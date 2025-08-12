@@ -1,0 +1,19 @@
+{
+    "name": "LB.TweenHelper.Editor",
+    "rootNamespace": "LB.TweenHelper.Editor",
+    "references": [
+        "LB.TweenHelper.Runtime",
+        "DOTween"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

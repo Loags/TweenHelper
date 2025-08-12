@@ -1,0 +1,43 @@
+Goals
+• Keep steady-state animation at zero avoidable allocations.
+• Avoid leaks and dangling tweens.
+• Provide predictable frame time under load.
+
+Engine Configuration
+• Initialize DoTween once at startup.
+• Set capacities to avoid internal array resizes.
+• Optionally prewarm by creating and killing small tweens.
+
+Allocation Strategy
+• Use the Integration layer to apply options without allocating per frame.
+• Avoid capturing large structs or references in per-frame delegates.
+
+Linking and Cleanup
+• Always link tweens to their GameObjects.
+• Provide a Lifecycle Tracker fallback.
+
+Update Strategy
+• Choose sensible project defaults.
+
+Snapping and Precision
+• Use snapping only when necessary.
+
+Materials, Rendering, and Text
+• For SpriteRenderer fades, avoid re-creating materials.
+
+Sequences and Batching
+• Compose with sequences sparingly.
+
+Capacities and IL2CPP
+• Document recommended starting capacities.
+
+Diagnostics and Profiling
+• Provide a debug flag to label tweens.
+• Offer a simple in-game counter.
+
+Tuning Process
+1) Start with Safe Mode on.
+2) Profile heavy scenes.
+3) Adjust capacities.
+4) Reduce simultaneous starts.
+5) Re-profile.

@@ -1,0 +1,33 @@
+Naming and Structure
+• Namespace: LB.TweenHelper for all runtime and editor code.
+• Class Names: Clear and complete.
+• Method Names: Verb-based and explicit.
+• No abbreviations or unclear short terms.
+• File Names: Match class names exactly. One public class per file.
+
+API Design
+• Keep the public interface intention-revealing and minimal.
+• Provide sensible defaults from Settings; allow explicit per-call overrides via the Options object.
+• Always return the underlying DoTween Tween or Sequence.
+
+Parameters and Overloads
+• For duration: an optional explicit float duration parameter; if null, use Settings default.
+• For overrides: accept an optional TweenOptions options parameter.
+
+Documentation and Comments
+• XML documentation on all public types and members.
+• Inline comments only for non-obvious logic.
+
+Error Handling and Guardrails
+• Validate inputs early.
+• Fail fast with clear, actionable log messages.
+
+Dependencies and Boundaries
+• Runtime code must not depend on editor assemblies.
+
+Extensibility
+• Presets: open registry.
+• Options object: additive, not breaking.
+
+Consistency
+• Use the same defaults everywhere by pulling from Settings.

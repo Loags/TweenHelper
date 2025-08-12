@@ -1,0 +1,9 @@
+---
+alwaysApply: true
+---
+
+Reference the following files to stay on track with the project alignments:
+@TweenHelper_txt\SystemDescription.txt
+@TweenHelper_txt\ImplementationWorkflow.txt
+@TweenHelper_txt\CodingStyleGuide.txt
+@TweenHelper_txt\PerformanceGuide.txt

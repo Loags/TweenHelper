@@ -1,0 +1,33 @@
+Title: LB.TweenHelper — High-level Animation Facade for DoTween (Free)
+
+Overview
+LB.TweenHelper is a thin, opinionated layer on top of DoTween that makes common animations fast to write, safe to run, and easy to reuse. It centralizes defaults, simplifies one-line calls, supports named presets, composes multi-step sequences, and cleans up automatically when GameObjects are destroyed.
+
+Namespace
+All runtime and editor types live under LB.TweenHelper.
+
+Core Goals
+1) Minimize user code for common animations.
+2) Centralize defaults and presets.
+3) Make cleanup automatic and safe.
+4) Keep raw DoTween power accessible when needed.
+
+Key Components
+• Settings (Singleton Asset): A ScriptableObject that defines global defaults (duration, ease, delay, update type, unscaled time, snapping) and DoTween engine configuration (Safe Mode, capacities, optional prewarm).
+• Bootstrapper (Runtime Initialization): Applies settings at startup, initializes DoTween, sets capacities, and optionally prewarms the engine.
+• DoTween Integration (Configuration Hub): Applies defaults and per-call options to tweens and sequences, sets targets, update behavior, loops, speed-based, and snapping. Also links tweens to their GameObjects for automatic cleanup.
+• Lifecycle Tracking (Fallback): A lightweight component that tracks active tweens per GameObject and kills them on destroy if native linking is not available.
+• Public Interface (One-Liners): Clear, intention-revealing methods for moving, rotating, scaling, and fading, as well as simple camera and UI helpers.
+• Options Object (Per-Call Overrides): A small, explicit value type that lets a caller override delay, ease, update type, unscaled time, snapping, loops, loop type, and speed-based behavior.
+• Preset System: Named, reusable animations defined in code or as ScriptableObject assets. Presets can be discovered automatically and played by name with optional overrides.
+• Sequence Composition: A readable “step” model for building multi-step animations (move, scale, delay, call) and helpers for parallel composition and staggered starts across lists of targets.
+• Control Surface: Pause, resume, kill, complete, and rewind by target or identifier to coordinate complex screens or game states.
+• Async Helpers: Simple “await until complete” and timeout utilities for integration with async flows.
+• Diagnostics and Performance Knobs: Naming, capacity tuning, optional debug logs, and guidance to avoid allocations.
+
+How It Feels to Use
+• One-liners for most tasks: “move this here”, “fade that in”, “scale this”.
+• Presets for consistent transitions: “play ButtonPop on this transform”.
+• Sequences when needed: “move, wait, scale, call callback”.
+• No manual cleanup: tweens are killed automatically with their targets.
+• Defaults are consistent project-wide, overridable per call when necessary.

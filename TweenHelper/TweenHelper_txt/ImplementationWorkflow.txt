@@ -1,0 +1,14 @@
+Objective
+Implement LB.TweenHelper in a strictly prioritized order, focusing on user-visible value first, then reuse and power features, then polish and diagnostics.
+
+Order of Implementation
+1) Settings and Bootstrap (single source of truth)
+2) DoTween Integration (central configuration)
+3) Lifecycle Tracking (safety fallback)
+4) Public Interface (core one-liners)
+5) Options Object (per-call overrides)
+6) Preset System (reusable animations)
+7) Sequence Composition (readable multi-step flows)
+8) Control Surface (operational control)
+9) Async Helpers (integration with async flows)
+10) Diagnostics and Performance (polish and safety)
