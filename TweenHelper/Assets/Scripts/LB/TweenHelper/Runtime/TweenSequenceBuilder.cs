@@ -257,6 +257,26 @@ namespace LB.TweenHelper
         }
         
         /// <summary>
+        /// Adds a rotation step that runs in parallel with the previous step.
+        /// </summary>
+        /// <param name="transform">The Transform to rotate.</param>
+        /// <param name="targetRotation">The target rotation in Euler angles.</param>
+        /// <param name="duration">Duration override (null uses settings default).</param>
+        /// <param name="options">Additional options to apply.</param>
+        /// <returns>This builder for chaining.</returns>
+        public TweenSequenceBuilder JoinRotate(Transform transform, Vector3 targetRotation, float? duration = null, TweenOptions options = default)
+        {
+            ThrowIfBuilt();
+            var tween = TweenHelper.RotateTo(transform, targetRotation, duration, options);
+            if (tween != null)
+            {
+                _sequence.Join(tween);
+                _steps.Add(tween);
+            }
+            return this;
+        }
+        
+        /// <summary>
         /// Adds a fade step that runs in parallel with the previous step.
         /// </summary>
         /// <param name="target">The target component to fade.</param>
