@@ -3,7 +3,7 @@
     "rootNamespace": "LB.TweenHelper.Editor",
     "references": [
         "LB.TweenHelper.Runtime",
-        "DOTween"
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [
         "Editor"
@@ -17,4 +17,3 @@
     "versionDefines": [],
     "noEngineReferences": false
 }
-

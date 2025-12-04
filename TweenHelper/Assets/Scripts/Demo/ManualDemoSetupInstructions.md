@@ -1,6 +1,6 @@
 # Manual Demo Scene Setup Instructions
 
-If the automatic setup doesn't work perfectly, follow these step-by-step instructions:
+Follow these step-by-step instructions to set up a TweenHelper demo scene from scratch.
 
 ## Step 1: Create Demo Objects
 
@@ -9,17 +9,17 @@ If the automatic setup doesn't work perfectly, follow these step-by-step instruc
    - Name it "Demo Objects"
 
 2. **Create 9 demo objects** in a 3x3 grid:
-   
+
    **Row 1 (Z = -3):**
    - Object 0: Cube at (-3, 0, -3) - Red material
    - Object 1: Sphere at (0, 0, -3) - Green material
    - Object 2: Cylinder at (3, 0, -3) - Blue material
-   
+
    **Row 2 (Z = 0):**
    - Object 3: Capsule at (-3, 0, 0) - Yellow material
    - Object 4: Cube at (0, 0, 0) - Cyan material
    - Object 5: Sphere at (3, 0, 0) - Magenta material
-   
+
    **Row 3 (Z = 3):**
    - Object 6: Cylinder at (-3, 0, 3) - Orange material
    - Object 7: Capsule at (0, 0, 3) - Purple material
@@ -41,60 +41,42 @@ If the automatic setup doesn't work perfectly, follow these step-by-step instruc
    - UI Scale Mode: Scale With Screen Size
    - Reference Resolution: 1920 x 1080
 
-3. **Create UI structure**:
+3. **Create UI elements**:
 
-### Header Panel
-- Create UI → Panel, name "Header Panel"
-- Anchor: Top stretch (0,0.9) to (1,1)
-- Add two Text components:
-  - "Title Text" - "LB.TweenHelper Demo"
-  - "CurrentDemoText" - "Demo: Basic Animations"
+### Animation Dropdown
+- Create UI → Dropdown - TextMeshPro (name it "AnimationDropdown")
+- Position at top of screen
+- This will be populated automatically by TweenDemoSceneSetup
+- Format: Category headers "── CATEGORY ──", items "   Animation Name"
 
-### Demo Selection Panel  
-- Create UI → Panel, name "Demo Selection Panel"
-- Anchor: (0,0.8) to (1,0.9)
-- Add Horizontal Layout Group
-- Create 7 buttons with text:
-  - "Basic Animations", "Presets", "Sequences", "Stagger", "Control", "Async", "Options"
+### Control Panel
+- Create UI → Panel (name "ControlPanel")
+- Add three buttons:
+  - **Play Button**: Executes selected animation
+  - **Reset Button**: Resets demo objects to original positions
+  - **Stop Button**: Kills all active tweens
 
-### Individual Demo Panels
-Create separate panels for each demo type with specific buttons:
+### Duration Slider (Optional)
+- Create UI → Slider
+- Name it "DurationSlider"
+- Min Value: 0.1, Max Value: 5.0, Default: 1.0
+- Add label text: "Animation Duration"
 
-**Basic Animation Panel:**
-- Buttons: "Move", "Rotate", "Scale", "Fade", "Combined"
-
-**Preset Panel:**
-- Buttons: "PopIn", "PopOut", "Bounce", "Shake", "FadeIn", "FadeOut", "All", "Random"
-
-**Sequence Panel:**
-- Buttons: "Simple", "Parallel", "Complex", "Looped", "Callbacks", "Presets"
-
-**Stagger Panel:**
-- Buttons: "Move", "Scale", "Preset", "Fade", "Wave", "Cascade"
-
-**Control Panel:**
-- Buttons: "Start", "Pause All", "Resume All", "Kill All", "Complete All", "ID Control", "Diagnostics"
-- Individual controls: "Pause Obj", "Resume Obj", "Kill Obj"
-
-**Async Panel:**
-- Buttons: "Await Complete", "Await Timeout", "Await All", "Await Any", "Cancellation", "Async Sequence", "Direct Await"
-
-**Options Panel:**
-- Buttons: "Easing", "Delay", "Loops", "Unscaled Time", "Snapping", "Speed Based", "Combined", "Fluent API", "Comparison"
-
-### Footer Panel
-- Create UI → Panel, name "Footer Panel"
-- Anchor: Bottom stretch (0,0) to (1,0.15)
-- Add Text: "InstructionsText" with usage instructions
+### Info Text (Optional)
+- Create UI → Text - TextMeshPro
+- Name it "InfoText"
+- Displays animation info and instructions
 
 ## Step 3: Create Demo Controller
 
-1. **Create controller object**:
+1. **Create controller GameObject**:
    - Right-click in Hierarchy → Create Empty
    - Name it "TweenDemoController"
 
-2. **Add all demo scripts**:
-   - TweenDemoController
+2. **Add TweenDemoSceneSetup script**:
+   - Add Component → TweenDemoSceneSetup
+
+3. **Add all demo provider scripts** to the same GameObject:
    - BasicAnimationDemo
    - PresetDemo
    - SequenceDemo
@@ -103,41 +85,114 @@ Create separate panels for each demo type with specific buttons:
    - AsyncDemo
    - OptionsDemo
 
-## Step 4: Link Everything
+   *Providers are auto-discovered via `GetComponentsInChildren<IDemoAnimationProvider>()`*
 
-In the TweenDemoController component:
+## Step 4: Link Everything in Inspector
 
-1. **Link Demo Objects**: Drag all 9 objects into the array
-2. **Link UI Elements**: Connect all text and button references
-3. **Link Individual Demo Controls**: Connect each demo's specific buttons
+In the **TweenDemoSceneSetup** component:
 
-## Button Linking Reference
+1. **Demo Objects Array**:
+   - Set size to 9
+   - Drag all 9 demo objects from Step 1
 
-### Main Demo Buttons (in demoButtons array):
-- Index 0: Basic Animations Button
-- Index 1: Presets Button
-- Index 2: Sequences Button
-- Index 3: Stagger Button
-- Index 4: Control Button
-- Index 5: Async Button
-- Index 6: Options Button
+2. **UI References**:
+   - Animation Dropdown → AnimationDropdown (TMP_Dropdown)
+   - Play Button → Play button
+   - Reset Button → Reset button
+   - Stop Button → Stop button
+   - Duration Slider → DurationSlider (optional)
+   - Info Text → InfoText (optional)
 
-### BasicAnimationDemo buttons:
-- moveButton → "Move" button
-- rotateButton → "Rotate" button  
-- scaleButton → "Scale" button
-- fadeButton → "Fade" button
-- combinedButton → "Combined" button
+3. **Settings** (optional):
+   - Default Duration: 1.0
+   - Auto Initialize On Start: ✓ (checked)
 
-### Continue for all other demo types...
+## Step 5: Position Camera
 
-## Step 5: Test Setup
+1. Select Main Camera
+2. Set Position to (0, 5, -10)
+3. Set Rotation to (30, 0, 0)
+4. Adjust to frame all demo objects
 
-1. Press Play
-2. Try clicking "Move" in Basic Animations
-3. Verify objects animate
-4. Test demo switching with top buttons
-5. Check keyboard shortcuts work
+## Step 6: Test Setup
 
-This manual setup ensures everything works exactly as intended!
+1. **Press Play**
+2. **Check dropdown population**: Should see 7 categories with 65 total animations
+3. **Select an animation** from dropdown (e.g., "Basic" → "   MoveTo (Up)")
+4. **Click Play button** → Objects should animate
+5. **Click Reset button** → Objects return to starting positions
+6. **Try different categories**: Presets, Sequences, Stagger, etc.
 
+## Expected Dropdown Structure
+
+```
+── Basic ──
+   MoveTo (Up)
+   MoveTo (Right)
+   RotateTo (180° Y)
+   ...
+── Presets ──
+   PopIn
+   PopOut
+   Bounce
+   ...
+── Sequences ──
+   Simple Sequence
+   Parallel Sequence
+   ...
+```
+
+## Troubleshooting
+
+### Dropdown is empty:
+- Ensure all 7 provider scripts are added to TweenDemoController GameObject
+- Check TweenDemoSceneSetup has reference to TMP_Dropdown
+
+### Animations don't play:
+- Verify all 9 demo objects are assigned in inspector
+- Check TweenHelperSettings exists in Resources folder
+- Ensure CanvasGroup is on objects for fade animations
+
+### Objects don't reset:
+- TweenDemoSceneSetup caches original positions on Start()
+- Make sure objects are in correct positions before pressing Play in editor
+
+## Adding Custom Animation Providers
+
+To add your own animations:
+
+1. **Create new script** implementing `IDemoAnimationProvider`:
+```csharp
+using LB.TweenHelper.Demo;
+
+public class MyCustomDemo : MonoBehaviour, IDemoAnimationProvider
+{
+    private GameObject[] demoObjects;
+
+    public string CategoryName => "Custom";
+
+    public void Initialize(GameObject[] objects)
+    {
+        demoObjects = objects;
+    }
+
+    public IEnumerable<DemoAnimation> GetAnimations()
+    {
+        yield return new DemoAnimation
+        {
+            Name = "My Animation",
+            Category = CategoryName,
+            Execute = (transforms, duration) =>
+            {
+                foreach (var t in transforms)
+                    if (t != null) TweenHelper.MoveTo(t, Vector3.up * 5f, duration);
+            }
+        };
+    }
+}
+```
+
+2. **Add script** to TweenDemoController GameObject
+3. **Press Play** → Your category appears in dropdown automatically!
+
+This setup provides a clean, extensible demo system with all 65 TweenHelper animations accessible via dropdown.

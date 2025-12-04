@@ -90,10 +90,10 @@ The demo system provides hands-on examples of every feature in LB.TweenHelper, f
 
 ### For Unity Scene Setup:
 1. Create a new scene for the demo
-2. Add the `TweenDemoController` script to an empty GameObject
+2. Add the `TweenDemoSceneSetup` script to an empty GameObject
 3. Create demo objects (cubes, UI elements, etc.) and assign to the `demoObjects` array
-4. Add individual demo components (`BasicAnimationDemo`, `PresetDemo`, etc.)
-5. Create UI buttons and assign to the controller's button arrays
+4. Add individual demo provider components (`BasicAnimationDemo`, `PresetDemo`, etc.)
+5. Create a TMP_Dropdown UI element and assign to the controller
 6. Ensure the `TweenHelperSettings` asset exists in Resources
 
 ### For Custom Demo Objects:
@@ -106,11 +106,12 @@ Demo objects should have:
 ### Recommended Scene Layout:
 ```
 DemoScene
-├── Demo Controller (TweenDemoController + all demo components)
+├── Demo Controller (TweenDemoSceneSetup + all IDemoAnimationProvider components)
 ├── UI Canvas
-│   ├── Demo Buttons
-│   ├── Instructions Text
-│   └── Current Demo Text
+│   ├── Animation Dropdown (TMP_Dropdown)
+│   ├── Play Button
+│   ├── Reset Button
+│   └── Duration Slider
 ├── Demo Objects (arranged in grid)
 │   ├── Cube 1 (Transform + optional fade component)
 │   ├── Cube 2
@@ -121,18 +122,13 @@ DemoScene
 ## Navigation
 
 ### Universal Controls:
-- **Arrow Keys**: Left/Right to switch demo sections
-- **Space**: Stop all animations
-- **R**: Reset all objects to original positions
+- **Dropdown**: Select animation from categorized list (format: "── CATEGORY ──" headers, "   Animation Name" items)
+- **Play Button**: Execute selected animation
+- **Reset Button**: Reset all objects to original positions
+- **Duration Slider**: Adjust animation duration
 
-### Demo-Specific Controls:
-Each demo section has its own keyboard shortcuts displayed in the GUI overlay.
-
-### GUI Information:
-- Current demo name and instructions
-- Keyboard shortcuts overlay
-- Real-time status information
-- Time scale controls (for unscaled time demos)
+### Demo Organization:
+All animations are organized by category in the dropdown, with providers automatically discovered via `IDemoAnimationProvider` interface.
 
 ## Code Examples
 
@@ -187,16 +183,42 @@ TweenHelper.KillById("ui-group");
 
 ## Extending the Demo
 
-### Adding New Demo Sections:
-1. Create a new demo script inheriting the pattern of existing demos
-2. Add initialization, button setup, and keyboard controls
-3. Include the new demo in `TweenDemoController.SetupDemos()`
-4. Add UI buttons and update the demo names array
+### Adding New Demo Providers:
+1. Create a new MonoBehaviour implementing `IDemoAnimationProvider`
+2. Implement `CategoryName` property (e.g., "Custom")
+3. Implement `Initialize(GameObject[] objects)` to receive demo objects
+4. Implement `GetAnimations()` to return `IEnumerable<DemoAnimation>`
+5. Add the provider component to the scene's demo controller GameObject
+6. The provider will be auto-discovered and animations added to the dropdown
 
-### Adding New Demo Objects:
-- Implement `IDemoTarget` interface for consistent behavior
-- Support common components (Transform, CanvasGroup, Image, etc.)
-- Consider fade compatibility for comprehensive testing
+Example:
+```csharp
+public class CustomDemo : MonoBehaviour, IDemoAnimationProvider
+{
+    private GameObject[] demoObjects;
+
+    public string CategoryName => "Custom";
+
+    public void Initialize(GameObject[] objects)
+    {
+        demoObjects = objects;
+    }
+
+    public IEnumerable<DemoAnimation> GetAnimations()
+    {
+        yield return new DemoAnimation
+        {
+            Name = "My Animation",
+            Category = CategoryName,
+            Execute = (transforms, duration) =>
+            {
+                foreach (var t in transforms)
+                    if (t != null) TweenHelper.MoveTo(t, Vector3.up * 2f, duration);
+            }
+        };
+    }
+}
+```
 
 ### Custom Presets:
 Create ScriptableObject-based presets by inheriting from `TweenPresetBase`:

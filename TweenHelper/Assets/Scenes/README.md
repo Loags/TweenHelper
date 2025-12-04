@@ -10,7 +10,8 @@ This directory contains everything needed to create a comprehensive interactive 
 - **`DemoSceneSetupGuide.md`** - Complete manual setup instructions
 
 ### **Demo Scripts:** (in `../Scripts/Demo/`)
-- **`TweenDemoController.cs`** - Main demo orchestrator
+- **`TweenDemoSceneSetup.cs`** - Main demo controller with dropdown UI
+- **`IDemoAnimationProvider.cs`** - Interface for extensible animation providers
 - **`BasicAnimationDemo.cs`** - Move, rotate, scale, fade demonstrations
 - **`PresetDemo.cs`** - Built-in preset system showcase
 - **`SequenceDemo.cs`** - Multi-step animation sequences
@@ -24,8 +25,8 @@ This directory contains everything needed to create a comprehensive interactive 
 ### **Option 1: Automatic Setup (Recommended)**
 1. Open `TweenHelperDemo.unity` in Unity
 2. Find the `TweenDemoSceneSetup` GameObject in the Hierarchy
-3. Right-click the component in Inspector → **"Setup Complete Demo Scene"**
-4. Manually link UI elements in the created `TweenDemoController` (see guide)
+3. Assign demo objects and UI references in the Inspector
+4. Press Play - animations are accessible via dropdown
 
 ### **Option 2: Manual Setup**
 Follow the comprehensive instructions in `DemoSceneSetupGuide.md`
@@ -33,43 +34,43 @@ Follow the comprehensive instructions in `DemoSceneSetupGuide.md`
 ## 🎮 **Demo Features**
 
 ### **Interactive Controls:**
-- **UI Buttons**: Click-to-trigger animations for each demo type
-- **Keyboard Shortcuts**: Quick access to all features (1-9, arrows, space)
+- **TMP_Dropdown**: Select from 65 categorized animations
+- **Play Button**: Execute selected animation
+- **Reset Button**: Return objects to starting positions
 - **Real-time Feedback**: Console logging and visual status updates
 
-### **7 Complete Demo Sections:**
+### **7 Complete Demo Categories (65 Total Animations):**
 
-#### **1. Basic Animations**
+#### **1. Basic (16 animations)**
 - Move, Rotate, Scale, Fade operations
 - Combined multi-property animations
 - Easing comparisons
 
-#### **2. Preset System**  
+#### **2. Presets (8 animations)**
 - PopIn, PopOut, Bounce, Shake, FadeIn, FadeOut
 - Preset chaining and custom options
-- Compatibility checking
 
-#### **3. Sequence Composition**
+#### **3. Sequences (8 animations)**
 - Step-by-step animations with delays
 - Parallel actions using Join methods
 - Complex multi-phase flows with callbacks
 
-#### **4. Staggered Animations**
+#### **4. Stagger (9 animations)**
 - Coordinated animations across multiple objects
 - Wave effects and cascade patterns
 - Custom stagger timing
 
-#### **5. Control Surface**
+#### **5. Control (7 animations)**
 - Pause, Resume, Kill, Complete operations
 - Target-based and ID-based control
 - Real-time diagnostics
 
-#### **6. Async Operations**
+#### **6. Async (6 animations)**
 - Await completion with timeouts
 - Concurrent animation patterns
 - Cancellation token support
 
-#### **7. Options & Settings**
+#### **7. Options (11 animations)**
 - Easing functions and comparisons
 - Loops, delays, unscaled time
 - Speed-based animations
@@ -84,10 +85,10 @@ Follow the comprehensive instructions in `DemoSceneSetupGuide.md`
 - **TweenLifecycleTracker**: Automatic cleanup safety
 
 ### **UI Layout:**
-- **Header**: Title and current demo indicator
-- **Demo Selection**: 7 main category buttons
-- **Demo Panels**: Individual controls for each category
-- **Footer**: Instructions and keyboard shortcuts
+- **Animation Dropdown**: TMP_Dropdown with categorized animations
+- **Control Buttons**: Play, Reset, Stop buttons
+- **Duration Slider**: Adjustable animation duration (optional)
+- **Info Text**: Status and instructions display (optional)
 
 ### **Technical Setup:**
 - **Camera**: Positioned for optimal viewing (0, 8, -12)
@@ -96,11 +97,11 @@ Follow the comprehensive instructions in `DemoSceneSetupGuide.md`
 
 ## 🔧 **Customization**
 
-### **Adding New Demos:**
-1. Create new demo script following existing patterns
-2. Add to `TweenDemoController` 
-3. Create UI panel with specific controls
-4. Link components in Inspector
+### **Adding New Demo Providers:**
+1. Create new MonoBehaviour implementing `IDemoAnimationProvider`
+2. Implement `CategoryName`, `Initialize()`, and `GetAnimations()`
+3. Add provider component to scene's demo controller GameObject
+4. Provider is auto-discovered and animations added to dropdown
 
 ### **Modifying Layout:**
 - Adjust object grid spacing in `TweenDemoSceneSetup`
@@ -126,9 +127,9 @@ Follow the comprehensive instructions in `DemoSceneSetupGuide.md`
 
 ### **Basic Functionality:**
 - [ ] Demo objects visible and properly positioned
-- [ ] UI buttons respond to clicks
-- [ ] Keyboard shortcuts work (arrows, space, 1-9)
-- [ ] Demo switching functions correctly
+- [ ] Dropdown populates with 65 animations across 7 categories
+- [ ] Play button executes selected animation
+- [ ] Reset button returns objects to original positions
 
 ### **Animation Features:**
 - [ ] Basic animations (move, rotate, scale, fade) work
