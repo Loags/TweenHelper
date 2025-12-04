@@ -41,3 +41,4 @@ namespace LB.TweenHelper
         bool CanApplyTo(GameObject target);
     }
 }
+
