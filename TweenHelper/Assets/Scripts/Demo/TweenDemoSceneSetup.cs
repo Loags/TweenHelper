@@ -1,8 +1,7 @@
-using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
-using DG.Tweening;
 using TMPro;
+using UnityEngine;
 
 namespace LB.TweenHelper.Demo
 {
@@ -15,24 +14,18 @@ namespace LB.TweenHelper.Demo
         #region Serialized Fields
 
         [Header("UI Reference")]
-        [SerializeField] private TMP_Dropdown animationDropdown;
+        [SerializeField] private GameObject animationDropdownObject;
+        [SerializeField] private Transform dropdownContainerTransform;
+        [SerializeField] private TextMeshProUGUI infoText;
 
         [Header("Animation Providers")]
-        [SerializeField] private BasicAnimationDemo basicAnimationDemo;
-        [SerializeField] private PresetDemo presetDemo;
-        [SerializeField] private SequenceDemo sequenceDemo;
-        [SerializeField] private StaggerDemo staggerDemo;
-        [SerializeField] private ControlDemo controlDemo;
-        [SerializeField] private AsyncDemo asyncDemo;
-        [SerializeField] private OptionsDemo optionsDemo;
+        [SerializeField] private MoveAnimationDemo moveAnimationDemo;
 
         [Header("Scene Generation")]
         [SerializeField] private bool autoSetupOnStart = true;
         [SerializeField] private Material demoMaterial;
 
         [Header("Layout Settings")]
-        [SerializeField] private int demoObjectsPerRow = 3;
-        [SerializeField] private float objectSpacing = 3f;
         [SerializeField] private Vector3 demoAreaCenter = Vector3.zero;
 
         [Header("Animation Settings")]
@@ -49,6 +42,7 @@ namespace LB.TweenHelper.Demo
         private Vector3[] _originalPositions;
         private Vector3[] _originalScales;
         private Quaternion[] _originalRotations;
+        private bool _autoResetAfterAnimation = true;
 
         #endregion
 
@@ -73,6 +67,11 @@ namespace LB.TweenHelper.Demo
             {
                 PlaySelectedAnimation();
             }
+
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                ToggleAutoReset();
+            }
         }
 
         #endregion
@@ -89,6 +88,7 @@ namespace LB.TweenHelper.Demo
             InitializeProviders();
             CacheOriginalTransforms();
             PopulateDropdown();
+            UpdateInfoText();
 
             Debug.Log($"[TweenDemo] Demo ready! {_demoObjects.Length} objects, {_animations.Count} animations.");
         }
@@ -119,6 +119,11 @@ namespace LB.TweenHelper.Demo
             // Skip headers
             if (animation.Name.StartsWith("──")) return;
 
+            if (_autoResetAfterAnimation)
+            {
+                ResetAllObjects();
+            }
+
             animation.Execute(_demoTransforms, defaultDuration);
             Debug.Log($"[TweenDemo] Playing: {animation.Name.Trim()}");
         }
@@ -145,6 +150,24 @@ namespace LB.TweenHelper.Demo
             Debug.Log("[TweenDemo] All objects reset.");
         }
 
+        public void ToggleAutoReset()
+        {
+            _autoResetAfterAnimation = !_autoResetAfterAnimation;
+            UpdateInfoText();
+            Debug.Log($"[TweenDemo] Auto-reset: {(_autoResetAfterAnimation ? "ON" : "OFF")}");
+        }
+
+        private void UpdateInfoText()
+        {
+            if (infoText == null) return;
+
+            string autoResetStatus = _autoResetAfterAnimation ? "<color=green>ON</color>" : "<color=red>OFF</color>";
+            infoText.text = "KEYBOARD CONTROLS\n\n" +
+                           "<b>SPACE</b>  —  Play Selected Animation\n" +
+                           "<b>R</b>  —  Reset All Objects\n" +
+                           $"<b>T</b>  —  Toggle Auto-Reset [{autoResetStatus}]";
+        }
+
         #endregion
 
         #region Provider Management
@@ -153,24 +176,7 @@ namespace LB.TweenHelper.Demo
         {
             _providers.Clear();
 
-            // Add assigned providers
-            if (basicAnimationDemo != null) _providers.Add(basicAnimationDemo);
-            if (presetDemo != null) _providers.Add(presetDemo);
-            if (sequenceDemo != null) _providers.Add(sequenceDemo);
-            if (staggerDemo != null) _providers.Add(staggerDemo);
-            if (controlDemo != null) _providers.Add(controlDemo);
-            if (asyncDemo != null) _providers.Add(asyncDemo);
-            if (optionsDemo != null) _providers.Add(optionsDemo);
-
-            // Find any additional providers on this object or children
-            var foundProviders = GetComponentsInChildren<IDemoAnimationProvider>();
-            foreach (var provider in foundProviders)
-            {
-                if (!_providers.Contains(provider))
-                {
-                    _providers.Add(provider);
-                }
-            }
+            if (moveAnimationDemo != null) _providers.Add(moveAnimationDemo);
 
             Debug.Log($"[TweenDemo] Found {_providers.Count} animation providers.");
         }
@@ -262,68 +268,30 @@ namespace LB.TweenHelper.Demo
 
         private void CreateDemoObjects()
         {
-            _demoObjects = new GameObject[9];
-            _demoTransforms = new Transform[9];
+            _demoObjects = new GameObject[1];
+            _demoTransforms = new Transform[1];
             var parentObject = new GameObject("Demo Objects");
 
-            for (int i = 0; i < 9; i++)
-            {
-                int row = i / demoObjectsPerRow;
-                int col = i % demoObjectsPerRow;
+            GameObject obj = CreateDemoObject(demoAreaCenter);
+            obj.transform.SetParent(parentObject.transform);
+            obj.name = "DemoObject_00";
 
-                Vector3 position = demoAreaCenter + new Vector3(
-                    (col - 1) * objectSpacing,
-                    0f,
-                    (row - 1) * objectSpacing
-                );
-
-                GameObject obj = CreateDemoObject(i, position);
-                obj.transform.SetParent(parentObject.transform);
-                obj.name = $"DemoObject_{i:00}";
-
-                _demoObjects[i] = obj;
-                _demoTransforms[i] = obj.transform;
-            }
+            _demoObjects[0] = obj;
+            _demoTransforms[0] = obj.transform;
         }
 
-        private GameObject CreateDemoObject(int index, Vector3 position)
+        private GameObject CreateDemoObject(Vector3 position)
         {
-            GameObject obj = (index % 4) switch
-            {
-                0 => GameObject.CreatePrimitive(PrimitiveType.Cube),
-                1 => GameObject.CreatePrimitive(PrimitiveType.Sphere),
-                2 => GameObject.CreatePrimitive(PrimitiveType.Cylinder),
-                3 => GameObject.CreatePrimitive(PrimitiveType.Capsule),
-                _ => GameObject.CreatePrimitive(PrimitiveType.Cube)
-            };
-
+            GameObject obj = GameObject.CreatePrimitive(PrimitiveType.Cube);
             obj.transform.position = position;
 
-            var renderer = obj.GetComponent<Renderer>();
-            if (renderer != null)
-            {
-                Material material = demoMaterial != null
-                    ? new Material(demoMaterial)
-                    : new Material(Shader.Find("Standard"));
-                material.color = GetObjectColor(index);
-                renderer.material = material;
-            }
+            if (obj.TryGetComponent<Renderer>(out var renderer))
+                renderer.material = demoMaterial;
 
             obj.AddComponent<CanvasGroup>().alpha = 1f;
             obj.AddComponent<TweenLifecycleTracker>();
 
             return obj;
-        }
-
-        private Color GetObjectColor(int index)
-        {
-            Color[] colors =
-            {
-                Color.red, Color.green, Color.blue, Color.yellow,
-                Color.cyan, Color.magenta, new Color(1f, 0.5f, 0f),
-                new Color(0.5f, 0f, 1f), new Color(0f, 1f, 0.5f)
-            };
-            return colors[index % colors.Length];
         }
 
         private void CacheOriginalTransforms()

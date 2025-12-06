@@ -45,7 +45,27 @@ namespace LB.TweenHelper
             }
             return this;
         }
-        
+
+        /// <summary>
+        /// Adds a relative movement step to the sequence.
+        /// </summary>
+        /// <param name="transform">The Transform to move.</param>
+        /// <param name="offset">The offset to move by.</param>
+        /// <param name="duration">Duration override (null uses settings default).</param>
+        /// <param name="options">Additional options to apply.</param>
+        /// <returns>This builder for chaining.</returns>
+        public TweenSequenceBuilder MoveBy(Transform transform, Vector3 offset, float? duration = null, TweenOptions options = default)
+        {
+            ThrowIfBuilt();
+            var tween = TweenHelper.MoveBy(transform, offset, duration, options);
+            if (tween != null)
+            {
+                _sequence.Append(tween);
+                _steps.Add(tween);
+            }
+            return this;
+        }
+
         /// <summary>
         /// Adds a rotation step to the sequence.
         /// </summary>
@@ -235,7 +255,27 @@ namespace LB.TweenHelper
             }
             return this;
         }
-        
+
+        /// <summary>
+        /// Adds a relative movement step that runs in parallel with the previous step.
+        /// </summary>
+        /// <param name="transform">The Transform to move.</param>
+        /// <param name="offset">The offset to move by.</param>
+        /// <param name="duration">Duration override (null uses settings default).</param>
+        /// <param name="options">Additional options to apply.</param>
+        /// <returns>This builder for chaining.</returns>
+        public TweenSequenceBuilder JoinMoveBy(Transform transform, Vector3 offset, float? duration = null, TweenOptions options = default)
+        {
+            ThrowIfBuilt();
+            var tween = TweenHelper.MoveBy(transform, offset, duration, options);
+            if (tween != null)
+            {
+                _sequence.Join(tween);
+                _steps.Add(tween);
+            }
+            return this;
+        }
+
         /// <summary>
         /// Adds a scaling step that runs in parallel with the previous step.
         /// </summary>
