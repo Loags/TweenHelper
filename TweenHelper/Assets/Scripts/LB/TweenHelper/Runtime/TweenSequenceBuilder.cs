@@ -301,6 +301,18 @@ namespace LB.TweenHelper
             _sequence.AppendCallback(() => callback?.Invoke());
             return this;
         }
+
+        /// <summary>
+        /// Sets a callback to invoke when the sequence completes.
+        /// </summary>
+        /// <param name="callback">The callback to invoke on completion.</param>
+        /// <returns>This builder for chaining.</returns>
+        public TweenSequenceBuilder OnComplete(Action callback)
+        {
+            ThrowIfBuilt();
+            _sequence.OnComplete(() => callback?.Invoke());
+            return this;
+        }
         
         /// <summary>
         /// Adds a custom tween step to the sequence.

@@ -12,17 +12,55 @@ namespace LB.TweenHelper
         #region Looping Patterns
 
         /// <summary>
-        /// Smooth up-down bouncing motion. Loops infinitely.
+        /// Realistic bouncing ball animation with exponential height decay.
+        /// Starts at current position, bounces up/down, each bounce smaller than the last.
+        /// Always returns to the exact starting position.
         /// </summary>
         /// <param name="t">Transform to animate.</param>
-        /// <param name="height">How high to bounce.</param>
-        /// <param name="duration">Duration for one bounce cycle.</param>
+        /// <param name="height">Initial bounce height.</param>
+        /// <param name="bounces">Number of bounces (default 4).</param>
+        /// <param name="duration">Total duration for all bounces.</param>
+        /// <param name="decay">Height decay per bounce (0.5 = half height each time).</param>
+        /// <param name="startDown">If true, drops down first then bounces up (like a falling ball). If false, goes up first.</param>
         /// <returns>The playing sequence.</returns>
-        public static Sequence Bounce(Transform t, float height = 2f, float duration = 1f)
+        public static Sequence Bounce(Transform t, float height = 2f, int bounces = 4, float duration = 2f, float decay = 0.6f, bool startDown = false)
         {
-            return TweenHelper.CreateSequence(t)
-                .MoveBy(t, Vector3.up * height, duration, TweenOptions.WithEase(Ease.InOutSine))
-                .Play(TweenOptions.WithLoops(-1, LoopType.Yoyo));
+            var builder = TweenHelper.CreateSequence(t);
+            Vector3 startPos = t.position;
+
+            // Calculate total "weight" for duration distribution (earlier bounces take more time)
+            float totalWeight = 0f;
+            float currentHeight = height;
+            for (int i = 0; i < bounces; i++)
+            {
+                totalWeight += Mathf.Sqrt(currentHeight); // Time proportional to sqrt of height (physics)
+                currentHeight *= decay;
+            }
+
+            // Direction vectors
+            Vector3 firstDir = startDown ? Vector3.down : Vector3.up;
+            Vector3 secondDir = startDown ? Vector3.up : Vector3.down;
+            Ease firstEase = startDown ? Ease.InQuad : Ease.OutQuad;  // Down accelerates, Up decelerates
+            Ease secondEase = startDown ? Ease.OutQuad : Ease.InQuad; // Up decelerates, Down accelerates
+
+            // Build each bounce
+            currentHeight = height;
+            for (int i = 0; i < bounces; i++)
+            {
+                // Duration proportional to sqrt of height (like real physics: t = sqrt(2h/g))
+                float bounceDuration = duration * (Mathf.Sqrt(currentHeight) / totalWeight);
+                float halfDuration = bounceDuration * 0.5f;
+
+                builder.MoveBy(t, firstDir * currentHeight, halfDuration, TweenOptions.WithEase(firstEase));
+                builder.MoveBy(t, secondDir * currentHeight, halfDuration, TweenOptions.WithEase(secondEase));
+
+                currentHeight *= decay;
+            }
+
+            // Ensure we end exactly at the start position (avoid floating point drift)
+            builder.OnComplete(() => t.position = startPos);
+
+            return builder.Play();
         }
 
         /// <summary>

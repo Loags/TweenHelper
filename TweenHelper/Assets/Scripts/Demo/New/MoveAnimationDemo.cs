@@ -131,11 +131,20 @@ namespace LB.TweenHelper.Demo
 
             yield return new DemoAnimation
             {
-                Name = "Bounce",
+                Name = "Bounce Down",
                 Category = CategoryName,
-                SubCategory = "Looping",
+                SubCategory = "Effects",
                 Execute = (transforms, duration) =>
-                    TweenAnimations.Bounce(transforms[0], 2f, duration)
+                    TweenAnimations.Bounce(transforms[0], 2f, 4, duration * 3, startDown: true)
+            };
+
+            yield return new DemoAnimation
+            {
+                Name = "Bounce Up",
+                Category = CategoryName,
+                SubCategory = "Effects",
+                Execute = (transforms, duration) =>
+                    TweenAnimations.Bounce(transforms[0], 2f, 4, duration * 3)
             };
 
             yield return new DemoAnimation
