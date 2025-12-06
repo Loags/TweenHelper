@@ -13,9 +13,11 @@ namespace LB.TweenHelper
     {
         private readonly Sequence _sequence;
         private readonly GameObject _defaultTarget;
+        private readonly Transform _defaultTransform;
         private readonly List<Tween> _steps = new List<Tween>();
+        private Ease? _defaultEase;
         private bool _hasBeenBuilt = false;
-        
+
         /// <summary>
         /// Creates a new sequence builder.
         /// </summary>
@@ -24,8 +26,53 @@ namespace LB.TweenHelper
         {
             _sequence = DOTween.Sequence();
             _defaultTarget = defaultTarget;
+            _defaultTransform = defaultTarget?.transform;
+        }
+
+        /// <summary>
+        /// Creates a new sequence builder with a Transform as the default target.
+        /// </summary>
+        /// <param name="defaultTransform">The default Transform for animations.</param>
+        public TweenSequenceBuilder(Transform defaultTransform)
+        {
+            _sequence = DOTween.Sequence();
+            _defaultTransform = defaultTransform;
+            _defaultTarget = defaultTransform?.gameObject;
+        }
+
+        /// <summary>
+        /// Sets the default easing for all subsequent steps.
+        /// </summary>
+        /// <param name="ease">The ease to apply to subsequent steps.</param>
+        /// <returns>This builder for chaining.</returns>
+        public TweenSequenceBuilder WithEase(Ease ease)
+        {
+            ThrowIfBuilt();
+            _defaultEase = ease;
+            return this;
+        }
+
+        private TweenOptions ApplyDefaultEase(TweenOptions options)
+        {
+            if (_defaultEase.HasValue && !options.Ease.HasValue)
+            {
+                return options.SetEase(_defaultEase.Value);
+            }
+            return options;
         }
         
+        /// <summary>
+        /// Adds a movement step to the sequence using the default transform.
+        /// </summary>
+        /// <param name="targetPosition">The target position.</param>
+        /// <param name="duration">Duration override (null uses settings default).</param>
+        /// <param name="options">Additional options to apply.</param>
+        /// <returns>This builder for chaining.</returns>
+        public TweenSequenceBuilder Move(Vector3 targetPosition, float? duration = null, TweenOptions options = default)
+        {
+            return Move(_defaultTransform, targetPosition, duration, options);
+        }
+
         /// <summary>
         /// Adds a movement step to the sequence.
         /// </summary>
@@ -37,13 +84,25 @@ namespace LB.TweenHelper
         public TweenSequenceBuilder Move(Transform transform, Vector3 targetPosition, float? duration = null, TweenOptions options = default)
         {
             ThrowIfBuilt();
-            var tween = TweenHelper.MoveTo(transform, targetPosition, duration, options);
+            var tween = TweenHelper.MoveTo(transform, targetPosition, duration, ApplyDefaultEase(options));
             if (tween != null)
             {
                 _sequence.Append(tween);
                 _steps.Add(tween);
             }
             return this;
+        }
+
+        /// <summary>
+        /// Adds a relative movement step to the sequence using the default transform.
+        /// </summary>
+        /// <param name="offset">The offset to move by.</param>
+        /// <param name="duration">Duration override (null uses settings default).</param>
+        /// <param name="options">Additional options to apply.</param>
+        /// <returns>This builder for chaining.</returns>
+        public TweenSequenceBuilder MoveBy(Vector3 offset, float? duration = null, TweenOptions options = default)
+        {
+            return MoveBy(_defaultTransform, offset, duration, options);
         }
 
         /// <summary>
@@ -57,13 +116,25 @@ namespace LB.TweenHelper
         public TweenSequenceBuilder MoveBy(Transform transform, Vector3 offset, float? duration = null, TweenOptions options = default)
         {
             ThrowIfBuilt();
-            var tween = TweenHelper.MoveBy(transform, offset, duration, options);
+            var tween = TweenHelper.MoveBy(transform, offset, duration, ApplyDefaultEase(options));
             if (tween != null)
             {
                 _sequence.Append(tween);
                 _steps.Add(tween);
             }
             return this;
+        }
+
+        /// <summary>
+        /// Adds a rotation step to the sequence using the default transform.
+        /// </summary>
+        /// <param name="targetRotation">The target rotation (in Euler angles).</param>
+        /// <param name="duration">Duration override (null uses settings default).</param>
+        /// <param name="options">Additional options to apply.</param>
+        /// <returns>This builder for chaining.</returns>
+        public TweenSequenceBuilder Rotate(Vector3 targetRotation, float? duration = null, TweenOptions options = default)
+        {
+            return Rotate(_defaultTransform, targetRotation, duration, options);
         }
 
         /// <summary>
@@ -77,7 +148,7 @@ namespace LB.TweenHelper
         public TweenSequenceBuilder Rotate(Transform transform, Vector3 targetRotation, float? duration = null, TweenOptions options = default)
         {
             ThrowIfBuilt();
-            var tween = TweenHelper.RotateTo(transform, targetRotation, duration, options);
+            var tween = TweenHelper.RotateTo(transform, targetRotation, duration, ApplyDefaultEase(options));
             if (tween != null)
             {
                 _sequence.Append(tween);
@@ -85,7 +156,19 @@ namespace LB.TweenHelper
             }
             return this;
         }
-        
+
+        /// <summary>
+        /// Adds a scaling step to the sequence using the default transform.
+        /// </summary>
+        /// <param name="targetScale">The target scale.</param>
+        /// <param name="duration">Duration override (null uses settings default).</param>
+        /// <param name="options">Additional options to apply.</param>
+        /// <returns>This builder for chaining.</returns>
+        public TweenSequenceBuilder Scale(Vector3 targetScale, float? duration = null, TweenOptions options = default)
+        {
+            return Scale(_defaultTransform, targetScale, duration, options);
+        }
+
         /// <summary>
         /// Adds a scaling step to the sequence.
         /// </summary>
@@ -97,7 +180,7 @@ namespace LB.TweenHelper
         public TweenSequenceBuilder Scale(Transform transform, Vector3 targetScale, float? duration = null, TweenOptions options = default)
         {
             ThrowIfBuilt();
-            var tween = TweenHelper.ScaleTo(transform, targetScale, duration, options);
+            var tween = TweenHelper.ScaleTo(transform, targetScale, duration, ApplyDefaultEase(options));
             if (tween != null)
             {
                 _sequence.Append(tween);
@@ -105,7 +188,19 @@ namespace LB.TweenHelper
             }
             return this;
         }
-        
+
+        /// <summary>
+        /// Adds a scaling step with uniform scale to the sequence using the default transform.
+        /// </summary>
+        /// <param name="targetScale">The uniform target scale value.</param>
+        /// <param name="duration">Duration override (null uses settings default).</param>
+        /// <param name="options">Additional options to apply.</param>
+        /// <returns>This builder for chaining.</returns>
+        public TweenSequenceBuilder Scale(float targetScale, float? duration = null, TweenOptions options = default)
+        {
+            return Scale(_defaultTransform, Vector3.one * targetScale, duration, options);
+        }
+
         /// <summary>
         /// Adds a scaling step with uniform scale to the sequence.
         /// </summary>
@@ -131,29 +226,30 @@ namespace LB.TweenHelper
         {
             ThrowIfBuilt();
             Tween tween = null;
-            
+            var finalOptions = ApplyDefaultEase(options);
+
             if (target is CanvasGroup canvasGroup)
             {
-                tween = TweenHelper.FadeTo(canvasGroup, targetAlpha, duration, options);
+                tween = TweenHelper.FadeTo(canvasGroup, targetAlpha, duration, finalOptions);
             }
             else if (target is SpriteRenderer spriteRenderer)
             {
-                tween = TweenHelper.FadeTo(spriteRenderer, targetAlpha, duration, options);
+                tween = TweenHelper.FadeTo(spriteRenderer, targetAlpha, duration, finalOptions);
             }
             else if (target is UnityEngine.UI.Image image)
             {
-                tween = TweenHelper.FadeTo(image, targetAlpha, duration, options);
+                tween = TweenHelper.FadeTo(image, targetAlpha, duration, finalOptions);
             }
             else if (target is UnityEngine.UI.Text text)
             {
-                tween = TweenHelper.FadeTo(text, targetAlpha, duration, options);
+                tween = TweenHelper.FadeTo(text, targetAlpha, duration, finalOptions);
             }
             else
             {
                 Debug.LogWarning($"TweenSequenceBuilder: Unsupported fade target type '{target?.GetType().Name}'. Supported types: CanvasGroup, SpriteRenderer, Image, Text.");
                 return this;
             }
-            
+
             if (tween != null)
             {
                 _sequence.Append(tween);
@@ -237,6 +333,18 @@ namespace LB.TweenHelper
         }
         
         /// <summary>
+        /// Adds a movement step that runs in parallel with the previous step using the default transform.
+        /// </summary>
+        /// <param name="targetPosition">The target position.</param>
+        /// <param name="duration">Duration override (null uses settings default).</param>
+        /// <param name="options">Additional options to apply.</param>
+        /// <returns>This builder for chaining.</returns>
+        public TweenSequenceBuilder JoinMove(Vector3 targetPosition, float? duration = null, TweenOptions options = default)
+        {
+            return JoinMove(_defaultTransform, targetPosition, duration, options);
+        }
+
+        /// <summary>
         /// Adds a movement step that runs in parallel with the previous step.
         /// </summary>
         /// <param name="transform">The Transform to move.</param>
@@ -247,13 +355,25 @@ namespace LB.TweenHelper
         public TweenSequenceBuilder JoinMove(Transform transform, Vector3 targetPosition, float? duration = null, TweenOptions options = default)
         {
             ThrowIfBuilt();
-            var tween = TweenHelper.MoveTo(transform, targetPosition, duration, options);
+            var tween = TweenHelper.MoveTo(transform, targetPosition, duration, ApplyDefaultEase(options));
             if (tween != null)
             {
                 _sequence.Join(tween);
                 _steps.Add(tween);
             }
             return this;
+        }
+
+        /// <summary>
+        /// Adds a relative movement step that runs in parallel with the previous step using the default transform.
+        /// </summary>
+        /// <param name="offset">The offset to move by.</param>
+        /// <param name="duration">Duration override (null uses settings default).</param>
+        /// <param name="options">Additional options to apply.</param>
+        /// <returns>This builder for chaining.</returns>
+        public TweenSequenceBuilder JoinMoveBy(Vector3 offset, float? duration = null, TweenOptions options = default)
+        {
+            return JoinMoveBy(_defaultTransform, offset, duration, options);
         }
 
         /// <summary>
@@ -267,13 +387,25 @@ namespace LB.TweenHelper
         public TweenSequenceBuilder JoinMoveBy(Transform transform, Vector3 offset, float? duration = null, TweenOptions options = default)
         {
             ThrowIfBuilt();
-            var tween = TweenHelper.MoveBy(transform, offset, duration, options);
+            var tween = TweenHelper.MoveBy(transform, offset, duration, ApplyDefaultEase(options));
             if (tween != null)
             {
                 _sequence.Join(tween);
                 _steps.Add(tween);
             }
             return this;
+        }
+
+        /// <summary>
+        /// Adds a scaling step that runs in parallel with the previous step using the default transform.
+        /// </summary>
+        /// <param name="targetScale">The target scale.</param>
+        /// <param name="duration">Duration override (null uses settings default).</param>
+        /// <param name="options">Additional options to apply.</param>
+        /// <returns>This builder for chaining.</returns>
+        public TweenSequenceBuilder JoinScale(Vector3 targetScale, float? duration = null, TweenOptions options = default)
+        {
+            return JoinScale(_defaultTransform, targetScale, duration, options);
         }
 
         /// <summary>
@@ -287,7 +419,7 @@ namespace LB.TweenHelper
         public TweenSequenceBuilder JoinScale(Transform transform, Vector3 targetScale, float? duration = null, TweenOptions options = default)
         {
             ThrowIfBuilt();
-            var tween = TweenHelper.ScaleTo(transform, targetScale, duration, options);
+            var tween = TweenHelper.ScaleTo(transform, targetScale, duration, ApplyDefaultEase(options));
             if (tween != null)
             {
                 _sequence.Join(tween);
@@ -295,7 +427,19 @@ namespace LB.TweenHelper
             }
             return this;
         }
-        
+
+        /// <summary>
+        /// Adds a rotation step that runs in parallel with the previous step using the default transform.
+        /// </summary>
+        /// <param name="targetRotation">The target rotation in Euler angles.</param>
+        /// <param name="duration">Duration override (null uses settings default).</param>
+        /// <param name="options">Additional options to apply.</param>
+        /// <returns>This builder for chaining.</returns>
+        public TweenSequenceBuilder JoinRotate(Vector3 targetRotation, float? duration = null, TweenOptions options = default)
+        {
+            return JoinRotate(_defaultTransform, targetRotation, duration, options);
+        }
+
         /// <summary>
         /// Adds a rotation step that runs in parallel with the previous step.
         /// </summary>
@@ -307,7 +451,7 @@ namespace LB.TweenHelper
         public TweenSequenceBuilder JoinRotate(Transform transform, Vector3 targetRotation, float? duration = null, TweenOptions options = default)
         {
             ThrowIfBuilt();
-            var tween = TweenHelper.RotateTo(transform, targetRotation, duration, options);
+            var tween = TweenHelper.RotateTo(transform, targetRotation, duration, ApplyDefaultEase(options));
             if (tween != null)
             {
                 _sequence.Join(tween);
@@ -328,24 +472,25 @@ namespace LB.TweenHelper
         {
             ThrowIfBuilt();
             Tween tween = null;
-            
+            var finalOptions = ApplyDefaultEase(options);
+
             if (target is CanvasGroup canvasGroup)
             {
-                tween = TweenHelper.FadeTo(canvasGroup, targetAlpha, duration, options);
+                tween = TweenHelper.FadeTo(canvasGroup, targetAlpha, duration, finalOptions);
             }
             else if (target is SpriteRenderer spriteRenderer)
             {
-                tween = TweenHelper.FadeTo(spriteRenderer, targetAlpha, duration, options);
+                tween = TweenHelper.FadeTo(spriteRenderer, targetAlpha, duration, finalOptions);
             }
             else if (target is UnityEngine.UI.Image image)
             {
-                tween = TweenHelper.FadeTo(image, targetAlpha, duration, options);
+                tween = TweenHelper.FadeTo(image, targetAlpha, duration, finalOptions);
             }
             else if (target is UnityEngine.UI.Text text)
             {
-                tween = TweenHelper.FadeTo(text, targetAlpha, duration, options);
+                tween = TweenHelper.FadeTo(text, targetAlpha, duration, finalOptions);
             }
-            
+
             if (tween != null)
             {
                 _sequence.Join(tween);
