@@ -6,16 +6,18 @@ using UnityEngine;
 namespace LB.TweenHelper.Demo
 {
     /// <summary>
-    /// Demo scene setup that creates demo objects and uses a TMP_Dropdown for animation selection.
-    /// Integrates with IDemoAnimationProvider classes for animation data.
+    /// Demo scene setup with two-level dropdown system:
+    /// 1. Provider dropdown (MoveAnimationDemo, etc.)
+    /// 2. Sub-category dropdowns spawned based on selected provider
     /// </summary>
     public class TweenDemoSceneSetup : MonoBehaviour
     {
         #region Serialized Fields
 
         [Header("UI Reference")]
-        [SerializeField] private GameObject animationDropdownObject;
-        [SerializeField] private Transform dropdownContainerTransform;
+        [SerializeField] private GameObject dropdownPrefab;
+        [SerializeField] private Transform providerDropdownContainer;
+        [SerializeField] private Transform subCategoryDropdownContainer;
         [SerializeField] private TextMeshProUGUI infoText;
 
         [Header("Animation Providers")]
@@ -35,8 +37,11 @@ namespace LB.TweenHelper.Demo
 
         #region Private Fields
 
-        private readonly List<IDemoAnimationProvider> _providers = new List<IDemoAnimationProvider>();
-        private readonly List<DemoAnimation> _animations = new List<DemoAnimation>();
+        private readonly List<IDemoAnimationProvider> _providers = new();
+        private readonly List<SubCategoryDropdown> _subCategoryDropdowns = new();
+        private TMP_Dropdown _providerDropdown;
+        private SubCategoryDropdown _activeSubCategory;
+        private IDemoAnimationProvider _activeProvider;
         private GameObject[] _demoObjects;
         private Transform[] _demoTransforms;
         private Vector3[] _originalPositions;
@@ -46,10 +51,23 @@ namespace LB.TweenHelper.Demo
 
         #endregion
 
+        #region Nested Types
+
+        private class SubCategoryDropdown
+        {
+            public string SubCategoryName;
+            public TMP_Dropdown Dropdown;
+            public List<DemoAnimation> Animations = new List<DemoAnimation>();
+        }
+
+        #endregion
+
         #region Unity Lifecycle
 
         private void Start()
         {
+            Application.targetFrameRate = 60;
+
             if (autoSetupOnStart)
             {
                 SetupDemo();
@@ -87,15 +105,18 @@ namespace LB.TweenHelper.Demo
             CreateDemoObjects();
             InitializeProviders();
             CacheOriginalTransforms();
-            PopulateDropdown();
+            CreateProviderDropdown();
             UpdateInfoText();
 
-            Debug.Log($"[TweenDemo] Demo ready! {_demoObjects.Length} objects, {_animations.Count} animations.");
+            Debug.Log($"[TweenDemo] Demo ready! {_demoObjects.Length} objects, {_providers.Count} providers.");
         }
 
         [ContextMenu("Clear Demo")]
         public void ClearDemo()
         {
+            ClearSubCategoryDropdowns();
+            ClearProviderDropdown();
+
             var demoParent = GameObject.Find("Demo Objects");
             if (demoParent != null)
             {
@@ -108,16 +129,13 @@ namespace LB.TweenHelper.Demo
 
         public void PlaySelectedAnimation()
         {
-            if (animationDropdown == null || _demoObjects == null) return;
+            if (_activeSubCategory == null || _demoObjects == null) return;
 
-            int index = animationDropdown.value;
-            if (index < 0 || index >= _animations.Count) return;
+            int index = _activeSubCategory.Dropdown.value;
+            if (index < 0 || index >= _activeSubCategory.Animations.Count) return;
 
-            var animation = _animations[index];
+            var animation = _activeSubCategory.Animations[index];
             if (animation == null || animation.Execute == null) return;
-
-            // Skip headers
-            if (animation.Name.StartsWith("──")) return;
 
             if (_autoResetAfterAnimation)
             {
@@ -125,7 +143,7 @@ namespace LB.TweenHelper.Demo
             }
 
             animation.Execute(_demoTransforms, defaultDuration);
-            Debug.Log($"[TweenDemo] Playing: {animation.Name.Trim()}");
+            Debug.Log($"[TweenDemo] Playing: [{_activeSubCategory.SubCategoryName}] {animation.Name}");
         }
 
         public void ResetAllObjects()
@@ -191,75 +209,164 @@ namespace LB.TweenHelper.Demo
 
         #endregion
 
-        #region Dropdown Population
+        #region Provider Dropdown
 
-        private void PopulateDropdown()
+        private void CreateProviderDropdown()
         {
-            if (animationDropdown == null)
+            if (dropdownPrefab == null || providerDropdownContainer == null)
             {
-                Debug.LogError("[TweenDemo] AnimationDropdown is not assigned!");
+                Debug.LogError("[TweenDemo] Dropdown prefab or provider container is not assigned!");
                 return;
             }
 
-            _animations.Clear();
-            animationDropdown.ClearOptions();
+            ClearProviderDropdown();
 
-            // Collect animations from all providers, grouped by category
-            foreach (var provider in _providers)
+            // Instantiate provider dropdown
+            var dropdownObj = Instantiate(dropdownPrefab, providerDropdownContainer);
+            dropdownObj.name = "Dropdown_Providers";
+            dropdownObj.SetActive(true);
+
+            _providerDropdown = dropdownObj.GetComponent<TMP_Dropdown>();
+            if (_providerDropdown == null)
             {
-                // Add category header
-                _animations.Add(new DemoAnimation
-                {
-                    Name = $"── {provider.CategoryName.ToUpper()} ──",
-                    Category = provider.CategoryName,
-                    Execute = null
-                });
-
-                // Add animations from this provider
-                foreach (var animation in provider.GetAnimations())
-                {
-                    _animations.Add(new DemoAnimation
-                    {
-                        Name = $"   {animation.Name}",
-                        Category = animation.Category,
-                        Execute = animation.Execute,
-                        RequiresMultipleObjects = animation.RequiresMultipleObjects
-                    });
-                }
+                Debug.LogError("[TweenDemo] Dropdown prefab missing TMP_Dropdown component!");
+                return;
             }
 
-            // Convert to dropdown options
-            var options = _animations.Select(a => new TMP_Dropdown.OptionData(a.Name)).ToList();
-            animationDropdown.AddOptions(options);
-            animationDropdown.onValueChanged.AddListener(OnDropdownValueChanged);
+            // Populate with provider names
+            _providerDropdown.ClearOptions();
+            var options = _providers.Select(p => new TMP_Dropdown.OptionData(p.CategoryName)).ToList();
+            _providerDropdown.AddOptions(options);
+            
+            // Subscribe to changes
+            _providerDropdown.onValueChanged.AddListener(OnProviderChanged);
 
-            // Select first non-header item
-            for (int i = 0; i < _animations.Count; i++)
+            // Select first provider
+            if (_providers.Count > 0)
             {
-                if (!_animations[i].Name.StartsWith("──"))
-                {
-                    animationDropdown.value = i;
-                    break;
-                }
+                _providerDropdown.value = 0;
+                _providerDropdown.RefreshShownValue();
+                
+                OnProviderChanged(0);
             }
         }
 
-        private void OnDropdownValueChanged(int index)
+        private void ClearProviderDropdown()
         {
-            if (index < 0 || index >= _animations.Count) return;
-
-            // Skip to next non-header if header selected
-            if (_animations[index].Name.StartsWith("──"))
+            if (_providerDropdown != null)
             {
-                for (int i = index + 1; i < _animations.Count; i++)
+                Destroy(_providerDropdown.gameObject);
+                _providerDropdown = null;
+            }
+            _activeProvider = null;
+        }
+
+        private void OnProviderChanged(int index)
+        {
+            if (index < 0 || index >= _providers.Count) return;
+
+            _activeProvider = _providers[index];
+            CreateSubCategoryDropdowns(_activeProvider);
+
+            Debug.Log($"[TweenDemo] Selected provider: {_activeProvider.CategoryName}");
+        }
+
+        #endregion
+
+        #region SubCategory Dropdowns
+
+        private void CreateSubCategoryDropdowns(IDemoAnimationProvider provider)
+        {
+            Debug.Log($"[TweenDemo] CreateSubCategoryDropdowns called for: {provider.CategoryName}");
+
+            if (dropdownPrefab == null)
+            {
+                Debug.LogError("[TweenDemo] dropdownPrefab is not assigned!");
+                return;
+            }
+
+            if (subCategoryDropdownContainer == null)
+            {
+                Debug.LogError("[TweenDemo] subCategoryDropdownContainer is not assigned!");
+                return;
+            }
+
+            ClearSubCategoryDropdowns();
+
+            // Group animations by SubCategory
+            var animations = provider.GetAnimations().ToList();
+            Debug.Log($"[TweenDemo] Found {animations.Count} animations from provider");
+
+            var subCategories = animations
+                .GroupBy(a => a.SubCategory ?? "Other")
+                .OrderBy(g => animations.FindIndex(a => a.SubCategory == g.Key))
+                .ToList();
+
+            Debug.Log($"[TweenDemo] Grouped into {subCategories.Count} sub-categories");
+
+            foreach (var group in subCategories)
+            {
+                var subCategory = new SubCategoryDropdown
                 {
-                    if (!_animations[i].Name.StartsWith("──"))
-                    {
-                        animationDropdown.value = i;
-                        return;
-                    }
+                    SubCategoryName = group.Key,
+                    Animations = group.ToList()
+                };
+
+                // Instantiate dropdown
+                var dropdownObj = Instantiate(dropdownPrefab, subCategoryDropdownContainer);
+                dropdownObj.name = $"Dropdown_{group.Key}";
+                dropdownObj.SetActive(true);
+
+                subCategory.Dropdown = dropdownObj.GetComponent<TMP_Dropdown>();
+                if (subCategory.Dropdown == null)
+                {
+                    Debug.LogError("[TweenDemo] Dropdown prefab missing TMP_Dropdown component!");
+                    continue;
+                }
+
+                // Populate dropdown options
+                subCategory.Dropdown.ClearOptions();
+                var options = subCategory.Animations.Select(a => new TMP_Dropdown.OptionData(a.Name)).ToList();
+                subCategory.Dropdown.AddOptions(options);
+
+                // Set initial value to show first animation name
+                subCategory.Dropdown.value = 0;
+                subCategory.Dropdown.RefreshShownValue();
+
+                // Subscribe to selection changes
+                var captured = subCategory;
+                subCategory.Dropdown.onValueChanged.AddListener(_ => OnSubCategoryDropdownChanged(captured));
+
+                _subCategoryDropdowns.Add(subCategory);
+            }
+
+            // Set first sub-category as active
+            if (_subCategoryDropdowns.Count > 0)
+            {
+                _activeSubCategory = _subCategoryDropdowns[0];
+            }
+
+            int totalAnimations = _subCategoryDropdowns.Sum(s => s.Animations.Count);
+            Debug.Log($"[TweenDemo] Created {_subCategoryDropdowns.Count} sub-category dropdowns with {totalAnimations} animations.");
+        }
+
+        private void ClearSubCategoryDropdowns()
+        {
+            foreach (var subCategory in _subCategoryDropdowns)
+            {
+                if (subCategory.Dropdown != null)
+                {
+                    Destroy(subCategory.Dropdown.gameObject);
                 }
             }
+            _subCategoryDropdowns.Clear();
+            _activeSubCategory = null;
+        }
+
+        private void OnSubCategoryDropdownChanged(SubCategoryDropdown subCategory)
+        {
+            _activeSubCategory = subCategory;
+            subCategory.Dropdown.RefreshShownValue();
         }
 
         #endregion

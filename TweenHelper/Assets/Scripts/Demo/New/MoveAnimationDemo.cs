@@ -23,6 +23,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "MoveTo (Up)",
                 Category = CategoryName,
+                SubCategory = "Basic MoveTo",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.up * 2f, duration)
             };
@@ -31,6 +32,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "MoveTo (Right)",
                 Category = CategoryName,
+                SubCategory = "Basic MoveTo",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.right * 2f, duration)
             };
@@ -39,6 +41,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "MoveTo (Forward)",
                 Category = CategoryName,
+                SubCategory = "Basic MoveTo",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.forward * 2f, duration)
             };
@@ -47,6 +50,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "MoveTo (Origin)",
                 Category = CategoryName,
+                SubCategory = "Basic MoveTo",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveTo(transforms[0], Vector3.zero, duration)
             };
@@ -55,6 +59,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "MoveTo (Diagonal)",
                 Category = CategoryName,
+                SubCategory = "Basic MoveTo",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveTo(transforms[0], transforms[0].position + new Vector3(1f, 1f, 1f), duration)
             };
@@ -67,6 +72,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "MoveBy (Offset)",
                 Category = CategoryName,
+                SubCategory = "MoveBy",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveBy(transforms[0], new Vector3(1f, 1f, 0f), duration)
             };
@@ -75,6 +81,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "MoveBy (Circle Step)",
                 Category = CategoryName,
+                SubCategory = "MoveBy",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveBy(transforms[0], new Vector3(Mathf.Cos(Time.time) * 2f, 0f, Mathf.Sin(Time.time) * 2f), duration)
             };
@@ -83,6 +90,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "MoveBy (Zigzag)",
                 Category = CategoryName,
+                SubCategory = "MoveBy",
                 Execute = (transforms, duration) =>
                 {
                     var t = transforms[0];
@@ -103,6 +111,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "MoveToLocal (Center)",
                 Category = CategoryName,
+                SubCategory = "MoveToLocal",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveToLocal(transforms[0], Vector3.zero, duration)
             };
@@ -111,6 +120,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "MoveToLocal (Above)",
                 Category = CategoryName,
+                SubCategory = "MoveToLocal",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveToLocal(transforms[0], new Vector3(0f, 2f, 0f), duration)
             };
@@ -123,6 +133,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "With Delay (0.5s)",
                 Category = CategoryName,
+                SubCategory = "Timing",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.up * 2f, duration,
                         TweenOptions.WithDelay(0.5f))
@@ -132,6 +143,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "Speed Based",
                 Category = CategoryName,
+                SubCategory = "Timing",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.right * 5f, 2f,
                         TweenOptions.WithSpeedBased())
@@ -145,6 +157,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "Loop: Yoyo (x3)",
                 Category = CategoryName,
+                SubCategory = "Looping",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.up * 2f, duration,
                         TweenOptions.WithLoops(3, LoopType.Yoyo))
@@ -154,6 +167,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "Loop: Restart (x3)",
                 Category = CategoryName,
+                SubCategory = "Looping",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.right * 2f, duration,
                         TweenOptions.WithLoops(3, LoopType.Restart))
@@ -163,6 +177,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "Loop: Infinite Yoyo",
                 Category = CategoryName,
+                SubCategory = "Looping",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.up * 2f, duration,
                         TweenOptions.WithLoops(-1, LoopType.Yoyo))
@@ -176,6 +191,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "Snapping Movement",
                 Category = CategoryName,
+                SubCategory = "Advanced",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveTo(transforms[0], transforms[0].position + new Vector3(2.7f, 1.3f, 0f), duration,
                         TweenOptions.WithSnapping())
@@ -185,6 +201,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "Sequential Path",
                 Category = CategoryName,
+                SubCategory = "Advanced",
                 Execute = (transforms, duration) =>
                 {
                     var t = transforms[0];
@@ -201,6 +218,7 @@ namespace LB.TweenHelper.Demo
             {
                 Name = "Combined Options",
                 Category = CategoryName,
+                SubCategory = "Advanced",
                 Execute = (transforms, duration) =>
                     TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.up * 3f, duration,
                         TweenOptions.WithDelay(0.3f).SetEase(Ease.OutBack).SetLoops(2, LoopType.Yoyo))

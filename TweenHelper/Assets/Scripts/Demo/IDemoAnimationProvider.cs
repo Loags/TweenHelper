@@ -10,6 +10,7 @@ namespace LB.TweenHelper.Demo
     {
         public string Name { get; set; }
         public string Category { get; set; }
+        public string SubCategory { get; set; }
         public System.Action<Transform[], float> Execute { get; set; }
         public bool RequiresMultipleObjects { get; set; }
     }
