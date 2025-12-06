@@ -126,102 +126,154 @@ namespace LB.TweenHelper.Demo
             };
 
             // ═══════════════════════════════════════════════════════════════
-            // TIMING VARIATIONS
+            // LOOPING PATTERNS (Using Sequences)
             // ═══════════════════════════════════════════════════════════════
 
             yield return new DemoAnimation
             {
-                Name = "With Delay (0.5s)",
-                Category = CategoryName,
-                SubCategory = "Timing",
-                Execute = (transforms, duration) =>
-                    TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.up * 2f, duration,
-                        TweenOptions.WithDelay(0.5f))
-            };
-
-            yield return new DemoAnimation
-            {
-                Name = "Speed Based",
-                Category = CategoryName,
-                SubCategory = "Timing",
-                Execute = (transforms, duration) =>
-                    TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.right * 5f, 2f,
-                        TweenOptions.WithSpeedBased())
-            };
-
-            // ═══════════════════════════════════════════════════════════════
-            // LOOPING PATTERNS
-            // ═══════════════════════════════════════════════════════════════
-
-            yield return new DemoAnimation
-            {
-                Name = "Loop: Yoyo (x3)",
+                Name = "Bounce (Yoyo)",
                 Category = CategoryName,
                 SubCategory = "Looping",
                 Execute = (transforms, duration) =>
-                    TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.up * 2f, duration,
-                        TweenOptions.WithLoops(3, LoopType.Yoyo))
+                {
+                    var t = transforms[0];
+                    TweenHelper.CreateSequence(t)
+                        .MoveBy(t, Vector3.up * 2f, duration, TweenOptions.WithEase(Ease.InOutSine))
+                        .Play(TweenOptions.WithLoops(-1, LoopType.Yoyo));
+                }
             };
 
             yield return new DemoAnimation
             {
-                Name = "Loop: Restart (x3)",
+                Name = "Square Loop",
                 Category = CategoryName,
                 SubCategory = "Looping",
                 Execute = (transforms, duration) =>
-                    TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.right * 2f, duration,
-                        TweenOptions.WithLoops(3, LoopType.Restart))
+                {
+                    var t = transforms[0];
+                    float step = duration / 4f;
+                    var ease = TweenOptions.WithEase(Ease.InOutSine);
+                    TweenHelper.CreateSequence(t)
+                        .MoveBy(t, Vector3.right * 2f, step, ease)
+                        .MoveBy(t, Vector3.up * 2f, step, ease)
+                        .MoveBy(t, Vector3.left * 2f, step, ease)
+                        .MoveBy(t, Vector3.down * 2f, step, ease)
+                        .Play(TweenOptions.WithLoops(-1, LoopType.Restart));
+                }
             };
 
             yield return new DemoAnimation
             {
-                Name = "Loop: Infinite Yoyo",
+                Name = "Triangle Loop",
                 Category = CategoryName,
                 SubCategory = "Looping",
                 Execute = (transforms, duration) =>
-                    TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.up * 2f, duration,
-                        TweenOptions.WithLoops(-1, LoopType.Yoyo))
+                {
+                    var t = transforms[0];
+                    float step = duration / 3f;
+                    var ease = TweenOptions.WithEase(Ease.InOutSine);
+                    TweenHelper.CreateSequence(t)
+                        .MoveBy(t, new Vector3(1f, 2f, 0f), step, ease)
+                        .MoveBy(t, new Vector3(1f, -2f, 0f), step, ease)
+                        .MoveBy(t, Vector3.left * 2f, step, ease)
+                        .Play(TweenOptions.WithLoops(-1, LoopType.Restart));
+                }
             };
-
-            // ═══════════════════════════════════════════════════════════════
-            // ADVANCED / COMBINED
-            // ═══════════════════════════════════════════════════════════════
 
             yield return new DemoAnimation
             {
-                Name = "Snapping Movement",
+                Name = "Pendulum (Yoyo)",
                 Category = CategoryName,
-                SubCategory = "Advanced",
+                SubCategory = "Looping",
                 Execute = (transforms, duration) =>
-                    TweenHelper.MoveTo(transforms[0], transforms[0].position + new Vector3(2.7f, 1.3f, 0f), duration,
-                        TweenOptions.WithSnapping())
+                {
+                    var t = transforms[0];
+                    TweenHelper.CreateSequence(t)
+                        .MoveBy(t, Vector3.right * 2f, duration, TweenOptions.WithEase(Ease.InOutSine))
+                        .Play(TweenOptions.WithLoops(-1, LoopType.Yoyo));
+                }
             };
+
+            // ═══════════════════════════════════════════════════════════════
+            // ADVANCED / COMBINED (Using Sequences)
+            // ═══════════════════════════════════════════════════════════════
 
             yield return new DemoAnimation
             {
-                Name = "Sequential Path",
+                Name = "Figure-8",
                 Category = CategoryName,
                 SubCategory = "Advanced",
                 Execute = (transforms, duration) =>
                 {
                     var t = transforms[0];
                     TweenHelper.CreateSequence(t)
-                        .MoveBy(t, Vector3.right * 2f, duration * 0.25f)
-                        .MoveBy(t, Vector3.up * 2f, duration * 0.25f)
-                        .MoveBy(t, Vector3.left * 2f, duration * 0.25f)
-                        .MoveBy(t, Vector3.down * 2f, duration * 0.25f)
+                        .MoveBy(t, new Vector3(1f, 1f, 0f), duration)
+                        .MoveBy(t, new Vector3(1f, -1f, 0f), duration)
+                        .MoveBy(t, new Vector3(-1f, -1f, 0f), duration)
+                        .MoveBy(t, new Vector3(-1f, 1f, 0f), duration)
+                        .MoveBy(t, new Vector3(-1f, -1f, 0f), duration)
+                        .MoveBy(t, new Vector3(-1f, 1f, 0f), duration)
+                        .MoveBy(t, new Vector3(1f, 1f, 0f), duration)
+                        .MoveBy(t, new Vector3(1f, -1f, 0f), duration)
                         .Play();
                 }
             };
 
             yield return new DemoAnimation
             {
-                Name = "Combined Options",
+                Name = "Staircase",
                 Category = CategoryName,
                 SubCategory = "Advanced",
                 Execute = (transforms, duration) =>
-                    TweenHelper.MoveTo(transforms[0], transforms[0].position + Vector3.up * 3f, duration,
-                        TweenOptions.WithDelay(0.3f).SetEase(Ease.OutBack).SetLoops(2, LoopType.Yoyo))
+                {
+                    var t = transforms[0];
+                    TweenHelper.CreateSequence(t)
+                        .MoveBy(t, Vector3.right * 0.5f, duration)
+                        .MoveBy(t, Vector3.up * 0.5f, duration)
+                        .MoveBy(t, Vector3.right * 0.5f, duration)
+                        .MoveBy(t, Vector3.up * 0.5f, duration)
+                        .MoveBy(t, Vector3.right * 0.5f, duration)
+                        .MoveBy(t, Vector3.up * 0.5f, duration)
+                        .Play();
+                }
+            };
+
+            yield return new DemoAnimation
+            {
+                Name = "Diamond",
+                Category = CategoryName,
+                SubCategory = "Advanced",
+                Execute = (transforms, duration) =>
+                {
+                    var t = transforms[0];
+                    TweenHelper.CreateSequence(t)
+                        .MoveBy(t, new Vector3(1.5f, 1.5f, 0f), duration)
+                        .MoveBy(t, new Vector3(1.5f, -1.5f, 0f), duration)
+                        .MoveBy(t, new Vector3(-1.5f, -1.5f, 0f), duration)
+                        .MoveBy(t, new Vector3(-1.5f, 1.5f, 0f), duration)
+                        .Play();
+                }
+            };
+
+            yield return new DemoAnimation
+            {
+                Name = "Spiral Out",
+                Category = CategoryName,
+                SubCategory = "Advanced",
+                Execute = (transforms, duration) =>
+                {
+                    var t = transforms[0];
+                    TweenHelper.CreateSequence(t)
+                        .MoveBy(t, Vector3.right * 0.5f, duration)
+                        .MoveBy(t, Vector3.up * 0.5f, duration)
+                        .MoveBy(t, Vector3.left * 1f, duration)
+                        .MoveBy(t, Vector3.down * 1f, duration)
+                        .MoveBy(t, Vector3.right * 1.5f, duration)
+                        .MoveBy(t, Vector3.up * 1.5f, duration)
+                        .MoveBy(t, Vector3.left * 2f, duration)
+                        .MoveBy(t, Vector3.down * 2f, duration)
+                        .Play();
+                }
             };
         }
     }
