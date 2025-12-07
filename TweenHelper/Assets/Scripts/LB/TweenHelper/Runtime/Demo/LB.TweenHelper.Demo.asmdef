@@ -1,8 +1,10 @@
 {
-    "name": "LB.TweenHelper.Runtime",
-    "rootNamespace": "LB.TweenHelper",
+    "name": "LB.TweenHelper.Demo",
+    "rootNamespace": "LB.TweenHelper.Demo",
     "references": [
+        "LB.TweenHelper.Runtime",
         "Unity.TextMeshPro",
+        "Unity.ugui",
         "DOTween.Modules"
     ],
     "includePlatforms": [],
