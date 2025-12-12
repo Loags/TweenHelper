@@ -28,11 +28,13 @@ namespace LB.TweenHelper
             var t = target.transform;
             var originalScale = t.localScale;
             t.localScale = Vector3.zero;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutBack);
+            var ease = ResolveEase(presetOptions, Ease.OutBack);
 
             // OutBack with overshoot parameter (1 = default, higher = more overshoot)
             return t.DOScale(originalScale, GetDuration(duration))
-                .SetEase(Ease.OutBack, 1.7f)
-                .WithDefaults(MergeWithDefaultEase(options, Ease.OutBack), target);
+                .SetEase(ease, 1.7f)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -50,9 +52,11 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
+            var ease = ResolveEase(presetOptions, Ease.InBack);
             return target.transform.DOScale(Vector3.zero, GetDuration(duration))
-                .SetEase(Ease.InBack)
-                .WithDefaults(MergeWithDefaultEase(options, Ease.InBack), target);
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -92,14 +96,16 @@ namespace LB.TweenHelper
             var t = target.transform;
             var originalScale = t.localScale;
             var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutElastic);
+            var ease = ResolveEase(presetOptions, Ease.OutElastic);
 
             // Squash and stretch style bounce
             return DOTween.Sequence()
                 .Append(t.DOScale(new Vector3(originalScale.x * 1.3f, originalScale.y * 0.7f, originalScale.z), dur * 0.15f))
                 .Append(t.DOScale(new Vector3(originalScale.x * 0.8f, originalScale.y * 1.2f, originalScale.z), dur * 0.15f))
                 .Append(t.DOScale(new Vector3(originalScale.x * 1.1f, originalScale.y * 0.9f, originalScale.z), dur * 0.15f))
-                .Append(t.DOScale(originalScale, dur * 0.25f).SetEase(Ease.OutElastic))
-                .WithDefaults(options, target);
+                .Append(t.DOScale(originalScale, dur * 0.25f).SetEase(ease))
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -143,10 +149,12 @@ namespace LB.TweenHelper
             var t = target.transform;
             var targetPos = t.localPosition;
             t.localPosition = targetPos + Vector3.up * 500f;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
+            var ease = ResolveEase(presetOptions, Ease.OutCubic);
 
             return t.DOLocalMove(targetPos, GetDuration(duration))
-                .SetEase(Ease.OutCubic)
-                .WithDefaults(MergeWithDefaultEase(options, Ease.OutCubic), target);
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -167,10 +175,12 @@ namespace LB.TweenHelper
             var t = target.transform;
             var targetPos = t.localPosition;
             t.localPosition = targetPos + Vector3.down * 500f;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
+            var ease = ResolveEase(presetOptions, Ease.OutCubic);
 
             return t.DOLocalMove(targetPos, GetDuration(duration))
-                .SetEase(Ease.OutCubic)
-                .WithDefaults(MergeWithDefaultEase(options, Ease.OutCubic), target);
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -191,10 +201,12 @@ namespace LB.TweenHelper
             var t = target.transform;
             var targetPos = t.localPosition;
             t.localPosition = targetPos + Vector3.left * 500f;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
+            var ease = ResolveEase(presetOptions, Ease.OutCubic);
 
             return t.DOLocalMove(targetPos, GetDuration(duration))
-                .SetEase(Ease.OutCubic)
-                .WithDefaults(MergeWithDefaultEase(options, Ease.OutCubic), target);
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -215,10 +227,12 @@ namespace LB.TweenHelper
             var t = target.transform;
             var targetPos = t.localPosition;
             t.localPosition = targetPos + Vector3.right * 500f;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
+            var ease = ResolveEase(presetOptions, Ease.OutCubic);
 
             return t.DOLocalMove(targetPos, GetDuration(duration))
-                .SetEase(Ease.OutCubic)
-                .WithDefaults(MergeWithDefaultEase(options, Ease.OutCubic), target);
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -238,7 +252,12 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var halfDur = GetDuration(duration) * 0.5f;
-            var loopOptions = MergeWithDefaultEase(options, Ease.InOutCubic);
+            var moveUpEase = options.Ease ?? Ease.InOutCubic;
+            var moveDownEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutCubic;
+
+            // Ensure each leg uses its own ease without being overwritten by global defaults.
+            var upOptions = MergeWithDefaultEase(options.SetEase(moveUpEase), moveUpEase);
+            var downOptions = MergeWithDefaultEase(options.SetEase(moveDownEase), moveDownEase);
             bool applyDelay = true;
 
             Tween tween = null;
@@ -247,8 +266,8 @@ namespace LB.TweenHelper
             {
                 tween = t.DOLocalMoveY(0.5f, halfDur)
                     .SetRelative(true)
-                    .SetEase(Ease.InOutCubic)
-                    .WithLoopDefaults(loopOptions, target, applyDelay);
+                    .SetEase(moveUpEase)
+                    .WithLoopDefaults(upOptions, target, applyDelay);
 
                 applyDelay = false;
                 tween.OnComplete(MoveDown);
@@ -258,8 +277,8 @@ namespace LB.TweenHelper
             {
                 tween = t.DOLocalMoveY(-0.5f, halfDur)
                     .SetRelative(true)
-                    .SetEase(Ease.InOutCubic)
-                    .WithLoopDefaults(loopOptions, target, applyDelay);
+                    .SetEase(moveDownEase)
+                    .WithLoopDefaults(downOptions, target, applyDelay);
 
                 applyDelay = false;
                 tween.OnComplete(MoveUp);
@@ -302,9 +321,10 @@ namespace LB.TweenHelper
             float direction = clockwise ? -1f : 1f;
             const float fullCycle = Mathf.PI * 2f;
             var loopOptions = options;
+            var orbitEase = loopOptions.Ease ?? Ease.Linear;
             if (!loopOptions.Ease.HasValue)
             {
-                loopOptions = loopOptions.SetEase(Ease.Linear);
+                loopOptions = loopOptions.SetEase(orbitEase);
             }
             loopOptions = loopOptions.SetUpdateType(UpdateType.Fixed);
 
@@ -336,7 +356,7 @@ namespace LB.TweenHelper
                             t.position = targetPos;
                         }
                     })
-                    .SetEase(Ease.Linear)
+                    .SetEase(orbitEase)
                     .SetUpdate(UpdateType.Fixed)
                     .WithLoopDefaults(loopOptions, target, applyDelay);
 
@@ -424,6 +444,8 @@ namespace LB.TweenHelper
             var t = target.transform;
             var startPos = t.localPosition;
             var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
+            var ease = ResolveEase(presetOptions, Ease.OutQuad);
 
             float progress = 0f;
             return DOTween.To(() => progress, x =>
@@ -436,8 +458,8 @@ namespace LB.TweenHelper
                         Mathf.Sin(rad) * radius * (1f - progress)
                     );
                 }, 1f, dur)
-                .SetEase(Ease.OutQuad)
-                .WithDefaults(options, target);
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -461,17 +483,20 @@ namespace LB.TweenHelper
             t.localPosition = t.localPosition + Vector3.up * dropHeight;
 
             var dur = GetDuration(duration);
+            var fallEase = ResolveEase(options, Ease.InQuad);
+            var bounceEase = ResolveSecondaryEase(options, Ease.OutQuad);
+            var presetOptions = MergeWithDefaultEase(options.SetEase(fallEase), fallEase);
 
             // Manual bounce: fall fast, then bounce up/down with decreasing height
             return DOTween.Sequence()
-                .Append(t.DOLocalMoveY(targetY, dur * 0.4f).SetEase(Ease.InQuad)) // Fall
-                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.3f, dur * 0.15f).SetEase(Ease.OutQuad)) // Bounce 1 up
-                .Append(t.DOLocalMoveY(targetY, dur * 0.15f).SetEase(Ease.InQuad)) // Bounce 1 down
-                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.1f, dur * 0.1f).SetEase(Ease.OutQuad)) // Bounce 2 up
-                .Append(t.DOLocalMoveY(targetY, dur * 0.1f).SetEase(Ease.InQuad)) // Bounce 2 down
-                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.03f, dur * 0.05f).SetEase(Ease.OutQuad)) // Bounce 3 up
-                .Append(t.DOLocalMoveY(targetY, dur * 0.05f).SetEase(Ease.InQuad)) // Bounce 3 down
-                .WithDefaults(options, target);
+                .Append(t.DOLocalMoveY(targetY, dur * 0.4f).SetEase(fallEase)) // Fall
+                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.3f, dur * 0.15f).SetEase(bounceEase)) // Bounce 1 up
+                .Append(t.DOLocalMoveY(targetY, dur * 0.15f).SetEase(fallEase)) // Bounce 1 down
+                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.1f, dur * 0.1f).SetEase(bounceEase)) // Bounce 2 up
+                .Append(t.DOLocalMoveY(targetY, dur * 0.1f).SetEase(fallEase)) // Bounce 2 down
+                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.03f, dur * 0.05f).SetEase(bounceEase)) // Bounce 3 up
+                .Append(t.DOLocalMoveY(targetY, dur * 0.05f).SetEase(fallEase)) // Bounce 3 down
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -490,10 +515,12 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
+            var ease = ResolveEase(presetOptions, Ease.OutCubic);
 
             return t.DOLocalMoveY(t.localPosition.y + 3f, GetDuration(duration))
-                .SetEase(Ease.OutCubic)
-                .WithDefaults(MergeWithDefaultEase(options, Ease.OutCubic), target);
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -518,7 +545,9 @@ namespace LB.TweenHelper
             SetAlpha(target, 0f);
             var tween = CreateFadeTween(target, 1f, GetDuration(duration));
             // Slow start to avoid appearing fully visible too early
-            return tween?.SetEase(Ease.InQuad).WithDefaults(options, target);
+            var presetOptions = MergeWithDefaultEase(options, Ease.InQuad);
+            var ease = ResolveEase(presetOptions, Ease.InQuad);
+            return tween?.SetEase(ease).WithDefaults(presetOptions, target);
         }
 
         public override bool CanApplyTo(GameObject target) => CanFade(target);
@@ -563,9 +592,11 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
+            var ease = ResolveEase(presetOptions, Ease.InOutQuad);
             return target.transform.DORotate(new Vector3(0, 360f, 0), GetDuration(duration), RotateMode.FastBeyond360)
-                .SetEase(Ease.InOutQuad)
-                .WithDefaults(MergeWithDefaultEase(options, Ease.InOutQuad), target);
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -583,9 +614,11 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
+            var ease = ResolveEase(presetOptions, Ease.InOutQuad);
             return target.transform.DORotate(new Vector3(360f, 0, 0), GetDuration(duration), RotateMode.FastBeyond360)
-                .SetEase(Ease.InOutQuad)
-                .WithDefaults(MergeWithDefaultEase(options, Ease.InOutQuad), target);
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -603,9 +636,11 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
+            var ease = ResolveEase(presetOptions, Ease.InOutQuad);
             return target.transform.DORotate(new Vector3(0, 0, 360f), GetDuration(duration), RotateMode.FastBeyond360)
-                .SetEase(Ease.InOutQuad)
-                .WithDefaults(MergeWithDefaultEase(options, Ease.InOutQuad), target);
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -624,9 +659,11 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
+            var ease = ResolveEase(presetOptions, Ease.InOutQuad);
             return target.transform.DORotate(new Vector3(360f, 360f, 0f), dur, RotateMode.FastBeyond360)
-                .SetEase(Ease.InOutQuad)
-                .WithDefaults(MergeWithDefaultEase(options, Ease.InOutQuad), target);
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -645,9 +682,11 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
+            var ease = ResolveEase(presetOptions, Ease.InOutQuad);
             return target.transform.DORotate(new Vector3(360f, 0f, 360f), dur, RotateMode.FastBeyond360)
-                .SetEase(Ease.InOutQuad)
-                .WithDefaults(MergeWithDefaultEase(options, Ease.InOutQuad), target);
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -666,9 +705,11 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
+            var ease = ResolveEase(presetOptions, Ease.InOutQuad);
             return target.transform.DORotate(new Vector3(0f, 360f, 360f), dur, RotateMode.FastBeyond360)
-                .SetEase(Ease.InOutQuad)
-                .WithDefaults(MergeWithDefaultEase(options, Ease.InOutQuad), target);
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -809,9 +850,11 @@ namespace LB.TweenHelper
             t.localScale = Vector3.zero;
 
             var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
+            var ease = ResolveEase(presetOptions, Ease.OutCubic);
             var seq = DOTween.Sequence();
 
-            seq.Append(t.DOScale(originalScale, dur).SetEase(Ease.OutCubic));
+            seq.Append(t.DOScale(originalScale, dur).SetEase(ease));
 
             var fadeTween = CreateFadeTween(target, 1f, dur);
             if (fadeTween != null)
@@ -821,7 +864,7 @@ namespace LB.TweenHelper
                 seq.Join(fadeTween.SetEase(Ease.Linear));
             }
 
-            return seq.WithDefaults(options, target);
+            return seq.WithDefaults(presetOptions, target);
         }
 
         public override bool CanApplyTo(GameObject target)
@@ -847,9 +890,11 @@ namespace LB.TweenHelper
             var t = target.transform;
             var originalScale = t.localScale;
             var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
+            var ease = ResolveEase(presetOptions, Ease.InBack);
 
             var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(Ease.InBack));
+            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease));
 
             var fadeTween = CreateFadeTween(target, 0f, dur);
             if (fadeTween != null)
@@ -858,7 +903,7 @@ namespace LB.TweenHelper
                 seq.Join(fadeTween);
             }
 
-            return seq.WithDefaults(options, target);
+            return seq.WithDefaults(presetOptions, target);
         }
 
         public override bool CanApplyTo(GameObject target)
@@ -884,14 +929,17 @@ namespace LB.TweenHelper
             var t = target.transform;
             var originalScale = t.localScale;
             var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
+            var ease = ResolveEase(presetOptions, Ease.OutCubic);
+            var secondaryEase = ResolveSecondaryEase(presetOptions, Ease.InCubic);
 
             return DOTween.Sequence()
-                .Append(t.DOScale(originalScale * 1.1f, dur * 0.15f))
-                .Append(t.DOScale(originalScale * 0.95f, dur * 0.15f))
-                .Append(t.DOScale(originalScale * 1.05f, dur * 0.15f))
-                .Append(t.DOScale(originalScale, dur * 0.15f))
+                .Append(t.DOScale(originalScale * 1.1f, dur * 0.15f).SetEase(ease))
+                .Append(t.DOScale(originalScale * 0.95f, dur * 0.15f).SetEase(secondaryEase))
+                .Append(t.DOScale(originalScale * 1.05f, dur * 0.15f).SetEase(ease))
+                .Append(t.DOScale(originalScale, dur * 0.15f).SetEase(ease))
                 .SetLoops(2)
-                .WithDefaults(options, target);
+                .WithDefaults(presetOptions, target);
         }
     }
 

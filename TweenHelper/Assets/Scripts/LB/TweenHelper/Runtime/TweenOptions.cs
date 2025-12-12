@@ -19,6 +19,8 @@ namespace LB.TweenHelper
         [SerializeField] private LoopType? loopType;
         [SerializeField] private bool? speedBased;
         [SerializeField] private string id;
+        [SerializeField] private Ease? secondaryEase;
+        [SerializeField] private Ease? tertiaryEase;
 
         /// <summary>
         /// Creates a new TweenOptions with the specified delay.
@@ -38,6 +40,15 @@ namespace LB.TweenHelper
         public static TweenOptions WithEase(Ease ease)
         {
             return new TweenOptions { ease = ease };
+        }
+
+        /// <summary>
+        /// Creates a new TweenOptions with primary/secondary/tertiary ease values.
+        /// Secondary/tertiary are optional and used by presets that have multiple internal tweens.
+        /// </summary>
+        public static TweenOptions WithEases(Ease ease, Ease? secondary = null, Ease? tertiary = null)
+        {
+            return new TweenOptions { ease = ease, secondaryEase = secondary, tertiaryEase = tertiary };
         }
         
         /// <summary>
@@ -130,6 +141,24 @@ namespace LB.TweenHelper
         public TweenOptions SetEase(Ease ease)
         {
             this.ease = ease;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the secondary ease for this TweenOptions.
+        /// </summary>
+        public TweenOptions SetSecondaryEase(Ease ease)
+        {
+            this.secondaryEase = ease;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the tertiary ease for this TweenOptions.
+        /// </summary>
+        public TweenOptions SetTertiaryEase(Ease ease)
+        {
+            this.tertiaryEase = ease;
             return this;
         }
         
@@ -227,6 +256,8 @@ namespace LB.TweenHelper
         internal LoopType? LoopType => loopType;
         internal bool? SpeedBased => speedBased;
         internal string Id => id;
+        internal Ease? SecondaryEase => secondaryEase;
+        internal Ease? TertiaryEase => tertiaryEase;
         
         #endregion
         
@@ -241,6 +272,8 @@ namespace LB.TweenHelper
             
             if (delay.HasValue) parts.Add($"Delay:{delay.Value:F2}");
             if (ease.HasValue) parts.Add($"Ease:{ease.Value}");
+            if (secondaryEase.HasValue) parts.Add($"Ease2:{secondaryEase.Value}");
+            if (tertiaryEase.HasValue) parts.Add($"Ease3:{tertiaryEase.Value}");
             if (updateType.HasValue) parts.Add($"Update:{updateType.Value}");
             if (unscaledTime.HasValue) parts.Add($"Unscaled:{unscaledTime.Value}");
             if (snapping.HasValue) parts.Add($"Snap:{snapping.Value}");

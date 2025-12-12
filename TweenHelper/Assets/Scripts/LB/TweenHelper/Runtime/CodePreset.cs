@@ -85,6 +85,30 @@ namespace LB.TweenHelper
         }
 
         /// <summary>
+        /// Resolves the ease to use for a preset, falling back to the provided default.
+        /// </summary>
+        protected Ease ResolveEase(TweenOptions options, Ease defaultEase)
+        {
+            return options.Ease ?? defaultEase;
+        }
+
+        /// <summary>
+        /// Resolves a secondary ease to use for presets with multiple tweens, falling back to primary or default.
+        /// </summary>
+        protected Ease ResolveSecondaryEase(TweenOptions options, Ease defaultEase)
+        {
+            return options.SecondaryEase ?? options.Ease ?? defaultEase;
+        }
+
+        /// <summary>
+        /// Resolves a tertiary ease to use for presets with multiple tweens, falling back to primary or default.
+        /// </summary>
+        protected Ease ResolveTertiaryEase(TweenOptions options, Ease defaultEase)
+        {
+            return options.TertiaryEase ?? options.SecondaryEase ?? options.Ease ?? defaultEase;
+        }
+
+        /// <summary>
         /// Registers this preset with the registry.
         /// Call this if not using [AutoRegisterPreset] attribute.
         /// </summary>
