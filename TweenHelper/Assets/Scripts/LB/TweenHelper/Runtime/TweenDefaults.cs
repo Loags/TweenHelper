@@ -121,6 +121,65 @@ namespace LB.TweenHelper
             return tween;
         }
 
+        /// <summary>
+        /// Applies defaults for tweens that loop manually (via callbacks) instead of DOTween's built-in looping.
+        /// Delay and loop counts are intentionally not applied every cycle to keep the loop seamless.
+        /// </summary>
+        /// <param name="tween">The tween to configure.</param>
+        /// <param name="options">Options that override defaults.</param>
+        /// <param name="linkTarget">Optional GameObject to link for auto-cleanup.</param>
+        /// <param name="applyDelayThisCycle">Whether to apply delay for this cycle.</param>
+        /// <returns>The configured tween.</returns>
+        public static T WithLoopDefaults<T>(this T tween, TweenOptions options, GameObject linkTarget, bool applyDelayThisCycle) where T : Tween
+        {
+            if (tween == null || !tween.IsActive())
+            {
+                return tween;
+            }
+
+            var settings = TweenHelperSettings.Instance;
+
+            // Apply ease (options override > settings default)
+            var ease = options.Ease ?? settings.DefaultEase;
+            tween.SetEase(ease);
+
+            // Apply delay only for the first cycle so we don't pause between loops.
+            if (applyDelayThisCycle)
+            {
+                var delay = options.Delay ?? settings.DefaultDelay;
+                if (delay > 0f)
+                {
+                    tween.SetDelay(delay);
+                }
+            }
+
+            // Apply update type and unscaled time
+            var updateType = options.UpdateType ?? settings.DefaultUpdateType;
+            var unscaledTime = options.UnscaledTime ?? settings.DefaultUnscaledTime;
+            tween.SetUpdate(updateType, unscaledTime);
+
+            // Apply speed-based
+            if (options.SpeedBased == true)
+            {
+                tween.SetSpeedBased(true);
+            }
+
+            // Apply ID
+            if (!string.IsNullOrEmpty(options.Id))
+            {
+                tween.SetId(options.Id);
+            }
+
+            // Link to GameObject for auto-cleanup
+            if (linkTarget != null)
+            {
+                tween.SetLink(linkTarget);
+                tween.SetTarget(linkTarget);
+            }
+
+            return tween;
+        }
+
         #endregion
 
         #region Sequence Extension Methods

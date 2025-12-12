@@ -238,6 +238,8 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var halfDur = GetDuration(duration) * 0.5f;
+            var loopOptions = MergeWithDefaultEase(options, Ease.InOutCubic);
+            bool applyDelay = true;
 
             Tween tween = null;
 
@@ -246,7 +248,10 @@ namespace LB.TweenHelper
                 tween = t.DOLocalMoveY(0.5f, halfDur)
                     .SetRelative(true)
                     .SetEase(Ease.InOutCubic)
-                    .OnComplete(MoveDown);
+                    .WithLoopDefaults(loopOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(MoveDown);
             }
 
             void MoveDown()
@@ -254,12 +259,15 @@ namespace LB.TweenHelper
                 tween = t.DOLocalMoveY(-0.5f, halfDur)
                     .SetRelative(true)
                     .SetEase(Ease.InOutCubic)
-                    .OnComplete(MoveUp);
+                    .WithLoopDefaults(loopOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(MoveUp);
             }
 
             MoveUp();
 
-            return tween.WithDefaults(options, target);
+            return tween;
         }
     }
 
@@ -293,36 +301,51 @@ namespace LB.TweenHelper
             var initialCenter = t.position;
             float direction = clockwise ? -1f : 1f;
             const float fullCycle = Mathf.PI * 2f;
+            var loopOptions = options;
+            if (!loopOptions.Ease.HasValue)
+            {
+                loopOptions = loopOptions.SetEase(Ease.Linear);
+            }
+            loopOptions = loopOptions.SetUpdateType(UpdateType.Fixed);
 
-            var tween = DOVirtual.Float(0f, fullCycle, dur, angle =>
-                {
-                    var normalized = Mathf.Repeat(angle / fullCycle, 1f);
-                    float radius = Mathf.Lerp(startRadius, endRadius, normalized);
-                    float directedAngle = angle * direction;
+            bool applyDelay = true;
+            Tween tween = null;
 
-                    Vector3 offset = new Vector3(
-                        Mathf.Cos(directedAngle) * radius,
-                        0f,
-                        Mathf.Sin(directedAngle) * radius
-                    );
-
-                    Vector3 targetPos = initialCenter + offset;
-
-                    if (rb && rb.isKinematic == false)
+            Tween CreateCycle()
+            {
+                tween = DOVirtual.Float(0f, fullCycle, dur, angle =>
                     {
-                        rb.MovePosition(targetPos);
-                    }
-                    else
-                    {
-                        t.position = targetPos;
-                    }
-                })
-                .SetEase(Ease.Linear)
-                .SetLoops(-1, LoopType.Incremental)
-                .SetUpdate(UpdateType.Fixed)
-                .WithDefaults(options, target);
+                        var normalized = Mathf.Repeat(angle / fullCycle, 1f);
+                        float radius = Mathf.Lerp(startRadius, endRadius, normalized);
+                        float directedAngle = angle * direction;
 
-            return tween;
+                        Vector3 offset = new Vector3(
+                            Mathf.Cos(directedAngle) * radius,
+                            0f,
+                            Mathf.Sin(directedAngle) * radius
+                        );
+
+                        Vector3 targetPos = initialCenter + offset;
+
+                        if (rb && rb.isKinematic == false)
+                        {
+                            rb.MovePosition(targetPos);
+                        }
+                        else
+                        {
+                            t.position = targetPos;
+                        }
+                    })
+                    .SetEase(Ease.Linear)
+                    .SetUpdate(UpdateType.Fixed)
+                    .WithLoopDefaults(loopOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(() => CreateCycle());
+                return tween;
+            }
+
+            return CreateCycle();
         }
     }
 
