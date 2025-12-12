@@ -1,7 +1,10 @@
 using UnityEngine;
 using UnityEngine.Rendering;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
+using UnityEngine.UI;
 
 namespace LB.TweenHelper.Demo
 {
@@ -17,6 +20,13 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private float spacingZ = 4f;
         [SerializeField] private Vector3 startPosition = new Vector3(-8, 0, 0);
 
+        [Header("Category Layout")]
+        [SerializeField] private float categoryGapZ = 6f;
+        [SerializeField] private bool spawnCategoryLabels = true;
+        [SerializeField] private Vector3 categoryLabelOffset = new Vector3(0f, 1.6f, 0f);
+        [SerializeField] private float categoryLabelLeftPadding = 2f;
+        [SerializeField] private Color categoryLabelColor = new Color(1f, 1f, 1f, 0.9f);
+
         [Header("Object Settings")]
         [SerializeField] private PrimitiveType objectType = PrimitiveType.Cube;
         [SerializeField] private Vector3 objectScale = Vector3.one;
@@ -24,10 +34,6 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private Color objectColor = new Color(0.3f, 0.6f, 1f, 1f);
         [Tooltip("Creates a transparent-capable material at runtime if no material is assigned")]
         [SerializeField] private bool useTransparentMaterial = true;
-
-        [Header("Canvas Settings")]
-        [SerializeField] private Vector3 labelOffset = new Vector3(0, 1.5f, 0);
-        [SerializeField] private float canvasScale = 0.01f;
 
         [Header("Camera Setup")]
         [SerializeField] private bool setupCamera = true;
@@ -39,7 +45,27 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private bool clearExistingOnSpawn = true;
 
         private readonly List<GameObject> _spawnedObjects = new List<GameObject>();
-        private Material _transparentMaterial;
+        private static readonly string[] CategoryOrder =
+        {
+            PresetCategories.Base,
+            PresetCategories.Scale,
+            PresetCategories.Movement,
+            PresetCategories.Fade,
+            PresetCategories.Rotation,
+            PresetCategories.Combined
+        };
+
+        private class PresetCategoryGroup
+        {
+            public string Name { get; }
+            public List<ITweenPreset> Presets { get; }
+
+            public PresetCategoryGroup(string name, List<ITweenPreset> presets)
+            {
+                Name = name;
+                Presets = presets;
+            }
+        }
 
         private void Start()
         {
@@ -73,6 +99,8 @@ namespace LB.TweenHelper.Demo
                 ClearSpawned();
             }
 
+            TweenPresetRegistry.ScanForCodePresets();
+
             // Get all registered presets and sort by category
             var presets = TweenPresetRegistry.Presets.ToList();
             if (presets.Count == 0)
@@ -81,72 +109,47 @@ namespace LB.TweenHelper.Demo
                 return;
             }
 
-            // Sort presets by category for logical grouping
-            var sortedPresets = SortPresetsByCategory(presets);
+            // Group presets by category for spatial separation
+            var groupedPresets = GroupPresetsByCategory(presets);
 
-            Debug.Log($"PresetShowcaseSpawner: Spawning {sortedPresets.Count} preset objects...");
+            Debug.Log($"PresetShowcaseSpawner: Spawning {presets.Count} preset objects across {groupedPresets.Count} categories...");
 
             // Create parent container
             var container = new GameObject("PresetShowcase");
             container.transform.SetParent(transform);
             container.transform.localPosition = Vector3.zero;
 
-            // Spawn objects in grid
-            for (int i = 0; i < sortedPresets.Count; i++)
+            // Spawn per-category blocks offset in Z so groups stay visually separated
+            float categoryOffsetZ = 0f;
+            foreach (var group in groupedPresets)
             {
-                var preset = sortedPresets[i];
-                int row = i / columns;
-                int col = i % columns;
+                var groupStart = startPosition + new Vector3(0f, 0f, categoryOffsetZ);
 
-                var position = startPosition + new Vector3(col * spacingX, 0, row * spacingZ);
-                var obj = SpawnPresetObject(preset, position, container.transform);
-                _spawnedObjects.Add(obj);
+                var rows = Mathf.Max(1, Mathf.CeilToInt(group.Presets.Count / (float)columns));
+                var categoryCenterOffset = new Vector3(0f, 0f, (rows - 1) * spacingZ * 0.5f);
+
+                if (spawnCategoryLabels)
+                {
+                    var labelPosition = GetCategoryLabelPosition(groupStart, rows, group.Presets.Count);
+                    SpawnCategoryLabel(group.Name, labelPosition + categoryCenterOffset, container.transform);
+                }
+
+                for (int i = 0; i < group.Presets.Count; i++)
+                {
+                    var preset = group.Presets[i];
+                    int row = i / columns;
+                    int col = i % columns;
+
+                    var position = groupStart + new Vector3(col * spacingX, 0, row * spacingZ);
+                    var obj = SpawnPresetObject(preset, position, container.transform);
+                    _spawnedObjects.Add(obj);
+                }
+
+                // Advance the offset based on the depth of this category block
+                categoryOffsetZ += rows * spacingZ + categoryGapZ;
             }
 
             Debug.Log($"PresetShowcaseSpawner: Spawned {_spawnedObjects.Count} objects.");
-        }
-
-        /// <summary>
-        /// Sorts presets by category for logical visual grouping.
-        /// Order: Scale → Position → Fade → Rotation → Combined
-        /// </summary>
-        private List<ITweenPreset> SortPresetsByCategory(List<ITweenPreset> presets)
-        {
-            // Define category order and patterns
-            var categoryOrder = new (string Category, string[] Patterns)[]
-            {
-                ("Scale", new[] { "PopIn", "PopOut", "Punch", "Bounce" }),
-                ("Position", new[] { "Shake", "SlideIn" }),
-                ("Fade", new[] { "FadeIn", "FadeOut" }),
-                ("Spin", new[] { "SpinX", "SpinY", "SpinZ" }),
-                ("Wobble", new[] { "WobbleX", "WobbleY", "WobbleZ" }),
-                ("Combined", new[] { "PopInFade", "Attention" }),
-            };
-
-            var sorted = new List<ITweenPreset>();
-            var remaining = new List<ITweenPreset>(presets);
-
-            foreach (var (category, patterns) in categoryOrder)
-            {
-                foreach (var pattern in patterns)
-                {
-                    var matches = remaining
-                        .Where(p => p.PresetName.StartsWith(pattern, System.StringComparison.OrdinalIgnoreCase))
-                        .OrderBy(p => p.PresetName)
-                        .ToList();
-
-                    foreach (var match in matches)
-                    {
-                        sorted.Add(match);
-                        remaining.Remove(match);
-                    }
-                }
-            }
-
-            // Add any remaining presets at the end (custom user presets)
-            sorted.AddRange(remaining.OrderBy(p => p.PresetName));
-
-            return sorted;
         }
 
         private GameObject SpawnPresetObject(ITweenPreset preset, Vector3 position, Transform parent)
@@ -190,6 +193,94 @@ namespace LB.TweenHelper.Demo
             display.Setup(preset.PresetName, preset.Description);
 
             return obj;
+        }
+
+        private List<PresetCategoryGroup> GroupPresetsByCategory(List<ITweenPreset> presets)
+        {
+            return presets
+                .GroupBy(GetCategoryName)
+                .Select(group => new PresetCategoryGroup(group.Key, group.OrderBy(p => p.PresetName).ToList()))
+                .OrderBy(g => GetCategoryOrderIndex(g.Name))
+                .ThenBy(g => g.Name)
+                .ToList();
+        }
+
+        private string GetCategoryName(ITweenPreset preset)
+        {
+            if (preset is ICategorizedTweenPreset categorized && !string.IsNullOrWhiteSpace(categorized.Category))
+            {
+                return categorized.Category;
+            }
+
+            return PresetCategories.Base;
+        }
+
+        private int GetCategoryOrderIndex(string category)
+        {
+            var index = Array.IndexOf(CategoryOrder, category);
+            return index >= 0 ? index : int.MaxValue;
+        }
+
+        private void SpawnCategoryLabel(string category, Vector3 position, Transform parent)
+        {
+            var labelGO = new GameObject($"Category_{category}_Label");
+            labelGO.transform.SetParent(parent);
+            labelGO.transform.localPosition = position;
+            labelGO.transform.localRotation = Quaternion.identity;
+
+            var canvas = labelGO.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.WorldSpace;
+
+            var scaler = labelGO.AddComponent<CanvasScaler>();
+            scaler.dynamicPixelsPerUnit = 10f;
+
+            var rect = labelGO.GetComponent<RectTransform>();
+            rect.sizeDelta = new Vector2(320f, 80f);
+            rect.localScale = Vector3.one * 0.01f;
+
+            // Background panel similar to animation labels
+            var panelGO = new GameObject("Panel");
+            panelGO.transform.SetParent(labelGO.transform, false);
+            var panelRect = panelGO.AddComponent<RectTransform>();
+            panelRect.anchorMin = Vector2.zero;
+            panelRect.anchorMax = Vector2.one;
+            panelRect.sizeDelta = Vector2.zero;
+
+            var panelImage = panelGO.AddComponent<Image>();
+            panelImage.color = new Color(0f, 0f, 0f, 0.7f);
+
+            var layout = panelGO.AddComponent<VerticalLayoutGroup>();
+            layout.padding = new RectOffset(12, 12, 10, 10);
+            layout.spacing = 0;
+            layout.childAlignment = TextAnchor.MiddleLeft;
+            layout.childControlHeight = true;
+            layout.childControlWidth = true;
+            layout.childForceExpandHeight = false;
+            layout.childForceExpandWidth = true;
+
+            var textGO = new GameObject("CategoryText");
+            textGO.transform.SetParent(panelGO.transform, false);
+            var text = textGO.AddComponent<TextMeshProUGUI>();
+            text.text = category;
+            text.fontSize = 28;
+            text.alignment = TextAlignmentOptions.Left;
+            text.color = categoryLabelColor;
+            text.fontStyle = FontStyles.Bold;
+
+            var textLayout = textGO.AddComponent<LayoutElement>();
+            textLayout.preferredHeight = 40;
+
+            // Billboard so it faces the camera
+            labelGO.AddComponent<BillboardCanvas>();
+        }
+
+        private Vector3 GetCategoryLabelPosition(Vector3 groupStart, int rows, int presetCount)
+        {
+            var colsInGroup = Mathf.Max(1, Mathf.Min(columns, presetCount));
+            var groupWidth = (colsInGroup - 1) * spacingX + objectScale.x;
+            var leftOfGroup = groupStart.x - (groupWidth * 0.5f) - categoryLabelLeftPadding;
+            var zCenter = (rows - 1) * spacingZ * 0.5f;
+            return new Vector3(leftOfGroup, groupStart.y, groupStart.z + zCenter) + categoryLabelOffset;
         }
 
         /// <summary>
@@ -305,16 +396,55 @@ namespace LB.TweenHelper.Demo
 
         private void OnDrawGizmosSelected()
         {
-            // Draw grid preview
-            Gizmos.color = new Color(0, 1, 0, 0.3f);
+            TweenPresetRegistry.ScanForCodePresets();
+            var presets = TweenPresetRegistry.Presets.ToList();
 
-            int presetCount = 20; // Approximate count for preview (includes axis variants)
-            for (int i = 0; i < presetCount; i++)
+            if (presets.Count == 0)
             {
-                int row = i / columns;
-                int col = i % columns;
-                var position = transform.position + startPosition + new Vector3(col * spacingX, 0, row * spacingZ);
-                Gizmos.DrawWireCube(position, objectScale);
+                int presetCount = 20; // Approximate fallback preview
+                Gizmos.color = new Color(0, 1, 0, 0.3f);
+                for (int i = 0; i < presetCount; i++)
+                {
+                    int row = i / columns;
+                    int col = i % columns;
+                    var position = transform.position + startPosition + new Vector3(col * spacingX, 0, row * spacingZ);
+                    Gizmos.DrawWireCube(position, objectScale);
+                }
+            }
+            else
+            {
+                Gizmos.color = new Color(0, 1, 0, 0.3f);
+                var grouped = GroupPresetsByCategory(presets);
+                float categoryOffsetZ = 0f;
+
+                foreach (var group in grouped)
+                {
+                    for (int i = 0; i < group.Presets.Count; i++)
+                    {
+                        int row = i / columns;
+                        int col = i % columns;
+                        var position = transform.position + startPosition + new Vector3(col * spacingX, 0, row * spacingZ + categoryOffsetZ);
+                        Gizmos.DrawWireCube(position, objectScale);
+                    }
+
+                    var rows = Mathf.Max(1, Mathf.CeilToInt(group.Presets.Count / (float)columns));
+                    categoryOffsetZ += rows * spacingZ + categoryGapZ;
+                }
+
+                if (spawnCategoryLabels)
+                {
+                    categoryOffsetZ = 0f;
+                    Gizmos.color = new Color(1f, 1f, 0f, 0.35f);
+                    foreach (var group in grouped)
+                    {
+                        var rows = Mathf.Max(1, Mathf.CeilToInt(group.Presets.Count / (float)columns));
+                        var categoryCenterOffset = new Vector3(0f, 0f, (rows - 1) * spacingZ * 0.5f);
+                        var basePos = transform.position + startPosition + new Vector3(0f, 0f, categoryOffsetZ);
+                        var position = GetCategoryLabelPosition(basePos, rows, group.Presets.Count) + categoryCenterOffset;
+                        Gizmos.DrawWireCube(position, new Vector3(1f, 1f, 0.1f));
+                        categoryOffsetZ += rows * spacingZ + categoryGapZ;
+                    }
+                }
             }
 
             // Draw camera position

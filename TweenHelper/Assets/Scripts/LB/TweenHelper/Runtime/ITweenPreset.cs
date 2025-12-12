@@ -40,5 +40,16 @@ namespace LB.TweenHelper
         /// <returns>True if the preset can be applied to the target.</returns>
         bool CanApplyTo(GameObject target);
     }
+
+    /// <summary>
+    /// Optional contract for presets that expose a category name for grouping and UI.
+    /// </summary>
+    public interface ICategorizedTweenPreset
+    {
+        /// <summary>
+        /// The category this preset belongs to (e.g. Base, Movement, Rotation).
+        /// </summary>
+        string Category { get; }
+    }
 }
 

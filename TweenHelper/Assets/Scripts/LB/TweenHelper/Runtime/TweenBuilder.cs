@@ -543,6 +543,91 @@ namespace LB.TweenHelper
 
         #endregion
 
+        #region Direct Preset Methods
+
+        // Scale Presets
+        /// <summary>Scales from 0 to original scale with overshoot.</summary>
+        public TweenBuilder PopIn(float? duration = null) => Preset("PopIn", duration);
+        /// <summary>Scales to 0 with anticipation.</summary>
+        public TweenBuilder PopOut(float? duration = null) => Preset("PopOut", duration);
+        /// <summary>Quick scale punch for feedback.</summary>
+        public TweenBuilder Punch(float? duration = null) => Preset("Punch", duration);
+        /// <summary>Squash and stretch bounce effect.</summary>
+        public TweenBuilder Bounce(float? duration = null) => Preset("Squash", duration);
+        public TweenBuilder Squash(float? duration = null) => Preset("Squash", duration);
+
+        // Position Presets
+        /// <summary>Random position shake.</summary>
+        public TweenBuilder Shake(float? duration = null) => Preset("Shake", duration);
+        /// <summary>Slides down from above.</summary>
+        public TweenBuilder SlideInDown(float? duration = null) => Preset("SlideInDown", duration);
+        /// <summary>Slides up from below.</summary>
+        public TweenBuilder SlideInUp(float? duration = null) => Preset("SlideInUp", duration);
+        /// <summary>Slides in from the left side.</summary>
+        public TweenBuilder SlideInLeft(float? duration = null) => Preset("SlideInLeft", duration);
+        /// <summary>Slides in from the right side.</summary>
+        public TweenBuilder SlideInRight(float? duration = null) => Preset("SlideInRight", duration);
+        /// <summary>Gentle up/down hovering loop.</summary>
+        public TweenBuilder Float(float? duration = null) => Preset("Float", duration);
+        /// <summary>Circles around a point on XZ plane.</summary>
+        public TweenBuilder Orbit(float? duration = null) => Preset("Orbit", duration);
+        /// <summary>Circles around a point on XZ plane with custom radius.</summary>
+        public TweenBuilder Orbit(float startRadius, float? endRadius = null, float? duration = null)
+        {
+            AddStep(() => OrbitTweenFactory.Create(_gameObject, duration, _currentOptions, false, startRadius, endRadius ?? startRadius));
+            return this;
+        }
+        /// <summary>Circles clockwise around a point on XZ plane.</summary>
+        public TweenBuilder OrbitClockwise(float? duration = null) => Preset("OrbitClockwise", duration);
+        /// <summary>Circles clockwise around a point on XZ plane with custom radius.</summary>
+        public TweenBuilder OrbitClockwise(float startRadius, float? endRadius = null, float? duration = null)
+        {
+            AddStep(() => OrbitTweenFactory.Create(_gameObject, duration, _currentOptions, true, startRadius, endRadius ?? startRadius));
+            return this;
+        }
+        /// <summary>Circles counter-clockwise around a point on XZ plane.</summary>
+        public TweenBuilder OrbitCounterClockwise(float? duration = null) => Preset("OrbitCounterClockwise", duration);
+        /// <summary>Circles counter-clockwise around a point on XZ plane with custom radius.</summary>
+        public TweenBuilder OrbitCounterClockwise(float startRadius, float? endRadius = null, float? duration = null)
+        {
+            AddStep(() => OrbitTweenFactory.Create(_gameObject, duration, _currentOptions, false, startRadius, endRadius ?? startRadius));
+            return this;
+        }
+        /// <summary>Spirals upward combining rotation and height.</summary>
+        public TweenBuilder Spiral(float? duration = null) => Preset("Spiral", duration);
+        /// <summary>Falls from above with bounce on landing.</summary>
+        public TweenBuilder DropIn(float? duration = null) => Preset("DropIn", duration);
+        /// <summary>Quick upward motion with ease-out.</summary>
+        public TweenBuilder LaunchUp(float? duration = null) => Preset("LaunchUp", duration);
+
+        // Rotation Presets
+        /// <summary>Spins 360 degrees on Y axis.</summary>
+        public TweenBuilder Spin(float? duration = null) => Preset("SpinY", duration);
+        public TweenBuilder SpinY(float? duration = null) => Preset("SpinY", duration);
+        public TweenBuilder SpinX(float? duration = null) => Preset("SpinX", duration);
+        public TweenBuilder SpinZ(float? duration = null) => Preset("SpinZ", duration);
+        public TweenBuilder SpinDiagonalXY(float? duration = null) => Preset("SpinDiagonalXY", duration);
+        public TweenBuilder SpinDiagonalXZ(float? duration = null) => Preset("SpinDiagonalXZ", duration);
+        public TweenBuilder SpinDiagonalYZ(float? duration = null) => Preset("SpinDiagonalYZ", duration);
+        /// <summary>Wobbles rotation back and forth.</summary>
+        public TweenBuilder Wobble(float? duration = null) => Preset("WobbleY", duration);
+        public TweenBuilder WobbleY(float? duration = null) => Preset("WobbleY", duration);
+        public TweenBuilder WobbleX(float? duration = null) => Preset("WobbleX", duration);
+        public TweenBuilder WobbleZ(float? duration = null) => Preset("WobbleZ", duration);
+        public TweenBuilder WobbleDiagonalXY(float? duration = null) => Preset("WobbleDiagonalXY", duration);
+        public TweenBuilder WobbleDiagonalXZ(float? duration = null) => Preset("WobbleDiagonalXZ", duration);
+        public TweenBuilder WobbleDiagonalYZ(float? duration = null) => Preset("WobbleDiagonalYZ", duration);
+
+        // Combined Presets
+        /// <summary>Scales and fades in together.</summary>
+        public TweenBuilder PopInFade(float? duration = null) => Preset("PopInFade", duration);
+        /// <summary>Scales down and fades out together.</summary>
+        public TweenBuilder PopOutFade(float? duration = null) => Preset("PopOutFade", duration);
+        /// <summary>Attention-grabbing pulse.</summary>
+        public TweenBuilder Attention(float? duration = null) => Preset("Attention", duration);
+
+        #endregion
+
         #region Callbacks
 
         /// <summary>

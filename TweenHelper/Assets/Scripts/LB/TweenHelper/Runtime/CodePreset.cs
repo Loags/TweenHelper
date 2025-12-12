@@ -22,7 +22,7 @@ namespace LB.TweenHelper
     ///     }
     /// }
     /// </example>
-    public abstract partial class CodePreset : ITweenPreset
+    public abstract partial class CodePreset : ITweenPreset, ICategorizedTweenPreset
     {
         /// <summary>
         /// The unique name identifier for this preset.
@@ -38,6 +38,11 @@ namespace LB.TweenHelper
         /// The default duration for this preset.
         /// </summary>
         public virtual float DefaultDuration => 0.5f;
+
+        /// <summary>
+        /// Category used for grouping in showcases. Override in subclasses as needed.
+        /// </summary>
+        public virtual string Category => PresetCategories.Base;
 
         /// <summary>
         /// Creates and configures a tween for the specified target.

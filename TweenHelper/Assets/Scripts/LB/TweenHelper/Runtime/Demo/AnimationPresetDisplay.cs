@@ -156,7 +156,7 @@ namespace LB.TweenHelper.Demo
             _nameText.fontStyle = FontStyles.Bold;
             _nameText.color = textColor;
             _nameText.alignment = TextAlignmentOptions.Center;
-            _nameText.enableWordWrapping = false;
+            _nameText.textWrappingMode = TextWrappingModes.Normal;
 
             var nameLayout = nameGO.AddComponent<LayoutElement>();
             nameLayout.preferredHeight = 30;
@@ -168,7 +168,7 @@ namespace LB.TweenHelper.Demo
             _descriptionText.fontSize = 14;
             _descriptionText.color = new Color(textColor.r, textColor.g, textColor.b, 0.8f);
             _descriptionText.alignment = TextAlignmentOptions.Center;
-            _descriptionText.enableWordWrapping = true;
+            _nameText.textWrappingMode = TextWrappingModes.Normal;
 
             var descLayout = descGO.AddComponent<LayoutElement>();
             descLayout.preferredHeight = 20;

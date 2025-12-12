@@ -1,3 +1,5 @@
+using System;
+using System;
 using UnityEngine;
 
 namespace LB.TweenHelper.Demo
@@ -9,7 +11,7 @@ namespace LB.TweenHelper.Demo
     public class FlyCamera : MonoBehaviour
     {
         [Header("Movement")]
-        [SerializeField] private float baseSpeed = 5f;
+        [SerializeField] private float baseSpeed = 8f;
         [SerializeField] private float minSpeed = 1f;
         [SerializeField] private float maxSpeed = 50f;
         [SerializeField] private float speedScrollSensitivity = 2f;
@@ -20,7 +22,8 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private bool invertY = false;
 
         [Header("Info")]
-        [SerializeField] private float currentSpeed;
+        [NonSerialized] private float currentSpeed;
+        private float _lastSetSpeed;
 
         private float _yaw;
         private float _pitch;
@@ -28,6 +31,7 @@ namespace LB.TweenHelper.Demo
         private void Start()
         {
             currentSpeed = baseSpeed;
+            _lastSetSpeed = currentSpeed;
 
             // Initialize rotation from current transform
             var euler = transform.eulerAngles;
@@ -52,6 +56,7 @@ namespace LB.TweenHelper.Demo
             {
                 currentSpeed += scroll * speedScrollSensitivity * currentSpeed;
                 currentSpeed = Mathf.Clamp(currentSpeed, minSpeed, maxSpeed);
+                _lastSetSpeed = currentSpeed;
             }
         }
 
@@ -106,6 +111,33 @@ namespace LB.TweenHelper.Demo
             // Reset controls
             var historyCount = AnimationResetManager.Instance?.HistoryCount ?? 0;
             GUI.Label(new Rect(10, 85, 400, 25), $"R: Reset last | Shift+R: Reset all ({historyCount} in history)");
+        }
+
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            if (hasFocus)
+            {
+                RestoreSpeed();
+            }
+        }
+
+        private void OnApplicationPause(bool pauseStatus)
+        {
+            if (!pauseStatus)
+            {
+                RestoreSpeed();
+            }
+        }
+
+        private void OnEnable()
+        {
+            RestoreSpeed();
+        }
+
+        private void RestoreSpeed()
+        {
+            var targetSpeed = _lastSetSpeed > 0f ? _lastSetSpeed : baseSpeed;
+            currentSpeed = Mathf.Clamp(targetSpeed, minSpeed, maxSpeed);
         }
     }
 }

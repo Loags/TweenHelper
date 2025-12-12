@@ -19,7 +19,7 @@ namespace LB.TweenHelper
         [SerializeField] private LoopType? loopType;
         [SerializeField] private bool? speedBased;
         [SerializeField] private string id;
-        
+
         /// <summary>
         /// Creates a new TweenOptions with the specified delay.
         /// </summary>
@@ -107,6 +107,7 @@ namespace LB.TweenHelper
         {
             return new TweenOptions { updateType = updateType };
         }
+
         
         #region Fluent API
         
@@ -142,6 +143,7 @@ namespace LB.TweenHelper
             this.updateType = updateType;
             return this;
         }
+
         
         /// <summary>
         /// Sets whether to use unscaled time for this TweenOptions.

@@ -9,12 +9,11 @@ namespace LB.TweenHelper
 {
     /// <summary>
     /// Registry for managing and discovering tween presets.
-    /// Supports both code-defined presets (CodePreset, LambdaPreset) and ScriptableObject assets (TweenPresetBase).
+    /// Auto-discovers classes marked with [AutoRegisterPreset] attribute.
     /// </summary>
     public static class TweenPresetRegistry
     {
         private static readonly Dictionary<string, ITweenPreset> _presets = new Dictionary<string, ITweenPreset>();
-        private static bool _hasScannedAssets = false;
         private static bool _hasScannedCodePresets = false;
 
         /// <summary>
@@ -167,34 +166,6 @@ namespace LB.TweenHelper
         #region Scanning
 
         /// <summary>
-        /// Scans for TweenPresetBase ScriptableObject assets in Resources folders.
-        /// </summary>
-        public static void ScanForAssets()
-        {
-            if (_hasScannedAssets) return;
-
-            _hasScannedAssets = true;
-
-            var presetAssets = Resources.LoadAll<TweenPresetBase>("");
-            int count = 0;
-
-            foreach (var preset in presetAssets)
-            {
-                if (preset != null)
-                {
-                    preset.ValidatePreset();
-                    RegisterPreset(preset);
-                    count++;
-                }
-            }
-
-            if (count > 0)
-            {
-                Debug.Log($"TweenPresetRegistry: Found {count} preset assets.");
-            }
-        }
-
-        /// <summary>
         /// Scans for classes marked with [AutoRegisterPreset] attribute and registers them.
         /// </summary>
         public static void ScanForCodePresets()
@@ -266,14 +237,12 @@ namespace LB.TweenHelper
         }
 
         /// <summary>
-        /// Clears all registered presets and rescans for assets and code presets.
+        /// Clears all registered presets and rescans for code presets.
         /// </summary>
         public static void Refresh()
         {
             _presets.Clear();
-            _hasScannedAssets = false;
             _hasScannedCodePresets = false;
-            ScanForAssets();
             ScanForCodePresets();
         }
 
@@ -283,10 +252,6 @@ namespace LB.TweenHelper
 
         private static void EnsureInitialized()
         {
-            if (!_hasScannedAssets)
-            {
-                ScanForAssets();
-            }
             if (!_hasScannedCodePresets)
             {
                 ScanForCodePresets();
@@ -299,7 +264,6 @@ namespace LB.TweenHelper
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Initialize()
         {
-            ScanForAssets();
             ScanForCodePresets();
         }
 
@@ -310,7 +274,6 @@ namespace LB.TweenHelper
         private static void OnDomainReload()
         {
             _presets.Clear();
-            _hasScannedAssets = false;
             _hasScannedCodePresets = false;
         }
 
