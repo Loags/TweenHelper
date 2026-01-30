@@ -109,6 +109,158 @@ namespace LB.TweenHelper
         }
     }
 
+    /// <summary>
+    /// Gentle scale pulse loop (1.0→1.08→1.0), callback-chain like Float.
+    /// Usage: transform.Tween().Preset("Breathe").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class BreathePreset : CodePreset
+    {
+        public override string PresetName => "Breathe";
+        public override string Description => "Gentle scale pulse loop";
+        public override float DefaultDuration => 4.0f;
+        public override string Category => PresetCategories.Scale;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var halfDur = GetDuration(duration) * 0.5f;
+            var expandEase = options.Ease ?? Ease.InOutSine;
+            var contractEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
+
+            var upOptions = MergeWithDefaultEase(options.SetEase(expandEase), expandEase);
+            var downOptions = MergeWithDefaultEase(options.SetEase(contractEase), contractEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void Expand()
+            {
+                tween = t.DOScale(originalScale * 1.08f, halfDur)
+                    .SetEase(expandEase)
+                    .WithLoopDefaults(upOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(Contract);
+            }
+
+            void Contract()
+            {
+                tween = t.DOScale(originalScale, halfDur)
+                    .SetEase(contractEase)
+                    .WithLoopDefaults(downOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(Expand);
+            }
+
+            Expand();
+
+            return tween;
+        }
+    }
+
+    /// <summary>
+    /// Double-pulse heartbeat loop (1.15x→rest→1.25x→rest→pause), callback-chain with sequence per cycle.
+    /// Usage: transform.Tween().Preset("Heartbeat").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class HeartbeatPreset : CodePreset
+    {
+        public override string PresetName => "Heartbeat";
+        public override string Description => "Double-pulse heartbeat loop";
+        public override float DefaultDuration => 0.8f;
+        public override string Category => PresetCategories.Scale;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var dur = GetDuration(duration);
+            var beatEase = options.Ease ?? Ease.OutQuad;
+            var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
+            var loopOptions = MergeWithDefaultEase(options, beatEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void Beat()
+            {
+                var seq = DOTween.Sequence()
+                    // First beat (smaller)
+                    .Append(t.DOScale(originalScale * 1.15f, dur * 0.12f).SetEase(beatEase))
+                    .Append(t.DOScale(originalScale, dur * 0.12f).SetEase(returnEase))
+                    // Second beat (larger)
+                    .Append(t.DOScale(originalScale * 1.25f, dur * 0.12f).SetEase(beatEase))
+                    .Append(t.DOScale(originalScale, dur * 0.14f).SetEase(returnEase))
+                    // Pause before next cycle
+                    .AppendInterval(dur * 0.5f)
+                    .WithLoopDefaults(loopOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween = seq;
+                seq.OnComplete(Beat);
+            }
+
+            Beat();
+
+            return tween;
+        }
+    }
+
+    /// <summary>
+    /// Scale from 0 with tight elastic oscillation (amplitude 0.7, period 0.3).
+    /// Usage: transform.Tween().Preset("ElasticSnap").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class ElasticSnapPreset : CodePreset
+    {
+        public override string PresetName => "ElasticSnap";
+        public override string Description => "Scale from 0 with tight elastic oscillation";
+        public override float DefaultDuration => 0.5f;
+        public override string Category => PresetCategories.Scale;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            t.localScale = Vector3.zero;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutElastic);
+            var ease = ResolveEase(presetOptions, Ease.OutElastic);
+
+            return t.DOScale(originalScale, GetDuration(duration))
+                .SetEase(ease, 0.7f, 0.3f)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Clean scale from 0 to original, no overshoot (contrast to PopIn's OutBack).
+    /// Usage: transform.Tween().Preset("GrowIn").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class GrowInPreset : CodePreset
+    {
+        public override string PresetName => "GrowIn";
+        public override string Description => "Clean scale from 0 to original, no overshoot";
+        public override float DefaultDuration => 0.4f;
+        public override string Category => PresetCategories.Scale;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            t.localScale = Vector3.zero;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
+            var ease = ResolveEase(presetOptions, Ease.OutCubic);
+
+            return t.DOScale(originalScale, GetDuration(duration))
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
     #endregion
 
     #region Position Animations
@@ -524,6 +676,209 @@ namespace LB.TweenHelper
         }
     }
 
+    /// <summary>
+    /// Slides up off-screen (+500 units), mirrors SlideInDown.
+    /// Usage: transform.Tween().Preset("SlideOutUp").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutUpPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutUp";
+        public override string Description => "Slides up off-screen";
+        public override float DefaultDuration => 0.5f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var presetOptions = MergeWithDefaultEase(options, Ease.InCubic);
+            var ease = ResolveEase(presetOptions, Ease.InCubic);
+
+            return t.DOLocalMoveY(t.localPosition.y + 500f, GetDuration(duration))
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Slides down off-screen (-500 units), mirrors SlideInUp.
+    /// Usage: transform.Tween().Preset("SlideOutDown").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutDownPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutDown";
+        public override string Description => "Slides down off-screen";
+        public override float DefaultDuration => 0.5f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var presetOptions = MergeWithDefaultEase(options, Ease.InCubic);
+            var ease = ResolveEase(presetOptions, Ease.InCubic);
+
+            return t.DOLocalMoveY(t.localPosition.y - 500f, GetDuration(duration))
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Slides left off-screen (-500 units), mirrors SlideInRight.
+    /// Usage: transform.Tween().Preset("SlideOutLeft").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutLeftPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutLeft";
+        public override string Description => "Slides left off-screen";
+        public override float DefaultDuration => 0.5f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var presetOptions = MergeWithDefaultEase(options, Ease.InCubic);
+            var ease = ResolveEase(presetOptions, Ease.InCubic);
+
+            return t.DOLocalMoveX(t.localPosition.x - 500f, GetDuration(duration))
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Slides right off-screen (+500 units), mirrors SlideInLeft.
+    /// Usage: transform.Tween().Preset("SlideOutRight").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutRightPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutRight";
+        public override string Description => "Slides right off-screen";
+        public override float DefaultDuration => 0.5f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var presetOptions = MergeWithDefaultEase(options, Ease.InCubic);
+            var ease = ResolveEase(presetOptions, Ease.InCubic);
+
+            return t.DOLocalMoveX(t.localPosition.x + 500f, GetDuration(duration))
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Horizontal Float equivalent, ±0.5 on X axis, callback-chain loop.
+    /// Usage: transform.Tween().Preset("Sway").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SwayPreset : CodePreset
+    {
+        public override string PresetName => "Sway";
+        public override string Description => "Gentle horizontal sway loop";
+        public override float DefaultDuration => 4.0f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var halfDur = GetDuration(duration) * 0.5f;
+            var moveRightEase = options.Ease ?? Ease.InOutSine;
+            var moveLeftEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
+
+            var rightOptions = MergeWithDefaultEase(options.SetEase(moveRightEase), moveRightEase);
+            var leftOptions = MergeWithDefaultEase(options.SetEase(moveLeftEase), moveLeftEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void MoveRight()
+            {
+                tween = t.DOLocalMoveX(0.5f, halfDur)
+                    .SetRelative(true)
+                    .SetEase(moveRightEase)
+                    .WithLoopDefaults(rightOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(MoveLeft);
+            }
+
+            void MoveLeft()
+            {
+                tween = t.DOLocalMoveX(-0.5f, halfDur)
+                    .SetRelative(true)
+                    .SetEase(moveLeftEase)
+                    .WithLoopDefaults(leftOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(MoveRight);
+            }
+
+            MoveRight();
+
+            return tween;
+        }
+    }
+
+    /// <summary>
+    /// Positional Y bounce (3 decreasing hops), sequence-based.
+    /// Usage: transform.Tween().Preset("Bounce").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PositionalBouncePreset : CodePreset
+    {
+        public override string PresetName => "Bounce";
+        public override string Description => "Positional Y bounce with decreasing hops";
+        public override float DefaultDuration => 0.8f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var baseY = t.localPosition.y;
+            var dur = GetDuration(duration);
+            var upEase = ResolveEase(options, Ease.OutQuad);
+            var downEase = ResolveSecondaryEase(options, Ease.InQuad);
+            var presetOptions = MergeWithDefaultEase(options, upEase);
+
+            return DOTween.Sequence()
+                // Hop 1 (highest)
+                .Append(t.DOLocalMoveY(baseY + 1.5f, dur * 0.15f).SetEase(upEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.15f).SetEase(downEase))
+                // Hop 2 (medium)
+                .Append(t.DOLocalMoveY(baseY + 0.8f, dur * 0.12f).SetEase(upEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.12f).SetEase(downEase))
+                // Hop 3 (small)
+                .Append(t.DOLocalMoveY(baseY + 0.3f, dur * 0.1f).SetEase(upEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.1f).SetEase(downEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Tight rapid vibration (DOShakePosition, strength 0.08, vibrato 40).
+    /// Usage: transform.Tween().Preset("Jitter").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class JitterPreset : CodePreset
+    {
+        public override string PresetName => "Jitter";
+        public override string Description => "Tight rapid vibration";
+        public override float DefaultDuration => 0.3f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOShakePosition(GetDuration(duration), 0.08f, 40, 90f, false, true)
+                .WithDefaults(options, target);
+        }
+    }
+
     #endregion
 
     #region Fade Animations
@@ -569,6 +924,149 @@ namespace LB.TweenHelper
         {
             var tween = CreateFadeTween(target, 0f, GetDuration(duration));
             return tween?.WithDefaults(options, target);
+        }
+
+        public override bool CanApplyTo(GameObject target) => CanFade(target);
+    }
+
+    /// <summary>
+    /// Rapid alpha on/off loop (1→0→1), callback-chain.
+    /// Usage: transform.Tween().Preset("Blink").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class BlinkPreset : CodePreset
+    {
+        public override string PresetName => "Blink";
+        public override string Description => "Rapid alpha on/off loop";
+        public override float DefaultDuration => 0.4f;
+        public override string Category => PresetCategories.Fade;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var halfDur = GetDuration(duration) * 0.5f;
+            var offEase = options.Ease ?? Ease.InOutQuad;
+            var onEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutQuad;
+
+            var offOptions = MergeWithDefaultEase(options.SetEase(offEase), offEase);
+            var onOptions = MergeWithDefaultEase(options.SetEase(onEase), onEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void FadeOff()
+            {
+                var fadeTween = CreateFadeTween(target, 0f, halfDur);
+                if (fadeTween == null) return;
+                tween = fadeTween
+                    .SetEase(offEase)
+                    .WithLoopDefaults(offOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(FadeOn);
+            }
+
+            void FadeOn()
+            {
+                var fadeTween = CreateFadeTween(target, 1f, halfDur);
+                if (fadeTween == null) return;
+                tween = fadeTween
+                    .SetEase(onEase)
+                    .WithLoopDefaults(onOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(FadeOff);
+            }
+
+            FadeOff();
+
+            return tween;
+        }
+
+        public override bool CanApplyTo(GameObject target) => CanFade(target);
+    }
+
+    /// <summary>
+    /// Smooth alpha cycle loop (1.0→0.3→1.0), callback-chain.
+    /// Usage: transform.Tween().Preset("PulseFade").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PulseFadePreset : CodePreset
+    {
+        public override string PresetName => "PulseFade";
+        public override string Description => "Smooth alpha pulse loop";
+        public override float DefaultDuration => 2.0f;
+        public override string Category => PresetCategories.Fade;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var halfDur = GetDuration(duration) * 0.5f;
+            var fadeOutEase = options.Ease ?? Ease.InOutSine;
+            var fadeInEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
+
+            var outOptions = MergeWithDefaultEase(options.SetEase(fadeOutEase), fadeOutEase);
+            var inOptions = MergeWithDefaultEase(options.SetEase(fadeInEase), fadeInEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void FadeDown()
+            {
+                var fadeTween = CreateFadeTween(target, 0.3f, halfDur);
+                if (fadeTween == null) return;
+                tween = fadeTween
+                    .SetEase(fadeOutEase)
+                    .WithLoopDefaults(outOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(FadeUp);
+            }
+
+            void FadeUp()
+            {
+                var fadeTween = CreateFadeTween(target, 1f, halfDur);
+                if (fadeTween == null) return;
+                tween = fadeTween
+                    .SetEase(fadeInEase)
+                    .WithLoopDefaults(inOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(FadeDown);
+            }
+
+            FadeDown();
+
+            return tween;
+        }
+
+        public override bool CanApplyTo(GameObject target) => CanFade(target);
+    }
+
+    /// <summary>
+    /// Randomized alpha flicker via Perlin noise, snaps to 1.0 on complete.
+    /// Usage: transform.Tween().Preset("Flicker").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class FlickerPreset : CodePreset
+    {
+        public override string PresetName => "Flicker";
+        public override string Description => "Randomized alpha flicker effect";
+        public override float DefaultDuration => 1.0f;
+        public override string Category => PresetCategories.Fade;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.Linear);
+            float seed = Random.Range(0f, 100f);
+
+            return DOVirtual.Float(0f, 1f, dur, t =>
+                {
+                    float noise = Mathf.PerlinNoise(seed + t * 12f, 0f);
+                    SetAlpha(target, noise);
+                })
+                .SetEase(Ease.Linear)
+                .OnComplete(() => SetAlpha(target, 1f))
+                .WithDefaults(presetOptions, target);
         }
 
         public override bool CanApplyTo(GameObject target) => CanFade(target);
@@ -827,6 +1325,130 @@ namespace LB.TweenHelper
         }
     }
 
+    /// <summary>
+    /// Lean 12° on Z then spring back, 2-step sequence.
+    /// Usage: transform.Tween().Preset("Tilt").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class TiltPreset : CodePreset
+    {
+        public override string PresetName => "Tilt";
+        public override string Description => "Lean on Z then spring back";
+        public override float DefaultDuration => 0.4f;
+        public override string Category => PresetCategories.Rotation;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalRot = t.localEulerAngles;
+            var dur = GetDuration(duration);
+            var leanEase = ResolveEase(options, Ease.OutQuad);
+            var returnEase = ResolveSecondaryEase(options, Ease.OutBack);
+            var presetOptions = MergeWithDefaultEase(options, leanEase);
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 12f), dur * 0.4f).SetEase(leanEase))
+                .Append(t.DOLocalRotate(originalRot, dur * 0.6f).SetEase(returnEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// 180° flip on X axis via RotateMode.LocalAxisAdd.
+    /// Usage: transform.Tween().Preset("FlipX").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class FlipXPreset : CodePreset
+    {
+        public override string PresetName => "FlipX";
+        public override string Description => "180° flip on X axis";
+        public override float DefaultDuration => 0.5f;
+        public override string Category => PresetCategories.Rotation;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
+            var ease = ResolveEase(presetOptions, Ease.InOutQuad);
+            return target.transform.DOLocalRotate(new Vector3(180f, 0f, 0f), GetDuration(duration), RotateMode.LocalAxisAdd)
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// 180° flip on Y axis via RotateMode.LocalAxisAdd.
+    /// Usage: transform.Tween().Preset("FlipY").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class FlipYPreset : CodePreset
+    {
+        public override string PresetName => "FlipY";
+        public override string Description => "180° flip on Y axis";
+        public override float DefaultDuration => 0.5f;
+        public override string Category => PresetCategories.Rotation;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
+            var ease = ResolveEase(presetOptions, Ease.InOutQuad);
+            return target.transform.DOLocalRotate(new Vector3(0f, 180f, 0f), GetDuration(duration), RotateMode.LocalAxisAdd)
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Gentle Z-axis pendulum loop (±8°), callback-chain like Float.
+    /// Usage: transform.Tween().Preset("Rock").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class RockPreset : CodePreset
+    {
+        public override string PresetName => "Rock";
+        public override string Description => "Gentle Z-axis pendulum loop";
+        public override float DefaultDuration => 3.0f;
+        public override string Category => PresetCategories.Rotation;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalRot = t.localEulerAngles;
+            var halfDur = GetDuration(duration) * 0.5f;
+            var leftEase = options.Ease ?? Ease.InOutSine;
+            var rightEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
+
+            var leftOptions = MergeWithDefaultEase(options.SetEase(leftEase), leftEase);
+            var rightOptions = MergeWithDefaultEase(options.SetEase(rightEase), rightEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void RockLeft()
+            {
+                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 8f), halfDur)
+                    .SetEase(leftEase)
+                    .WithLoopDefaults(leftOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(RockRight);
+            }
+
+            void RockRight()
+            {
+                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, -8f), halfDur)
+                    .SetEase(rightEase)
+                    .WithLoopDefaults(rightOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(RockLeft);
+            }
+
+            RockLeft();
+
+            return tween;
+        }
+    }
+
     #endregion
 
     #region Combined Animations
@@ -939,6 +1561,193 @@ namespace LB.TweenHelper
                 .Append(t.DOScale(originalScale * 1.05f, dur * 0.15f).SetEase(ease))
                 .Append(t.DOScale(originalScale, dur * 0.15f).SetEase(ease))
                 .SetLoops(2)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Slide up from below + fade in (fade at 70% duration).
+    /// Usage: transform.Tween().Preset("SlideInFadeUp").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInFadeUpPreset : CodePreset
+    {
+        public override string PresetName => "SlideInFadeUp";
+        public override string Description => "Slides up from below with fade in";
+        public override float DefaultDuration => 1.0f;
+        public override string Category => PresetCategories.Combined;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var targetPos = t.localPosition;
+            t.localPosition = targetPos + Vector3.down * 100f;
+
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
+            var ease = ResolveEase(presetOptions, Ease.OutCubic);
+
+            var seq = DOTween.Sequence();
+            seq.Append(t.DOLocalMove(targetPos, dur).SetEase(ease));
+
+            var fadeTween = CreateFadeTween(target, 1f, dur * 0.7f);
+            if (fadeTween != null)
+            {
+                SetAlpha(target, 0f);
+                seq.Join(fadeTween.SetEase(Ease.Linear));
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Slide down from above + fade in.
+    /// Usage: transform.Tween().Preset("SlideInFadeDown").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInFadeDownPreset : CodePreset
+    {
+        public override string PresetName => "SlideInFadeDown";
+        public override string Description => "Slides down from above with fade in";
+        public override float DefaultDuration => 1.0f;
+        public override string Category => PresetCategories.Combined;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var targetPos = t.localPosition;
+            t.localPosition = targetPos + Vector3.up * 100f;
+
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
+            var ease = ResolveEase(presetOptions, Ease.OutCubic);
+
+            var seq = DOTween.Sequence();
+            seq.Append(t.DOLocalMove(targetPos, dur).SetEase(ease));
+
+            var fadeTween = CreateFadeTween(target, 1f, dur * 0.7f);
+            if (fadeTween != null)
+            {
+                SetAlpha(target, 0f);
+                seq.Join(fadeTween.SetEase(Ease.Linear));
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Shake position + fade out (damage/death effect).
+    /// Usage: transform.Tween().Preset("ShakeFade").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class ShakeFadePreset : CodePreset
+    {
+        public override string PresetName => "ShakeFade";
+        public override string Description => "Shake position with fade out";
+        public override float DefaultDuration => 0.8f;
+        public override string Category => PresetCategories.Combined;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.Linear);
+
+            var seq = DOTween.Sequence();
+            seq.Append(t.DOShakePosition(dur, 0.3f, 15, 90f, false, true));
+
+            var fadeTween = CreateFadeTween(target, 0f, dur);
+            if (fadeTween != null)
+            {
+                fadeTween.SetEase(Ease.InQuad);
+                seq.Join(fadeTween);
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// 720° Y spin + scale to zero (collectible pickup effect).
+    /// Usage: transform.Tween().Preset("SpinScale").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinScalePreset : CodePreset
+    {
+        public override string PresetName => "SpinScale";
+        public override string Description => "Spin and shrink to zero";
+        public override float DefaultDuration => 0.7f;
+        public override string Category => PresetCategories.Combined;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var dur = GetDuration(duration);
+            var scaleEase = ResolveEase(options, Ease.InBack);
+            var spinEase = ResolveSecondaryEase(options, Ease.Linear);
+            var presetOptions = MergeWithDefaultEase(options, scaleEase);
+
+            return DOTween.Sequence()
+                .Join(t.DOScale(Vector3.zero, dur).SetEase(scaleEase))
+                .Join(t.DORotate(new Vector3(0f, 720f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Drop from above with bounce + squash-stretch on each landing.
+    /// Usage: transform.Tween().Preset("BounceLand").Play();
+    /// </summary>
+    [AutoRegisterPreset]
+    public class BounceLandPreset : CodePreset
+    {
+        public override string PresetName => "BounceLand";
+        public override string Description => "Drop with bounce and squash-stretch on landing";
+        public override float DefaultDuration => 1.6f;
+        public override string Category => PresetCategories.Combined;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var targetY = t.localPosition.y;
+            var dropHeight = 5f;
+            t.localPosition = t.localPosition + Vector3.up * dropHeight;
+
+            var dur = GetDuration(duration);
+            var fallEase = ResolveEase(options, Ease.InQuad);
+            var bounceEase = ResolveSecondaryEase(options, Ease.OutQuad);
+            var presetOptions = MergeWithDefaultEase(options, fallEase);
+
+            // Squash scale values
+            var squash1 = new Vector3(originalScale.x * 1.3f, originalScale.y * 0.7f, originalScale.z);
+            var squash2 = new Vector3(originalScale.x * 1.15f, originalScale.y * 0.85f, originalScale.z);
+
+            return DOTween.Sequence()
+                // Fall
+                .Append(t.DOLocalMoveY(targetY, dur * 0.3f).SetEase(fallEase))
+                // Squash on first impact
+                .Append(t.DOScale(squash1, dur * 0.05f).SetEase(Ease.OutQuad))
+                .Append(t.DOScale(originalScale, dur * 0.05f).SetEase(Ease.InQuad))
+                // Bounce 1 up
+                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.35f, dur * 0.12f).SetEase(bounceEase))
+                .Append(t.DOLocalMoveY(targetY, dur * 0.12f).SetEase(fallEase))
+                // Squash on second impact
+                .Append(t.DOScale(squash2, dur * 0.04f).SetEase(Ease.OutQuad))
+                .Append(t.DOScale(originalScale, dur * 0.04f).SetEase(Ease.InQuad))
+                // Bounce 2 up (smaller)
+                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.1f, dur * 0.09f).SetEase(bounceEase))
+                .Append(t.DOLocalMoveY(targetY, dur * 0.09f).SetEase(fallEase))
+                // Final settle
+                .Append(t.DOScale(originalScale, dur * 0.05f).SetEase(Ease.OutQuad))
                 .WithDefaults(presetOptions, target);
         }
     }

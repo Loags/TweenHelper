@@ -476,7 +476,6 @@ MonoBehaviour:
   shiftMultiplier: 2
   mouseSensitivity: 2
   invertY: 0
-  currentSpeed: 0
 --- !u!1001 &2872349441217058211
 PrefabInstance:
   m_ObjectHideFlags: 0

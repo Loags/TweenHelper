@@ -552,9 +552,16 @@ namespace LB.TweenHelper
         public TweenBuilder PopOut(float? duration = null) => Preset("PopOut", duration);
         /// <summary>Quick scale punch for feedback.</summary>
         public TweenBuilder Punch(float? duration = null) => Preset("Punch", duration);
-        /// <summary>Squash and stretch bounce effect.</summary>
-        public TweenBuilder Bounce(float? duration = null) => Preset("Squash", duration);
+        /// <summary>Squash and stretch effect.</summary>
         public TweenBuilder Squash(float? duration = null) => Preset("Squash", duration);
+        /// <summary>Gentle scale pulse loop.</summary>
+        public TweenBuilder Breathe(float? duration = null) => Preset("Breathe", duration);
+        /// <summary>Double-pulse heartbeat loop.</summary>
+        public TweenBuilder Heartbeat(float? duration = null) => Preset("Heartbeat", duration);
+        /// <summary>Scale from 0 with tight elastic oscillation.</summary>
+        public TweenBuilder ElasticSnap(float? duration = null) => Preset("ElasticSnap", duration);
+        /// <summary>Clean scale from 0 to original, no overshoot.</summary>
+        public TweenBuilder GrowIn(float? duration = null) => Preset("GrowIn", duration);
 
         // Position Presets
         /// <summary>Random position shake.</summary>
@@ -567,8 +574,18 @@ namespace LB.TweenHelper
         public TweenBuilder SlideInLeft(float? duration = null) => Preset("SlideInLeft", duration);
         /// <summary>Slides in from the right side.</summary>
         public TweenBuilder SlideInRight(float? duration = null) => Preset("SlideInRight", duration);
+        /// <summary>Slides up off-screen.</summary>
+        public TweenBuilder SlideOutUp(float? duration = null) => Preset("SlideOutUp", duration);
+        /// <summary>Slides down off-screen.</summary>
+        public TweenBuilder SlideOutDown(float? duration = null) => Preset("SlideOutDown", duration);
+        /// <summary>Slides left off-screen.</summary>
+        public TweenBuilder SlideOutLeft(float? duration = null) => Preset("SlideOutLeft", duration);
+        /// <summary>Slides right off-screen.</summary>
+        public TweenBuilder SlideOutRight(float? duration = null) => Preset("SlideOutRight", duration);
         /// <summary>Gentle up/down hovering loop.</summary>
         public TweenBuilder Float(float? duration = null) => Preset("Float", duration);
+        /// <summary>Gentle horizontal sway loop.</summary>
+        public TweenBuilder Sway(float? duration = null) => Preset("Sway", duration);
         /// <summary>Circles around a point on XZ plane.</summary>
         public TweenBuilder Orbit(float? duration = null) => Preset("Orbit", duration);
         /// <summary>Circles around a point on XZ plane with custom radius.</summary>
@@ -599,6 +616,18 @@ namespace LB.TweenHelper
         public TweenBuilder DropIn(float? duration = null) => Preset("DropIn", duration);
         /// <summary>Quick upward motion with ease-out.</summary>
         public TweenBuilder LaunchUp(float? duration = null) => Preset("LaunchUp", duration);
+        /// <summary>Positional Y bounce with decreasing hops.</summary>
+        public TweenBuilder Bounce(float? duration = null) => Preset("Bounce", duration);
+        /// <summary>Tight rapid vibration.</summary>
+        public TweenBuilder Jitter(float? duration = null) => Preset("Jitter", duration);
+
+        // Fade Presets
+        /// <summary>Rapid alpha on/off loop.</summary>
+        public TweenBuilder Blink(float? duration = null) => Preset("Blink", duration);
+        /// <summary>Smooth alpha pulse loop.</summary>
+        public TweenBuilder PulseFade(float? duration = null) => Preset("PulseFade", duration);
+        /// <summary>Randomized alpha flicker effect.</summary>
+        public TweenBuilder Flicker(float? duration = null) => Preset("Flicker", duration);
 
         // Rotation Presets
         /// <summary>Spins 360 degrees on Y axis.</summary>
@@ -617,6 +646,14 @@ namespace LB.TweenHelper
         public TweenBuilder WobbleDiagonalXY(float? duration = null) => Preset("WobbleDiagonalXY", duration);
         public TweenBuilder WobbleDiagonalXZ(float? duration = null) => Preset("WobbleDiagonalXZ", duration);
         public TweenBuilder WobbleDiagonalYZ(float? duration = null) => Preset("WobbleDiagonalYZ", duration);
+        /// <summary>Lean on Z then spring back.</summary>
+        public TweenBuilder Tilt(float? duration = null) => Preset("Tilt", duration);
+        /// <summary>180° flip on X axis.</summary>
+        public TweenBuilder FlipX(float? duration = null) => Preset("FlipX", duration);
+        /// <summary>180° flip on Y axis.</summary>
+        public TweenBuilder FlipY(float? duration = null) => Preset("FlipY", duration);
+        /// <summary>Gentle Z-axis pendulum loop.</summary>
+        public TweenBuilder Rock(float? duration = null) => Preset("Rock", duration);
 
         // Combined Presets
         /// <summary>Scales and fades in together.</summary>
@@ -625,6 +662,16 @@ namespace LB.TweenHelper
         public TweenBuilder PopOutFade(float? duration = null) => Preset("PopOutFade", duration);
         /// <summary>Attention-grabbing pulse.</summary>
         public TweenBuilder Attention(float? duration = null) => Preset("Attention", duration);
+        /// <summary>Slides up from below with fade in.</summary>
+        public TweenBuilder SlideInFadeUp(float? duration = null) => Preset("SlideInFadeUp", duration);
+        /// <summary>Slides down from above with fade in.</summary>
+        public TweenBuilder SlideInFadeDown(float? duration = null) => Preset("SlideInFadeDown", duration);
+        /// <summary>Shake position with fade out.</summary>
+        public TweenBuilder ShakeFade(float? duration = null) => Preset("ShakeFade", duration);
+        /// <summary>Spin and shrink to zero.</summary>
+        public TweenBuilder SpinScale(float? duration = null) => Preset("SpinScale", duration);
+        /// <summary>Drop with bounce and squash-stretch on landing.</summary>
+        public TweenBuilder BounceLand(float? duration = null) => Preset("BounceLand", duration);
 
         #endregion
 
