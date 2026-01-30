@@ -6,7 +6,8 @@
       "Bash(xargs:*)",
       "Bash(grep:*)",
       "Bash(ls:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git -C /mnt/d/Repositories/Unity/TweenHelper log --name-status --pretty=format:\"%H %s\" -n 20)"
     ],
     "deny": [],
     "ask": []

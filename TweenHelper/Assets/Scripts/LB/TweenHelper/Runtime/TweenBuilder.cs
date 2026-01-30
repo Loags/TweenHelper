@@ -562,6 +562,10 @@ namespace LB.TweenHelper
         public TweenBuilder ElasticSnap(float? duration = null) => Preset("ElasticSnap", duration);
         /// <summary>Clean scale from 0 to original, no overshoot.</summary>
         public TweenBuilder GrowIn(float? duration = null) => Preset("GrowIn", duration);
+        /// <summary>Clean scale to zero, no anticipation.</summary>
+        public TweenBuilder ShrinkOut(float? duration = null) => Preset("ShrinkOut", duration);
+        /// <summary>Quick scale bump for UI feedback.</summary>
+        public TweenBuilder PulseScale(float? duration = null) => Preset("PulseScale", duration);
 
         // Position Presets
         /// <summary>Random position shake.</summary>
@@ -620,6 +624,14 @@ namespace LB.TweenHelper
         public TweenBuilder Bounce(float? duration = null) => Preset("Bounce", duration);
         /// <summary>Tight rapid vibration.</summary>
         public TweenBuilder Jitter(float? duration = null) => Preset("Jitter", duration);
+        /// <summary>Pull back then snap forward on local Z.</summary>
+        public TweenBuilder Recoil(float? duration = null) => Preset("Recoil", duration);
+        /// <summary>Small push right then spring back.</summary>
+        public TweenBuilder Nudge(float? duration = null) => Preset("Nudge", duration);
+        /// <summary>Circular orbit on XY plane.</summary>
+        public TweenBuilder Orbit2D(float? duration = null) => Preset("Orbit2D", duration);
+        /// <summary>Alternating diagonal zig-zag movement.</summary>
+        public TweenBuilder ZigZag(float? duration = null) => Preset("ZigZag", duration);
 
         // Fade Presets
         /// <summary>Rapid alpha on/off loop.</summary>
@@ -628,6 +640,8 @@ namespace LB.TweenHelper
         public TweenBuilder PulseFade(float? duration = null) => Preset("PulseFade", duration);
         /// <summary>Randomized alpha flicker effect.</summary>
         public TweenBuilder Flicker(float? duration = null) => Preset("Flicker", duration);
+        /// <summary>Fade in then fade out.</summary>
+        public TweenBuilder FadeInOut(float? duration = null) => Preset("FadeInOut", duration);
 
         // Rotation Presets
         /// <summary>Spins 360 degrees on Y axis.</summary>
@@ -654,6 +668,10 @@ namespace LB.TweenHelper
         public TweenBuilder FlipY(float? duration = null) => Preset("FlipY", duration);
         /// <summary>Gentle Z-axis pendulum loop.</summary>
         public TweenBuilder Rock(float? duration = null) => Preset("Rock", duration);
+        /// <summary>X-axis tilt forward then spring back.</summary>
+        public TweenBuilder Nod(float? duration = null) => Preset("Nod", duration);
+        /// <summary>Wind up rotation then snap forward and settle.</summary>
+        public TweenBuilder WindUp(float? duration = null) => Preset("WindUp", duration);
 
         // Combined Presets
         /// <summary>Scales and fades in together.</summary>
@@ -672,6 +690,14 @@ namespace LB.TweenHelper
         public TweenBuilder SpinScale(float? duration = null) => Preset("SpinScale", duration);
         /// <summary>Drop with bounce and squash-stretch on landing.</summary>
         public TweenBuilder BounceLand(float? duration = null) => Preset("BounceLand", duration);
+        /// <summary>Scale up and fade out simultaneously.</summary>
+        public TweenBuilder Explode(float? duration = null) => Preset("Explode", duration);
+        /// <summary>Spin and scale in from zero.</summary>
+        public TweenBuilder SwirlIn(float? duration = null) => Preset("SwirlIn", duration);
+        /// <summary>Slides in from the left with fade in.</summary>
+        public TweenBuilder SlideInFadeLeft(float? duration = null) => Preset("SlideInFadeLeft", duration);
+        /// <summary>Slides in from the right with fade in.</summary>
+        public TweenBuilder SlideInFadeRight(float? duration = null) => Preset("SlideInFadeRight", duration);
 
         #endregion
 

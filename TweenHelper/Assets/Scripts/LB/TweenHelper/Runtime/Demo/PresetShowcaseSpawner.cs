@@ -35,6 +35,13 @@ namespace LB.TweenHelper.Demo
         [Tooltip("Creates a transparent-capable material at runtime if no material is assigned")]
         [SerializeField] private bool useTransparentMaterial = true;
 
+        [Header("Ground")]
+        [SerializeField] private bool spawnGround = true;
+        [SerializeField] private Material groundMaterial;
+        [SerializeField] private float groundPadding = 120f;
+        [SerializeField] private float groundYOffset = -0.5f;
+        [SerializeField] private float groundTiling = 4f;
+
         [Header("Camera Setup")]
         [SerializeField] private bool setupCamera = true;
         [SerializeField] private Vector3 cameraPosition = new Vector3(0, 5, -10);
@@ -149,6 +156,11 @@ namespace LB.TweenHelper.Demo
                 categoryOffsetZ += rows * spacingZ + categoryGapZ;
             }
 
+            if (spawnGround)
+            {
+                SpawnGroundPlane(container.transform, categoryOffsetZ);
+            }
+
             Debug.Log($"PresetShowcaseSpawner: Spawned {_spawnedObjects.Count} objects.");
         }
 
@@ -193,6 +205,36 @@ namespace LB.TweenHelper.Demo
             display.Setup(preset.PresetName, preset.Description);
 
             return obj;
+        }
+
+        private void SpawnGroundPlane(Transform parent, float totalDepth)
+        {
+            var ground = GameObject.CreatePrimitive(PrimitiveType.Quad);
+            ground.name = "Ground";
+            ground.transform.SetParent(parent);
+
+            // Rotate quad to face up
+            ground.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+
+            // Size to cover the full grid with padding
+            float width = (columns - 1) * spacingX + groundPadding * 2f;
+            float depth = totalDepth + groundPadding * 2f;
+            ground.transform.localScale = new Vector3(width, depth, 1f);
+
+            // Center on the grid
+            float centerX = startPosition.x + (columns - 1) * spacingX * 0.5f;
+            float centerZ = startPosition.z + (totalDepth - categoryGapZ) * 0.5f;
+            ground.transform.localPosition = new Vector3(centerX, groundYOffset, centerZ);
+
+            // Apply material with tiling
+            var renderer = ground.GetComponent<Renderer>();
+            if (renderer != null && groundMaterial != null)
+            {
+                renderer.material = new Material(groundMaterial);
+                renderer.material.mainTextureScale = new Vector2(width / groundTiling, depth / groundTiling);
+            }
+
+            _spawnedObjects.Add(ground);
         }
 
         private List<PresetCategoryGroup> GroupPresetsByCategory(List<ITweenPreset> presets)
