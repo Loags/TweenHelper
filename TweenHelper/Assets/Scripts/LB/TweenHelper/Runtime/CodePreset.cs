@@ -1,6 +1,7 @@
 using DG.Tweening;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace LB.TweenHelper
 {
@@ -22,7 +23,7 @@ namespace LB.TweenHelper
     ///     }
     /// }
     /// </example>
-    public abstract partial class CodePreset : ITweenPreset, ICategorizedTweenPreset
+    public abstract class CodePreset : ITweenPreset
     {
         /// <summary>
         /// The unique name identifier for this preset.
@@ -38,11 +39,6 @@ namespace LB.TweenHelper
         /// The default duration for this preset.
         /// </summary>
         public virtual float DefaultDuration => 0.5f;
-
-        /// <summary>
-        /// Category used for grouping in showcases. Override in subclasses as needed.
-        /// </summary>
-        public virtual string Category => PresetCategories.Base;
 
         /// <summary>
         /// Creates and configures a tween for the specified target.
@@ -115,6 +111,100 @@ namespace LB.TweenHelper
         public void Register()
         {
             TweenPresetRegistry.RegisterPreset(this);
+        }
+
+        /// <summary>
+        /// Creates a fade tween for the appropriate component type.
+        /// Supports CanvasGroup, SpriteRenderer, Image, Text, and Renderer (material).
+        /// </summary>
+        protected static Tween CreateFadeTween(GameObject target, float alpha, float duration)
+        {
+            var canvasGroup = target.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+                return canvasGroup.DOFade(alpha, duration);
+
+            var spriteRenderer = target.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+                return spriteRenderer.DOFade(alpha, duration);
+
+            var image = target.GetComponent<Image>();
+            if (image != null)
+                return image.DOFade(alpha, duration);
+
+            var text = target.GetComponent<Text>();
+            if (text != null)
+                return text.DOFade(alpha, duration);
+
+            // Fallback to Renderer material fade
+            var renderer = target.GetComponent<Renderer>();
+            if (renderer != null && renderer.material != null)
+                return renderer.material.DOFade(alpha, duration);
+
+            return null;
+        }
+
+        /// <summary>
+        /// Sets the alpha for the appropriate component type.
+        /// Supports CanvasGroup, SpriteRenderer, Image, Text, and Renderer (material).
+        /// </summary>
+        protected static void SetAlpha(GameObject target, float alpha)
+        {
+            var canvasGroup = target.GetComponent<CanvasGroup>();
+            if (canvasGroup != null)
+            {
+                canvasGroup.alpha = alpha;
+                return;
+            }
+
+            var spriteRenderer = target.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                var c = spriteRenderer.color;
+                c.a = alpha;
+                spriteRenderer.color = c;
+                return;
+            }
+
+            var image = target.GetComponent<Image>();
+            if (image != null)
+            {
+                var c = image.color;
+                c.a = alpha;
+                image.color = c;
+                return;
+            }
+
+            var text = target.GetComponent<Text>();
+            if (text != null)
+            {
+                var c = text.color;
+                c.a = alpha;
+                text.color = c;
+                return;
+            }
+
+            // Fallback to Renderer material
+            var renderer = target.GetComponent<Renderer>();
+            if (renderer != null && renderer.material != null)
+            {
+                var c = renderer.material.color;
+                c.a = alpha;
+                renderer.material.color = c;
+            }
+        }
+
+        /// <summary>
+        /// Checks if the target has a component that supports fading.
+        /// </summary>
+        protected static bool CanFade(GameObject target)
+        {
+            if (target == null) return false;
+
+            return target.GetComponent<CanvasGroup>() != null ||
+                   target.GetComponent<SpriteRenderer>() != null ||
+                   target.GetComponent<Image>() != null ||
+                   target.GetComponent<Text>() != null ||
+                   (target.GetComponent<Renderer>()?.material != null);
         }
     }
 

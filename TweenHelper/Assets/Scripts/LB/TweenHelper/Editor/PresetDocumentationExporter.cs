@@ -16,16 +16,6 @@ namespace LB.TweenHelper.Editor
     /// </summary>
     public static class PresetDocumentationExporter
     {
-        private static readonly string[] CategoryOrder =
-        {
-            PresetCategories.Base,
-            PresetCategories.Scale,
-            PresetCategories.Movement,
-            PresetCategories.Fade,
-            PresetCategories.Rotation,
-            PresetCategories.Combined
-        };
-
         /// <summary>
         /// Exports all registered preset documentation to a user-chosen .txt file.
         /// </summary>
@@ -40,7 +30,7 @@ namespace LB.TweenHelper.Editor
             {
                 EditorUtility.DisplayDialog(
                     "No Presets Found",
-                    "No presets are registered. Ensure BuiltInPresets.cs is compiled.",
+                    "No presets are registered. Ensure preset scripts are compiled.",
                     "OK");
                 return;
             }
@@ -77,74 +67,30 @@ namespace LB.TweenHelper.Editor
 
             sb.Append(BuildProjectInfoHeader(presets));
 
-            // Group by category
-            var grouped = presets
-                .GroupBy(p => (p is ICategorizedTweenPreset cat) ? cat.Category : "Uncategorized")
-                .ToDictionary(g => g.Key, g => g.OrderBy(p => p.PresetName).ToList());
+            // Alphabetical flat list
+            var sorted = presets.OrderBy(p => p.PresetName).ToList();
 
-            foreach (string category in CategoryOrder)
+            sb.AppendLine("────────────────────────────────────────");
+            sb.AppendLine("Presets");
+            sb.AppendLine("────────────────────────────────────────");
+            sb.AppendLine();
+
+            foreach (var preset in sorted)
             {
-                if (!grouped.TryGetValue(category, out var categoryPresets))
-                    continue;
-
-                sb.AppendLine("────────────────────────────────────────");
-                sb.AppendLine($"Category: {category}");
-                sb.AppendLine("────────────────────────────────────────");
+                sb.AppendLine($"[{preset.PresetName}]");
+                sb.AppendLine($"Description: {preset.Description}");
                 sb.AppendLine();
 
-                foreach (var preset in categoryPresets)
+                // Append XML summary if available
+                string className = preset.GetType().Name;
+                if (xmlSummaries.TryGetValue(className, out string summary) && !string.IsNullOrWhiteSpace(summary))
                 {
-                    sb.AppendLine($"[{preset.PresetName}]");
-                    sb.AppendLine($"Description: {preset.Description}");
-
-                    if (preset is ICategorizedTweenPreset categorized)
-                        sb.AppendLine($"Category:    {categorized.Category}");
-
-                    sb.AppendLine();
-
-                    // Append XML summary if available
-                    string className = preset.GetType().Name;
-                    if (xmlSummaries.TryGetValue(className, out string summary) && !string.IsNullOrWhiteSpace(summary))
-                    {
-                        sb.AppendLine(summary);
-                        sb.AppendLine();
-                    }
-
-                    sb.AppendLine("────────────────────────────────────────");
+                    sb.AppendLine(summary);
                     sb.AppendLine();
                 }
 
-                grouped.Remove(category);
-            }
-
-            // Any remaining categories not in CategoryOrder
-            foreach (var kvp in grouped.OrderBy(k => k.Key))
-            {
-                sb.AppendLine("────────────────────────────────────────");
-                sb.AppendLine($"Category: {kvp.Key}");
                 sb.AppendLine("────────────────────────────────────────");
                 sb.AppendLine();
-
-                foreach (var preset in kvp.Value)
-                {
-                    sb.AppendLine($"[{preset.PresetName}]");
-                    sb.AppendLine($"Description: {preset.Description}");
-
-                    if (preset is ICategorizedTweenPreset categorized)
-                        sb.AppendLine($"Category:    {categorized.Category}");
-
-                    sb.AppendLine();
-
-                    string className = preset.GetType().Name;
-                    if (xmlSummaries.TryGetValue(className, out string summary) && !string.IsNullOrWhiteSpace(summary))
-                    {
-                        sb.AppendLine(summary);
-                        sb.AppendLine();
-                    }
-
-                    sb.AppendLine("────────────────────────────────────────");
-                    sb.AppendLine();
-                }
             }
 
             return sb.ToString();
@@ -183,16 +129,6 @@ namespace LB.TweenHelper.Editor
             sb.AppendLine(separator);
             sb.AppendLine();
             sb.AppendLine($"Total Presets: {presets.Count}");
-            sb.AppendLine();
-
-            var categoryGroups = presets
-                .GroupBy(p => (p is ICategorizedTweenPreset cat) ? cat.Category : "Uncategorized")
-                .OrderBy(g => g.Key)
-                .ToList();
-
-            foreach (var group in categoryGroups)
-                sb.AppendLine($"  {group.Key}: {group.Count()} presets");
-
             sb.AppendLine();
             sb.AppendLine("Builder Capabilities:");
             sb.AppendLine("  Move, Rotate, Scale, Fade, Sequence (Then/With), Async/Await");
@@ -237,40 +173,40 @@ namespace LB.TweenHelper.Editor
         {
             var summaries = new Dictionary<string, string>();
 
-            // Find BuiltInPresets.cs via AssetDatabase
-            string[] guids = AssetDatabase.FindAssets("BuiltInPresets t:MonoScript");
+            // Scan all .cs files in the Presets folder
+            string[] guids = AssetDatabase.FindAssets("t:MonoScript",
+                new[] { "Assets/Scripts/LB/TweenHelper/Runtime/Presets" });
+
             if (guids.Length == 0)
             {
-                Debug.LogWarning("PresetDocumentationExporter: Could not find BuiltInPresets.cs source file.");
+                Debug.LogWarning("PresetDocumentationExporter: Could not find any scripts in Runtime/Presets/.");
                 return summaries;
             }
 
-            string assetPath = AssetDatabase.GUIDToAssetPath(guids[0]);
-            string fullPath = Path.GetFullPath(assetPath);
-
-            if (!File.Exists(fullPath))
-            {
-                Debug.LogWarning($"PresetDocumentationExporter: Source file not found at {fullPath}");
-                return summaries;
-            }
-
-            string source = File.ReadAllText(fullPath);
-
-            // Match each XML summary block followed by a class declaration
-            // Pattern: /// <summary> ... /// </summary> ... class {Name} : CodePreset
             var pattern = new Regex(
                 @"((?:\s*///[^\n]*\n)+)\s*\[AutoRegisterPreset\]\s*\n\s*public\s+class\s+(\w+)",
                 RegexOptions.Multiline);
 
-            foreach (Match match in pattern.Matches(source))
+            foreach (string guid in guids)
             {
-                string docBlock = match.Groups[1].Value;
-                string className = match.Groups[2].Value;
+                string assetPath = AssetDatabase.GUIDToAssetPath(guid);
+                string fullPath = Path.GetFullPath(assetPath);
 
-                string cleaned = CleanXmlDocBlock(docBlock);
-                if (!string.IsNullOrWhiteSpace(cleaned))
+                if (!File.Exists(fullPath))
+                    continue;
+
+                string source = File.ReadAllText(fullPath);
+
+                foreach (Match match in pattern.Matches(source))
                 {
-                    summaries[className] = cleaned;
+                    string docBlock = match.Groups[1].Value;
+                    string className = match.Groups[2].Value;
+
+                    string cleaned = CleanXmlDocBlock(docBlock);
+                    if (!string.IsNullOrWhiteSpace(cleaned))
+                    {
+                        summaries[className] = cleaned;
+                    }
                 }
             }
 

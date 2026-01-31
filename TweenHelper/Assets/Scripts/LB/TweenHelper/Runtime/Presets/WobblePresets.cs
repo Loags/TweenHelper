@@ -1,0 +1,263 @@
+using DG.Tweening;
+using UnityEngine;
+
+namespace LB.TweenHelper
+{
+    /// <summary>
+    /// Wobbles the target's rotation back and forth on the Y axis using DOTween's punch rotation.
+    /// <para>
+    /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 15, 0)</c> (15° amplitude), vibrato <c>8</c>,
+    /// and elasticity <c>0.5</c>. Creates a shaking/head-shake oscillation on the yaw axis.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> DOTween punch default<br/>
+    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> "No" gesture, shake-to-settle, spin wobble, rotational impact.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleY").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobblePreset : CodePreset
+    {
+        public override string PresetName => "WobbleY";
+        public override string Description => "Wobbles rotation back and forth on Y";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(0, 15f, 0), GetDuration(duration), 8, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Wobbles the target's rotation back and forth on the X axis using DOTween's punch rotation.
+    /// <para>
+    /// Uses <c>DOPunchRotation</c> with punch vector <c>(15, 0, 0)</c> (15° amplitude), vibrato <c>8</c>,
+    /// and elasticity <c>0.5</c>. Creates a nodding/tipping oscillation on the pitch axis.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> DOTween punch default<br/>
+    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> Nodding motion, forward/back wobble, rocking chair, impact tilt.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleX").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleXPreset : CodePreset
+    {
+        public override string PresetName => "WobbleX";
+        public override string Description => "Wobbles rotation back and forth on X";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(15f, 0, 0), GetDuration(duration), 8, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Wobbles the target's rotation back and forth on the Z axis using DOTween's punch rotation.
+    /// <para>
+    /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 0, 15)</c> (15° amplitude), vibrato <c>8</c>,
+    /// and elasticity <c>0.5</c>. Creates a side-to-side tilt oscillation on the roll axis.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> DOTween punch default<br/>
+    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> 2D wobble, pendulum swing, teeter-totter, balance recovery.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleZ").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleZPreset : CodePreset
+    {
+        public override string PresetName => "WobbleZ";
+        public override string Description => "Wobbles rotation back and forth on Z";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(0, 0, 15f), GetDuration(duration), 8, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Subtle Z-axis wobble with small angle and fewer vibrations.
+    /// <para>
+    /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 0, 8)</c>, vibrato <c>6</c>, elasticity <c>0.5</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleZSmall").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleZSmallPreset : CodePreset
+    {
+        public override string PresetName => "WobbleZSmall";
+        public override string Description => "Subtle Z-axis wobble";
+        public override float DefaultDuration => 0.4f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(0, 0, 8f), GetDuration(duration), 6, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Medium Z-axis wobble with moderate angle and vibrations.
+    /// <para>
+    /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 0, 11)</c>, vibrato <c>7</c>, elasticity <c>0.5</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.45s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleZMedium").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleZMediumPreset : CodePreset
+    {
+        public override string PresetName => "WobbleZMedium";
+        public override string Description => "Medium Z-axis wobble";
+        public override float DefaultDuration => 0.45f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(0, 0, 11f), GetDuration(duration), 7, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Heavy Z-axis wobble with large angle and more vibrations.
+    /// <para>
+    /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 0, 25)</c>, vibrato <c>10</c>, elasticity <c>0.5</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleZLarge").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleZLargePreset : CodePreset
+    {
+        public override string PresetName => "WobbleZLarge";
+        public override string Description => "Heavy Z-axis wobble";
+        public override float DefaultDuration => 0.6f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(0, 0, 25f), GetDuration(duration), 10, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Wobbles the target's rotation diagonally across both X and Y axes simultaneously.
+    /// <para>
+    /// Uses <c>DOPunchRotation</c> with punch vector <c>(12, 12, 0)</c> (12° amplitude per axis),
+    /// vibrato <c>8</c>, and elasticity <c>0.5</c>. The dual-axis punch creates a more complex,
+    /// organic wobble than single-axis variants.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> DOTween punch default<br/>
+    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> Complex wobble, impact reaction, organic jiggle, multi-axis disturbance.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXY").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleDiagonalXYPreset : CodePreset
+    {
+        public override string PresetName => "WobbleDiagonalXY";
+        public override string Description => "Wobbles rotation diagonally across X and Y";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(12f, 12f, 0f), GetDuration(duration), 8, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Wobbles the target's rotation diagonally across both X and Z axes simultaneously.
+    /// <para>
+    /// Uses <c>DOPunchRotation</c> with punch vector <c>(12, 0, 12)</c> (12° amplitude per axis),
+    /// vibrato <c>8</c>, and elasticity <c>0.5</c>. Combines pitch and roll wobble for a
+    /// tumbling-style oscillation.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> DOTween punch default<br/>
+    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> Tumble wobble, unsteady object, physical disturbance, off-balance reaction.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXZ").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleDiagonalXZPreset : CodePreset
+    {
+        public override string PresetName => "WobbleDiagonalXZ";
+        public override string Description => "Wobbles rotation diagonally across X and Z";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(12f, 0f, 12f), GetDuration(duration), 8, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Wobbles the target's rotation diagonally across both Y and Z axes simultaneously.
+    /// <para>
+    /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 12, 12)</c> (12° amplitude per axis),
+    /// vibrato <c>8</c>, and elasticity <c>0.5</c>. Combines yaw and roll wobble for a
+    /// sideways-tilting oscillation.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> DOTween punch default<br/>
+    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> Sideways wobble, wind-blown object, lateral disturbance, off-kilter reaction.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalYZ").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleDiagonalYZPreset : CodePreset
+    {
+        public override string PresetName => "WobbleDiagonalYZ";
+        public override string Description => "Wobbles rotation diagonally across Y and Z";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(0f, 12f, 12f), GetDuration(duration), 8, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+}

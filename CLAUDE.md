@@ -29,10 +29,9 @@ TweenDefaults.cs             → .WithDefaults() extension to apply settings to 
 Preset system:
 
 ```
-ITweenPreset.cs              → Interface + ICategorizedTweenPreset for grouping
-CodePreset.cs                → Abstract base class (partial) with helper methods
-BuiltInPresets.cs            → ~30 presets: PopIn, Shake, Spin, Orbit, Float, etc.
-PresetCategories.cs          → Category string constants
+ITweenPreset.cs              → Interface for reusable tween presets
+CodePreset.cs                → Abstract base class with helper methods (fade, easing)
+Presets/                     → ~117 presets split by family (PopPresets.cs, ShakePresets.cs, etc.)
 PresetExtensions.cs          → Preset-related extensions
 TweenPresetRegistry.cs       → Registry with [AutoRegisterPreset] attribute scanning
 ```
@@ -90,13 +89,13 @@ Looping presets (Float, Orbit) use manual callback-based loops with `WithLoopDef
 - **Defaults**: Always pull from `TweenHelperSettings.Instance`
 - **Presets**: Always call `.WithDefaults(options, target)` at the end of `CreateTween()`
 - **XML docs**: On all public types and members
-- **One public class per file**, file name matches class name
+- **One public class per file**, file name matches class name (preset family files may contain multiple related presets)
 
 ## Adding a New Preset
 
-1. Create a class extending `CodePreset` in `BuiltInPresets.cs` (or a new file)
+1. Create a class extending `CodePreset` in the appropriate family file under `Runtime/Presets/` (or a new file)
 2. Add `[AutoRegisterPreset]` attribute
-3. Override `PresetName`, `Description`, `DefaultDuration`, `Category`
+3. Override `PresetName`, `Description`, `DefaultDuration`
 4. Implement `CreateTween()` — end with `.WithDefaults(options, target)`
 5. Optionally add a convenience method to `TweenBuilder` in the Direct Preset Methods region
 
@@ -105,7 +104,7 @@ Looping presets (Float, Orbit) use manual callback-based loops with `WithLoopDef
 | Task | Primary File |
 |------|--------------|
 | Add animation to builder | TweenBuilder.cs |
-| Add new preset | BuiltInPresets.cs, CodePreset.cs |
+| Add new preset | Runtime/Presets/*.cs, CodePreset.cs |
 | Modify global defaults | TweenHelperSettings.cs |
 | Change how defaults apply | TweenDefaults.cs |
 | Sequence/parallel composition | TweenBuilder.cs (Then/With methods) |
