@@ -4,14 +4,13 @@ using UnityEngine;
 namespace LB.TweenHelper
 {
     /// <summary>
-    /// Tilts the target 15 degrees forward on the X axis then springs back to the original rotation.
+    /// Tilts the target forward on the X axis then springs back to the original rotation.
     /// <para>
-    /// Builds a 2-step sequence: (1) rotate to <c>original + (15, 0, 0)</c> over 40% duration with
-    /// <c>Ease.OutQuad</c>, (2) return to original rotation over 60% duration with <c>Ease.OutBack</c>
-    /// (springy overshoot on return). Same structure as Tilt but operates on the X axis.
+    /// Builds a 2-step sequence: (1) rotate to <c>original + (11, 0, 0)</c> over 40% duration with
+    /// <c>Ease.OutQuad</c>, (2) return to original rotation over 60% duration with <c>Ease.OutBack</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutQuad (lean), OutBack (return)<br/>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.35s | <b>Default ease:</b> OutQuad (lean), OutBack (return)<br/>
     /// <b>Easing override:</b> Primary ease controls forward lean; secondary ease controls springy return.
     /// </para>
     /// <para>
@@ -24,7 +23,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "Nod";
         public override string Description => "X-axis tilt forward then spring back";
-        public override float DefaultDuration => 0.4f;
+        public override float DefaultDuration => 0.35f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
@@ -37,7 +36,7 @@ namespace LB.TweenHelper
             var presetOptions = MergeWithDefaultEase(options, leanEase);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalRotate(originalRot + new Vector3(15f, 0f, 0f), dur * 0.4f).SetEase(leanEase))
+                .Append(t.DOLocalRotate(originalRot + new Vector3(11f, 0f, 0f), dur * 0.4f).SetEase(leanEase))
                 .Append(t.DOLocalRotate(originalRot, dur * 0.6f).SetEase(returnEase))
                 .WithDefaults(presetOptions, target);
         }
@@ -64,17 +63,17 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Subtle forward tilt and spring back on X axis.
+    /// Soft forward tilt and spring back on X axis.
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (lean), OutBack (return)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NodSmall").Play();</c>
+    /// Usage: <c>transform.Tween().Preset("NodSoft").Play();</c>
     /// </summary>
     [AutoRegisterPreset]
-    public class NodSmallPreset : CodePreset
+    public class NodSoftPreset : CodePreset
     {
-        public override string PresetName => "NodSmall";
-        public override string Description => "Subtle forward tilt and spring back";
+        public override string PresetName => "NodSoft";
+        public override string Description => "Soft forward tilt and spring back";
         public override float DefaultDuration => 0.3f;
 
 
@@ -85,37 +84,16 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Medium forward tilt and spring back on X axis.
-    /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.35s | <b>Default ease:</b> OutQuad (lean), OutBack (return)
-    /// </para>
-    /// Usage: <c>transform.Tween().Preset("NodMedium").Play();</c>
-    /// </summary>
-    [AutoRegisterPreset]
-    public class NodMediumPreset : CodePreset
-    {
-        public override string PresetName => "NodMedium";
-        public override string Description => "Medium forward tilt and spring back";
-        public override float DefaultDuration => 0.35f;
-
-
-        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
-        {
-            return NodFactory.Create(target, 11f, GetDuration(duration), options);
-        }
-    }
-
-    /// <summary>
     /// Deep forward tilt and spring back on X axis.
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (lean), OutBack (return)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NodLarge").Play();</c>
+    /// Usage: <c>transform.Tween().Preset("NodHard").Play();</c>
     /// </summary>
     [AutoRegisterPreset]
-    public class NodLargePreset : CodePreset
+    public class NodHardPreset : CodePreset
     {
-        public override string PresetName => "NodLarge";
+        public override string PresetName => "NodHard";
         public override string Description => "Deep forward tilt and spring back";
         public override float DefaultDuration => 0.5f;
 

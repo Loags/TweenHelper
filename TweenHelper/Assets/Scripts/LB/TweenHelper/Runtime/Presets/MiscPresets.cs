@@ -395,4 +395,636 @@ namespace LB.TweenHelper
                 .WithDefaults(presetOptions, target);
         }
     }
+
+    /// <summary>
+    /// Soft breathing loop with smaller scale range and slower rhythm.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InOutSine
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("BreatheSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class BreatheSoftPreset : CodePreset
+    {
+        public override string PresetName => "BreatheSoft";
+        public override string Description => "Soft gentle scale pulse loop";
+        public override float DefaultDuration => 5.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var halfDur = GetDuration(duration) * 0.5f;
+            var expandEase = options.Ease ?? Ease.InOutSine;
+            var contractEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
+
+            var upOptions = MergeWithDefaultEase(options.SetEase(expandEase), expandEase);
+            var downOptions = MergeWithDefaultEase(options.SetEase(contractEase), contractEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void Expand()
+            {
+                tween = t.DOScale(originalScale * 1.04f, halfDur)
+                    .SetEase(expandEase)
+                    .WithLoopDefaults(upOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(Contract);
+            }
+
+            void Contract()
+            {
+                tween = t.DOScale(originalScale, halfDur)
+                    .SetEase(contractEase)
+                    .WithLoopDefaults(downOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(Expand);
+            }
+
+            Expand();
+
+            return tween;
+        }
+    }
+
+    /// <summary>
+    /// Hard breathing loop with larger scale range and faster rhythm.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 3.0s | <b>Default ease:</b> InOutSine
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("BreatheHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class BreatheHardPreset : CodePreset
+    {
+        public override string PresetName => "BreatheHard";
+        public override string Description => "Hard intense scale pulse loop";
+        public override float DefaultDuration => 3.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var halfDur = GetDuration(duration) * 0.5f;
+            var expandEase = options.Ease ?? Ease.InOutSine;
+            var contractEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
+
+            var upOptions = MergeWithDefaultEase(options.SetEase(expandEase), expandEase);
+            var downOptions = MergeWithDefaultEase(options.SetEase(contractEase), contractEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void Expand()
+            {
+                tween = t.DOScale(originalScale * 1.15f, halfDur)
+                    .SetEase(expandEase)
+                    .WithLoopDefaults(upOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(Contract);
+            }
+
+            void Contract()
+            {
+                tween = t.DOScale(originalScale, halfDur)
+                    .SetEase(contractEase)
+                    .WithLoopDefaults(downOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(Expand);
+            }
+
+            Expand();
+
+            return tween;
+        }
+    }
+
+    /// <summary>
+    /// Soft heartbeat with smaller pulses and slower rhythm.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 1.0s per cycle | <b>Default ease:</b> OutQuad (beat), InQuad (return)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("HeartbeatSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class HeartbeatSoftPreset : CodePreset
+    {
+        public override string PresetName => "HeartbeatSoft";
+        public override string Description => "Soft double-pulse heartbeat loop";
+        public override float DefaultDuration => 1.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var dur = GetDuration(duration);
+            var beatEase = options.Ease ?? Ease.OutQuad;
+            var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
+            var loopOptions = MergeWithDefaultEase(options, beatEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void Beat()
+            {
+                var seq = DOTween.Sequence()
+                    .Append(t.DOScale(originalScale * 1.08f, dur * 0.12f).SetEase(beatEase))
+                    .Append(t.DOScale(originalScale, dur * 0.12f).SetEase(returnEase))
+                    .Append(t.DOScale(originalScale * 1.15f, dur * 0.12f).SetEase(beatEase))
+                    .Append(t.DOScale(originalScale, dur * 0.14f).SetEase(returnEase))
+                    .AppendInterval(dur * 0.5f)
+                    .WithLoopDefaults(loopOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween = seq;
+                seq.OnComplete(Beat);
+            }
+
+            Beat();
+
+            return tween;
+        }
+    }
+
+    /// <summary>
+    /// Hard heartbeat with larger pulses and faster rhythm.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 0.6s per cycle | <b>Default ease:</b> OutQuad (beat), InQuad (return)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("HeartbeatHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class HeartbeatHardPreset : CodePreset
+    {
+        public override string PresetName => "HeartbeatHard";
+        public override string Description => "Hard intense heartbeat loop";
+        public override float DefaultDuration => 0.6f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var dur = GetDuration(duration);
+            var beatEase = options.Ease ?? Ease.OutQuad;
+            var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
+            var loopOptions = MergeWithDefaultEase(options, beatEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void Beat()
+            {
+                var seq = DOTween.Sequence()
+                    .Append(t.DOScale(originalScale * 1.25f, dur * 0.12f).SetEase(beatEase))
+                    .Append(t.DOScale(originalScale, dur * 0.12f).SetEase(returnEase))
+                    .Append(t.DOScale(originalScale * 1.4f, dur * 0.12f).SetEase(beatEase))
+                    .Append(t.DOScale(originalScale, dur * 0.14f).SetEase(returnEase))
+                    .AppendInterval(dur * 0.5f)
+                    .WithLoopDefaults(loopOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween = seq;
+                seq.OnComplete(Beat);
+            }
+
+            Beat();
+
+            return tween;
+        }
+    }
+
+    /// <summary>
+    /// Soft elastic snap in with lower amplitude and longer period.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutElastic (amplitude 0.4, period 0.4)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("ElasticSnapInSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class ElasticSnapInSoftPreset : CodePreset
+    {
+        public override string PresetName => "ElasticSnapInSoft";
+        public override string Description => "Soft elastic snap from zero";
+        public override float DefaultDuration => 0.6f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            t.localScale = Vector3.zero;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutElastic);
+            var ease = ResolveEase(presetOptions, Ease.OutElastic);
+
+            return t.DOScale(originalScale, GetDuration(duration))
+                .SetEase(ease, 0.4f, 0.4f)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Hard elastic snap in with higher amplitude and shorter period.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutElastic (amplitude 1.0, period 0.2)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("ElasticSnapInHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class ElasticSnapInHardPreset : CodePreset
+    {
+        public override string PresetName => "ElasticSnapInHard";
+        public override string Description => "Hard elastic snap from zero";
+        public override float DefaultDuration => 0.4f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            t.localScale = Vector3.zero;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutElastic);
+            var ease = ResolveEase(presetOptions, Ease.OutElastic);
+
+            return t.DOScale(originalScale, GetDuration(duration))
+                .SetEase(ease, 1.0f, 0.2f)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Soft float with smaller range and slower speed.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 7.0s | <b>Default ease:</b> InOutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("FloatSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class FloatSoftPreset : CodePreset
+    {
+        public override string PresetName => "FloatSoft";
+        public override string Description => "Soft gentle hovering loop";
+        public override float DefaultDuration => 7.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var halfDur = GetDuration(duration) * 0.5f;
+            var moveUpEase = options.Ease ?? Ease.InOutCubic;
+            var moveDownEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutCubic;
+
+            var upOptions = MergeWithDefaultEase(options.SetEase(moveUpEase), moveUpEase);
+            var downOptions = MergeWithDefaultEase(options.SetEase(moveDownEase), moveDownEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void MoveUp()
+            {
+                tween = t.DOLocalMoveY(0.25f, halfDur)
+                    .SetRelative(true)
+                    .SetEase(moveUpEase)
+                    .WithLoopDefaults(upOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(MoveDown);
+            }
+
+            void MoveDown()
+            {
+                tween = t.DOLocalMoveY(-0.25f, halfDur)
+                    .SetRelative(true)
+                    .SetEase(moveDownEase)
+                    .WithLoopDefaults(downOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(MoveUp);
+            }
+
+            MoveUp();
+
+            return tween;
+        }
+    }
+
+    /// <summary>
+    /// Hard float with larger range and faster speed.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InOutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("FloatHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class FloatHardPreset : CodePreset
+    {
+        public override string PresetName => "FloatHard";
+        public override string Description => "Hard pronounced hovering loop";
+        public override float DefaultDuration => 5.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var halfDur = GetDuration(duration) * 0.5f;
+            var moveUpEase = options.Ease ?? Ease.InOutCubic;
+            var moveDownEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutCubic;
+
+            var upOptions = MergeWithDefaultEase(options.SetEase(moveUpEase), moveUpEase);
+            var downOptions = MergeWithDefaultEase(options.SetEase(moveDownEase), moveDownEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void MoveUp()
+            {
+                tween = t.DOLocalMoveY(0.8f, halfDur)
+                    .SetRelative(true)
+                    .SetEase(moveUpEase)
+                    .WithLoopDefaults(upOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(MoveDown);
+            }
+
+            void MoveDown()
+            {
+                tween = t.DOLocalMoveY(-0.8f, halfDur)
+                    .SetRelative(true)
+                    .SetEase(moveDownEase)
+                    .WithLoopDefaults(downOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(MoveUp);
+            }
+
+            MoveUp();
+
+            return tween;
+        }
+    }
+
+    /// <summary>
+    /// Soft zig-zag with smaller steps and slower speed.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.2s | <b>Default ease:</b> InOutSine
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("ZigZagSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class ZigZagSoftPreset : CodePreset
+    {
+        public override string PresetName => "ZigZagSoft";
+        public override string Description => "Soft alternating diagonal movement";
+        public override float DefaultDuration => 1.2f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
+            var ease = ResolveEase(presetOptions, Ease.InOutSine);
+            var stepDur = dur / 3f;
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalMove(new Vector3(0.25f, 0.25f, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(-0.5f, 0.25f, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(0.25f, 0.25f, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Hard zig-zag with larger steps and faster speed.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InOutSine
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("ZigZagHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class ZigZagHardPreset : CodePreset
+    {
+        public override string PresetName => "ZigZagHard";
+        public override string Description => "Hard alternating diagonal movement";
+        public override float DefaultDuration => 0.8f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
+            var ease = ResolveEase(presetOptions, Ease.InOutSine);
+            var stepDur = dur / 3f;
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalMove(new Vector3(0.8f, 0.8f, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(-1.6f, 0.8f, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(0.8f, 0.8f, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Soft attention pulse with smaller oscillations and slower rhythm.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic, InCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("AttentionSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class AttentionSoftPreset : CodePreset
+    {
+        public override string PresetName => "AttentionSoft";
+        public override string Description => "Soft attention-grabbing pulse";
+        public override float DefaultDuration => 1.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
+            var ease = ResolveEase(presetOptions, Ease.OutCubic);
+            var secondaryEase = ResolveSecondaryEase(presetOptions, Ease.InCubic);
+
+            return DOTween.Sequence()
+                .Append(t.DOScale(originalScale * 1.05f, dur * 0.15f).SetEase(ease))
+                .Append(t.DOScale(originalScale * 0.97f, dur * 0.15f).SetEase(secondaryEase))
+                .Append(t.DOScale(originalScale * 1.03f, dur * 0.15f).SetEase(ease))
+                .Append(t.DOScale(originalScale, dur * 0.15f).SetEase(ease))
+                .SetLoops(2)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Hard attention pulse with larger oscillations and faster rhythm.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutCubic, InCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("AttentionHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class AttentionHardPreset : CodePreset
+    {
+        public override string PresetName => "AttentionHard";
+        public override string Description => "Hard attention-grabbing pulse";
+        public override float DefaultDuration => 0.6f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
+            var ease = ResolveEase(presetOptions, Ease.OutCubic);
+            var secondaryEase = ResolveSecondaryEase(presetOptions, Ease.InCubic);
+
+            return DOTween.Sequence()
+                .Append(t.DOScale(originalScale * 1.2f, dur * 0.15f).SetEase(ease))
+                .Append(t.DOScale(originalScale * 0.9f, dur * 0.15f).SetEase(secondaryEase))
+                .Append(t.DOScale(originalScale * 1.1f, dur * 0.15f).SetEase(ease))
+                .Append(t.DOScale(originalScale, dur * 0.15f).SetEase(ease))
+                .SetLoops(2)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Soft tilt with smaller angle and slower speed.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (lean), OutBack (return)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("TiltSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class TiltSoftPreset : CodePreset
+    {
+        public override string PresetName => "TiltSoft";
+        public override string Description => "Soft lean on Z then spring back";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalRot = t.localEulerAngles;
+            var dur = GetDuration(duration);
+            var leanEase = ResolveEase(options, Ease.OutQuad);
+            var returnEase = ResolveSecondaryEase(options, Ease.OutBack);
+            var presetOptions = MergeWithDefaultEase(options, leanEase);
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 6f), dur * 0.4f).SetEase(leanEase))
+                .Append(t.DOLocalRotate(originalRot, dur * 0.6f).SetEase(returnEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Hard tilt with larger angle and faster speed.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (lean), OutBack (return)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("TiltHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class TiltHardPreset : CodePreset
+    {
+        public override string PresetName => "TiltHard";
+        public override string Description => "Hard lean on Z then spring back";
+        public override float DefaultDuration => 0.3f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalRot = t.localEulerAngles;
+            var dur = GetDuration(duration);
+            var leanEase = ResolveEase(options, Ease.OutQuad);
+            var returnEase = ResolveSecondaryEase(options, Ease.OutBack);
+            var presetOptions = MergeWithDefaultEase(options, leanEase);
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 20f), dur * 0.4f).SetEase(leanEase))
+                .Append(t.DOLocalRotate(originalRot, dur * 0.6f).SetEase(returnEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Soft wind-up with smaller rotation and slower speed.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s | <b>Default ease:</b> InQuad (wind), OutBack (snap)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WindUpSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WindUpSoftPreset : CodePreset
+    {
+        public override string PresetName => "WindUpSoft";
+        public override string Description => "Soft wind up then snap forward";
+        public override float DefaultDuration => 0.6f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalRot = t.localEulerAngles;
+            var dur = GetDuration(duration);
+            var windEase = ResolveEase(options, Ease.InQuad);
+            var snapEase = ResolveSecondaryEase(options, Ease.OutBack);
+            var presetOptions = MergeWithDefaultEase(options, windEase);
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, -15f), dur * 0.4f).SetEase(windEase))
+                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 3f), dur * 0.35f).SetEase(snapEase))
+                .Append(t.DOLocalRotate(originalRot, dur * 0.25f).SetEase(Ease.OutQuad))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Hard wind-up with larger rotation and faster speed.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s | <b>Default ease:</b> InQuad (wind), OutBack (snap)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WindUpHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WindUpHardPreset : CodePreset
+    {
+        public override string PresetName => "WindUpHard";
+        public override string Description => "Hard wind up then snap forward";
+        public override float DefaultDuration => 0.4f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalRot = t.localEulerAngles;
+            var dur = GetDuration(duration);
+            var windEase = ResolveEase(options, Ease.InQuad);
+            var snapEase = ResolveSecondaryEase(options, Ease.OutBack);
+            var presetOptions = MergeWithDefaultEase(options, windEase);
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, -50f), dur * 0.4f).SetEase(windEase))
+                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 8f), dur * 0.35f).SetEase(snapEase))
+                .Append(t.DOLocalRotate(originalRot, dur * 0.25f).SetEase(Ease.OutQuad))
+                .WithDefaults(presetOptions, target);
+        }
+    }
 }

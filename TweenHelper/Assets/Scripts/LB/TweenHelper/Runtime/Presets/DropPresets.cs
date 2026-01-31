@@ -96,49 +96,6 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Standard drop from 8 units above with bounce on landing.
-    /// <para>
-    /// Offsets Y by <c>+8</c>, then builds a sequence with <c>InQuad</c> fall and 3 bounces
-    /// with heights at 30%, 10%, 3% of drop height. Same parameters as base DropIn for consistent naming.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.2s | <b>Default ease:</b> InQuad (fall), OutQuad (bounce)
-    /// </para>
-    /// Usage: <c>transform.Tween().Preset("DropInMedium").Play();</c>
-    /// </summary>
-    [AutoRegisterPreset]
-    public class DropInMediumPreset : CodePreset
-    {
-        public override string PresetName => "DropInMedium";
-        public override string Description => "Standard drop with bounce on landing";
-        public override float DefaultDuration => 1.2f;
-
-
-        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
-        {
-            var t = target.transform;
-            var targetY = t.localPosition.y;
-            var dropHeight = 8f;
-            t.localPosition = t.localPosition + Vector3.up * dropHeight;
-
-            var dur = GetDuration(duration);
-            var fallEase = ResolveEase(options, Ease.InQuad);
-            var bounceEase = ResolveSecondaryEase(options, Ease.OutQuad);
-            var presetOptions = MergeWithDefaultEase(options.SetEase(fallEase), fallEase);
-
-            return DOTween.Sequence()
-                .Append(t.DOLocalMoveY(targetY, dur * 0.4f).SetEase(fallEase))
-                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.3f, dur * 0.15f).SetEase(bounceEase))
-                .Append(t.DOLocalMoveY(targetY, dur * 0.15f).SetEase(fallEase))
-                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.1f, dur * 0.1f).SetEase(bounceEase))
-                .Append(t.DOLocalMoveY(targetY, dur * 0.1f).SetEase(fallEase))
-                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.03f, dur * 0.05f).SetEase(bounceEase))
-                .Append(t.DOLocalMoveY(targetY, dur * 0.05f).SetEase(fallEase))
-                .WithDefaults(presetOptions, target);
-        }
-    }
-
-    /// <summary>
     /// Heavy drop from 10 units above with sharper bounce decay, creating a weighty landing effect.
     /// <para>
     /// Offsets Y by <c>+10</c>, then builds a sequence with <c>InCubic</c> fall and 2 bounces

@@ -281,4 +281,124 @@ namespace LB.TweenHelper
                 .WithDefaults(presetOptions, target);
         }
     }
+
+    /// <summary>
+    /// Soft spin and shrink — slower rotation with gentle scale-down.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.9s | <b>Default ease:</b> InSine (scale), Linear (spin)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinScaleOutSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinScaleOutSoftPreset : CodePreset
+    {
+        public override string PresetName => "SpinScaleOutSoft";
+        public override string Description => "Soft spin and shrink to zero";
+        public override float DefaultDuration => 0.9f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var dur = GetDuration(duration);
+            var scaleEase = ResolveEase(options, Ease.InSine);
+            var spinEase = ResolveSecondaryEase(options, Ease.Linear);
+            var presetOptions = MergeWithDefaultEase(options, scaleEase);
+
+            return DOTween.Sequence()
+                .Join(t.DOScale(Vector3.zero, dur).SetEase(scaleEase))
+                .Join(t.DORotate(new Vector3(0f, 360f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Hard spin and shrink — fast triple rotation with snappy scale-down.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InQuart (scale), Linear (spin)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinScaleOutHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinScaleOutHardPreset : CodePreset
+    {
+        public override string PresetName => "SpinScaleOutHard";
+        public override string Description => "Hard spin and shrink to zero";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var dur = GetDuration(duration);
+            var scaleEase = ResolveEase(options, Ease.InQuart);
+            var spinEase = ResolveSecondaryEase(options, Ease.Linear);
+            var presetOptions = MergeWithDefaultEase(options, scaleEase);
+
+            return DOTween.Sequence()
+                .Join(t.DOScale(Vector3.zero, dur).SetEase(scaleEase))
+                .Join(t.DORotate(new Vector3(0f, 1080f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Soft spin and shrink with mild anticipation overshoot on scale.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.9s | <b>Default ease:</b> InBack (1.2 overshoot, scale), Linear (spin)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinScaleOutOvershootSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinScaleOutOvershootSoftPreset : CodePreset
+    {
+        public override string PresetName => "SpinScaleOutOvershootSoft";
+        public override string Description => "Soft spin and shrink with mild anticipation";
+        public override float DefaultDuration => 0.9f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var dur = GetDuration(duration);
+            var scaleEase = ResolveEase(options, Ease.InBack);
+            var spinEase = ResolveSecondaryEase(options, Ease.Linear);
+            var presetOptions = MergeWithDefaultEase(options, scaleEase);
+
+            return DOTween.Sequence()
+                .Join(t.DOScale(Vector3.zero, dur).SetEase(scaleEase, 1.2f))
+                .Join(t.DORotate(new Vector3(0f, 360f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Hard spin and shrink with strong anticipation overshoot on scale.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InBack (2.0 overshoot, scale), Linear (spin)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinScaleOutOvershootHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinScaleOutOvershootHardPreset : CodePreset
+    {
+        public override string PresetName => "SpinScaleOutOvershootHard";
+        public override string Description => "Hard spin and shrink with strong anticipation";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var dur = GetDuration(duration);
+            var scaleEase = ResolveEase(options, Ease.InBack);
+            var spinEase = ResolveSecondaryEase(options, Ease.Linear);
+            var presetOptions = MergeWithDefaultEase(options, scaleEase);
+
+            return DOTween.Sequence()
+                .Join(t.DOScale(Vector3.zero, dur).SetEase(scaleEase, 2.0f))
+                .Join(t.DORotate(new Vector3(0f, 1080f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
 }

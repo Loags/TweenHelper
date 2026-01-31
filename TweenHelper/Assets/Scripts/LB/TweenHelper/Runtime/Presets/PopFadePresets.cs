@@ -59,6 +59,94 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
+    /// Soft scales the target from zero to original while simultaneously fading in.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.5s | <b>Default ease:</b> OutSine (scale), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PopInFadeSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PopInFadeSoftPreset : CodePreset
+    {
+        public override string PresetName => "PopInFadeSoft";
+        public override string Description => "Soft scales and fades in together";
+        public override float DefaultDuration => 2.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            t.localScale = Vector3.zero;
+
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutSine);
+            var ease = ResolveEase(presetOptions, Ease.OutSine);
+            var seq = DOTween.Sequence();
+
+            seq.Append(t.DOScale(originalScale, dur).SetEase(ease));
+
+            var fadeTween = CreateFadeTween(target, 1f, dur);
+            if (fadeTween != null)
+            {
+                SetAlpha(target, 0f);
+                seq.Join(fadeTween.SetEase(Ease.Linear));
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+
+        public override bool CanApplyTo(GameObject target)
+        {
+            return target != null;
+        }
+    }
+
+    /// <summary>
+    /// Hard scales the target from zero to original while simultaneously fading in.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.4s | <b>Default ease:</b> OutQuart (scale), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PopInFadeHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PopInFadeHardPreset : CodePreset
+    {
+        public override string PresetName => "PopInFadeHard";
+        public override string Description => "Hard scales and fades in together";
+        public override float DefaultDuration => 1.4f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            t.localScale = Vector3.zero;
+
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutQuart);
+            var ease = ResolveEase(presetOptions, Ease.OutQuart);
+            var seq = DOTween.Sequence();
+
+            seq.Append(t.DOScale(originalScale, dur).SetEase(ease));
+
+            var fadeTween = CreateFadeTween(target, 1f, dur);
+            if (fadeTween != null)
+            {
+                SetAlpha(target, 0f);
+                seq.Join(fadeTween.SetEase(Ease.Linear));
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+
+        public override bool CanApplyTo(GameObject target)
+        {
+            return target != null;
+        }
+    }
+
+    /// <summary>
     /// Scales the target down to zero while simultaneously fading out to transparent.
     /// <para>
     /// Builds a parallel sequence: scale to <c>Vector3.zero</c> with <c>Ease.InCubic</c> (no anticipation),
@@ -88,6 +176,88 @@ namespace LB.TweenHelper
             var dur = GetDuration(duration);
             var presetOptions = MergeWithDefaultEase(options, Ease.InCubic);
             var ease = ResolveEase(presetOptions, Ease.InCubic);
+
+            var seq = DOTween.Sequence();
+            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease));
+
+            var fadeTween = CreateFadeTween(target, 0f, dur);
+            if (fadeTween != null)
+            {
+                fadeTween.SetEase(Ease.Linear);
+                seq.Join(fadeTween);
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+
+        public override bool CanApplyTo(GameObject target)
+        {
+            return target != null;
+        }
+    }
+
+    /// <summary>
+    /// Soft scales the target down to zero while simultaneously fading out.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.6s | <b>Default ease:</b> InSine (scale), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PopOutFadeSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PopOutFadeSoftPreset : CodePreset
+    {
+        public override string PresetName => "PopOutFadeSoft";
+        public override string Description => "Soft scales down and fades out together";
+        public override float DefaultDuration => 1.6f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.InSine);
+            var ease = ResolveEase(presetOptions, Ease.InSine);
+
+            var seq = DOTween.Sequence();
+            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease));
+
+            var fadeTween = CreateFadeTween(target, 0f, dur);
+            if (fadeTween != null)
+            {
+                fadeTween.SetEase(Ease.Linear);
+                seq.Join(fadeTween);
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+
+        public override bool CanApplyTo(GameObject target)
+        {
+            return target != null;
+        }
+    }
+
+    /// <summary>
+    /// Hard scales the target down to zero while simultaneously fading out.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InQuart (scale), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PopOutFadeHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PopOutFadeHardPreset : CodePreset
+    {
+        public override string PresetName => "PopOutFadeHard";
+        public override string Description => "Hard scales down and fades out together";
+        public override float DefaultDuration => 0.8f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.InQuart);
+            var ease = ResolveEase(presetOptions, Ease.InQuart);
 
             var seq = DOTween.Sequence();
             seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease));
@@ -141,6 +311,88 @@ namespace LB.TweenHelper
 
             var seq = DOTween.Sequence();
             seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease));
+
+            var fadeTween = CreateFadeTween(target, 0f, dur);
+            if (fadeTween != null)
+            {
+                fadeTween.SetEase(Ease.Linear);
+                seq.Join(fadeTween);
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+
+        public override bool CanApplyTo(GameObject target)
+        {
+            return target != null;
+        }
+    }
+
+    /// <summary>
+    /// Soft scales the target down to zero while fading out, with mild anticipation overshoot on scale.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.6s | <b>Default ease:</b> InBack (overshoot 2.5, scale), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PopOutFadeOvershootSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PopOutFadeOvershootSoftPreset : CodePreset
+    {
+        public override string PresetName => "PopOutFadeOvershootSoft";
+        public override string Description => "Soft scales down and fades out with mild overshoot";
+        public override float DefaultDuration => 1.6f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
+            var ease = ResolveEase(presetOptions, Ease.InBack);
+
+            var seq = DOTween.Sequence();
+            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease, 2.5f));
+
+            var fadeTween = CreateFadeTween(target, 0f, dur);
+            if (fadeTween != null)
+            {
+                fadeTween.SetEase(Ease.Linear);
+                seq.Join(fadeTween);
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+
+        public override bool CanApplyTo(GameObject target)
+        {
+            return target != null;
+        }
+    }
+
+    /// <summary>
+    /// Hard scales the target down to zero while fading out, with strong anticipation overshoot on scale.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InBack (overshoot 6.0, scale), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PopOutFadeOvershootHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PopOutFadeOvershootHardPreset : CodePreset
+    {
+        public override string PresetName => "PopOutFadeOvershootHard";
+        public override string Description => "Hard scales down and fades out with strong overshoot";
+        public override float DefaultDuration => 0.8f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
+            var ease = ResolveEase(presetOptions, Ease.InBack);
+
+            var seq = DOTween.Sequence();
+            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease, 6.0f));
 
             var fadeTween = CreateFadeTween(target, 0f, dur);
             if (fadeTween != null)

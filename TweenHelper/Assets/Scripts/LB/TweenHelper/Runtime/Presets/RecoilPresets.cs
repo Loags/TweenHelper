@@ -102,4 +102,46 @@ namespace LB.TweenHelper
             return RecoilFactory.Create(target, -0.5f, GetDuration(duration), options);
         }
     }
+
+    /// <summary>
+    /// Soft recoil with shorter pull-back distance.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("RecoilSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class RecoilSoftPreset : CodePreset
+    {
+        public override string PresetName => "RecoilSoft";
+        public override string Description => "Soft pull back then snap forward";
+        public override float DefaultDuration => 0.3f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return RecoilFactory.Create(target, -0.25f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Hard recoil with longer pull-back distance.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("RecoilHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class RecoilHardPreset : CodePreset
+    {
+        public override string PresetName => "RecoilHard";
+        public override string Description => "Hard pull back then snap forward";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return RecoilFactory.Create(target, -0.8f, GetDuration(duration), options);
+        }
+    }
 }

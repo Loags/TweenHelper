@@ -4,14 +4,13 @@ using UnityEngine;
 namespace LB.TweenHelper
 {
     /// <summary>
-    /// Performs a quick scale bump up to 1.2x then back to original, ideal for UI tap/click feedback.
+    /// Performs a quick scale bump up to 1.14x then back to original, ideal for UI tap/click feedback.
     /// <para>
-    /// Builds a 2-step sequence: (1) scale to <c>originalScale * 1.2</c> over 40% duration with <c>Ease.OutQuad</c>,
+    /// Builds a 2-step sequence: (1) scale to <c>originalScale * 1.14</c> over 40% duration with <c>Ease.OutQuad</c>,
     /// (2) return to original scale over 60% duration with <c>Ease.InQuad</c>.
-    /// The asymmetric timing (fast up, slower down) creates a natural pulse feel.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.28s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
     /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.
     /// </para>
     /// <para>
@@ -24,7 +23,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "PulseScale";
         public override string Description => "Quick scale bump for UI feedback";
-        public override float DefaultDuration => 0.3f;
+        public override float DefaultDuration => 0.28f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
@@ -37,7 +36,7 @@ namespace LB.TweenHelper
             var presetOptions = MergeWithDefaultEase(options, upEase);
 
             return DOTween.Sequence()
-                .Append(t.DOScale(originalScale * 1.2f, dur * 0.4f).SetEase(upEase))
+                .Append(t.DOScale(originalScale * 1.14f, dur * 0.4f).SetEase(upEase))
                 .Append(t.DOScale(originalScale, dur * 0.6f).SetEase(downEase))
                 .WithDefaults(presetOptions, target);
         }
@@ -64,18 +63,18 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Subtle scale bump to 1.08x then back to original, for understated UI feedback.
+    /// Soft scale bump to 1.08x then back to original, for understated UI feedback.
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
     /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PulseScaleSmall").Play();</c>
+    /// Usage: <c>transform.Tween().Preset("PulseScaleSoft").Play();</c>
     /// </summary>
     [AutoRegisterPreset]
-    public class PulseScaleSmallPreset : CodePreset
+    public class PulseScaleSoftPreset : CodePreset
     {
-        public override string PresetName => "PulseScaleSmall";
-        public override string Description => "Subtle scale bump for light feedback";
+        public override string PresetName => "PulseScaleSoft";
+        public override string Description => "Soft scale bump for light feedback";
         public override float DefaultDuration => 0.25f;
 
 
@@ -86,39 +85,17 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Medium scale bump to 1.14x then back to original, for moderate UI feedback.
-    /// <para>
-    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.28s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
-    /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.
-    /// </para>
-    /// Usage: <c>transform.Tween().Preset("PulseScaleMedium").Play();</c>
-    /// </summary>
-    [AutoRegisterPreset]
-    public class PulseScaleMediumPreset : CodePreset
-    {
-        public override string PresetName => "PulseScaleMedium";
-        public override string Description => "Medium scale bump for moderate feedback";
-        public override float DefaultDuration => 0.28f;
-
-
-        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
-        {
-            return PulseScaleFactory.Create(target, 1.14f, GetDuration(duration), options);
-        }
-    }
-
-    /// <summary>
     /// Bold scale bump to 1.25x then back to original, for emphatic UI feedback.
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.35s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
     /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PulseScaleLarge").Play();</c>
+    /// Usage: <c>transform.Tween().Preset("PulseScaleHard").Play();</c>
     /// </summary>
     [AutoRegisterPreset]
-    public class PulseScaleLargePreset : CodePreset
+    public class PulseScaleHardPreset : CodePreset
     {
-        public override string PresetName => "PulseScaleLarge";
+        public override string PresetName => "PulseScaleHard";
         public override string Description => "Bold scale bump for emphatic feedback";
         public override float DefaultDuration => 0.35f;
 

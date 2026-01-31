@@ -6,7 +6,7 @@ namespace LB.TweenHelper
     /// <summary>
     /// Gentle Z-axis pendulum loop. Rocks left then right continuously.
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 3.0s (1.5s per leg) | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.8s (1.4s per leg) | <b>Default ease:</b> InOutSine<br/>
     /// <b>Easing override:</b> Primary ease controls left-rock; secondary ease controls right-rock.
     /// </para>
     /// <para>
@@ -19,7 +19,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "Rock";
         public override string Description => "Gentle Z-axis pendulum loop";
-        public override float DefaultDuration => 3.0f;
+        public override float DefaultDuration => 2.8f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
@@ -38,7 +38,7 @@ namespace LB.TweenHelper
 
             void RockLeft()
             {
-                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 8f), halfDur)
+                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 6f), halfDur)
                     .SetEase(leftEase)
                     .WithLoopDefaults(leftOptions, target, applyDelay);
 
@@ -48,7 +48,7 @@ namespace LB.TweenHelper
 
             void RockRight()
             {
-                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, -8f), halfDur)
+                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, -6f), halfDur)
                     .SetEase(rightEase)
                     .WithLoopDefaults(rightOptions, target, applyDelay);
 
@@ -108,17 +108,17 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Subtle Z-axis pendulum loop with small angle.
+    /// Soft Z-axis pendulum loop with small angle.
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.5s | <b>Default ease:</b> InOutSine
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("RockSmall").Play();</c>
+    /// Usage: <c>transform.Tween().Preset("RockSoft").Play();</c>
     /// </summary>
     [AutoRegisterPreset]
-    public class RockSmallPreset : CodePreset
+    public class RockSoftPreset : CodePreset
     {
-        public override string PresetName => "RockSmall";
-        public override string Description => "Subtle Z-axis pendulum loop";
+        public override string PresetName => "RockSoft";
+        public override string Description => "Soft Z-axis pendulum loop";
         public override float DefaultDuration => 2.5f;
 
 
@@ -129,37 +129,16 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Medium Z-axis pendulum loop with moderate angle.
-    /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.8s | <b>Default ease:</b> InOutSine
-    /// </para>
-    /// Usage: <c>transform.Tween().Preset("RockMedium").Play();</c>
-    /// </summary>
-    [AutoRegisterPreset]
-    public class RockMediumPreset : CodePreset
-    {
-        public override string PresetName => "RockMedium";
-        public override string Description => "Medium Z-axis pendulum loop";
-        public override float DefaultDuration => 2.8f;
-
-
-        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
-        {
-            return RockFactory.Create(target, 6f, GetDuration(duration), options);
-        }
-    }
-
-    /// <summary>
     /// Wide Z-axis pendulum loop with large angle.
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 3.5s | <b>Default ease:</b> InOutSine
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("RockLarge").Play();</c>
+    /// Usage: <c>transform.Tween().Preset("RockHard").Play();</c>
     /// </summary>
     [AutoRegisterPreset]
-    public class RockLargePreset : CodePreset
+    public class RockHardPreset : CodePreset
     {
-        public override string PresetName => "RockLarge";
+        public override string PresetName => "RockHard";
         public override string Description => "Wide Z-axis pendulum loop";
         public override float DefaultDuration => 3.5f;
 
