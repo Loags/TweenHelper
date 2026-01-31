@@ -546,10 +546,14 @@ namespace LB.TweenHelper
         #region Direct Preset Methods
 
         // Scale Presets
-        /// <summary>Scales from 0 to original scale with overshoot.</summary>
+        /// <summary>Scales from 0 to original scale, no overshoot.</summary>
         public TweenBuilder PopIn(float? duration = null) => Preset("PopIn", duration);
-        /// <summary>Scales to 0 with anticipation.</summary>
+        /// <summary>Scales from 0 to original scale with overshoot.</summary>
+        public TweenBuilder PopInOvershoot(float? duration = null) => Preset("PopInOvershoot", duration);
+        /// <summary>Scales to 0, no anticipation.</summary>
         public TweenBuilder PopOut(float? duration = null) => Preset("PopOut", duration);
+        /// <summary>Scales to 0 with anticipation overshoot.</summary>
+        public TweenBuilder PopOutOvershoot(float? duration = null) => Preset("PopOutOvershoot", duration);
         /// <summary>Quick scale punch for feedback.</summary>
         public TweenBuilder Punch(float? duration = null) => Preset("Punch", duration);
         /// <summary>Squash and stretch effect.</summary>
@@ -559,11 +563,7 @@ namespace LB.TweenHelper
         /// <summary>Double-pulse heartbeat loop.</summary>
         public TweenBuilder Heartbeat(float? duration = null) => Preset("Heartbeat", duration);
         /// <summary>Scale from 0 with tight elastic oscillation.</summary>
-        public TweenBuilder ElasticSnap(float? duration = null) => Preset("ElasticSnap", duration);
-        /// <summary>Clean scale from 0 to original, no overshoot.</summary>
-        public TweenBuilder GrowIn(float? duration = null) => Preset("GrowIn", duration);
-        /// <summary>Clean scale to zero, no anticipation.</summary>
-        public TweenBuilder ShrinkOut(float? duration = null) => Preset("ShrinkOut", duration);
+        public TweenBuilder ElasticSnapIn(float? duration = null) => Preset("ElasticSnapIn", duration);
         /// <summary>Quick scale bump for UI feedback.</summary>
         public TweenBuilder PulseScale(float? duration = null) => Preset("PulseScale", duration);
 
@@ -676,8 +676,10 @@ namespace LB.TweenHelper
         // Combined Presets
         /// <summary>Scales and fades in together.</summary>
         public TweenBuilder PopInFade(float? duration = null) => Preset("PopInFade", duration);
-        /// <summary>Scales down and fades out together.</summary>
+        /// <summary>Scales down and fades out together, no anticipation.</summary>
         public TweenBuilder PopOutFade(float? duration = null) => Preset("PopOutFade", duration);
+        /// <summary>Scales down and fades out with anticipation overshoot.</summary>
+        public TweenBuilder PopOutFadeOvershoot(float? duration = null) => Preset("PopOutFadeOvershoot", duration);
         /// <summary>Attention-grabbing pulse.</summary>
         public TweenBuilder Attention(float? duration = null) => Preset("Attention", duration);
         /// <summary>Slides up from below with fade in.</summary>
@@ -686,8 +688,10 @@ namespace LB.TweenHelper
         public TweenBuilder SlideInFadeDown(float? duration = null) => Preset("SlideInFadeDown", duration);
         /// <summary>Shake position with fade out.</summary>
         public TweenBuilder ShakeFade(float? duration = null) => Preset("ShakeFade", duration);
-        /// <summary>Spin and shrink to zero.</summary>
-        public TweenBuilder SpinScale(float? duration = null) => Preset("SpinScale", duration);
+        /// <summary>Spin and shrink to zero, no anticipation.</summary>
+        public TweenBuilder SpinScaleOut(float? duration = null) => Preset("SpinScaleOut", duration);
+        /// <summary>Spin and shrink to zero with anticipation overshoot.</summary>
+        public TweenBuilder SpinScaleOutOvershoot(float? duration = null) => Preset("SpinScaleOutOvershoot", duration);
         /// <summary>Drop with bounce and squash-stretch on landing.</summary>
         public TweenBuilder BounceLand(float? duration = null) => Preset("BounceLand", duration);
         /// <summary>Scale up and fade out simultaneously.</summary>
@@ -698,6 +702,96 @@ namespace LB.TweenHelper
         public TweenBuilder SlideInFadeLeft(float? duration = null) => Preset("SlideInFadeLeft", duration);
         /// <summary>Slides in from the right with fade in.</summary>
         public TweenBuilder SlideInFadeRight(float? duration = null) => Preset("SlideInFadeRight", duration);
+
+        // Intensity Tier Presets
+        /// <summary>Subtle scale punch for delicate feedback.</summary>
+        public TweenBuilder PunchS(float? duration = null) => Preset("PunchS", duration);
+        /// <summary>Medium scale punch for moderate feedback.</summary>
+        public TweenBuilder PunchM(float? duration = null) => Preset("PunchM", duration);
+        /// <summary>Heavy scale punch for emphatic feedback.</summary>
+        public TweenBuilder PunchL(float? duration = null) => Preset("PunchL", duration);
+        /// <summary>Light position shake.</summary>
+        public TweenBuilder ShakeS(float? duration = null) => Preset("ShakeS", duration);
+        /// <summary>Medium position shake.</summary>
+        public TweenBuilder ShakeM(float? duration = null) => Preset("ShakeM", duration);
+        /// <summary>Heavy position shake.</summary>
+        public TweenBuilder ShakeL(float? duration = null) => Preset("ShakeL", duration);
+        /// <summary>Subtle rapid vibration.</summary>
+        public TweenBuilder JitterS(float? duration = null) => Preset("JitterS", duration);
+        /// <summary>Medium rapid vibration.</summary>
+        public TweenBuilder JitterM(float? duration = null) => Preset("JitterM", duration);
+        /// <summary>Intense rapid vibration.</summary>
+        public TweenBuilder JitterL(float? duration = null) => Preset("JitterL", duration);
+        /// <summary>Subtle scale bump for light feedback.</summary>
+        public TweenBuilder PulseScaleS(float? duration = null) => Preset("PulseScaleS", duration);
+        /// <summary>Medium scale bump for moderate feedback.</summary>
+        public TweenBuilder PulseScaleM(float? duration = null) => Preset("PulseScaleM", duration);
+        /// <summary>Bold scale bump for emphatic feedback.</summary>
+        public TweenBuilder PulseScaleL(float? duration = null) => Preset("PulseScaleL", duration);
+        /// <summary>Subtle Z-axis wobble.</summary>
+        public TweenBuilder WobbleZS(float? duration = null) => Preset("WobbleZS", duration);
+        /// <summary>Medium Z-axis wobble.</summary>
+        public TweenBuilder WobbleZM(float? duration = null) => Preset("WobbleZM", duration);
+        /// <summary>Heavy Z-axis wobble.</summary>
+        public TweenBuilder WobbleZL(float? duration = null) => Preset("WobbleZL", duration);
+        /// <summary>Light bounce.</summary>
+        public TweenBuilder BounceS(float? duration = null) => Preset("BounceS", duration);
+        /// <summary>Medium bounce.</summary>
+        public TweenBuilder BounceM(float? duration = null) => Preset("BounceM", duration);
+        /// <summary>Heavy bounce with tall hops.</summary>
+        public TweenBuilder BounceL(float? duration = null) => Preset("BounceL", duration);
+        /// <summary>Subtle horizontal sway loop.</summary>
+        public TweenBuilder SwayS(float? duration = null) => Preset("SwayS", duration);
+        /// <summary>Medium horizontal sway loop.</summary>
+        public TweenBuilder SwayM(float? duration = null) => Preset("SwayM", duration);
+        /// <summary>Wide horizontal sway loop.</summary>
+        public TweenBuilder SwayL(float? duration = null) => Preset("SwayL", duration);
+        /// <summary>Subtle Z-axis pendulum loop.</summary>
+        public TweenBuilder RockS(float? duration = null) => Preset("RockS", duration);
+        /// <summary>Medium Z-axis pendulum loop.</summary>
+        public TweenBuilder RockM(float? duration = null) => Preset("RockM", duration);
+        /// <summary>Wide Z-axis pendulum loop.</summary>
+        public TweenBuilder RockL(float? duration = null) => Preset("RockL", duration);
+        /// <summary>Subtle forward tilt and spring back.</summary>
+        public TweenBuilder NodS(float? duration = null) => Preset("NodS", duration);
+        /// <summary>Medium forward tilt and spring back.</summary>
+        public TweenBuilder NodM(float? duration = null) => Preset("NodM", duration);
+        /// <summary>Deep forward tilt and spring back.</summary>
+        public TweenBuilder NodL(float? duration = null) => Preset("NodL", duration);
+
+        // Directional Variant Presets
+        /// <summary>Small push left then spring back.</summary>
+        public TweenBuilder NudgeLeft(float? duration = null) => Preset("NudgeLeft", duration);
+        /// <summary>Small push right then spring back.</summary>
+        public TweenBuilder NudgeRight(float? duration = null) => Preset("NudgeRight", duration);
+        /// <summary>Small push up then spring back.</summary>
+        public TweenBuilder NudgeUp(float? duration = null) => Preset("NudgeUp", duration);
+        /// <summary>Small push down then spring back.</summary>
+        public TweenBuilder NudgeDown(float? duration = null) => Preset("NudgeDown", duration);
+        /// <summary>Pull forward then snap back on local Z.</summary>
+        public TweenBuilder RecoilForward(float? duration = null) => Preset("RecoilForward", duration);
+        /// <summary>Pull back then snap forward on local Z.</summary>
+        public TweenBuilder RecoilBack(float? duration = null) => Preset("RecoilBack", duration);
+        /// <summary>Quick downward motion with ease-out.</summary>
+        public TweenBuilder LaunchDown(float? duration = null) => Preset("LaunchDown", duration);
+        /// <summary>Quick leftward motion with ease-out.</summary>
+        public TweenBuilder LaunchLeft(float? duration = null) => Preset("LaunchLeft", duration);
+        /// <summary>Quick rightward motion with ease-out.</summary>
+        public TweenBuilder LaunchRight(float? duration = null) => Preset("LaunchRight", duration);
+
+        // Timing Style Presets
+        /// <summary>Gentle scale entrance, no overshoot.</summary>
+        public TweenBuilder PopInSoft(float? duration = null) => Preset("PopInSoft", duration);
+        /// <summary>Gentle scale entrance with minimal overshoot.</summary>
+        public TweenBuilder PopInSoftOvershoot(float? duration = null) => Preset("PopInSoftOvershoot", duration);
+        /// <summary>Fast scale entrance, no overshoot.</summary>
+        public TweenBuilder PopInHard(float? duration = null) => Preset("PopInHard", duration);
+        /// <summary>Snappy scale entrance with strong overshoot.</summary>
+        public TweenBuilder PopInHardOvershoot(float? duration = null) => Preset("PopInHardOvershoot", duration);
+        /// <summary>Heavy drop with sharp bounce decay.</summary>
+        public TweenBuilder DropInHeavy(float? duration = null) => Preset("DropInHeavy", duration);
+        /// <summary>Cartoon bounce with squash-stretch on landing.</summary>
+        public TweenBuilder BounceCartoon(float? duration = null) => Preset("BounceCartoon", duration);
 
         #endregion
 

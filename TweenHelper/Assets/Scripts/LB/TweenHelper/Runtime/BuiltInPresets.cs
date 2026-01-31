@@ -12,15 +12,14 @@ namespace LB.TweenHelper
     #region Scale Animations
 
     /// <summary>
-    /// Scales the target from zero to its original scale with elastic overshoot, creating a snappy entrance effect.
+    /// Scales cleanly from zero to original scale without overshoot, providing a smooth entrance.
     /// <para>
-    /// Sets initial scale to <c>Vector3.zero</c>, then animates to the stored original scale using
-    /// <c>Ease.OutBack</c> with an overshoot parameter of <c>1.7</c> (above the default 1.0,
-    /// producing a noticeable but controlled overshoot).
+    /// Sets initial scale to <c>Vector3.zero</c> and animates to original scale using <c>Ease.OutCubic</c>.
+    /// Decelerates smoothly to the final value without exceeding it.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutBack (1.7 overshoot)<br/>
-    /// <b>Easing override:</b> Primary ease replaces OutBack.
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Easing override:</b> Primary ease replaces OutCubic.
     /// </para>
     /// <para>
     /// <b>Use cases:</b> UI element entrance, item spawn, notification pop-up, dialog appearance.
@@ -31,6 +30,43 @@ namespace LB.TweenHelper
     public class PopInPreset : CodePreset
     {
         public override string PresetName => "PopIn";
+        public override string Description => "Scales from 0 to original scale, no overshoot";
+        public override float DefaultDuration => 0.5f;
+        public override string Category => PresetCategories.Base;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            t.localScale = Vector3.zero;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
+            var ease = ResolveEase(presetOptions, Ease.OutCubic);
+
+            return t.DOScale(originalScale, GetDuration(duration))
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Scales the target from zero to its original scale with elastic overshoot, creating a snappy entrance effect.
+    /// <para>
+    /// Sets initial scale to <c>Vector3.zero</c>, then animates to the stored original scale using
+    /// <c>Ease.OutBack</c> with an overshoot parameter of <c>1.7</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutBack (1.7 overshoot)<br/>
+    /// <b>Easing override:</b> Primary ease replaces OutBack.
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> Bouncy UI entrance, item spawn with pop, playful notification.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PopInOvershoot").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PopInOvershootPreset : CodePreset
+    {
+        public override string PresetName => "PopInOvershoot";
         public override string Description => "Scales from 0 to original scale with overshoot";
         public override float DefaultDuration => 0.6f;
         public override string Category => PresetCategories.Base;
@@ -43,9 +79,41 @@ namespace LB.TweenHelper
             var presetOptions = MergeWithDefaultEase(options, Ease.OutBack);
             var ease = ResolveEase(presetOptions, Ease.OutBack);
 
-            // OutBack with overshoot parameter (1 = default, higher = more overshoot)
             return t.DOScale(originalScale, GetDuration(duration))
                 .SetEase(ease, 1.7f)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Scales the target down to zero with a clean deceleration, no anticipation overshoot.
+    /// <para>
+    /// Animates scale to <c>Vector3.zero</c> using <c>Ease.InCubic</c> for a smooth exit
+    /// without the brief scale-up that InBack produces.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.4s | <b>Default ease:</b> InCubic<br/>
+    /// <b>Easing override:</b> Primary ease replaces InCubic.
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> UI element dismissal, item collection, dialog close, notification dismiss.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PopOut").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PopOutPreset : CodePreset
+    {
+        public override string PresetName => "PopOut";
+        public override string Description => "Scales to 0, no anticipation";
+        public override float DefaultDuration => 0.4f;
+        public override string Category => PresetCategories.Base;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var presetOptions = MergeWithDefaultEase(options, Ease.InCubic);
+            var ease = ResolveEase(presetOptions, Ease.InCubic);
+            return target.transform.DOScale(Vector3.zero, GetDuration(duration))
+                .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -61,15 +129,15 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces InBack.
     /// </para>
     /// <para>
-    /// <b>Use cases:</b> UI element dismissal, item collection, dialog close, notification dismiss.
+    /// <b>Use cases:</b> UI element dismissal with anticipation, item collection, dialog close with overshoot.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopOut").Play();</c>
+    /// Usage: <c>transform.Tween().Preset("PopOutOvershoot").Play();</c>
     /// </summary>
     [AutoRegisterPreset]
-    public class PopOutPreset : CodePreset
+    public class PopOutOvershootPreset : CodePreset
     {
-        public override string PresetName => "PopOut";
-        public override string Description => "Scales to 0 with anticipation";
+        public override string PresetName => "PopOutOvershoot";
+        public override string Description => "Scales to 0 with anticipation overshoot";
         public override float DefaultDuration => 0.4f;
         public override string Category => PresetCategories.Base;
 
@@ -110,6 +178,216 @@ namespace LB.TweenHelper
         {
             return target.transform.DOPunchScale(Vector3.one * 0.15f, GetDuration(duration), 6, 0.7f)
                 .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Subtle scale punch with smaller vector and fewer vibrations, for delicate feedback.
+    /// <para>
+    /// Uses <c>DOPunchScale</c> with punch vector <c>Vector3.one * 0.08</c>, vibrato <c>4</c>, elasticity <c>0.7</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.15s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PunchS").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PunchSPreset : CodePreset
+    {
+        public override string PresetName => "PunchS";
+        public override string Description => "Subtle scale punch for delicate feedback";
+        public override float DefaultDuration => 0.15f;
+        public override string Category => PresetCategories.Base;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchScale(Vector3.one * 0.08f, GetDuration(duration), 4, 0.7f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Medium scale punch for moderate feedback.
+    /// <para>
+    /// Uses <c>DOPunchScale</c> with punch vector <c>Vector3.one * 0.11</c>, vibrato <c>5</c>, elasticity <c>0.7</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.18s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PunchM").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PunchMPreset : CodePreset
+    {
+        public override string PresetName => "PunchM";
+        public override string Description => "Medium scale punch for moderate feedback";
+        public override float DefaultDuration => 0.18f;
+        public override string Category => PresetCategories.Base;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchScale(Vector3.one * 0.11f, GetDuration(duration), 5, 0.7f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Heavy scale punch with larger vector and more vibrations, for emphatic feedback.
+    /// <para>
+    /// Uses <c>DOPunchScale</c> with punch vector <c>Vector3.one * 0.25</c>, vibrato <c>8</c>, elasticity <c>0.7</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.25s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PunchL").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PunchLPreset : CodePreset
+    {
+        public override string PresetName => "PunchL";
+        public override string Description => "Heavy scale punch for emphatic feedback";
+        public override float DefaultDuration => 0.25f;
+        public override string Category => PresetCategories.Base;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchScale(Vector3.one * 0.25f, GetDuration(duration), 8, 0.7f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Gentle entrance scaling from zero with a slow OutSine ease, no overshoot.
+    /// <para>
+    /// Sets initial scale to <c>Vector3.zero</c> and animates to original scale using <c>Ease.OutSine</c>.
+    /// Slower and softer than PopIn for a calm, understated entrance.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.8s | <b>Default ease:</b> OutSine<br/>
+    /// <b>Easing override:</b> Primary ease replaces OutSine.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PopInSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PopInSoftPreset : CodePreset
+    {
+        public override string PresetName => "PopInSoft";
+        public override string Description => "Gentle scale entrance, no overshoot";
+        public override float DefaultDuration => 0.8f;
+        public override string Category => PresetCategories.Base;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            t.localScale = Vector3.zero;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutSine);
+            var ease = ResolveEase(presetOptions, Ease.OutSine);
+
+            return t.DOScale(originalScale, GetDuration(duration))
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Gentle entrance scaling from zero with mild OutBack overshoot (overshoot param 1.2).
+    /// <para>
+    /// Sets initial scale to <c>Vector3.zero</c> and animates to original scale using <c>Ease.OutBack</c>
+    /// with overshoot parameter <c>1.2</c>, producing a subtle bounce past the target before settling.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.8s | <b>Default ease:</b> OutBack (overshoot 1.2)<br/>
+    /// <b>Easing override:</b> Primary ease replaces OutBack.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PopInSoftOvershoot").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PopInSoftOvershootPreset : CodePreset
+    {
+        public override string PresetName => "PopInSoftOvershoot";
+        public override string Description => "Gentle scale entrance with mild OutBack overshoot";
+        public override float DefaultDuration => 0.8f;
+        public override string Category => PresetCategories.Base;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            t.localScale = Vector3.zero;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutBack);
+            var ease = ResolveEase(presetOptions, Ease.OutBack);
+
+            return t.DOScale(originalScale, GetDuration(duration))
+                .SetEase(ease, 1.2f)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Fast entrance scaling from zero with a snappy OutQuart ease, no overshoot.
+    /// <para>
+    /// Sets initial scale to <c>Vector3.zero</c> and animates to original scale using <c>Ease.OutQuart</c>.
+    /// Faster and punchier than PopIn but without any overshoot.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuart<br/>
+    /// <b>Easing override:</b> Primary ease replaces OutQuart.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PopInHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PopInHardPreset : CodePreset
+    {
+        public override string PresetName => "PopInHard";
+        public override string Description => "Fast scale entrance, no overshoot";
+        public override float DefaultDuration => 0.3f;
+        public override string Category => PresetCategories.Base;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            t.localScale = Vector3.zero;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutQuart);
+            var ease = ResolveEase(presetOptions, Ease.OutQuart);
+
+            return t.DOScale(originalScale, GetDuration(duration))
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Snappy entrance scaling from zero with OutBack and high overshoot parameter for a hard pop.
+    /// <para>
+    /// Sets initial scale to <c>Vector3.zero</c>, then animates to original scale using
+    /// <c>Ease.OutBack</c> with overshoot <c>2.2</c> for a pronounced snap.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutBack (2.2 overshoot)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PopInHardOvershoot").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PopInHardOvershootPreset : CodePreset
+    {
+        public override string PresetName => "PopInHardOvershoot";
+        public override string Description => "Snappy scale entrance with strong overshoot";
+        public override float DefaultDuration => 0.4f;
+        public override string Category => PresetCategories.Base;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            t.localScale = Vector3.zero;
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutBack);
+            var ease = ResolveEase(presetOptions, Ease.OutBack);
+
+            return t.DOScale(originalScale, GetDuration(duration))
+                .SetEase(ease, 2.2f)
+                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -293,12 +571,12 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Springy UI element entrance, badge pop-in, slot-machine result, snappy icon appearance.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("ElasticSnap").Play();</c>
+    /// Usage: <c>transform.Tween().Preset("ElasticSnapIn").Play();</c>
     /// </summary>
     [AutoRegisterPreset]
-    public class ElasticSnapPreset : CodePreset
+    public class ElasticSnapInPreset : CodePreset
     {
-        public override string PresetName => "ElasticSnap";
+        public override string PresetName => "ElasticSnapIn";
         public override string Description => "Scale from 0 with tight elastic oscillation";
         public override float DefaultDuration => 0.5f;
         public override string Category => PresetCategories.Scale;
@@ -317,77 +595,6 @@ namespace LB.TweenHelper
         }
     }
 
-    /// <summary>
-    /// Scales cleanly from zero to original scale without overshoot, providing a smooth entrance.
-    /// <para>
-    /// Sets initial scale to <c>Vector3.zero</c> and animates to original scale using <c>Ease.OutCubic</c>.
-    /// Unlike PopIn (which uses OutBack with overshoot), this preset decelerates smoothly to the final value
-    /// without exceeding it, giving a more subtle and professional entrance.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutCubic<br/>
-    /// <b>Easing override:</b> Primary ease replaces OutCubic.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Subtle UI entrance, tooltip appearance, menu item reveal, understated element show.
-    /// </para>
-    /// Usage: <c>transform.Tween().Preset("GrowIn").Play();</c>
-    /// </summary>
-    [AutoRegisterPreset]
-    public class GrowInPreset : CodePreset
-    {
-        public override string PresetName => "GrowIn";
-        public override string Description => "Clean scale from 0 to original, no overshoot";
-        public override float DefaultDuration => 0.4f;
-        public override string Category => PresetCategories.Scale;
-
-        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
-        {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            t.localScale = Vector3.zero;
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
-            var ease = ResolveEase(presetOptions, Ease.OutCubic);
-
-            return t.DOScale(originalScale, GetDuration(duration))
-                .SetEase(ease)
-                .WithDefaults(presetOptions, target);
-        }
-    }
-
-    /// <summary>
-    /// Scales cleanly to zero without anticipation overshoot, providing a smooth exit.
-    /// <para>
-    /// Animates scale to <c>Vector3.zero</c> using <c>Ease.OutCubic</c>.
-    /// Unlike PopOut (which uses InBack for a brief wind-up overshoot), this preset shrinks directly
-    /// and smoothly to zero with no anticipation, creating a clean, understated disappearance.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutCubic<br/>
-    /// <b>Easing override:</b> Primary ease replaces OutCubic.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Subtle UI dismissal, tooltip hide, quiet element removal, clean fade-to-nothing.
-    /// </para>
-    /// Usage: <c>transform.Tween().Preset("ShrinkOut").Play();</c>
-    /// </summary>
-    [AutoRegisterPreset]
-    public class ShrinkOutPreset : CodePreset
-    {
-        public override string PresetName => "ShrinkOut";
-        public override string Description => "Clean scale to zero, no anticipation";
-        public override float DefaultDuration => 0.4f;
-        public override string Category => PresetCategories.Scale;
-
-        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
-        {
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
-            var ease = ResolveEase(presetOptions, Ease.OutCubic);
-            return target.transform.DOScale(Vector3.zero, GetDuration(duration))
-                .SetEase(ease)
-                .WithDefaults(presetOptions, target);
-        }
-    }
 
     /// <summary>
     /// Performs a quick scale bump up to 1.2x then back to original, ideal for UI tap/click feedback.
@@ -426,6 +633,92 @@ namespace LB.TweenHelper
                 .Append(t.DOScale(originalScale * 1.2f, dur * 0.4f).SetEase(upEase))
                 .Append(t.DOScale(originalScale, dur * 0.6f).SetEase(downEase))
                 .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Internal factory for PulseScale variants sharing the same 2-phase up/down sequence structure.
+    /// </summary>
+    internal static class PulseScaleFactory
+    {
+        public static Tween Create(GameObject target, float peak, float duration, TweenOptions options)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var upEase = options.Ease ?? Ease.OutQuad;
+            var downEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(upEase);
+
+            return DOTween.Sequence()
+                .Append(t.DOScale(originalScale * peak, duration * 0.4f).SetEase(upEase))
+                .Append(t.DOScale(originalScale, duration * 0.6f).SetEase(downEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Subtle scale bump to 1.08x then back to original, for understated UI feedback.
+    /// <para>
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
+    /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PulseScaleS").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PulseScaleSPreset : CodePreset
+    {
+        public override string PresetName => "PulseScaleS";
+        public override string Description => "Subtle scale bump for light feedback";
+        public override float DefaultDuration => 0.25f;
+        public override string Category => PresetCategories.Scale;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return PulseScaleFactory.Create(target, 1.08f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Medium scale bump to 1.14x then back to original, for moderate UI feedback.
+    /// <para>
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.28s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
+    /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PulseScaleM").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PulseScaleMPreset : CodePreset
+    {
+        public override string PresetName => "PulseScaleM";
+        public override string Description => "Medium scale bump for moderate feedback";
+        public override float DefaultDuration => 0.28f;
+        public override string Category => PresetCategories.Scale;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return PulseScaleFactory.Create(target, 1.14f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Bold scale bump to 1.25x then back to original, for emphatic UI feedback.
+    /// <para>
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.35s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
+    /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PulseScaleL").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PulseScaleLPreset : CodePreset
+    {
+        public override string PresetName => "PulseScaleL";
+        public override string Description => "Bold scale bump for emphatic feedback";
+        public override float DefaultDuration => 0.35f;
+        public override string Category => PresetCategories.Scale;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return PulseScaleFactory.Create(target, 1.25f, GetDuration(duration), options);
         }
     }
 
@@ -1194,6 +1487,115 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
+    /// Internal factory for Sway variants sharing the same callback-chain loop structure.
+    /// </summary>
+    internal static class SwayFactory
+    {
+        public static Tween Create(GameObject target, float amplitude, float duration, TweenOptions options)
+        {
+            var t = target.transform;
+            var halfDur = duration * 0.5f;
+            var moveRightEase = options.Ease ?? Ease.InOutSine;
+            var moveLeftEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
+
+            var rightOptions = options.Ease.HasValue ? options : options.SetEase(moveRightEase);
+            var leftOptions = options.Ease.HasValue ? options : options.SetEase(moveLeftEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void MoveRight()
+            {
+                tween = t.DOLocalMoveX(amplitude, halfDur)
+                    .SetRelative(true)
+                    .SetEase(moveRightEase)
+                    .WithLoopDefaults(rightOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(MoveLeft);
+            }
+
+            void MoveLeft()
+            {
+                tween = t.DOLocalMoveX(-amplitude, halfDur)
+                    .SetRelative(true)
+                    .SetEase(moveLeftEase)
+                    .WithLoopDefaults(leftOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(MoveRight);
+            }
+
+            MoveRight();
+
+            return tween;
+        }
+    }
+
+    /// <summary>
+    /// Subtle horizontal sway loop with small amplitude.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 3.0s | <b>Default ease:</b> InOutSine
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SwayS").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SwaySPreset : CodePreset
+    {
+        public override string PresetName => "SwayS";
+        public override string Description => "Subtle horizontal sway loop";
+        public override float DefaultDuration => 3.0f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SwayFactory.Create(target, 0.25f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Medium horizontal sway loop with moderate amplitude.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 3.5s | <b>Default ease:</b> InOutSine
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SwayM").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SwayMPreset : CodePreset
+    {
+        public override string PresetName => "SwayM";
+        public override string Description => "Medium horizontal sway loop";
+        public override float DefaultDuration => 3.5f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SwayFactory.Create(target, 0.35f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Wide horizontal sway loop with large amplitude.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InOutSine
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SwayL").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SwayLPreset : CodePreset
+    {
+        public override string PresetName => "SwayL";
+        public override string Description => "Wide horizontal sway loop";
+        public override float DefaultDuration => 5.0f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SwayFactory.Create(target, 0.8f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
     /// Bounces the target on the Y axis with three progressively smaller hops using a sequence.
     /// <para>
     /// Builds a 6-step Y-axis sequence from the current base Y: hop 1 rises <c>+1.5</c> (15% duration each way),
@@ -1235,6 +1637,111 @@ namespace LB.TweenHelper
                 .Append(t.DOLocalMoveY(baseY, dur * 0.12f).SetEase(downEase))
                 // Hop 3 (small)
                 .Append(t.DOLocalMoveY(baseY + 0.3f, dur * 0.1f).SetEase(upEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.1f).SetEase(downEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Light positional Y bounce with small hops.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutQuad (up), InQuad (down)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("BounceS").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class BounceSPreset : CodePreset
+    {
+        public override string PresetName => "BounceS";
+        public override string Description => "Light bounce";
+        public override float DefaultDuration => 0.6f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var baseY = t.localPosition.y;
+            var dur = GetDuration(duration);
+            var upEase = ResolveEase(options, Ease.OutQuad);
+            var downEase = ResolveSecondaryEase(options, Ease.InQuad);
+            var presetOptions = MergeWithDefaultEase(options, upEase);
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalMoveY(baseY + 0.75f, dur * 0.15f).SetEase(upEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.15f).SetEase(downEase))
+                .Append(t.DOLocalMoveY(baseY + 0.4f, dur * 0.12f).SetEase(upEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.12f).SetEase(downEase))
+                .Append(t.DOLocalMoveY(baseY + 0.15f, dur * 0.1f).SetEase(upEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.1f).SetEase(downEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Medium positional Y bounce with moderate hops.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.7s | <b>Default ease:</b> OutQuad (up), InQuad (down)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("BounceM").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class BounceMPreset : CodePreset
+    {
+        public override string PresetName => "BounceM";
+        public override string Description => "Medium bounce";
+        public override float DefaultDuration => 0.7f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var baseY = t.localPosition.y;
+            var dur = GetDuration(duration);
+            var upEase = ResolveEase(options, Ease.OutQuad);
+            var downEase = ResolveSecondaryEase(options, Ease.InQuad);
+            var presetOptions = MergeWithDefaultEase(options, upEase);
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalMoveY(baseY + 1.1f, dur * 0.15f).SetEase(upEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.15f).SetEase(downEase))
+                .Append(t.DOLocalMoveY(baseY + 0.6f, dur * 0.12f).SetEase(upEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.12f).SetEase(downEase))
+                .Append(t.DOLocalMoveY(baseY + 0.22f, dur * 0.1f).SetEase(upEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.1f).SetEase(downEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Heavy positional Y bounce with tall hops.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutQuad (up), InQuad (down)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("BounceL").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class BounceLPreset : CodePreset
+    {
+        public override string PresetName => "BounceL";
+        public override string Description => "Heavy bounce with tall hops";
+        public override float DefaultDuration => 1.0f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var baseY = t.localPosition.y;
+            var dur = GetDuration(duration);
+            var upEase = ResolveEase(options, Ease.OutQuad);
+            var downEase = ResolveSecondaryEase(options, Ease.InQuad);
+            var presetOptions = MergeWithDefaultEase(options, upEase);
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalMoveY(baseY + 2.5f, dur * 0.15f).SetEase(upEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.15f).SetEase(downEase))
+                .Append(t.DOLocalMoveY(baseY + 1.3f, dur * 0.12f).SetEase(upEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.12f).SetEase(downEase))
+                .Append(t.DOLocalMoveY(baseY + 0.5f, dur * 0.1f).SetEase(upEase))
                 .Append(t.DOLocalMoveY(baseY, dur * 0.1f).SetEase(downEase))
                 .WithDefaults(presetOptions, target);
         }
@@ -1450,6 +1957,443 @@ namespace LB.TweenHelper
                 .Append(t.DOLocalMove(new Vector3(0.5f, 0.5f, 0f), stepDur).SetRelative(true).SetEase(ease))
                 .Append(t.DOLocalMove(new Vector3(-1f, 0.5f, 0f), stepDur).SetRelative(true).SetEase(ease))
                 .Append(t.DOLocalMove(new Vector3(0.5f, 0.5f, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Light position shake with low strength and fewer oscillations.
+    /// <para>
+    /// Uses <c>DOShakePosition</c> with strength <c>0.15</c>, vibrato <c>10</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("ShakeS").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class ShakeSPreset : CodePreset
+    {
+        public override string PresetName => "ShakeS";
+        public override string Description => "Light position shake";
+        public override float DefaultDuration => 0.4f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOShakePosition(GetDuration(duration), 0.15f, 10, 90f, false, true)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Medium position shake with moderate strength and vibrato.
+    /// <para>
+    /// Uses <c>DOShakePosition</c> with strength <c>0.22</c>, vibrato <c>12</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.45s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("ShakeM").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class ShakeMPreset : CodePreset
+    {
+        public override string PresetName => "ShakeM";
+        public override string Description => "Medium position shake";
+        public override float DefaultDuration => 0.45f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOShakePosition(GetDuration(duration), 0.22f, 12, 90f, false, true)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Heavy position shake with high strength and many oscillations.
+    /// <para>
+    /// Uses <c>DOShakePosition</c> with strength <c>0.5</c>, vibrato <c>20</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("ShakeL").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class ShakeLPreset : CodePreset
+    {
+        public override string PresetName => "ShakeL";
+        public override string Description => "Heavy position shake";
+        public override float DefaultDuration => 0.6f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOShakePosition(GetDuration(duration), 0.5f, 20, 90f, false, true)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Subtle rapid vibration with very low amplitude and moderate vibrato.
+    /// <para>
+    /// Uses <c>DOShakePosition</c> with strength <c>0.04</c>, vibrato <c>30</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.2s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("JitterS").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class JitterSPreset : CodePreset
+    {
+        public override string PresetName => "JitterS";
+        public override string Description => "Subtle rapid vibration";
+        public override float DefaultDuration => 0.2f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOShakePosition(GetDuration(duration), 0.04f, 30, 90f, false, true)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Medium rapid vibration with moderate amplitude and vibrato.
+    /// <para>
+    /// Uses <c>DOShakePosition</c> with strength <c>0.06</c>, vibrato <c>35</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.25s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("JitterM").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class JitterMPreset : CodePreset
+    {
+        public override string PresetName => "JitterM";
+        public override string Description => "Medium rapid vibration";
+        public override float DefaultDuration => 0.25f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOShakePosition(GetDuration(duration), 0.06f, 35, 90f, false, true)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Intense rapid vibration with high amplitude and extreme vibrato.
+    /// <para>
+    /// Uses <c>DOShakePosition</c> with strength <c>0.15</c>, vibrato <c>50</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("JitterL").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class JitterLPreset : CodePreset
+    {
+        public override string PresetName => "JitterL";
+        public override string Description => "Intense rapid vibration";
+        public override float DefaultDuration => 0.4f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOShakePosition(GetDuration(duration), 0.15f, 50, 90f, false, true)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Internal factory for Nudge directional variants sharing the same push/spring-back structure.
+    /// </summary>
+    internal static class NudgeFactory
+    {
+        public static Tween Create(GameObject target, Vector3 direction, float distance, float duration, TweenOptions options)
+        {
+            var t = target.transform;
+            var offset = direction * distance;
+            var pushEase = options.Ease ?? Ease.OutQuad;
+            var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.OutBack;
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(pushEase);
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalMove(offset, duration * 0.3f).SetRelative(true).SetEase(pushEase))
+                .Append(t.DOLocalMove(-offset, duration * 0.7f).SetRelative(true).SetEase(returnEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Nudges the target to the left then springs back to original position.
+    /// <para>
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (push), OutBack (return)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("NudgeLeft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class NudgeLeftPreset : CodePreset
+    {
+        public override string PresetName => "NudgeLeft";
+        public override string Description => "Small push left then spring back";
+        public override float DefaultDuration => 0.3f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return NudgeFactory.Create(target, Vector3.left, 0.3f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Nudges the target to the right then springs back to original position.
+    /// <para>
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (push), OutBack (return)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("NudgeRight").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class NudgeRightPreset : CodePreset
+    {
+        public override string PresetName => "NudgeRight";
+        public override string Description => "Small push right then spring back";
+        public override float DefaultDuration => 0.3f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return NudgeFactory.Create(target, Vector3.right, 0.3f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Nudges the target upward then springs back to original position.
+    /// <para>
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (push), OutBack (return)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("NudgeUp").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class NudgeUpPreset : CodePreset
+    {
+        public override string PresetName => "NudgeUp";
+        public override string Description => "Small push up then spring back";
+        public override float DefaultDuration => 0.3f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return NudgeFactory.Create(target, Vector3.up, 0.3f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Nudges the target downward then springs back to original position.
+    /// <para>
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (push), OutBack (return)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("NudgeDown").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class NudgeDownPreset : CodePreset
+    {
+        public override string PresetName => "NudgeDown";
+        public override string Description => "Small push down then spring back";
+        public override float DefaultDuration => 0.3f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return NudgeFactory.Create(target, Vector3.down, 0.3f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Internal factory for Recoil directional variants sharing the same pull/snap structure.
+    /// </summary>
+    internal static class RecoilFactory
+    {
+        public static Tween Create(GameObject target, float pullZ, float duration, TweenOptions options)
+        {
+            var t = target.transform;
+            var pullEase = options.Ease ?? Ease.OutQuad;
+            var snapEase = options.SecondaryEase ?? options.Ease ?? Ease.OutCubic;
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(pullEase);
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalMoveZ(pullZ, duration * 0.4f).SetRelative(true).SetEase(pullEase))
+                .Append(t.DOLocalMoveZ(-pullZ, duration * 0.6f).SetRelative(true).SetEase(snapEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Pulls the target forward on local Z then snaps it back, simulating a forward recoil.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("RecoilForward").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class RecoilForwardPreset : CodePreset
+    {
+        public override string PresetName => "RecoilForward";
+        public override string Description => "Pull forward then snap back on local Z";
+        public override float DefaultDuration => 0.4f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return RecoilFactory.Create(target, 0.5f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Pulls the target backward on local Z then snaps it forward, simulating a backward recoil.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("RecoilBack").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class RecoilBackPreset : CodePreset
+    {
+        public override string PresetName => "RecoilBack";
+        public override string Description => "Pull back then snap forward on local Z";
+        public override float DefaultDuration => 0.4f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return RecoilFactory.Create(target, -0.5f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Internal factory for Launch directional variants sharing the same non-returning movement structure.
+    /// </summary>
+    internal static class LaunchFactory
+    {
+        public static Tween Create(GameObject target, Vector3 direction, float distance, float duration, TweenOptions options)
+        {
+            var t = target.transform;
+            var ease = options.Ease ?? Ease.OutCubic;
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(ease);
+
+            return t.DOLocalMove(t.localPosition + direction * distance, duration)
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Launches the target 3 units downward from its current local position with a decelerating ease.
+    /// <para>
+    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("LaunchDown").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class LaunchDownPreset : CodePreset
+    {
+        public override string PresetName => "LaunchDown";
+        public override string Description => "Quick downward motion with ease-out";
+        public override float DefaultDuration => 0.4f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return LaunchFactory.Create(target, Vector3.down, 3f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Launches the target 3 units to the left from its current local position with a decelerating ease.
+    /// <para>
+    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("LaunchLeft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class LaunchLeftPreset : CodePreset
+    {
+        public override string PresetName => "LaunchLeft";
+        public override string Description => "Quick leftward motion with ease-out";
+        public override float DefaultDuration => 0.4f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return LaunchFactory.Create(target, Vector3.left, 3f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Launches the target 3 units to the right from its current local position with a decelerating ease.
+    /// <para>
+    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("LaunchRight").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class LaunchRightPreset : CodePreset
+    {
+        public override string PresetName => "LaunchRight";
+        public override string Description => "Quick rightward motion with ease-out";
+        public override float DefaultDuration => 0.4f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return LaunchFactory.Create(target, Vector3.right, 3f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Heavy drop from 10 units above with sharper bounce decay, creating a weighty landing effect.
+    /// <para>
+    /// Offsets Y by <c>+10</c>, then builds a sequence with <c>InCubic</c> fall and 2 bounces
+    /// with sharper height decay than standard DropIn.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.9s | <b>Default ease:</b> InCubic (fall), OutQuad (bounce)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("DropInHeavy").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class DropInHeavyPreset : CodePreset
+    {
+        public override string PresetName => "DropInHeavy";
+        public override string Description => "Heavy drop with sharp bounce decay";
+        public override float DefaultDuration => 0.9f;
+        public override string Category => PresetCategories.Movement;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var targetY = t.localPosition.y;
+            var dropHeight = 10f;
+            t.localPosition = t.localPosition + Vector3.up * dropHeight;
+
+            var dur = GetDuration(duration);
+            var fallEase = ResolveEase(options, Ease.InCubic);
+            var bounceEase = ResolveSecondaryEase(options, Ease.OutQuad);
+            var presetOptions = MergeWithDefaultEase(options.SetEase(fallEase), fallEase);
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalMoveY(targetY, dur * 0.45f).SetEase(fallEase))
+                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.15f, dur * 0.13f).SetEase(bounceEase))
+                .Append(t.DOLocalMoveY(targetY, dur * 0.13f).SetEase(fallEase))
+                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.04f, dur * 0.1f).SetEase(bounceEase))
+                .Append(t.DOLocalMoveY(targetY, dur * 0.1f).SetEase(fallEase))
+                .AppendInterval(dur * 0.09f)
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -2057,6 +3001,81 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
+    /// Subtle Z-axis wobble with small angle and fewer vibrations.
+    /// <para>
+    /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 0, 8)</c>, vibrato <c>6</c>, elasticity <c>0.5</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleZS").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleZSPreset : CodePreset
+    {
+        public override string PresetName => "WobbleZS";
+        public override string Description => "Subtle Z-axis wobble";
+        public override float DefaultDuration => 0.4f;
+        public override string Category => PresetCategories.Rotation;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(0, 0, 8f), GetDuration(duration), 6, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Medium Z-axis wobble with moderate angle and vibrations.
+    /// <para>
+    /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 0, 11)</c>, vibrato <c>7</c>, elasticity <c>0.5</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.45s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleZM").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleZMPreset : CodePreset
+    {
+        public override string PresetName => "WobbleZM";
+        public override string Description => "Medium Z-axis wobble";
+        public override float DefaultDuration => 0.45f;
+        public override string Category => PresetCategories.Rotation;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(0, 0, 11f), GetDuration(duration), 7, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Heavy Z-axis wobble with large angle and more vibrations.
+    /// <para>
+    /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 0, 25)</c>, vibrato <c>10</c>, elasticity <c>0.5</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleZL").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleZLPreset : CodePreset
+    {
+        public override string PresetName => "WobbleZL";
+        public override string Description => "Heavy Z-axis wobble";
+        public override float DefaultDuration => 0.6f;
+        public override string Category => PresetCategories.Rotation;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(0, 0, 25f), GetDuration(duration), 10, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
     /// Wobbles the target's rotation diagonally across both X and Y axes simultaneously.
     /// <para>
     /// Uses <c>DOPunchRotation</c> with punch vector <c>(12, 12, 0)</c> (12° amplitude per axis),
@@ -2322,6 +3341,114 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
+    /// Internal factory for Rock variants sharing the same callback-chain loop structure.
+    /// </summary>
+    internal static class RockFactory
+    {
+        public static Tween Create(GameObject target, float angle, float duration, TweenOptions options)
+        {
+            var t = target.transform;
+            var originalRot = t.localEulerAngles;
+            var halfDur = duration * 0.5f;
+            var leftEase = options.Ease ?? Ease.InOutSine;
+            var rightEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
+
+            var leftOptions = options.Ease.HasValue ? options : options.SetEase(leftEase);
+            var rightOptions = options.Ease.HasValue ? options : options.SetEase(rightEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void RockLeft()
+            {
+                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, angle), halfDur)
+                    .SetEase(leftEase)
+                    .WithLoopDefaults(leftOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(RockRight);
+            }
+
+            void RockRight()
+            {
+                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, -angle), halfDur)
+                    .SetEase(rightEase)
+                    .WithLoopDefaults(rightOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(RockLeft);
+            }
+
+            RockLeft();
+
+            return tween;
+        }
+    }
+
+    /// <summary>
+    /// Subtle Z-axis pendulum loop with small angle.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.5s | <b>Default ease:</b> InOutSine
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("RockS").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class RockSPreset : CodePreset
+    {
+        public override string PresetName => "RockS";
+        public override string Description => "Subtle Z-axis pendulum loop";
+        public override float DefaultDuration => 2.5f;
+        public override string Category => PresetCategories.Rotation;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return RockFactory.Create(target, 4f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Medium Z-axis pendulum loop with moderate angle.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.8s | <b>Default ease:</b> InOutSine
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("RockM").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class RockMPreset : CodePreset
+    {
+        public override string PresetName => "RockM";
+        public override string Description => "Medium Z-axis pendulum loop";
+        public override float DefaultDuration => 2.8f;
+        public override string Category => PresetCategories.Rotation;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return RockFactory.Create(target, 6f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Wide Z-axis pendulum loop with large angle.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 3.5s | <b>Default ease:</b> InOutSine
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("RockL").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class RockLPreset : CodePreset
+    {
+        public override string PresetName => "RockL";
+        public override string Description => "Wide Z-axis pendulum loop";
+        public override float DefaultDuration => 3.5f;
+        public override string Category => PresetCategories.Rotation;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return RockFactory.Create(target, 14f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
     /// Tilts the target 15 degrees forward on the X axis then springs back to the original rotation.
     /// <para>
     /// Builds a 2-step sequence: (1) rotate to <c>original + (15, 0, 0)</c> over 40% duration with
@@ -2358,6 +3485,89 @@ namespace LB.TweenHelper
                 .Append(t.DOLocalRotate(originalRot + new Vector3(15f, 0f, 0f), dur * 0.4f).SetEase(leanEase))
                 .Append(t.DOLocalRotate(originalRot, dur * 0.6f).SetEase(returnEase))
                 .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Internal factory for Nod variants sharing the same tilt-and-spring structure.
+    /// </summary>
+    internal static class NodFactory
+    {
+        public static Tween Create(GameObject target, float angle, float duration, TweenOptions options)
+        {
+            var t = target.transform;
+            var originalRot = t.localEulerAngles;
+            var leanEase = options.Ease ?? Ease.OutQuad;
+            var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.OutBack;
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(leanEase);
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalRotate(originalRot + new Vector3(angle, 0f, 0f), duration * 0.4f).SetEase(leanEase))
+                .Append(t.DOLocalRotate(originalRot, duration * 0.6f).SetEase(returnEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Subtle forward tilt and spring back on X axis.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (lean), OutBack (return)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("NodS").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class NodSPreset : CodePreset
+    {
+        public override string PresetName => "NodS";
+        public override string Description => "Subtle forward tilt and spring back";
+        public override float DefaultDuration => 0.3f;
+        public override string Category => PresetCategories.Rotation;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return NodFactory.Create(target, 8f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Medium forward tilt and spring back on X axis.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.35s | <b>Default ease:</b> OutQuad (lean), OutBack (return)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("NodM").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class NodMPreset : CodePreset
+    {
+        public override string PresetName => "NodM";
+        public override string Description => "Medium forward tilt and spring back";
+        public override float DefaultDuration => 0.35f;
+        public override string Category => PresetCategories.Rotation;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return NodFactory.Create(target, 11f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Deep forward tilt and spring back on X axis.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (lean), OutBack (return)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("NodL").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class NodLPreset : CodePreset
+    {
+        public override string PresetName => "NodL";
+        public override string Description => "Deep forward tilt and spring back";
+        public override float DefaultDuration => 0.5f;
+        public override string Category => PresetCategories.Rotation;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return NodFactory.Create(target, 25f, GetDuration(duration), options);
         }
     }
 
@@ -2464,11 +3674,11 @@ namespace LB.TweenHelper
     /// <summary>
     /// Scales the target down to zero while simultaneously fading out to transparent.
     /// <para>
-    /// Builds a parallel sequence: scale to <c>Vector3.zero</c> with <c>Ease.InBack</c> (anticipation overshoot),
+    /// Builds a parallel sequence: scale to <c>Vector3.zero</c> with <c>Ease.InCubic</c> (no anticipation),
     /// fade to <c>0</c> with <c>Ease.Linear</c>. If no fadeable component exists, only the scale animation plays.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.2s | <b>Default ease:</b> InBack (scale), Linear (fade)<br/>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.2s | <b>Default ease:</b> InCubic (scale), Linear (fade)<br/>
     /// <b>Easing override:</b> Primary ease controls scale; fade is always Linear.
     /// </para>
     /// <para>
@@ -2480,7 +3690,57 @@ namespace LB.TweenHelper
     public class PopOutFadePreset : CodePreset
     {
         public override string PresetName => "PopOutFade";
-        public override string Description => "Scales down and fades out together";
+        public override string Description => "Scales down and fades out together, no anticipation";
+        public override float DefaultDuration => 1.2f;
+        public override string Category => PresetCategories.Combined;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.InCubic);
+            var ease = ResolveEase(presetOptions, Ease.InCubic);
+
+            var seq = DOTween.Sequence();
+            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease));
+
+            var fadeTween = CreateFadeTween(target, 0f, dur);
+            if (fadeTween != null)
+            {
+                fadeTween.SetEase(Ease.Linear);
+                seq.Join(fadeTween);
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+
+        public override bool CanApplyTo(GameObject target)
+        {
+            return target != null;
+        }
+    }
+
+    /// <summary>
+    /// Scales the target down to zero while fading out, with anticipation overshoot on scale.
+    /// <para>
+    /// Builds a parallel sequence: scale to <c>Vector3.zero</c> with <c>Ease.InBack</c> (anticipation),
+    /// joined with fade to <c>0</c> using <c>Ease.Linear</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.2s | <b>Default ease:</b> InBack (scale), Linear (fade)<br/>
+    /// <b>Easing override:</b> Primary ease controls scale; fade is always Linear.
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> UI element dismissal with anticipation, dialog close with overshoot, combined exit.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PopOutFadeOvershoot").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PopOutFadeOvershootPreset : CodePreset
+    {
+        public override string PresetName => "PopOutFadeOvershoot";
+        public override string Description => "Scales down and fades out with anticipation overshoot";
         public override float DefaultDuration => 1.2f;
         public override string Category => PresetCategories.Combined;
 
@@ -2705,9 +3965,47 @@ namespace LB.TweenHelper
     /// <summary>
     /// Spins the target 720 degrees on the Y axis while shrinking to zero scale, creating a collectible pickup effect.
     /// <para>
-    /// Builds a parallel sequence: scale to <c>Vector3.zero</c> with <c>Ease.InBack</c> (anticipation),
+    /// Builds a parallel sequence: scale to <c>Vector3.zero</c> with <c>Ease.InCubic</c> (no anticipation),
     /// joined with 720° Y rotation using <c>RotateMode.FastBeyond360</c> and <c>Ease.Linear</c>
     /// (uniform spin speed). The two full rotations during shrink create a vortex-like exit.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.7s | <b>Default ease:</b> InCubic (scale), Linear (spin)<br/>
+    /// <b>Easing override:</b> Primary ease controls scale; secondary ease controls spin.
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> Collectible pickup, item absorption, vortex exit, magical disappearance.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinScaleOut").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinScaleOutPreset : CodePreset
+    {
+        public override string PresetName => "SpinScaleOut";
+        public override string Description => "Spin and shrink to zero, no anticipation";
+        public override float DefaultDuration => 0.7f;
+        public override string Category => PresetCategories.Combined;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var dur = GetDuration(duration);
+            var scaleEase = ResolveEase(options, Ease.InCubic);
+            var spinEase = ResolveSecondaryEase(options, Ease.Linear);
+            var presetOptions = MergeWithDefaultEase(options, scaleEase);
+
+            return DOTween.Sequence()
+                .Join(t.DOScale(Vector3.zero, dur).SetEase(scaleEase))
+                .Join(t.DORotate(new Vector3(0f, 720f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Shrinks the target to zero while spinning 720° on Y, with anticipation overshoot on scale.
+    /// <para>
+    /// Builds a parallel sequence: scale to <c>Vector3.zero</c> with <c>Ease.InBack</c> (anticipation),
+    /// joined with 720° Y rotation using <c>RotateMode.FastBeyond360</c> and <c>Ease.Linear</c>.
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.7s | <b>Default ease:</b> InBack (scale), Linear (spin)<br/>
@@ -2716,13 +4014,13 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Collectible pickup, item absorption, vortex exit, magical disappearance.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinScale").Play();</c>
+    /// Usage: <c>transform.Tween().Preset("SpinScaleOutOvershoot").Play();</c>
     /// </summary>
     [AutoRegisterPreset]
-    public class SpinScalePreset : CodePreset
+    public class SpinScaleOutOvershootPreset : CodePreset
     {
-        public override string PresetName => "SpinScale";
-        public override string Description => "Spin and shrink to zero";
+        public override string PresetName => "SpinScaleOutOvershoot";
+        public override string Description => "Spin and shrink to zero with anticipation overshoot";
         public override float DefaultDuration => 0.7f;
         public override string Category => PresetCategories.Combined;
 
@@ -2859,7 +4157,7 @@ namespace LB.TweenHelper
     /// Sets initial scale to <c>Vector3.zero</c>. Builds a parallel sequence: scale to original with
     /// <c>Ease.OutBack</c> (overshoot entrance), joined with 360° Y rotation using
     /// <c>RotateMode.FastBeyond360</c> and <c>Ease.Linear</c> (uniform spin).
-    /// The inverse of SpinScale (which shrinks while spinning).
+    /// The inverse of SpinScaleOut (which shrinks while spinning).
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutBack (scale), Linear (spin)<br/>
@@ -2993,6 +4291,65 @@ namespace LB.TweenHelper
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Cartoon-style bounce with a big hop, squash-stretch on landing, and three decreasing hops.
+    /// <para>
+    /// Builds a multi-step sequence: initial hop to 2.5 units, squash on landing (1.4x wide, 0.6y tall),
+    /// then 3 decreasing hops with progressively smaller squash. Total duration 1.4s.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.4s | <b>Default ease:</b> InQuad (fall), OutQuad (hop)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("BounceCartoon").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class BounceCartoonPreset : CodePreset
+    {
+        public override string PresetName => "BounceCartoon";
+        public override string Description => "Cartoon bounce with squash-stretch on landing";
+        public override float DefaultDuration => 1.4f;
+        public override string Category => PresetCategories.Combined;
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var baseY = t.localPosition.y;
+            var dur = GetDuration(duration);
+            var fallEase = ResolveEase(options, Ease.InQuad);
+            var hopEase = ResolveSecondaryEase(options, Ease.OutQuad);
+            var presetOptions = MergeWithDefaultEase(options, fallEase);
+
+            var squash1 = new Vector3(originalScale.x * 1.4f, originalScale.y * 0.6f, originalScale.z);
+            var squash2 = new Vector3(originalScale.x * 1.25f, originalScale.y * 0.75f, originalScale.z);
+            var squash3 = new Vector3(originalScale.x * 1.12f, originalScale.y * 0.88f, originalScale.z);
+
+            return DOTween.Sequence()
+                // Big hop up
+                .Append(t.DOLocalMoveY(baseY + 2.5f, dur * 0.15f).SetEase(hopEase))
+                // Fall down
+                .Append(t.DOLocalMoveY(baseY, dur * 0.15f).SetEase(fallEase))
+                // Squash on landing
+                .Append(t.DOScale(squash1, dur * 0.04f).SetEase(Ease.OutQuad))
+                .Append(t.DOScale(originalScale, dur * 0.04f).SetEase(Ease.InQuad))
+                // Hop 2
+                .Append(t.DOLocalMoveY(baseY + 1.2f, dur * 0.1f).SetEase(hopEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.1f).SetEase(fallEase))
+                // Squash 2
+                .Append(t.DOScale(squash2, dur * 0.03f).SetEase(Ease.OutQuad))
+                .Append(t.DOScale(originalScale, dur * 0.03f).SetEase(Ease.InQuad))
+                // Hop 3
+                .Append(t.DOLocalMoveY(baseY + 0.5f, dur * 0.08f).SetEase(hopEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.08f).SetEase(fallEase))
+                // Squash 3
+                .Append(t.DOScale(squash3, dur * 0.03f).SetEase(Ease.OutQuad))
+                .Append(t.DOScale(originalScale, dur * 0.03f).SetEase(Ease.InQuad))
+                // Final settle
+                .AppendInterval(dur * 0.14f)
+                .WithDefaults(presetOptions, target);
+        }
     }
 
     #endregion

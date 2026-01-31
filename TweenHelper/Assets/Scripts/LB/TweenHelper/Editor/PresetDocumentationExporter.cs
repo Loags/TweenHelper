@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using DG.Tweening;
 using UnityEditor;
 using UnityEngine;
 
@@ -74,6 +75,8 @@ namespace LB.TweenHelper.Editor
             sb.AppendLine($"Generated: {DateTime.Now:yyyy-MM-dd}");
             sb.AppendLine();
 
+            sb.Append(BuildProjectInfoHeader(presets));
+
             // Group by category
             var grouped = presets
                 .GroupBy(p => (p is ICategorizedTweenPreset cat) ? cat.Category : "Uncategorized")
@@ -143,6 +146,89 @@ namespace LB.TweenHelper.Editor
                     sb.AppendLine();
                 }
             }
+
+            return sb.ToString();
+        }
+
+        private static string BuildProjectInfoHeader(List<ITweenPreset> presets)
+        {
+            const string separator = "────────────────────────────────────────";
+            var sb = new StringBuilder();
+
+            // 1. Project Metadata
+            sb.AppendLine(separator);
+            sb.AppendLine("Project Information");
+            sb.AppendLine(separator);
+            sb.AppendLine();
+            sb.AppendLine($"Unity Version:   {Application.unityVersion}");
+            sb.AppendLine($"DOTween Version: {DOTween.Version}");
+            sb.AppendLine($"Repository:      https://github.com/Loags/TweenHelper");
+            sb.AppendLine($"Author:          Loags");
+            sb.AppendLine($"License:         MIT");
+            sb.AppendLine();
+
+            // 2. Project Summary
+            sb.AppendLine(separator);
+            sb.AppendLine("About TweenHelper");
+            sb.AppendLine(separator);
+            sb.AppendLine();
+            sb.AppendLine("TweenHelper is a high-level animation facade built on DOTween for Unity.");
+            sb.AppendLine("It provides a fluent builder API, named presets with auto-registration,");
+            sb.AppendLine("sequence composition, and automatic cleanup via GameObject linking.");
+            sb.AppendLine();
+
+            // 3. What's Included
+            sb.AppendLine(separator);
+            sb.AppendLine("What's Included");
+            sb.AppendLine(separator);
+            sb.AppendLine();
+            sb.AppendLine($"Total Presets: {presets.Count}");
+            sb.AppendLine();
+
+            var categoryGroups = presets
+                .GroupBy(p => (p is ICategorizedTweenPreset cat) ? cat.Category : "Uncategorized")
+                .OrderBy(g => g.Key)
+                .ToList();
+
+            foreach (var group in categoryGroups)
+                sb.AppendLine($"  {group.Key}: {group.Count()} presets");
+
+            sb.AppendLine();
+            sb.AppendLine("Builder Capabilities:");
+            sb.AppendLine("  Move, Rotate, Scale, Fade, Sequence (Then/With), Async/Await");
+            sb.AppendLine();
+
+            // 4. Architecture Overview
+            sb.AppendLine(separator);
+            sb.AppendLine("Architecture Overview");
+            sb.AppendLine(separator);
+            sb.AppendLine();
+            sb.AppendLine("Fluent Builder    — transform.Tween().Move(...).WithEase(...).Play()");
+            sb.AppendLine("Preset System     — [AutoRegisterPreset] attribute + TweenPresetRegistry auto-discovery");
+            sb.AppendLine("TweenHandle       — Wrapper with control (Pause/Resume/Kill), status, and async/await");
+            sb.AppendLine("TweenOptions      — Value-type struct with nullable fields for per-call overrides");
+            sb.AppendLine("Auto-Cleanup      — SetLink(gameObject) + TweenLifecycleTracker fallback");
+            sb.AppendLine("Global Defaults   — TweenHelperSettings singleton ScriptableObject");
+            sb.AppendLine();
+
+            // 5. Current Default Settings
+            var settings = TweenHelperSettings.Instance;
+            sb.AppendLine(separator);
+            sb.AppendLine("Current Default Settings");
+            sb.AppendLine(separator);
+            sb.AppendLine();
+            sb.AppendLine($"Default Duration:  {settings.DefaultDuration}s");
+            sb.AppendLine($"Default Ease:      {settings.DefaultEase}");
+            sb.AppendLine($"Default Delay:     {settings.DefaultDelay}s");
+            sb.AppendLine();
+            sb.AppendLine($"Safe Mode:         {settings.UseSafeMode}");
+            sb.AppendLine($"Auto Play:         {settings.EnableAutoPlay}");
+            sb.AppendLine($"Auto Kill:         {settings.EnableAutoKill}");
+            sb.AppendLine();
+            sb.AppendLine($"Tweener Capacity:  {settings.MaxTweenersCapacity}");
+            sb.AppendLine($"Sequence Capacity: {settings.MaxSequencesCapacity}");
+            sb.AppendLine();
+            sb.AppendLine();
 
             return sb.ToString();
         }

@@ -3,29 +3,22 @@ using UnityEngine.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
-using UnityEngine.UI;
 
 namespace LB.TweenHelper.Demo
 {
     /// <summary>
-    /// Spawns objects for each registered animation preset in a grid layout.
+    /// Spawns objects for each registered animation preset in a family-cluster layout.
+    /// Related presets (e.g., all "Pop*" presets) form small visual clusters arranged in a grid.
     /// Attach to any GameObject and use context menu or run at Start.
     /// </summary>
     public class PresetShowcaseSpawner : MonoBehaviour
     {
-        [Header("Layout")]
-        [SerializeField] private int columns = 5;
-        [SerializeField] private float spacingX = 4f;
-        [SerializeField] private float spacingZ = 4f;
+        [Header("Cluster Layout")]
+        [SerializeField] private int familiesPerRow = 4;
+        [SerializeField] private float intraClusterSpacing = 6f;
+        [SerializeField] private float interClusterGapX = 15f;
+        [SerializeField] private float interClusterGapZ = 12f;
         [SerializeField] private Vector3 startPosition = new Vector3(-8, 0, 0);
-
-        [Header("Category Layout")]
-        [SerializeField] private float categoryGapZ = 6f;
-        [SerializeField] private bool spawnCategoryLabels = true;
-        [SerializeField] private Vector3 categoryLabelOffset = new Vector3(0f, 1.6f, 0f);
-        [SerializeField] private float categoryLabelLeftPadding = 2f;
-        [SerializeField] private Color categoryLabelColor = new Color(1f, 1f, 1f, 0.9f);
 
         [Header("Object Settings")]
         [SerializeField] private PrimitiveType objectType = PrimitiveType.Cube;
@@ -52,26 +45,94 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private bool clearExistingOnSpawn = true;
 
         private readonly List<GameObject> _spawnedObjects = new List<GameObject>();
-        private static readonly string[] CategoryOrder =
+
+        /// <summary>
+        /// Override dictionary for preset names that don't follow standard prefix rules.
+        /// Maps preset name to family name.
+        /// </summary>
+        private static readonly Dictionary<string, string> FamilyOverrides = new Dictionary<string, string>
         {
-            PresetCategories.Base,
-            PresetCategories.Scale,
-            PresetCategories.Movement,
-            PresetCategories.Fade,
-            PresetCategories.Rotation,
-            PresetCategories.Combined
+            { "SwirlIn", "Spiral" },
+            { "Squash", "Misc" },
+            { "Breathe", "Misc" },
+            { "Heartbeat", "Misc" },
+            { "ElasticSnapIn", "Misc" },
+            { "Float", "Misc" },
+            { "ZigZag", "Misc" },
+            { "Blink", "Misc" },
+            { "Flicker", "Misc" },
+            { "Tilt", "Misc" },
+            { "WindUp", "Misc" },
+            { "Attention", "Misc" },
+            { "Explode", "Misc" },
         };
 
-        private class PresetCategoryGroup
+        /// <summary>
+        /// Known suffixes stripped during family detection, ordered longest first.
+        /// </summary>
+        private static readonly string[] KnownSuffixes =
         {
-            public string Name { get; }
-            public List<ITweenPreset> Presets { get; }
+            "Overshoot",
+            "Clockwise",
+            "CounterClockwise",
+            "Diagonal",
+            "Cartoon",
+            "Heavy",
+            "Fade",
+            "Land",
+            "Soft",
+            "Hard",
+            "Down",
+            "Left",
+            "Right",
+            "Up",
+            "Out",
+            "In",
+            "XY",
+            "XZ",
+            "YZ",
+            "2D",
+            "S",
+            "M",
+            "L",
+            "X",
+            "Y",
+            "Z",
+        };
 
-            public PresetCategoryGroup(string name, List<ITweenPreset> presets)
-            {
-                Name = name;
-                Presets = presets;
-            }
+        /// <summary>
+        /// Order in which families appear. Families not listed sort alphabetically after these.
+        /// </summary>
+        private static readonly string[] FamilyOrder =
+        {
+            "Pop",
+            "Slide",
+            "Wobble",
+            "Spin",
+            "Bounce",
+            "Shake",
+            "Nudge",
+            "Pulse",
+            "Punch",
+            "Sway",
+            "Orbit",
+            "Rock",
+            "Nod",
+            "Jitter",
+            "Launch",
+            "Fade",
+            "Recoil",
+            "Drop",
+            "Flip",
+            "Spiral",
+            "Misc",
+        };
+
+        private class PresetFamilyCluster
+        {
+            public string Name;
+            public List<List<ITweenPreset>> Rows;
+            public int MaxColumnsInRow;
         }
 
         private void Start()
@@ -108,7 +169,6 @@ namespace LB.TweenHelper.Demo
 
             TweenPresetRegistry.ScanForCodePresets();
 
-            // Get all registered presets and sort by category
             var presets = TweenPresetRegistry.Presets.ToList();
             if (presets.Count == 0)
             {
@@ -116,64 +176,298 @@ namespace LB.TweenHelper.Demo
                 return;
             }
 
-            // Group presets by category for spatial separation
-            var groupedPresets = GroupPresetsByCategory(presets);
+            var families = GroupPresetsByFamily(presets);
 
-            Debug.Log($"PresetShowcaseSpawner: Spawning {presets.Count} preset objects across {groupedPresets.Count} categories...");
+            Debug.Log($"PresetShowcaseSpawner: Spawning {presets.Count} preset objects across {families.Count} families...");
 
-            // Create parent container
             var container = new GameObject("PresetShowcase");
             container.transform.SetParent(transform);
             container.transform.localPosition = Vector3.zero;
 
-            // Spawn per-category blocks offset in Z so groups stay visually separated
-            float categoryOffsetZ = 0f;
-            foreach (var group in groupedPresets)
+            // Track layout bounds for ground plane
+            float maxX = 0f;
+            float maxZ = 0f;
+
+            // Arrange families in a grid-of-clusters
+            int familyCol = 0;
+            float rowOffsetZ = 0f;
+            float rowMaxDepth = 0f;
+            float currentX = 0f;
+
+            for (int f = 0; f < families.Count; f++)
             {
-                var groupStart = startPosition + new Vector3(0f, 0f, categoryOffsetZ);
+                var family = families[f];
 
-                var rows = Mathf.Max(1, Mathf.CeilToInt(group.Presets.Count / (float)columns));
-                var categoryCenterOffset = new Vector3(0f, 0f, (rows - 1) * spacingZ * 0.5f);
+                float clusterWidth = (family.MaxColumnsInRow - 1) * intraClusterSpacing;
+                float clusterDepth = (family.Rows.Count - 1) * intraClusterSpacing;
 
-                if (spawnCategoryLabels)
+                var clusterOrigin = startPosition + new Vector3(currentX, 0f, rowOffsetZ);
+
+                // Spawn preset objects in sub-row layout
+                for (int r = 0; r < family.Rows.Count; r++)
                 {
-                    var labelPosition = GetCategoryLabelPosition(groupStart, rows, group.Presets.Count);
-                    SpawnCategoryLabel(group.Name, labelPosition + categoryCenterOffset, container.transform);
+                    var subRow = family.Rows[r];
+                    for (int c = 0; c < subRow.Count; c++)
+                    {
+                        var position = clusterOrigin + new Vector3(c * intraClusterSpacing, 0f, r * intraClusterSpacing);
+                        var obj = SpawnPresetObject(subRow[c], position, container.transform);
+                        _spawnedObjects.Add(obj);
+
+                        maxX = Mathf.Max(maxX, position.x);
+                        maxZ = Mathf.Max(maxZ, position.z);
+                    }
                 }
 
-                for (int i = 0; i < group.Presets.Count; i++)
+                rowMaxDepth = Mathf.Max(rowMaxDepth, clusterDepth);
+
+                familyCol++;
+                currentX += clusterWidth + interClusterGapX;
+
+                // Wrap to next row of clusters
+                if (familyCol >= familiesPerRow)
                 {
-                    var preset = group.Presets[i];
-                    int row = i / columns;
-                    int col = i % columns;
-
-                    var position = groupStart + new Vector3(col * spacingX, 0, row * spacingZ);
-                    var obj = SpawnPresetObject(preset, position, container.transform);
-                    _spawnedObjects.Add(obj);
+                    familyCol = 0;
+                    currentX = 0f;
+                    rowOffsetZ += rowMaxDepth + interClusterGapZ;
+                    rowMaxDepth = 0f;
                 }
-
-                // Advance the offset based on the depth of this category block
-                categoryOffsetZ += rows * spacingZ + categoryGapZ;
             }
+
+            // Account for the last partial row
+            float totalDepth = rowOffsetZ + rowMaxDepth;
 
             if (spawnGround)
             {
-                SpawnGroundPlane(container.transform, categoryOffsetZ);
+                SpawnGroundPlane(container.transform, maxX - startPosition.x, totalDepth);
             }
 
             Debug.Log($"PresetShowcaseSpawner: Spawned {_spawnedObjects.Count} objects.");
         }
 
+        private string GetPresetFamily(ITweenPreset preset)
+        {
+            var name = preset.PresetName;
+
+            if (FamilyOverrides.TryGetValue(name, out var familyOverride))
+            {
+                return familyOverride;
+            }
+
+            // Iteratively strip known suffixes to find the root family name
+            var candidate = name;
+            bool stripped = true;
+            while (stripped && candidate.Length > 0)
+            {
+                stripped = false;
+                foreach (var suffix in KnownSuffixes)
+                {
+                    // Only strip single-char suffixes (S/M/L/X/Y/Z) if the remaining part
+                    // is at least 3 chars and ends with a lowercase letter (to avoid over-stripping)
+                    if (suffix.Length == 1 && candidate.Length > 1 && candidate.EndsWith(suffix, StringComparison.Ordinal))
+                    {
+                        var remaining = candidate.Substring(0, candidate.Length - 1);
+                        if (remaining.Length >= 3 && char.IsLower(remaining[remaining.Length - 1]))
+                        {
+                            candidate = remaining;
+                            stripped = true;
+                            break;
+                        }
+                    }
+                    else if (suffix.Length > 1 && candidate.Length > suffix.Length && candidate.EndsWith(suffix, StringComparison.Ordinal))
+                    {
+                        candidate = candidate.Substring(0, candidate.Length - suffix.Length);
+                        stripped = true;
+                        break;
+                    }
+                }
+            }
+
+            // If stripping reduced to empty or single char, use original first word
+            if (candidate.Length < 2)
+            {
+                candidate = name;
+            }
+
+            return candidate;
+        }
+
+        private List<PresetFamilyCluster> GroupPresetsByFamily(List<ITweenPreset> presets)
+        {
+            var groups = presets
+                .GroupBy(GetPresetFamily)
+                .Select(g =>
+                {
+                    var rows = GroupIntoSubRows(g.Key, g.ToList());
+                    int maxCols = rows.Max(r => r.Count);
+                    return new PresetFamilyCluster
+                    {
+                        Name = g.Key,
+                        Rows = rows,
+                        MaxColumnsInRow = maxCols
+                    };
+                })
+                .OrderBy(c => GetFamilyOrderIndex(c.Name))
+                .ThenBy(c => c.Name)
+                .ToList();
+
+            return groups;
+        }
+
+        private int GetFamilyOrderIndex(string family)
+        {
+            var index = Array.IndexOf(FamilyOrder, family);
+            return index >= 0 ? index : int.MaxValue;
+        }
+
+        private List<List<ITweenPreset>> GroupIntoSubRows(string family, List<ITweenPreset> presets)
+        {
+            var grouped = presets
+                .GroupBy(p => GetSubRowKey(family, p.PresetName))
+                .OrderBy(g => GetSubRowOrder(g.Key))
+                .ThenBy(g => g.Key)
+                .Select(g => g.OrderBy(p => GetColumnOrder(family, p.PresetName)).ThenBy(p => p.PresetName).ToList())
+                .ToList();
+
+            // Post-process: if all rows are singletons and count > 6, re-chunk into rows of 3
+            if (grouped.Count > 6 && grouped.All(r => r.Count == 1))
+            {
+                var flat = grouped.SelectMany(r => r).ToList();
+                grouped = new List<List<ITweenPreset>>();
+                for (int i = 0; i < flat.Count; i += 3)
+                {
+                    grouped.Add(flat.Skip(i).Take(3).ToList());
+                }
+            }
+
+            return grouped;
+        }
+
+        private static string GetSubRowKey(string family, string presetName)
+        {
+            // Remove intensity modifiers (these become column variations)
+            var name = presetName.Replace("Soft", "").Replace("Hard", "");
+
+            // Strip family prefix
+            if (name.StartsWith(family, StringComparison.Ordinal))
+            {
+                name = name.Substring(family.Length);
+            }
+
+            // Strip trailing leaf modifier to get the row key
+            return StripTrailingLeaf(name);
+        }
+
+        private static string StripTrailingLeaf(string variant)
+        {
+            // Directions (longest first to avoid partial matches)
+            string[] directions = { "Forward", "Right", "Left", "Down", "Back", "Up" };
+            foreach (var d in directions)
+            {
+                if (variant.EndsWith(d, StringComparison.Ordinal))
+                {
+                    return variant.Substring(0, variant.Length - d.Length);
+                }
+            }
+
+            // Compound axes
+            string[] compoundAxes = { "XY", "XZ", "YZ", "2D" };
+            foreach (var a in compoundAxes)
+            {
+                if (variant.EndsWith(a, StringComparison.Ordinal))
+                {
+                    return variant.Substring(0, variant.Length - a.Length);
+                }
+            }
+
+            // Single axes (always strip)
+            string[] singleAxes = { "X", "Y", "Z" };
+            foreach (var a in singleAxes)
+            {
+                if (variant.EndsWith(a, StringComparison.Ordinal))
+                {
+                    return variant.Substring(0, variant.Length - 1);
+                }
+            }
+
+            // Sizes (only strip if remaining is non-empty)
+            string[] sizes = { "S", "M", "L" };
+            foreach (var s in sizes)
+            {
+                if (variant.EndsWith(s, StringComparison.Ordinal))
+                {
+                    var remaining = variant.Substring(0, variant.Length - 1);
+                    if (remaining.Length > 0)
+                    {
+                        return remaining;
+                    }
+                }
+            }
+
+            return variant;
+        }
+
+        private static int GetSubRowOrder(string rowKey)
+        {
+            int score = 0;
+
+            if (string.IsNullOrEmpty(rowKey)) return -1;
+
+            if (rowKey.Contains("In") && !rowKey.Contains("Out")) score += 0;
+            else if (rowKey.Contains("Out")) score += 100;
+
+            if (rowKey.Contains("Diagonal")) score += 5;
+            if (rowKey.Contains("Overshoot")) score += 10;
+            if (rowKey.Contains("Land")) score += 15;
+            if (rowKey.Contains("Fade")) score += 20;
+            if (rowKey.Contains("Cartoon")) score += 25;
+            if (rowKey.Contains("Scale")) score += 30;
+            if (rowKey.Contains("Clockwise") && !rowKey.Contains("Counter")) score += 40;
+            if (rowKey.Contains("CounterClockwise")) score += 45;
+
+            return score;
+        }
+
+        private static int GetColumnOrder(string family, string presetName)
+        {
+            int score = 0;
+
+            // Intensity modifiers
+            if (presetName.Contains("Soft")) score += 1;
+            else if (presetName.Contains("Hard")) score += 2;
+
+            // Directions
+            if (presetName.Contains("Up")) score += 0;
+            else if (presetName.Contains("Down")) score += 10;
+            else if (presetName.Contains("Left")) score += 20;
+            else if (presetName.Contains("Right")) score += 30;
+            else if (presetName.Contains("Forward")) score += 40;
+            else if (presetName.Contains("Back") && !presetName.Contains("Backflip")) score += 50;
+
+            // Axes
+            if (presetName.EndsWith("XY")) score += 100;
+            else if (presetName.EndsWith("XZ")) score += 110;
+            else if (presetName.EndsWith("YZ")) score += 120;
+            else if (presetName.EndsWith("2D")) score += 130;
+            else if (presetName.EndsWith("X")) score += 100;
+            else if (presetName.EndsWith("Y")) score += 110;
+            else if (presetName.EndsWith("Z")) score += 120;
+
+            // Sizes
+            if (presetName.EndsWith("S") && !presetName.EndsWith("XS")) score += 1000;
+            else if (presetName.EndsWith("M")) score += 1100;
+            else if (presetName.EndsWith("L")) score += 1200;
+
+            return score;
+        }
+
         private GameObject SpawnPresetObject(ITweenPreset preset, Vector3 position, Transform parent)
         {
-            // Create primitive
             var obj = GameObject.CreatePrimitive(objectType);
             obj.name = $"Preset_{preset.PresetName}";
             obj.transform.SetParent(parent);
             obj.transform.localPosition = position;
             obj.transform.localScale = objectScale;
 
-            // Apply material
             var renderer = obj.GetComponent<Renderer>();
             if (renderer != null)
             {
@@ -186,47 +480,40 @@ namespace LB.TweenHelper.Demo
                     renderer.material = CreateTransparentMaterial();
                 }
 
-                // Set color
                 if (renderer.material != null)
                 {
                     renderer.material.color = objectColor;
                 }
             }
 
-            // Ensure collider exists for clicking
             var collider = obj.GetComponent<Collider>();
             if (collider == null)
             {
                 obj.AddComponent<BoxCollider>();
             }
 
-            // Add display component
             var display = obj.AddComponent<AnimationPresetDisplay>();
             display.Setup(preset.PresetName, preset.Description);
 
             return obj;
         }
 
-        private void SpawnGroundPlane(Transform parent, float totalDepth)
+        private void SpawnGroundPlane(Transform parent, float totalWidth, float totalDepth)
         {
             var ground = GameObject.CreatePrimitive(PrimitiveType.Quad);
             ground.name = "Ground";
             ground.transform.SetParent(parent);
 
-            // Rotate quad to face up
             ground.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
 
-            // Size to cover the full grid with padding
-            float width = (columns - 1) * spacingX + groundPadding * 2f;
+            float width = totalWidth + groundPadding * 2f;
             float depth = totalDepth + groundPadding * 2f;
             ground.transform.localScale = new Vector3(width, depth, 1f);
 
-            // Center on the grid
-            float centerX = startPosition.x + (columns - 1) * spacingX * 0.5f;
-            float centerZ = startPosition.z + (totalDepth - categoryGapZ) * 0.5f;
+            float centerX = startPosition.x + totalWidth * 0.5f;
+            float centerZ = startPosition.z + totalDepth * 0.5f;
             ground.transform.localPosition = new Vector3(centerX, groundYOffset, centerZ);
 
-            // Apply material with tiling
             var renderer = ground.GetComponent<Renderer>();
             if (renderer != null && groundMaterial != null)
             {
@@ -237,94 +524,6 @@ namespace LB.TweenHelper.Demo
             _spawnedObjects.Add(ground);
         }
 
-        private List<PresetCategoryGroup> GroupPresetsByCategory(List<ITweenPreset> presets)
-        {
-            return presets
-                .GroupBy(GetCategoryName)
-                .Select(group => new PresetCategoryGroup(group.Key, group.OrderBy(p => p.PresetName).ToList()))
-                .OrderBy(g => GetCategoryOrderIndex(g.Name))
-                .ThenBy(g => g.Name)
-                .ToList();
-        }
-
-        private string GetCategoryName(ITweenPreset preset)
-        {
-            if (preset is ICategorizedTweenPreset categorized && !string.IsNullOrWhiteSpace(categorized.Category))
-            {
-                return categorized.Category;
-            }
-
-            return PresetCategories.Base;
-        }
-
-        private int GetCategoryOrderIndex(string category)
-        {
-            var index = Array.IndexOf(CategoryOrder, category);
-            return index >= 0 ? index : int.MaxValue;
-        }
-
-        private void SpawnCategoryLabel(string category, Vector3 position, Transform parent)
-        {
-            var labelGO = new GameObject($"Category_{category}_Label");
-            labelGO.transform.SetParent(parent);
-            labelGO.transform.localPosition = position;
-            labelGO.transform.localRotation = Quaternion.identity;
-
-            var canvas = labelGO.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.WorldSpace;
-
-            var scaler = labelGO.AddComponent<CanvasScaler>();
-            scaler.dynamicPixelsPerUnit = 10f;
-
-            var rect = labelGO.GetComponent<RectTransform>();
-            rect.sizeDelta = new Vector2(320f, 80f);
-            rect.localScale = Vector3.one * 0.01f;
-
-            // Background panel similar to animation labels
-            var panelGO = new GameObject("Panel");
-            panelGO.transform.SetParent(labelGO.transform, false);
-            var panelRect = panelGO.AddComponent<RectTransform>();
-            panelRect.anchorMin = Vector2.zero;
-            panelRect.anchorMax = Vector2.one;
-            panelRect.sizeDelta = Vector2.zero;
-
-            var panelImage = panelGO.AddComponent<Image>();
-            panelImage.color = new Color(0f, 0f, 0f, 0.7f);
-
-            var layout = panelGO.AddComponent<VerticalLayoutGroup>();
-            layout.padding = new RectOffset(12, 12, 10, 10);
-            layout.spacing = 0;
-            layout.childAlignment = TextAnchor.MiddleLeft;
-            layout.childControlHeight = true;
-            layout.childControlWidth = true;
-            layout.childForceExpandHeight = false;
-            layout.childForceExpandWidth = true;
-
-            var textGO = new GameObject("CategoryText");
-            textGO.transform.SetParent(panelGO.transform, false);
-            var text = textGO.AddComponent<TextMeshProUGUI>();
-            text.text = category;
-            text.fontSize = 28;
-            text.alignment = TextAlignmentOptions.Left;
-            text.color = categoryLabelColor;
-            text.fontStyle = FontStyles.Bold;
-
-            var textLayout = textGO.AddComponent<LayoutElement>();
-            textLayout.preferredHeight = 40;
-
-            // Billboard so it faces the camera
-            labelGO.AddComponent<BillboardCanvas>();
-        }
-
-        private Vector3 GetCategoryLabelPosition(Vector3 groupStart, int rows, int presetCount)
-        {
-            var colsInGroup = Mathf.Max(1, Mathf.Min(columns, presetCount));
-            var groupWidth = (colsInGroup - 1) * spacingX + objectScale.x;
-            var leftOfGroup = groupStart.x - (groupWidth * 0.5f) - categoryLabelLeftPadding;
-            var zCenter = (rows - 1) * spacingZ * 0.5f;
-            return new Vector3(leftOfGroup, groupStart.y, groupStart.z + zCenter) + categoryLabelOffset;
-        }
-
         /// <summary>
         /// Creates a material that supports transparency for fade animations.
         /// Uses URP Lit shader if available, falls back to Standard shader.
@@ -333,14 +532,12 @@ namespace LB.TweenHelper.Demo
         {
             Material mat = null;
 
-            // Try URP Lit shader first (Unity 6 default)
             var urpLit = Shader.Find("Universal Render Pipeline/Lit");
             if (urpLit != null)
             {
                 mat = new Material(urpLit);
-                // Set to transparent mode
-                mat.SetFloat("_Surface", 1); // 0 = Opaque, 1 = Transparent
-                mat.SetFloat("_Blend", 0);   // 0 = Alpha, 1 = Premultiply, 2 = Additive, 3 = Multiply
+                mat.SetFloat("_Surface", 1);
+                mat.SetFloat("_Blend", 0);
                 mat.SetInt("_SrcBlend", (int)BlendMode.SrcAlpha);
                 mat.SetInt("_DstBlend", (int)BlendMode.OneMinusSrcAlpha);
                 mat.SetInt("_ZWrite", 0);
@@ -349,13 +546,11 @@ namespace LB.TweenHelper.Demo
             }
             else
             {
-                // Fallback to Standard shader (Built-in RP)
                 var standard = Shader.Find("Standard");
                 if (standard != null)
                 {
                     mat = new Material(standard);
-                    // Set to transparent mode
-                    mat.SetFloat("_Mode", 3); // Transparent
+                    mat.SetFloat("_Mode", 3);
                     mat.SetInt("_SrcBlend", (int)BlendMode.SrcAlpha);
                     mat.SetInt("_DstBlend", (int)BlendMode.OneMinusSrcAlpha);
                     mat.SetInt("_ZWrite", 0);
@@ -388,7 +583,6 @@ namespace LB.TweenHelper.Demo
             }
             _spawnedObjects.Clear();
 
-            // Also destroy the container
             var container = transform.Find("PresetShowcase");
             if (container != null)
             {
@@ -413,11 +607,9 @@ namespace LB.TweenHelper.Demo
                 return;
             }
 
-            // Position camera
             mainCamera.transform.position = cameraPosition;
             mainCamera.transform.eulerAngles = cameraRotation;
 
-            // Add FlyCamera if not present
             if (mainCamera.GetComponent<FlyCamera>() == null)
             {
                 mainCamera.gameObject.AddComponent<FlyCamera>();
@@ -443,48 +635,63 @@ namespace LB.TweenHelper.Demo
 
             if (presets.Count == 0)
             {
-                int presetCount = 20; // Approximate fallback preview
+                int presetCount = 20;
                 Gizmos.color = new Color(0, 1, 0, 0.3f);
                 for (int i = 0; i < presetCount; i++)
                 {
-                    int row = i / columns;
-                    int col = i % columns;
-                    var position = transform.position + startPosition + new Vector3(col * spacingX, 0, row * spacingZ);
+                    int row = i / 3;
+                    int col = i % 3;
+                    var position = transform.position + startPosition + new Vector3(col * intraClusterSpacing, 0, row * intraClusterSpacing);
                     Gizmos.DrawWireCube(position, objectScale);
                 }
             }
             else
             {
-                Gizmos.color = new Color(0, 1, 0, 0.3f);
-                var grouped = GroupPresetsByCategory(presets);
-                float categoryOffsetZ = 0f;
+                var families = GroupPresetsByFamily(presets);
 
-                foreach (var group in grouped)
+                int familyCol = 0;
+                float rowOffsetZ = 0f;
+                float rowMaxDepth = 0f;
+                float currentX = 0f;
+
+                Gizmos.color = new Color(0, 1, 0, 0.3f);
+
+                for (int f = 0; f < families.Count; f++)
                 {
-                    for (int i = 0; i < group.Presets.Count; i++)
+                    var family = families[f];
+
+                    float clusterWidth = (family.MaxColumnsInRow - 1) * intraClusterSpacing;
+                    float clusterDepth = (family.Rows.Count - 1) * intraClusterSpacing;
+
+                    var clusterOrigin = transform.position + startPosition + new Vector3(currentX, 0f, rowOffsetZ);
+
+                    for (int r = 0; r < family.Rows.Count; r++)
                     {
-                        int row = i / columns;
-                        int col = i % columns;
-                        var position = transform.position + startPosition + new Vector3(col * spacingX, 0, row * spacingZ + categoryOffsetZ);
-                        Gizmos.DrawWireCube(position, objectScale);
+                        var subRow = family.Rows[r];
+                        for (int c = 0; c < subRow.Count; c++)
+                        {
+                            var position = clusterOrigin + new Vector3(c * intraClusterSpacing, 0f, r * intraClusterSpacing);
+                            Gizmos.DrawWireCube(position, objectScale);
+                        }
                     }
 
-                    var rows = Mathf.Max(1, Mathf.CeilToInt(group.Presets.Count / (float)columns));
-                    categoryOffsetZ += rows * spacingZ + categoryGapZ;
-                }
+                    // Draw cluster bounding box
+                    Gizmos.color = new Color(1f, 1f, 0f, 0.15f);
+                    var clusterCenter = clusterOrigin + new Vector3(clusterWidth * 0.5f, 0f, clusterDepth * 0.5f);
+                    Gizmos.DrawWireCube(clusterCenter, new Vector3(clusterWidth + 1f, 0.1f, clusterDepth + 1f));
+                    Gizmos.color = new Color(0, 1, 0, 0.3f);
 
-                if (spawnCategoryLabels)
-                {
-                    categoryOffsetZ = 0f;
-                    Gizmos.color = new Color(1f, 1f, 0f, 0.35f);
-                    foreach (var group in grouped)
+                    rowMaxDepth = Mathf.Max(rowMaxDepth, clusterDepth);
+
+                    familyCol++;
+                    currentX += clusterWidth + interClusterGapX;
+
+                    if (familyCol >= familiesPerRow)
                     {
-                        var rows = Mathf.Max(1, Mathf.CeilToInt(group.Presets.Count / (float)columns));
-                        var categoryCenterOffset = new Vector3(0f, 0f, (rows - 1) * spacingZ * 0.5f);
-                        var basePos = transform.position + startPosition + new Vector3(0f, 0f, categoryOffsetZ);
-                        var position = GetCategoryLabelPosition(basePos, rows, group.Presets.Count) + categoryCenterOffset;
-                        Gizmos.DrawWireCube(position, new Vector3(1f, 1f, 0.1f));
-                        categoryOffsetZ += rows * spacingZ + categoryGapZ;
+                        familyCol = 0;
+                        currentX = 0f;
+                        rowOffsetZ += rowMaxDepth + interClusterGapZ;
+                        rowMaxDepth = 0f;
                     }
                 }
             }

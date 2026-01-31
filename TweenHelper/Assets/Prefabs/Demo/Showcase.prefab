@@ -44,15 +44,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c5dd21c98b7f424b89c4f16e98fd58d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  columns: 4
-  spacingX: 4
-  spacingZ: 4
+  familiesPerRow: 4
+  intraClusterSpacing: 6
+  interClusterGapX: 15
+  interClusterGapZ: 12
   startPosition: {x: -6, y: 0, z: 0}
-  categoryGapZ: 6
-  spawnCategoryLabels: 1
-  categoryLabelOffset: {x: 0, y: 1.6, z: 0}
-  categoryLabelLeftPadding: 2
-  categoryLabelColor: {r: 1, g: 1, b: 1, a: 0.9}
   objectType: 3
   objectScale: {x: 1, y: 1, z: 1}
   objectMaterial: {fileID: 2100000, guid: d4af34a6e79dddb4aa0bd5a5cac53a17, type: 2}

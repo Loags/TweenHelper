@@ -2,7 +2,5 @@
   <Project Path="LB.TweenHelper.Runtime.csproj" />
   <Project Path="DOTween.Modules.csproj" />
   <Project Path="LB.TweenHelper.Demo.csproj" />
-  <Project Path="Assembly-CSharp-Editor.csproj" />
-  <Project Path="Assembly-CSharp.csproj" />
   <Project Path="LB.TweenHelper.Editor.csproj" />
 </Solution>

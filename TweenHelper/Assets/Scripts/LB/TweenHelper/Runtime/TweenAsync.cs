@@ -45,7 +45,7 @@ namespace LB.TweenHelper
             });
             
             // Set up completion callback
-            tween.OnComplete(() =>
+            _ = tween.OnComplete(() =>
             {
                 if (!tcs.Task.IsCompleted)
                 {
@@ -54,7 +54,7 @@ namespace LB.TweenHelper
             });
             
             // Set up kill callback for early termination
-            tween.OnKill(() =>
+            _ = tween.OnKill(() =>
             {
                 if (!tcs.Task.IsCompleted)
                 {
@@ -205,7 +205,7 @@ namespace LB.TweenHelper
             
             // Create a dummy tween for the delay
             var delayTween = DOTween.To(() => 0f, x => { }, 1f, delaySeconds);
-            delayTween.SetUpdate(unscaledTime);
+            _ = delayTween.SetUpdate(unscaledTime);
             
             await AwaitCompletion(delayTween, cancellationToken);
         }
