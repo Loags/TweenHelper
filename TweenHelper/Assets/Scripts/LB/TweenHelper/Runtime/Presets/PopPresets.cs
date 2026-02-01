@@ -29,11 +29,13 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            t.localScale = Vector3.zero;
+            var start = ResolveStartScale(options, Vector3.zero);
+            var scaleTarget = ResolveTargetScale(options, originalScale);
+            t.localScale = start;
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
             var ease = ResolveEase(presetOptions, Ease.OutQuad);
 
-            return t.DOScale(originalScale, GetDuration(duration))
+            return t.DOScale(scaleTarget, GetDuration(duration, options))
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -60,20 +62,23 @@ namespace LB.TweenHelper
         public override string PresetName => "PopInOvershoot";
         public override string Description => "Scales from 0 to original scale with overshoot";
         public override float DefaultDuration => 1.0f;
+        public override float DefaultOvershoot => 0.2f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            t.localScale = Vector3.zero;
-            var dur = GetDuration(duration);
+            var start = ResolveStartScale(options, Vector3.zero);
+            var scaleTarget = ResolveTargetScale(options, originalScale);
+            t.localScale = start;
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
-            var overshootScale = originalScale * 1.2f;
+            var overshootScale = scaleTarget * (1.0f + DefaultOvershoot * ResolveOvershootMultiplier(presetOptions));
 
             var seq = DOTween.Sequence();
             seq.Append(t.DOScale(overshootScale, dur).SetEase(Ease.OutQuad));
-            seq.Append(t.DOScale(originalScale, dur * 0.5f).SetEase(Ease.InOutSine));
+            seq.Append(t.DOScale(scaleTarget, dur * 0.5f).SetEase(Ease.InOutSine));
             return seq.WithDefaults(presetOptions, target);
         }
     }
@@ -104,7 +109,8 @@ namespace LB.TweenHelper
         {
             var presetOptions = MergeWithDefaultEase(options, Ease.InCubic);
             var ease = ResolveEase(presetOptions, Ease.InCubic);
-            return target.transform.DOScale(Vector3.zero, GetDuration(duration))
+            var endScale = ResolveTargetScale(options, Vector3.zero);
+            return target.transform.DOScale(endScale, GetDuration(duration, options))
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -129,7 +135,8 @@ namespace LB.TweenHelper
         {
             var presetOptions = MergeWithDefaultEase(options, Ease.InSine);
             var ease = ResolveEase(presetOptions, Ease.InSine);
-            return target.transform.DOScale(Vector3.zero, GetDuration(duration))
+            var endScale = ResolveTargetScale(options, Vector3.zero);
+            return target.transform.DOScale(endScale, GetDuration(duration, options))
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -154,7 +161,8 @@ namespace LB.TweenHelper
         {
             var presetOptions = MergeWithDefaultEase(options, Ease.InQuart);
             var ease = ResolveEase(presetOptions, Ease.InQuart);
-            return target.transform.DOScale(Vector3.zero, GetDuration(duration))
+            var endScale = ResolveTargetScale(options, Vector3.zero);
+            return target.transform.DOScale(endScale, GetDuration(duration, options))
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -180,17 +188,20 @@ namespace LB.TweenHelper
         public override string PresetName => "PopOutOvershoot";
         public override string Description => "Scales to 0 with anticipation overshoot";
         public override float DefaultDuration => 0.4f;
+        public override float DefaultOvershoot => 1.70158f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
             var ease = ResolveEase(presetOptions, Ease.InBack);
+            var os = DefaultOvershoot * ResolveOvershootMultiplier(presetOptions);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease));
+            seq.Join(t.DOScale(endScale, dur).SetEase(ease, os));
             return seq.WithDefaults(presetOptions, target);
         }
     }
@@ -215,17 +226,20 @@ namespace LB.TweenHelper
         public override string PresetName => "PopOutOvershootSoft";
         public override string Description => "Soft scale exit with mild overshoot";
         public override float DefaultDuration => 0.6f;
+        public override float DefaultOvershoot => 2.5f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
             var ease = ResolveEase(presetOptions, Ease.InBack);
+            var os = DefaultOvershoot * ResolveOvershootMultiplier(presetOptions);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease, 2.5f));
+            seq.Join(t.DOScale(endScale, dur).SetEase(ease, os));
             return seq.WithDefaults(presetOptions, target);
         }
     }
@@ -250,17 +264,20 @@ namespace LB.TweenHelper
         public override string PresetName => "PopOutOvershootHard";
         public override string Description => "Hard scale exit with strong overshoot";
         public override float DefaultDuration => 0.25f;
+        public override float DefaultOvershoot => 6.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
             var ease = ResolveEase(presetOptions, Ease.InBack);
+            var os = DefaultOvershoot * ResolveOvershootMultiplier(presetOptions);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease, 6.0f));
+            seq.Join(t.DOScale(endScale, dur).SetEase(ease, os));
             return seq.WithDefaults(presetOptions, target);
         }
     }
@@ -284,11 +301,13 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            t.localScale = Vector3.zero;
+            var start = ResolveStartScale(options, Vector3.zero);
+            var scaleTarget = ResolveTargetScale(options, originalScale);
+            t.localScale = start;
             var presetOptions = MergeWithDefaultEase(options, Ease.OutSine);
             var ease = ResolveEase(presetOptions, Ease.OutSine);
 
-            return t.DOScale(originalScale, GetDuration(duration))
+            return t.DOScale(scaleTarget, GetDuration(duration, options))
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -315,20 +334,23 @@ namespace LB.TweenHelper
         public override string PresetName => "PopInOvershootSoft";
         public override string Description => "Gentle scale entrance with mild OutBack overshoot";
         public override float DefaultDuration => 1.2f;
+        public override float DefaultOvershoot => 0.1f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            t.localScale = Vector3.zero;
-            var dur = GetDuration(duration);
+            var start = ResolveStartScale(options, Vector3.zero);
+            var scaleTarget = ResolveTargetScale(options, originalScale);
+            t.localScale = start;
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
-            var overshootScale = originalScale * 1.1f;
+            var overshootScale = scaleTarget * (1.0f + DefaultOvershoot * ResolveOvershootMultiplier(presetOptions));
 
             var seq = DOTween.Sequence();
             seq.Append(t.DOScale(overshootScale, dur).SetEase(Ease.OutQuad));
-            seq.Append(t.DOScale(originalScale, dur * 0.5f).SetEase(Ease.InOutSine));
+            seq.Append(t.DOScale(scaleTarget, dur * 0.5f).SetEase(Ease.InOutSine));
             return seq.WithDefaults(presetOptions, target);
         }
     }
@@ -352,11 +374,13 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            t.localScale = Vector3.zero;
+            var start = ResolveStartScale(options, Vector3.zero);
+            var scaleTarget = ResolveTargetScale(options, originalScale);
+            t.localScale = start;
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuart);
             var ease = ResolveEase(presetOptions, Ease.OutQuart);
 
-            return t.DOScale(originalScale, GetDuration(duration))
+            return t.DOScale(scaleTarget, GetDuration(duration, options))
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -383,20 +407,23 @@ namespace LB.TweenHelper
         public override string PresetName => "PopInOvershootHard";
         public override string Description => "Snappy scale entrance with strong overshoot";
         public override float DefaultDuration => 0.8f;
+        public override float DefaultOvershoot => 0.4f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            t.localScale = Vector3.zero;
-            var dur = GetDuration(duration);
+            var start = ResolveStartScale(options, Vector3.zero);
+            var scaleTarget = ResolveTargetScale(options, originalScale);
+            t.localScale = start;
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
-            var overshootScale = originalScale * 1.4f;
+            var overshootScale = scaleTarget * (1.0f + DefaultOvershoot * ResolveOvershootMultiplier(presetOptions));
 
             var seq = DOTween.Sequence();
             seq.Append(t.DOScale(overshootScale, dur).SetEase(Ease.OutQuad));
-            seq.Append(t.DOScale(originalScale, dur * 0.5f).SetEase(Ease.InOutSine));
+            seq.Append(t.DOScale(scaleTarget, dur * 0.5f).SetEase(Ease.InOutSine));
             return seq.WithDefaults(presetOptions, target);
         }
     }

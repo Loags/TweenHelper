@@ -36,7 +36,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinFactory.Create(target, Vector3.up, 360f, GetDuration(duration), options);
+            return SpinFactory.Create(target, Vector3.up, 360f, GetDuration(duration, options), options);
         }
     }
 
@@ -57,7 +57,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinFactory.Create(target, Vector3.up, 360f, GetDuration(duration), options);
+            return SpinFactory.Create(target, Vector3.up, 360f, GetDuration(duration, options), options);
         }
     }
 
@@ -78,7 +78,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinFactory.Create(target, Vector3.up, 360f, GetDuration(duration), options);
+            return SpinFactory.Create(target, Vector3.up, 360f, GetDuration(duration, options), options);
         }
     }
 
@@ -100,7 +100,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinFactory.Create(target, Vector3.right, 360f, GetDuration(duration), options);
+            return SpinFactory.Create(target, Vector3.right, 360f, GetDuration(duration, options), options);
         }
     }
 
@@ -121,7 +121,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinFactory.Create(target, Vector3.right, 360f, GetDuration(duration), options);
+            return SpinFactory.Create(target, Vector3.right, 360f, GetDuration(duration, options), options);
         }
     }
 
@@ -142,7 +142,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinFactory.Create(target, Vector3.right, 360f, GetDuration(duration), options);
+            return SpinFactory.Create(target, Vector3.right, 360f, GetDuration(duration, options), options);
         }
     }
 
@@ -164,7 +164,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinFactory.Create(target, Vector3.forward, 360f, GetDuration(duration), options);
+            return SpinFactory.Create(target, Vector3.forward, 360f, GetDuration(duration, options), options);
         }
     }
 
@@ -185,7 +185,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinFactory.Create(target, Vector3.forward, 360f, GetDuration(duration), options);
+            return SpinFactory.Create(target, Vector3.forward, 360f, GetDuration(duration, options), options);
         }
     }
 
@@ -206,7 +206,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinFactory.Create(target, Vector3.forward, 360f, GetDuration(duration), options);
+            return SpinFactory.Create(target, Vector3.forward, 360f, GetDuration(duration, options), options);
         }
     }
 
@@ -243,7 +243,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinDiagonalFactory.Create(target, new Vector3(360f, 360f, 0f), GetDuration(duration), options);
+            return SpinDiagonalFactory.Create(target, new Vector3(360f, 360f, 0f), GetDuration(duration, options), options);
         }
     }
 
@@ -264,7 +264,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinDiagonalFactory.Create(target, new Vector3(360f, 360f, 0f), GetDuration(duration), options);
+            return SpinDiagonalFactory.Create(target, new Vector3(360f, 360f, 0f), GetDuration(duration, options), options);
         }
     }
 
@@ -285,7 +285,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinDiagonalFactory.Create(target, new Vector3(360f, 360f, 0f), GetDuration(duration), options);
+            return SpinDiagonalFactory.Create(target, new Vector3(360f, 360f, 0f), GetDuration(duration, options), options);
         }
     }
 
@@ -307,7 +307,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinDiagonalFactory.Create(target, new Vector3(360f, 0f, 360f), GetDuration(duration), options);
+            return SpinDiagonalFactory.Create(target, new Vector3(360f, 0f, 360f), GetDuration(duration, options), options);
         }
     }
 
@@ -328,7 +328,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinDiagonalFactory.Create(target, new Vector3(360f, 0f, 360f), GetDuration(duration), options);
+            return SpinDiagonalFactory.Create(target, new Vector3(360f, 0f, 360f), GetDuration(duration, options), options);
         }
     }
 
@@ -349,7 +349,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinDiagonalFactory.Create(target, new Vector3(360f, 0f, 360f), GetDuration(duration), options);
+            return SpinDiagonalFactory.Create(target, new Vector3(360f, 0f, 360f), GetDuration(duration, options), options);
         }
     }
 
@@ -371,7 +371,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinDiagonalFactory.Create(target, new Vector3(0f, 360f, 360f), GetDuration(duration), options);
+            return SpinDiagonalFactory.Create(target, new Vector3(0f, 360f, 360f), GetDuration(duration, options), options);
         }
     }
 
@@ -392,7 +392,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinDiagonalFactory.Create(target, new Vector3(0f, 360f, 360f), GetDuration(duration), options);
+            return SpinDiagonalFactory.Create(target, new Vector3(0f, 360f, 360f), GetDuration(duration, options), options);
         }
     }
 
@@ -413,7 +413,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SpinDiagonalFactory.Create(target, new Vector3(0f, 360f, 360f), GetDuration(duration), options);
+            return SpinDiagonalFactory.Create(target, new Vector3(0f, 360f, 360f), GetDuration(duration, options), options);
         }
     }
 
@@ -444,13 +444,14 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.InCubic);
             var spinEase = ResolveSecondaryEase(options, Ease.Linear);
             var presetOptions = MergeWithDefaultEase(options, scaleEase);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             return DOTween.Sequence()
-                .Join(t.DOScale(Vector3.zero, dur).SetEase(scaleEase))
+                .Join(t.DOScale(endScale, dur).SetEase(scaleEase))
                 .Join(t.DORotate(new Vector3(0f, 720f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
@@ -477,18 +478,21 @@ namespace LB.TweenHelper
         public override string PresetName => "SpinScaleOutOvershoot";
         public override string Description => "Spin and shrink to zero with anticipation overshoot";
         public override float DefaultDuration => 0.7f;
+        public override float DefaultOvershoot => 1.70158f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.InBack);
             var spinEase = ResolveSecondaryEase(options, Ease.Linear);
             var presetOptions = MergeWithDefaultEase(options, scaleEase);
+            var os = DefaultOvershoot * ResolveOvershootMultiplier(presetOptions);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             return DOTween.Sequence()
-                .Join(t.DOScale(Vector3.zero, dur).SetEase(scaleEase))
+                .Join(t.DOScale(endScale, dur).SetEase(scaleEase, os))
                 .Join(t.DORotate(new Vector3(0f, 720f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
@@ -512,13 +516,14 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.InSine);
             var spinEase = ResolveSecondaryEase(options, Ease.Linear);
             var presetOptions = MergeWithDefaultEase(options, scaleEase);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             return DOTween.Sequence()
-                .Join(t.DOScale(Vector3.zero, dur).SetEase(scaleEase))
+                .Join(t.DOScale(endScale, dur).SetEase(scaleEase))
                 .Join(t.DORotate(new Vector3(0f, 360f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
@@ -542,13 +547,14 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.InQuart);
             var spinEase = ResolveSecondaryEase(options, Ease.Linear);
             var presetOptions = MergeWithDefaultEase(options, scaleEase);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             return DOTween.Sequence()
-                .Join(t.DOScale(Vector3.zero, dur).SetEase(scaleEase))
+                .Join(t.DOScale(endScale, dur).SetEase(scaleEase))
                 .Join(t.DORotate(new Vector3(0f, 1080f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
@@ -567,18 +573,21 @@ namespace LB.TweenHelper
         public override string PresetName => "SpinScaleOutOvershootSoft";
         public override string Description => "Soft spin and shrink with mild anticipation";
         public override float DefaultDuration => 0.9f;
+        public override float DefaultOvershoot => 1.2f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.InBack);
             var spinEase = ResolveSecondaryEase(options, Ease.Linear);
             var presetOptions = MergeWithDefaultEase(options, scaleEase);
+            var os = DefaultOvershoot * ResolveOvershootMultiplier(presetOptions);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             return DOTween.Sequence()
-                .Join(t.DOScale(Vector3.zero, dur).SetEase(scaleEase, 1.2f))
+                .Join(t.DOScale(endScale, dur).SetEase(scaleEase, os))
                 .Join(t.DORotate(new Vector3(0f, 360f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
@@ -597,18 +606,21 @@ namespace LB.TweenHelper
         public override string PresetName => "SpinScaleOutOvershootHard";
         public override string Description => "Hard spin and shrink with strong anticipation";
         public override float DefaultDuration => 0.5f;
+        public override float DefaultOvershoot => 2.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.InBack);
             var spinEase = ResolveSecondaryEase(options, Ease.Linear);
             var presetOptions = MergeWithDefaultEase(options, scaleEase);
+            var os = DefaultOvershoot * ResolveOvershootMultiplier(presetOptions);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             return DOTween.Sequence()
-                .Join(t.DOScale(Vector3.zero, dur).SetEase(scaleEase, 2.0f))
+                .Join(t.DOScale(endScale, dur).SetEase(scaleEase, os))
                 .Join(t.DORotate(new Vector3(0f, 1080f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }

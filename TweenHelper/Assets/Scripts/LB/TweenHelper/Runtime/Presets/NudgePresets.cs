@@ -30,7 +30,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var pushEase = ResolveEase(options, Ease.OutQuad);
             var returnEase = ResolveSecondaryEase(options, Ease.OutBack);
             var presetOptions = MergeWithDefaultEase(options, pushEase);
@@ -79,7 +79,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NudgeFactory.Create(target, Vector3.left, 0.3f, GetDuration(duration), options);
+            return NudgeFactory.Create(target, Vector3.left, 0.3f, GetDuration(duration, options), options);
         }
     }
 
@@ -100,7 +100,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NudgeFactory.Create(target, Vector3.right, 0.3f, GetDuration(duration), options);
+            return NudgeFactory.Create(target, Vector3.right, 0.3f, GetDuration(duration, options), options);
         }
     }
 
@@ -121,7 +121,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NudgeFactory.Create(target, Vector3.up, 0.3f, GetDuration(duration), options);
+            return NudgeFactory.Create(target, Vector3.up, 0.3f, GetDuration(duration, options), options);
         }
     }
 
@@ -142,7 +142,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NudgeFactory.Create(target, Vector3.down, 0.3f, GetDuration(duration), options);
+            return NudgeFactory.Create(target, Vector3.down, 0.3f, GetDuration(duration, options), options);
         }
     }
 
@@ -165,7 +165,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NudgeFactory.Create(target, Vector3.right, 0.15f, GetDuration(duration), options);
+            return NudgeFactory.Create(target, Vector3.right, 0.15f, GetDuration(duration, options), options);
         }
     }
 
@@ -186,7 +186,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NudgeFactory.Create(target, Vector3.left, 0.15f, GetDuration(duration), options);
+            return NudgeFactory.Create(target, Vector3.left, 0.15f, GetDuration(duration, options), options);
         }
     }
 
@@ -207,7 +207,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NudgeFactory.Create(target, Vector3.right, 0.15f, GetDuration(duration), options);
+            return NudgeFactory.Create(target, Vector3.right, 0.15f, GetDuration(duration, options), options);
         }
     }
 
@@ -228,7 +228,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NudgeFactory.Create(target, Vector3.up, 0.15f, GetDuration(duration), options);
+            return NudgeFactory.Create(target, Vector3.up, 0.15f, GetDuration(duration, options), options);
         }
     }
 
@@ -249,7 +249,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NudgeFactory.Create(target, Vector3.down, 0.15f, GetDuration(duration), options);
+            return NudgeFactory.Create(target, Vector3.down, 0.15f, GetDuration(duration, options), options);
         }
     }
 
@@ -272,7 +272,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NudgeFactory.Create(target, Vector3.right, 0.6f, GetDuration(duration), options);
+            return NudgeFactory.Create(target, Vector3.right, 0.6f, GetDuration(duration, options), options);
         }
     }
 
@@ -293,7 +293,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NudgeFactory.Create(target, Vector3.left, 0.6f, GetDuration(duration), options);
+            return NudgeFactory.Create(target, Vector3.left, 0.6f, GetDuration(duration, options), options);
         }
     }
 
@@ -314,7 +314,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NudgeFactory.Create(target, Vector3.right, 0.6f, GetDuration(duration), options);
+            return NudgeFactory.Create(target, Vector3.right, 0.6f, GetDuration(duration, options), options);
         }
     }
 
@@ -335,7 +335,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NudgeFactory.Create(target, Vector3.up, 0.6f, GetDuration(duration), options);
+            return NudgeFactory.Create(target, Vector3.up, 0.6f, GetDuration(duration, options), options);
         }
     }
 
@@ -356,7 +356,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NudgeFactory.Create(target, Vector3.down, 0.6f, GetDuration(duration), options);
+            return NudgeFactory.Create(target, Vector3.down, 0.6f, GetDuration(duration, options), options);
         }
     }
 }

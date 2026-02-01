@@ -31,7 +31,7 @@ namespace LB.TweenHelper
         {
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
             var ease = ResolveEase(presetOptions, Ease.InOutQuad);
-            return target.transform.DOLocalRotate(new Vector3(180f, 0f, 0f), GetDuration(duration), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(180f, 0f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -59,7 +59,7 @@ namespace LB.TweenHelper
         {
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
             var ease = ResolveEase(presetOptions, Ease.InOutSine);
-            return target.transform.DOLocalRotate(new Vector3(180f, 0f, 0f), GetDuration(duration), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(180f, 0f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -87,7 +87,7 @@ namespace LB.TweenHelper
         {
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
             var ease = ResolveEase(presetOptions, Ease.OutQuad);
-            return target.transform.DOLocalRotate(new Vector3(180f, 0f, 0f), GetDuration(duration), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(180f, 0f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -121,7 +121,7 @@ namespace LB.TweenHelper
         {
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
             var ease = ResolveEase(presetOptions, Ease.InOutQuad);
-            return target.transform.DOLocalRotate(new Vector3(0f, 180f, 0f), GetDuration(duration), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(0f, 180f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -149,7 +149,7 @@ namespace LB.TweenHelper
         {
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
             var ease = ResolveEase(presetOptions, Ease.InOutSine);
-            return target.transform.DOLocalRotate(new Vector3(0f, 180f, 0f), GetDuration(duration), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(0f, 180f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -177,7 +177,7 @@ namespace LB.TweenHelper
         {
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
             var ease = ResolveEase(presetOptions, Ease.OutQuad);
-            return target.transform.DOLocalRotate(new Vector3(0f, 180f, 0f), GetDuration(duration), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(0f, 180f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -211,7 +211,7 @@ namespace LB.TweenHelper
         {
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
             var ease = ResolveEase(presetOptions, Ease.InOutQuad);
-            return target.transform.DOLocalRotate(new Vector3(0f, 0f, 180f), GetDuration(duration), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(0f, 0f, 180f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -239,7 +239,7 @@ namespace LB.TweenHelper
         {
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
             var ease = ResolveEase(presetOptions, Ease.InOutSine);
-            return target.transform.DOLocalRotate(new Vector3(0f, 0f, 180f), GetDuration(duration), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(0f, 0f, 180f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -267,7 +267,7 @@ namespace LB.TweenHelper
         {
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
             var ease = ResolveEase(presetOptions, Ease.OutQuad);
-            return target.transform.DOLocalRotate(new Vector3(0f, 0f, 180f), GetDuration(duration), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(0f, 0f, 180f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }

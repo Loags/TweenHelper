@@ -41,10 +41,16 @@ namespace LB.TweenHelper
         public virtual float DefaultDuration => 0.5f;
 
         /// <summary>
+        /// The base overshoot value for this preset, scaled by the caller's overshoot multiplier.
+        /// Meaning is preset-specific: ease overshoot parameter, scale excess, etc.
+        /// </summary>
+        public virtual float DefaultOvershoot => 0f;
+
+        /// <summary>
         /// Creates and configures a tween for the specified target.
         /// </summary>
         /// <param name="target">The GameObject to animate.</param>
-        /// <param name="duration">Duration override (null uses preset default).</param>
+        /// <param name="duration">Duration override (null falls through to options.Duration, then preset default).</param>
         /// <param name="options">Additional options to apply.</param>
         /// <returns>The configured tween.</returns>
         public abstract Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default);
@@ -61,11 +67,11 @@ namespace LB.TweenHelper
         }
 
         /// <summary>
-        /// Helper method to get the actual duration (parameter or default).
+        /// Helper method to get the actual duration (parameter or options or default).
         /// </summary>
-        protected float GetDuration(float? duration)
+        protected float GetDuration(float? duration, TweenOptions options = default)
         {
-            return duration ?? DefaultDuration;
+            return duration ?? options.Duration ?? DefaultDuration;
         }
 
         /// <summary>
@@ -78,6 +84,15 @@ namespace LB.TweenHelper
                 return callerOptions.SetEase(defaultEase);
             }
             return callerOptions;
+        }
+
+        /// <summary>
+        /// Resolves the overshoot multiplier from options, defaulting to 1.0 (no change).
+        /// Presets multiply their base overshoot value by this.
+        /// </summary>
+        protected float ResolveOvershootMultiplier(TweenOptions options)
+        {
+            return options.Overshoot ?? 1.0f;
         }
 
         /// <summary>
@@ -102,6 +117,22 @@ namespace LB.TweenHelper
         protected Ease ResolveTertiaryEase(TweenOptions options, Ease defaultEase)
         {
             return options.TertiaryEase ?? options.SecondaryEase ?? options.Ease ?? defaultEase;
+        }
+
+        /// <summary>
+        /// Resolves the start scale from options, falling back to the provided default.
+        /// </summary>
+        protected Vector3 ResolveStartScale(TweenOptions options, Vector3 defaultStart)
+        {
+            return options.StartScale ?? defaultStart;
+        }
+
+        /// <summary>
+        /// Resolves the target scale from options, falling back to the provided default.
+        /// </summary>
+        protected Vector3 ResolveTargetScale(TweenOptions options, Vector3 defaultTarget)
+        {
+            return options.TargetScale ?? defaultTarget;
         }
 
         /// <summary>

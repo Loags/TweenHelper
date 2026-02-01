@@ -30,7 +30,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var pullEase = ResolveEase(options, Ease.OutQuad);
             var snapEase = ResolveSecondaryEase(options, Ease.OutCubic);
             var presetOptions = MergeWithDefaultEase(options, pullEase);
@@ -78,7 +78,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return RecoilFactory.Create(target, 0.5f, GetDuration(duration), options);
+            return RecoilFactory.Create(target, 0.5f, GetDuration(duration, options), options);
         }
     }
 
@@ -99,7 +99,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return RecoilFactory.Create(target, 0.25f, GetDuration(duration), options);
+            return RecoilFactory.Create(target, 0.25f, GetDuration(duration, options), options);
         }
     }
 
@@ -120,7 +120,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return RecoilFactory.Create(target, 0.8f, GetDuration(duration), options);
+            return RecoilFactory.Create(target, 0.8f, GetDuration(duration, options), options);
         }
     }
 
@@ -141,7 +141,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return RecoilFactory.Create(target, -0.5f, GetDuration(duration), options);
+            return RecoilFactory.Create(target, -0.5f, GetDuration(duration, options), options);
         }
     }
 
@@ -162,7 +162,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return RecoilFactory.Create(target, -0.25f, GetDuration(duration), options);
+            return RecoilFactory.Create(target, -0.25f, GetDuration(duration, options), options);
         }
     }
 
@@ -183,7 +183,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return RecoilFactory.Create(target, -0.8f, GetDuration(duration), options);
+            return RecoilFactory.Create(target, -0.8f, GetDuration(duration, options), options);
         }
     }
 
@@ -204,7 +204,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return RecoilFactory.Create(target, -0.25f, GetDuration(duration), options);
+            return RecoilFactory.Create(target, -0.25f, GetDuration(duration, options), options);
         }
     }
 
@@ -225,7 +225,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return RecoilFactory.Create(target, -0.8f, GetDuration(duration), options);
+            return RecoilFactory.Create(target, -0.8f, GetDuration(duration, options), options);
         }
     }
 }

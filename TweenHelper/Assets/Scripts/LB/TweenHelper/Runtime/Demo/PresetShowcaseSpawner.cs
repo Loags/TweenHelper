@@ -317,7 +317,7 @@ namespace LB.TweenHelper.Demo
                         MaxColumnsInRow = maxCols
                     };
                 })
-                .OrderBy(c => GetFamilyOrderIndex(c.Name))
+                .OrderByDescending(c => c.Rows.Sum(r => r.Count))
                 .ThenBy(c => c.Name)
                 .ToList();
 
@@ -446,9 +446,10 @@ namespace LB.TweenHelper.Demo
         {
             int score = 0;
 
-            // Intensity modifiers
-            if (presetName.Contains("Soft")) score += 1;
+            // Intensity modifiers: Soft, Default, Hard
+            if (presetName.Contains("Soft")) score += 0;
             else if (presetName.Contains("Hard")) score += 2;
+            else score += 1;
 
             // Directions
             if (presetName.Contains("Up")) score += 0;

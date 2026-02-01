@@ -374,7 +374,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return OrbitXYFactory.Create(target, duration ?? GetDuration(null), options, clockwise: false, radius: 1f);
+            return OrbitXYFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: false, radius: 1f);
         }
     }
 
@@ -396,7 +396,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return OrbitXYFactory.Create(target, duration ?? GetDuration(null), options, clockwise: true, radius: 1f);
+            return OrbitXYFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: true, radius: 1f);
         }
     }
 
@@ -418,7 +418,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return OrbitXYFactory.Create(target, duration ?? GetDuration(null), options, clockwise: false, radius: 1f);
+            return OrbitXYFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: false, radius: 1f);
         }
     }
 
@@ -439,7 +439,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return OrbitXYFactory.Create(target, duration ?? GetDuration(null), options, clockwise: true, radius: 0.5f);
+            return OrbitXYFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: true, radius: 0.5f);
         }
     }
 
@@ -460,7 +460,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return OrbitXYFactory.Create(target, duration ?? GetDuration(null), options, clockwise: true, radius: 2f);
+            return OrbitXYFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: true, radius: 2f);
         }
     }
 
@@ -481,7 +481,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return OrbitXYFactory.Create(target, duration ?? GetDuration(null), options, clockwise: false, radius: 0.5f);
+            return OrbitXYFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: false, radius: 0.5f);
         }
     }
 
@@ -502,7 +502,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return OrbitXYFactory.Create(target, duration ?? GetDuration(null), options, clockwise: false, radius: 2f);
+            return OrbitXYFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: false, radius: 2f);
         }
     }
 
@@ -523,7 +523,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return OrbitXYFactory.Create(target, duration ?? GetDuration(null), options, clockwise: false, radius: 0.5f);
+            return OrbitXYFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: false, radius: 0.5f);
         }
     }
 
@@ -544,7 +544,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return OrbitXYFactory.Create(target, duration ?? GetDuration(null), options, clockwise: false, radius: 2f);
+            return OrbitXYFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: false, radius: 2f);
         }
     }
 }

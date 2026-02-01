@@ -31,7 +31,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutElastic);
             var ease = ResolveEase(presetOptions, Ease.OutElastic);
 
@@ -63,7 +63,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutElastic);
             var ease = ResolveEase(presetOptions, Ease.OutElastic);
 
@@ -95,7 +95,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutElastic);
             var ease = ResolveEase(presetOptions, Ease.OutElastic);
 
@@ -135,7 +135,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var baseY = t.localPosition.y;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var upEase = ResolveEase(options, Ease.OutQuad);
             var downEase = ResolveSecondaryEase(options, Ease.InQuad);
             var presetOptions = MergeWithDefaultEase(options, upEase);
@@ -170,7 +170,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var baseY = t.localPosition.y;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var upEase = ResolveEase(options, Ease.OutQuad);
             var downEase = ResolveSecondaryEase(options, Ease.InQuad);
             var presetOptions = MergeWithDefaultEase(options, upEase);
@@ -205,7 +205,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var baseY = t.localPosition.y;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var upEase = ResolveEase(options, Ease.OutQuad);
             var downEase = ResolveSecondaryEase(options, Ease.InQuad);
             var presetOptions = MergeWithDefaultEase(options, upEase);

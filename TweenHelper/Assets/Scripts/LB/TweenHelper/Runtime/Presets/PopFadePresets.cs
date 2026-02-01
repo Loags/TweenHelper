@@ -32,14 +32,16 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            t.localScale = Vector3.zero;
+            var start = ResolveStartScale(options, Vector3.zero);
+            var scaleTarget = ResolveTargetScale(options, originalScale);
+            t.localScale = start;
 
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
             var ease = ResolveEase(presetOptions, Ease.OutCubic);
             var seq = DOTween.Sequence();
 
-            seq.Append(t.DOScale(originalScale, dur).SetEase(ease));
+            seq.Append(t.DOScale(scaleTarget, dur).SetEase(ease));
 
             var fadeTween = CreateFadeTween(target, 1f, dur);
             if (fadeTween != null)
@@ -77,14 +79,16 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            t.localScale = Vector3.zero;
+            var start = ResolveStartScale(options, Vector3.zero);
+            var scaleTarget = ResolveTargetScale(options, originalScale);
+            t.localScale = start;
 
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutSine);
             var ease = ResolveEase(presetOptions, Ease.OutSine);
             var seq = DOTween.Sequence();
 
-            seq.Append(t.DOScale(originalScale, dur).SetEase(ease));
+            seq.Append(t.DOScale(scaleTarget, dur).SetEase(ease));
 
             var fadeTween = CreateFadeTween(target, 1f, dur);
             if (fadeTween != null)
@@ -121,14 +125,16 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            t.localScale = Vector3.zero;
+            var start = ResolveStartScale(options, Vector3.zero);
+            var scaleTarget = ResolveTargetScale(options, originalScale);
+            t.localScale = start;
 
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuart);
             var ease = ResolveEase(presetOptions, Ease.OutQuart);
             var seq = DOTween.Sequence();
 
-            seq.Append(t.DOScale(originalScale, dur).SetEase(ease));
+            seq.Append(t.DOScale(scaleTarget, dur).SetEase(ease));
 
             var fadeTween = CreateFadeTween(target, 1f, dur);
             if (fadeTween != null)
@@ -173,12 +179,13 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InCubic);
             var ease = ResolveEase(presetOptions, Ease.InCubic);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease));
+            seq.Join(t.DOScale(endScale, dur).SetEase(ease));
 
             var fadeTween = CreateFadeTween(target, 0f, dur);
             if (fadeTween != null)
@@ -214,12 +221,13 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InSine);
             var ease = ResolveEase(presetOptions, Ease.InSine);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease));
+            seq.Join(t.DOScale(endScale, dur).SetEase(ease));
 
             var fadeTween = CreateFadeTween(target, 0f, dur);
             if (fadeTween != null)
@@ -255,12 +263,13 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InQuart);
             var ease = ResolveEase(presetOptions, Ease.InQuart);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease));
+            seq.Join(t.DOScale(endScale, dur).SetEase(ease));
 
             var fadeTween = CreateFadeTween(target, 0f, dur);
             if (fadeTween != null)
@@ -305,12 +314,13 @@ namespace LB.TweenHelper
         { 
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
             var ease = ResolveEase(presetOptions, Ease.InBack);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease));
+            seq.Join(t.DOScale(endScale, dur).SetEase(ease));
 
             var fadeTween = CreateFadeTween(target, 0f, dur);
             if (fadeTween != null)
@@ -346,12 +356,13 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
             var ease = ResolveEase(presetOptions, Ease.InBack);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease, 2.5f));
+            seq.Join(t.DOScale(endScale, dur).SetEase(ease, 2.5f));
 
             var fadeTween = CreateFadeTween(target, 0f, dur);
             if (fadeTween != null)
@@ -387,12 +398,13 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
             var ease = ResolveEase(presetOptions, Ease.InBack);
 
+            var endScale = ResolveTargetScale(options, Vector3.zero);
             var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease, 6.0f));
+            seq.Join(t.DOScale(endScale, dur).SetEase(ease, 6.0f));
 
             var fadeTween = CreateFadeTween(target, 0f, dur);
             if (fadeTween != null)
@@ -438,13 +450,14 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.OutQuad);
             var fadeEase = ResolveSecondaryEase(options, Ease.Linear);
             var presetOptions = MergeWithDefaultEase(options, scaleEase);
 
+            var explodeTarget = ResolveTargetScale(options, originalScale * 1.5f);
             var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(originalScale * 1.5f, dur).SetEase(scaleEase));
+            seq.Join(t.DOScale(explodeTarget, dur).SetEase(scaleEase));
 
             var fadeTween = CreateFadeTween(target, 0f, dur);
             if (fadeTween != null)
@@ -477,13 +490,14 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.OutSine);
             var fadeEase = ResolveSecondaryEase(options, Ease.Linear);
             var presetOptions = MergeWithDefaultEase(options, scaleEase);
 
+            var explodeTarget = ResolveTargetScale(options, originalScale * 1.3f);
             var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(originalScale * 1.3f, dur).SetEase(scaleEase));
+            seq.Join(t.DOScale(explodeTarget, dur).SetEase(scaleEase));
 
             var fadeTween = CreateFadeTween(target, 0f, dur);
             if (fadeTween != null)
@@ -516,13 +530,14 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.OutCubic);
             var fadeEase = ResolveSecondaryEase(options, Ease.Linear);
             var presetOptions = MergeWithDefaultEase(options, scaleEase);
 
+            var explodeTarget = ResolveTargetScale(options, originalScale * 2.0f);
             var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(originalScale * 2.0f, dur).SetEase(scaleEase));
+            seq.Join(t.DOScale(explodeTarget, dur).SetEase(scaleEase));
 
             var fadeTween = CreateFadeTween(target, 0f, dur);
             if (fadeTween != null)

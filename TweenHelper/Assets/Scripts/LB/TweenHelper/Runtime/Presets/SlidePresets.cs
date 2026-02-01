@@ -41,7 +41,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFactory.Create(target, Vector3.up, 500f, GetDuration(duration), options);
+            return SlideInFactory.Create(target, Vector3.up, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -63,7 +63,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFactory.Create(target, Vector3.down, 500f, GetDuration(duration), options);
+            return SlideInFactory.Create(target, Vector3.down, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -85,7 +85,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFactory.Create(target, Vector3.left, 500f, GetDuration(duration), options);
+            return SlideInFactory.Create(target, Vector3.left, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -107,7 +107,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFactory.Create(target, Vector3.right, 500f, GetDuration(duration), options);
+            return SlideInFactory.Create(target, Vector3.right, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -130,7 +130,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFactory.Create(target, Vector3.up, 500f, GetDuration(duration), options);
+            return SlideInFactory.Create(target, Vector3.up, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -151,7 +151,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFactory.Create(target, Vector3.down, 500f, GetDuration(duration), options);
+            return SlideInFactory.Create(target, Vector3.down, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -172,7 +172,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFactory.Create(target, Vector3.left, 500f, GetDuration(duration), options);
+            return SlideInFactory.Create(target, Vector3.left, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -193,7 +193,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFactory.Create(target, Vector3.right, 500f, GetDuration(duration), options);
+            return SlideInFactory.Create(target, Vector3.right, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -216,7 +216,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFactory.Create(target, Vector3.up, 500f, GetDuration(duration), options);
+            return SlideInFactory.Create(target, Vector3.up, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -237,7 +237,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFactory.Create(target, Vector3.down, 500f, GetDuration(duration), options);
+            return SlideInFactory.Create(target, Vector3.down, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -258,7 +258,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFactory.Create(target, Vector3.left, 500f, GetDuration(duration), options);
+            return SlideInFactory.Create(target, Vector3.left, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -279,7 +279,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFactory.Create(target, Vector3.right, 500f, GetDuration(duration), options);
+            return SlideInFactory.Create(target, Vector3.right, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -321,7 +321,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideOutFactory.Create(target, Vector3.up, 500f, GetDuration(duration), options);
+            return SlideOutFactory.Create(target, Vector3.up, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -343,7 +343,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideOutFactory.Create(target, Vector3.down, 500f, GetDuration(duration), options);
+            return SlideOutFactory.Create(target, Vector3.down, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -365,7 +365,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideOutFactory.Create(target, Vector3.left, 500f, GetDuration(duration), options);
+            return SlideOutFactory.Create(target, Vector3.left, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -387,7 +387,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideOutFactory.Create(target, Vector3.right, 500f, GetDuration(duration), options);
+            return SlideOutFactory.Create(target, Vector3.right, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -410,7 +410,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideOutFactory.Create(target, Vector3.up, 500f, GetDuration(duration), options);
+            return SlideOutFactory.Create(target, Vector3.up, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -431,7 +431,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideOutFactory.Create(target, Vector3.down, 500f, GetDuration(duration), options);
+            return SlideOutFactory.Create(target, Vector3.down, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -452,7 +452,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideOutFactory.Create(target, Vector3.left, 500f, GetDuration(duration), options);
+            return SlideOutFactory.Create(target, Vector3.left, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -473,7 +473,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideOutFactory.Create(target, Vector3.right, 500f, GetDuration(duration), options);
+            return SlideOutFactory.Create(target, Vector3.right, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -496,7 +496,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideOutFactory.Create(target, Vector3.up, 500f, GetDuration(duration), options);
+            return SlideOutFactory.Create(target, Vector3.up, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -517,7 +517,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideOutFactory.Create(target, Vector3.down, 500f, GetDuration(duration), options);
+            return SlideOutFactory.Create(target, Vector3.down, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -538,7 +538,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideOutFactory.Create(target, Vector3.left, 500f, GetDuration(duration), options);
+            return SlideOutFactory.Create(target, Vector3.left, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -559,7 +559,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideOutFactory.Create(target, Vector3.right, 500f, GetDuration(duration), options);
+            return SlideOutFactory.Create(target, Vector3.right, 500f, GetDuration(duration, options), options);
         }
     }
 
@@ -610,7 +610,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFadeFactory.Create(target, Vector3.down, 100f, GetDuration(duration), options);
+            return SlideInFadeFactory.Create(target, Vector3.down, 100f, GetDuration(duration, options), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -633,7 +633,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFadeFactory.Create(target, Vector3.up, 100f, GetDuration(duration), options);
+            return SlideInFadeFactory.Create(target, Vector3.up, 100f, GetDuration(duration, options), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -656,7 +656,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFadeFactory.Create(target, Vector3.left, 100f, GetDuration(duration), options);
+            return SlideInFadeFactory.Create(target, Vector3.left, 100f, GetDuration(duration, options), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -679,7 +679,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFadeFactory.Create(target, Vector3.right, 100f, GetDuration(duration), options);
+            return SlideInFadeFactory.Create(target, Vector3.right, 100f, GetDuration(duration, options), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -704,7 +704,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFadeFactory.Create(target, Vector3.down, 100f, GetDuration(duration), options);
+            return SlideInFadeFactory.Create(target, Vector3.down, 100f, GetDuration(duration, options), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -727,7 +727,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFadeFactory.Create(target, Vector3.up, 100f, GetDuration(duration), options);
+            return SlideInFadeFactory.Create(target, Vector3.up, 100f, GetDuration(duration, options), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -750,7 +750,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFadeFactory.Create(target, Vector3.left, 100f, GetDuration(duration), options);
+            return SlideInFadeFactory.Create(target, Vector3.left, 100f, GetDuration(duration, options), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -773,7 +773,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFadeFactory.Create(target, Vector3.right, 100f, GetDuration(duration), options);
+            return SlideInFadeFactory.Create(target, Vector3.right, 100f, GetDuration(duration, options), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -798,7 +798,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFadeFactory.Create(target, Vector3.down, 100f, GetDuration(duration), options);
+            return SlideInFadeFactory.Create(target, Vector3.down, 100f, GetDuration(duration, options), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -821,7 +821,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFadeFactory.Create(target, Vector3.up, 100f, GetDuration(duration), options);
+            return SlideInFadeFactory.Create(target, Vector3.up, 100f, GetDuration(duration, options), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -844,7 +844,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFadeFactory.Create(target, Vector3.left, 100f, GetDuration(duration), options);
+            return SlideInFadeFactory.Create(target, Vector3.left, 100f, GetDuration(duration, options), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -867,7 +867,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SlideInFadeFactory.Create(target, Vector3.right, 100f, GetDuration(duration), options);
+            return SlideInFadeFactory.Create(target, Vector3.right, 100f, GetDuration(duration, options), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;

@@ -29,7 +29,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var halfDur = GetDuration(duration) * 0.5f;
+            var halfDur = GetDuration(duration, options) * 0.5f;
             var moveRightEase = options.Ease ?? Ease.InOutSine;
             var moveLeftEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
 
@@ -130,7 +130,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SwayFactory.Create(target, 0.25f, GetDuration(duration), options);
+            return SwayFactory.Create(target, 0.25f, GetDuration(duration, options), options);
         }
     }
 
@@ -151,7 +151,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return SwayFactory.Create(target, 0.8f, GetDuration(duration), options);
+            return SwayFactory.Create(target, 0.8f, GetDuration(duration, options), options);
         }
     }
 }

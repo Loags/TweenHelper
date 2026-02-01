@@ -28,7 +28,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOShakePosition(GetDuration(duration), 0.22f, 12, 90f, false, true)
+            return target.transform.DOShakePosition(GetDuration(duration, options), 0.22f, 12, 90f, false, true)
                 .WithDefaults(options, target);
         }
     }
@@ -53,7 +53,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOShakePosition(GetDuration(duration), 0.15f, 10, 90f, false, true)
+            return target.transform.DOShakePosition(GetDuration(duration, options), 0.15f, 10, 90f, false, true)
                 .WithDefaults(options, target);
         }
     }
@@ -78,7 +78,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOShakePosition(GetDuration(duration), 0.5f, 20, 90f, false, true)
+            return target.transform.DOShakePosition(GetDuration(duration, options), 0.5f, 20, 90f, false, true)
                 .WithDefaults(options, target);
         }
     }
@@ -109,7 +109,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.Linear);
 
             var seq = DOTween.Sequence();
@@ -149,7 +149,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.Linear);
 
             var seq = DOTween.Sequence();
@@ -189,7 +189,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.Linear);
 
             var seq = DOTween.Sequence();

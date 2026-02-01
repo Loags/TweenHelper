@@ -31,7 +31,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var halfDur = GetDuration(duration) * 0.5f;
+            var halfDur = GetDuration(duration, options) * 0.5f;
             var expandEase = options.Ease ?? Ease.InOutSine;
             var contractEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
 
@@ -95,7 +95,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var beatEase = options.Ease ?? Ease.OutQuad;
             var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
             var loopOptions = MergeWithDefaultEase(options, beatEase);
@@ -154,7 +154,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var halfDur = GetDuration(duration) * 0.5f;
+            var halfDur = GetDuration(duration, options) * 0.5f;
             var moveUpEase = options.Ease ?? Ease.InOutCubic;
             var moveDownEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutCubic;
 
@@ -220,7 +220,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
             var ease = ResolveEase(presetOptions, Ease.InOutSine);
             var stepDur = dur / 3f;
@@ -262,7 +262,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
             var ease = ResolveEase(presetOptions, Ease.OutCubic);
             var secondaryEase = ResolveSecondaryEase(presetOptions, Ease.InCubic);
@@ -305,7 +305,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalRot = t.localEulerAngles;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var leanEase = ResolveEase(options, Ease.OutQuad);
             var returnEase = ResolveSecondaryEase(options, Ease.OutBack);
             var presetOptions = MergeWithDefaultEase(options, leanEase);
@@ -336,7 +336,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var halfDur = GetDuration(duration) * 0.5f;
+            var halfDur = GetDuration(duration, options) * 0.5f;
             var expandEase = options.Ease ?? Ease.InOutSine;
             var contractEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
 
@@ -391,7 +391,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var halfDur = GetDuration(duration) * 0.5f;
+            var halfDur = GetDuration(duration, options) * 0.5f;
             var expandEase = options.Ease ?? Ease.InOutSine;
             var contractEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
 
@@ -446,7 +446,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var beatEase = options.Ease ?? Ease.OutQuad;
             var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
             var loopOptions = MergeWithDefaultEase(options, beatEase);
@@ -494,7 +494,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var beatEase = options.Ease ?? Ease.OutQuad;
             var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
             var loopOptions = MergeWithDefaultEase(options, beatEase);
@@ -541,7 +541,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var halfDur = GetDuration(duration) * 0.5f;
+            var halfDur = GetDuration(duration, options) * 0.5f;
             var moveUpEase = options.Ease ?? Ease.InOutCubic;
             var moveDownEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutCubic;
 
@@ -597,7 +597,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var halfDur = GetDuration(duration) * 0.5f;
+            var halfDur = GetDuration(duration, options) * 0.5f;
             var moveUpEase = options.Ease ?? Ease.InOutCubic;
             var moveDownEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutCubic;
 
@@ -653,7 +653,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
             var ease = ResolveEase(presetOptions, Ease.InOutSine);
             var stepDur = dur / 3f;
@@ -684,7 +684,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
             var ease = ResolveEase(presetOptions, Ease.InOutSine);
             var stepDur = dur / 3f;
@@ -716,7 +716,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
             var ease = ResolveEase(presetOptions, Ease.OutCubic);
             var secondaryEase = ResolveSecondaryEase(presetOptions, Ease.InCubic);
@@ -750,7 +750,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
             var ease = ResolveEase(presetOptions, Ease.OutCubic);
             var secondaryEase = ResolveSecondaryEase(presetOptions, Ease.InCubic);
@@ -784,7 +784,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalRot = t.localEulerAngles;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var leanEase = ResolveEase(options, Ease.OutQuad);
             var returnEase = ResolveSecondaryEase(options, Ease.OutBack);
             var presetOptions = MergeWithDefaultEase(options, leanEase);
@@ -815,7 +815,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalRot = t.localEulerAngles;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var leanEase = ResolveEase(options, Ease.OutQuad);
             var returnEase = ResolveSecondaryEase(options, Ease.OutBack);
             var presetOptions = MergeWithDefaultEase(options, leanEase);

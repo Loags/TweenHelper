@@ -26,7 +26,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalRot = t.localEulerAngles;
-            var halfDur = GetDuration(duration) * 0.5f;
+            var halfDur = GetDuration(duration, options) * 0.5f;
             var leftEase = options.Ease ?? Ease.InOutSine;
             var rightEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
 
@@ -124,7 +124,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return PendulumFactory.Create(target, 4f, GetDuration(duration), options);
+            return PendulumFactory.Create(target, 4f, GetDuration(duration, options), options);
         }
     }
 
@@ -145,7 +145,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return PendulumFactory.Create(target, 14f, GetDuration(duration), options);
+            return PendulumFactory.Create(target, 14f, GetDuration(duration, options), options);
         }
     }
 }

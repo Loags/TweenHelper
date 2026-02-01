@@ -11,8 +11,9 @@ API Design
 • Always return the underlying DoTween Tween or Sequence.
 
 Parameters and Overloads
-• For duration: an optional explicit float duration parameter; if null, use Settings default.
-• For overrides: accept an optional TweenOptions options parameter.
+• For duration: an optional explicit float duration parameter. Resolution chain: explicit param → options.Duration → preset DefaultDuration (or Settings default for builder methods).
+• For overrides: accept an optional TweenOptions options parameter. Duration can also be set via TweenOptions.WithDuration() or .SetDuration() as an alternative to the separate parameter.
+• For scale overrides: entrance/exit presets use ResolveStartScale(options, default) and ResolveTargetScale(options, default) to allow callers to override start and target scale via TweenOptions.WithStartScale() / .WithTargetScale().
 
 Documentation and Comments
 • XML documentation on all public types and members.

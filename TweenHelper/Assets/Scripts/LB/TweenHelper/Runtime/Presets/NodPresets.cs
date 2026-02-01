@@ -30,7 +30,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalRot = t.localEulerAngles;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var leanEase = ResolveEase(options, Ease.OutQuad);
             var returnEase = ResolveSecondaryEase(options, Ease.OutBack);
             var presetOptions = MergeWithDefaultEase(options, leanEase);
@@ -79,7 +79,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NodFactory.Create(target, 8f, GetDuration(duration), options);
+            return NodFactory.Create(target, 8f, GetDuration(duration, options), options);
         }
     }
 
@@ -100,7 +100,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return NodFactory.Create(target, 25f, GetDuration(duration), options);
+            return NodFactory.Create(target, 25f, GetDuration(duration, options), options);
         }
     }
 }

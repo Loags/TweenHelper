@@ -52,7 +52,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder Move(Vector3 target, float? duration = null)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOMove(target, dur));
             return this;
         }
@@ -62,7 +62,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder MoveLocal(Vector3 target, float? duration = null)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOLocalMove(target, dur));
             return this;
         }
@@ -72,7 +72,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder MoveBy(Vector3 offset, float? duration = null)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOMove(_transform.position + offset, dur));
             return this;
         }
@@ -82,7 +82,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder MoveX(float target, float? duration = null)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOMoveX(target, dur));
             return this;
         }
@@ -92,7 +92,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder MoveY(float target, float? duration = null)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOMoveY(target, dur));
             return this;
         }
@@ -102,7 +102,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder MoveZ(float target, float? duration = null)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOMoveZ(target, dur));
             return this;
         }
@@ -112,7 +112,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder PunchPosition(Vector3 punch, float? duration = null, int vibrato = 10, float elasticity = 1f)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOPunchPosition(punch, dur, vibrato, elasticity));
             return this;
         }
@@ -122,7 +122,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder ShakePosition(float? duration = null, float strength = 1f, int vibrato = 10, float randomness = 90f)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOShakePosition(dur, strength, vibrato, randomness));
             return this;
         }
@@ -136,7 +136,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder Rotate(Vector3 target, float? duration = null, RotateMode mode = RotateMode.Fast)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DORotate(target, dur, mode));
             return this;
         }
@@ -146,7 +146,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder RotateLocal(Vector3 target, float? duration = null, RotateMode mode = RotateMode.Fast)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOLocalRotate(target, dur, mode));
             return this;
         }
@@ -156,7 +156,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder RotateBy(Vector3 offset, float? duration = null, RotateMode mode = RotateMode.Fast)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DORotate(_transform.eulerAngles + offset, dur, mode));
             return this;
         }
@@ -166,7 +166,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder RotateQuaternion(Quaternion target, float? duration = null)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DORotateQuaternion(target, dur));
             return this;
         }
@@ -176,7 +176,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder PunchRotation(Vector3 punch, float? duration = null, int vibrato = 10, float elasticity = 1f)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOPunchRotation(punch, dur, vibrato, elasticity));
             return this;
         }
@@ -186,7 +186,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder ShakeRotation(float? duration = null, float strength = 90f, int vibrato = 10, float randomness = 90f)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOShakeRotation(dur, strength, vibrato, randomness));
             return this;
         }
@@ -200,7 +200,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder Scale(float target, float? duration = null)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOScale(target, dur));
             return this;
         }
@@ -210,7 +210,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder Scale(Vector3 target, float? duration = null)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOScale(target, dur));
             return this;
         }
@@ -220,7 +220,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder ScaleX(float target, float? duration = null)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOScaleX(target, dur));
             return this;
         }
@@ -230,7 +230,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder ScaleY(float target, float? duration = null)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOScaleY(target, dur));
             return this;
         }
@@ -240,7 +240,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder ScaleZ(float target, float? duration = null)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOScaleZ(target, dur));
             return this;
         }
@@ -250,7 +250,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder PunchScale(Vector3 punch, float? duration = null, int vibrato = 10, float elasticity = 1f)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOPunchScale(punch, dur, vibrato, elasticity));
             return this;
         }
@@ -260,7 +260,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder ShakeScale(float? duration = null, float strength = 1f, int vibrato = 10, float randomness = 90f)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => _transform.DOShakeScale(dur, strength, vibrato, randomness));
             return this;
         }
@@ -274,7 +274,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder Fade(float alpha, float? duration = null)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => CreateFadeTween(alpha, dur));
             return this;
         }
@@ -339,7 +339,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder Color(Color target, float? duration = null)
         {
-            var dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
             AddStep(() => CreateColorTween(target, dur));
             return this;
         }

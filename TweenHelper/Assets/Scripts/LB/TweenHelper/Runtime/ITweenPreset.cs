@@ -28,7 +28,7 @@ namespace LB.TweenHelper
         /// Creates and configures a tween for the specified target using this preset.
         /// </summary>
         /// <param name="target">The GameObject to animate.</param>
-        /// <param name="duration">Duration override (null uses preset default).</param>
+        /// <param name="duration">Duration override (null falls through to options.Duration, then preset default).</param>
         /// <param name="options">Additional options to apply.</param>
         /// <returns>The configured tween or sequence.</returns>
         Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default);

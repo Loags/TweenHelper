@@ -30,7 +30,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var upEase = ResolveEase(options, Ease.OutQuad);
             var downEase = ResolveSecondaryEase(options, Ease.InQuad);
             var presetOptions = MergeWithDefaultEase(options, upEase);
@@ -80,7 +80,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return PulseScaleFactory.Create(target, 1.08f, GetDuration(duration), options);
+            return PulseScaleFactory.Create(target, 1.08f, GetDuration(duration, options), options);
         }
     }
 
@@ -102,7 +102,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return PulseScaleFactory.Create(target, 1.25f, GetDuration(duration), options);
+            return PulseScaleFactory.Create(target, 1.25f, GetDuration(duration, options), options);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace LB.TweenHelper
             var dropHeight = 8f;
             t.localPosition = t.localPosition + Vector3.up * dropHeight;
 
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var fallEase = ResolveEase(options, Ease.InQuad);
             var bounceEase = ResolveSecondaryEase(options, Ease.OutQuad);
             var presetOptions = MergeWithDefaultEase(options.SetEase(fallEase), fallEase);
@@ -78,7 +78,7 @@ namespace LB.TweenHelper
             var dropHeight = 6f;
             t.localPosition = t.localPosition + Vector3.up * dropHeight;
 
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var fallEase = ResolveEase(options, Ease.InSine);
             var bounceEase = ResolveSecondaryEase(options, Ease.OutSine);
             var presetOptions = MergeWithDefaultEase(options.SetEase(fallEase), fallEase);
@@ -121,7 +121,7 @@ namespace LB.TweenHelper
             var dropHeight = 10f;
             t.localPosition = t.localPosition + Vector3.up * dropHeight;
 
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var fallEase = ResolveEase(options, Ease.InCubic);
             var bounceEase = ResolveSecondaryEase(options, Ease.OutQuad);
             var presetOptions = MergeWithDefaultEase(options.SetEase(fallEase), fallEase);
@@ -171,7 +171,7 @@ namespace LB.TweenHelper
             var dropHeight = 5f;
             t.localPosition = t.localPosition + Vector3.up * dropHeight;
 
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var fallEase = ResolveEase(options, Ease.InQuad);
             var bounceEase = ResolveSecondaryEase(options, Ease.OutQuad);
             var presetOptions = MergeWithDefaultEase(options, fallEase);
@@ -225,7 +225,7 @@ namespace LB.TweenHelper
             var t = target.transform;
             var originalScale = t.localScale;
             var baseY = t.localPosition.y;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var fallEase = ResolveEase(options, Ease.InQuad);
             var hopEase = ResolveSecondaryEase(options, Ease.OutQuad);
             var presetOptions = MergeWithDefaultEase(options, fallEase);
@@ -287,7 +287,7 @@ namespace LB.TweenHelper
             var dropHeight = 4f;
             t.localPosition = t.localPosition + Vector3.up * dropHeight;
 
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var fallEase = ResolveEase(options, Ease.InSine);
             var bounceEase = ResolveSecondaryEase(options, Ease.OutSine);
             var presetOptions = MergeWithDefaultEase(options, fallEase);
@@ -343,7 +343,7 @@ namespace LB.TweenHelper
             var dropHeight = 7f;
             t.localPosition = t.localPosition + Vector3.up * dropHeight;
 
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var fallEase = ResolveEase(options, Ease.InCubic);
             var bounceEase = ResolveSecondaryEase(options, Ease.OutQuad);
             var presetOptions = MergeWithDefaultEase(options, fallEase);
@@ -396,7 +396,7 @@ namespace LB.TweenHelper
             var t = target.transform;
             var originalScale = t.localScale;
             var baseY = t.localPosition.y;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var fallEase = ResolveEase(options, Ease.InSine);
             var hopEase = ResolveSecondaryEase(options, Ease.OutSine);
             var presetOptions = MergeWithDefaultEase(options, fallEase);
@@ -455,7 +455,7 @@ namespace LB.TweenHelper
             var t = target.transform;
             var originalScale = t.localScale;
             var baseY = t.localPosition.y;
-            var dur = GetDuration(duration);
+            var dur = GetDuration(duration, options);
             var fallEase = ResolveEase(options, Ease.InCubic);
             var hopEase = ResolveSecondaryEase(options, Ease.OutQuad);
             var presetOptions = MergeWithDefaultEase(options, fallEase);

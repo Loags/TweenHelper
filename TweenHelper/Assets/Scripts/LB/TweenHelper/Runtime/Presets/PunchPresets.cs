@@ -28,7 +28,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchScale(Vector3.one * 0.11f, GetDuration(duration), 5, 0.7f)
+            return target.transform.DOPunchScale(Vector3.one * 0.11f, GetDuration(duration, options), 5, 0.7f)
                 .WithDefaults(options, target);
         }
     }
@@ -53,7 +53,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchScale(Vector3.one * 0.08f, GetDuration(duration), 4, 0.7f)
+            return target.transform.DOPunchScale(Vector3.one * 0.08f, GetDuration(duration, options), 4, 0.7f)
                 .WithDefaults(options, target);
         }
     }
@@ -78,7 +78,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchScale(Vector3.one * 0.25f, GetDuration(duration), 8, 0.7f)
+            return target.transform.DOPunchScale(Vector3.one * 0.25f, GetDuration(duration, options), 8, 0.7f)
                 .WithDefaults(options, target);
         }
     }

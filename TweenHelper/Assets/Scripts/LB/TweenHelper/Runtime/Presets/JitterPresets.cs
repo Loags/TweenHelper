@@ -28,7 +28,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOShakePosition(GetDuration(duration), 0.06f, 35, 90f, false, true)
+            return target.transform.DOShakePosition(GetDuration(duration, options), 0.06f, 35, 90f, false, true)
                 .WithDefaults(options, target);
         }
     }
@@ -53,7 +53,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOShakePosition(GetDuration(duration), 0.04f, 30, 90f, false, true)
+            return target.transform.DOShakePosition(GetDuration(duration, options), 0.04f, 30, 90f, false, true)
                 .WithDefaults(options, target);
         }
     }
@@ -78,7 +78,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOShakePosition(GetDuration(duration), 0.15f, 50, 90f, false, true)
+            return target.transform.DOShakePosition(GetDuration(duration, options), 0.15f, 50, 90f, false, true)
                 .WithDefaults(options, target);
         }
     }

@@ -5,7 +5,7 @@ namespace LB.TweenHelper
 {
     /// <summary>
     /// Value type that represents per-call overrides for tween behavior.
-    /// Allows explicit control over delay, ease, update type, unscaled time, snapping, loops, and speed-based behavior.
+    /// Allows explicit control over duration, delay, ease, update type, unscaled time, snapping, loops, and speed-based behavior.
     /// </summary>
     [System.Serializable]
     public struct TweenOptions
@@ -21,6 +21,20 @@ namespace LB.TweenHelper
         [SerializeField] private string id;
         [SerializeField] private Ease? secondaryEase;
         [SerializeField] private Ease? tertiaryEase;
+        [SerializeField] private float? overshoot;
+        [SerializeField] private float? duration;
+        [SerializeField] private Vector3? startScale;
+        [SerializeField] private Vector3? targetScale;
+
+        /// <summary>
+        /// Creates a new TweenOptions with the specified duration override.
+        /// </summary>
+        /// <param name="duration">The duration override for the tween.</param>
+        /// <returns>A new TweenOptions instance.</returns>
+        public static TweenOptions WithDuration(float duration)
+        {
+            return new TweenOptions { duration = duration };
+        }
 
         /// <summary>
         /// Creates a new TweenOptions with the specified delay.
@@ -110,6 +124,17 @@ namespace LB.TweenHelper
         }
         
         /// <summary>
+        /// Creates a new TweenOptions with the specified overshoot multiplier.
+        /// Default is 1.0 (preset's built-in amount). 0.5 = half, 2.0 = double, 0.0 = none.
+        /// </summary>
+        /// <param name="overshoot">The overshoot multiplier.</param>
+        /// <returns>A new TweenOptions instance.</returns>
+        public static TweenOptions WithOvershoot(float overshoot)
+        {
+            return new TweenOptions { overshoot = overshoot };
+        }
+
+        /// <summary>
         /// Creates a new TweenOptions with the specified update type.
         /// </summary>
         /// <param name="updateType">The update type to use.</param>
@@ -119,7 +144,27 @@ namespace LB.TweenHelper
             return new TweenOptions { updateType = updateType };
         }
 
-        
+        /// <summary>
+        /// Creates a new TweenOptions with the specified start scale override for entrance presets.
+        /// </summary>
+        /// <param name="startScale">The start scale to use instead of the preset default (typically zero).</param>
+        /// <returns>A new TweenOptions instance.</returns>
+        public static TweenOptions WithStartScale(Vector3 startScale)
+        {
+            return new TweenOptions { startScale = startScale };
+        }
+
+        /// <summary>
+        /// Creates a new TweenOptions with the specified target scale override for scale presets.
+        /// </summary>
+        /// <param name="targetScale">The target scale to use instead of the preset default.</param>
+        /// <returns>A new TweenOptions instance.</returns>
+        public static TweenOptions WithTargetScale(Vector3 targetScale)
+        {
+            return new TweenOptions { targetScale = targetScale };
+        }
+
+
         #region Fluent API
         
         /// <summary>
@@ -233,6 +278,18 @@ namespace LB.TweenHelper
         }
         
         /// <summary>
+        /// Sets the overshoot multiplier for this TweenOptions.
+        /// Default is 1.0 (preset's built-in amount). 0.5 = half, 2.0 = double, 0.0 = none.
+        /// </summary>
+        /// <param name="overshoot">The overshoot multiplier.</param>
+        /// <returns>This TweenOptions instance for chaining.</returns>
+        public TweenOptions SetOvershoot(float overshoot)
+        {
+            this.overshoot = overshoot;
+            return this;
+        }
+
+        /// <summary>
         /// Sets the identifier for this TweenOptions.
         /// </summary>
         /// <param name="id">The identifier for the tween.</param>
@@ -242,7 +299,40 @@ namespace LB.TweenHelper
             this.id = id;
             return this;
         }
-        
+
+        /// <summary>
+        /// Sets the duration override for this TweenOptions.
+        /// </summary>
+        /// <param name="duration">The duration override for the tween.</param>
+        /// <returns>This TweenOptions instance for chaining.</returns>
+        public TweenOptions SetDuration(float duration)
+        {
+            this.duration = duration;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the start scale override for entrance presets.
+        /// </summary>
+        /// <param name="startScale">The start scale to use instead of the preset default (typically zero).</param>
+        /// <returns>This TweenOptions instance for chaining.</returns>
+        public TweenOptions SetStartScale(Vector3 startScale)
+        {
+            this.startScale = startScale;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the target scale override for scale presets.
+        /// </summary>
+        /// <param name="targetScale">The target scale to use instead of the preset default.</param>
+        /// <returns>This TweenOptions instance for chaining.</returns>
+        public TweenOptions SetTargetScale(Vector3 targetScale)
+        {
+            this.targetScale = targetScale;
+            return this;
+        }
+
         #endregion
         
         #region Internal Property Access
@@ -258,7 +348,11 @@ namespace LB.TweenHelper
         internal string Id => id;
         internal Ease? SecondaryEase => secondaryEase;
         internal Ease? TertiaryEase => tertiaryEase;
-        
+        internal float? Overshoot => overshoot;
+        internal float? Duration => duration;
+        internal Vector3? StartScale => startScale;
+        internal Vector3? TargetScale => targetScale;
+
         #endregion
         
         /// <summary>
@@ -281,7 +375,11 @@ namespace LB.TweenHelper
             if (loopType.HasValue) parts.Add($"LoopType:{loopType.Value}");
             if (speedBased.HasValue) parts.Add($"Speed:{speedBased.Value}");
             if (!string.IsNullOrEmpty(id)) parts.Add($"Id:{id}");
-            
+            if (overshoot.HasValue) parts.Add($"Overshoot:{overshoot.Value:F2}");
+            if (duration.HasValue) parts.Add($"Duration:{duration.Value:F2}");
+            if (startScale.HasValue) parts.Add($"StartScale:{startScale.Value}");
+            if (targetScale.HasValue) parts.Add($"TargetScale:{targetScale.Value}");
+
             return parts.Count > 0 ? $"TweenOptions({string.Join(", ", parts)})" : "TweenOptions(None)";
         }
     }

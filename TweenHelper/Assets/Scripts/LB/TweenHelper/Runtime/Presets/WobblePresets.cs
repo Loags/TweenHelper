@@ -28,7 +28,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0, 15f, 0), GetDuration(duration), 8, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(0, 15f, 0), GetDuration(duration, options), 8, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -53,7 +53,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0, 8f, 0), GetDuration(duration), 5, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(0, 8f, 0), GetDuration(duration, options), 5, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -78,7 +78,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0, 25f, 0), GetDuration(duration), 12, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(0, 25f, 0), GetDuration(duration, options), 12, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -108,7 +108,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(15f, 0, 0), GetDuration(duration), 8, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(15f, 0, 0), GetDuration(duration, options), 8, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -133,7 +133,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(8f, 0, 0), GetDuration(duration), 5, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(8f, 0, 0), GetDuration(duration, options), 5, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -158,7 +158,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(25f, 0, 0), GetDuration(duration), 12, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(25f, 0, 0), GetDuration(duration, options), 12, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -188,7 +188,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0, 0, 11f), GetDuration(duration), 7, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(0, 0, 11f), GetDuration(duration, options), 7, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -213,7 +213,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0, 0, 8f), GetDuration(duration), 6, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(0, 0, 8f), GetDuration(duration, options), 6, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -238,7 +238,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0, 0, 25f), GetDuration(duration), 10, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(0, 0, 25f), GetDuration(duration, options), 10, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -268,7 +268,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(12f, 12f, 0f), GetDuration(duration), 8, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(12f, 12f, 0f), GetDuration(duration, options), 8, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -290,7 +290,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(7f, 7f, 0f), GetDuration(duration), 5, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(7f, 7f, 0f), GetDuration(duration, options), 5, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -312,7 +312,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(20f, 20f, 0f), GetDuration(duration), 12, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(20f, 20f, 0f), GetDuration(duration, options), 12, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -342,7 +342,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(12f, 0f, 12f), GetDuration(duration), 8, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(12f, 0f, 12f), GetDuration(duration, options), 8, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -364,7 +364,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(7f, 0f, 7f), GetDuration(duration), 5, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(7f, 0f, 7f), GetDuration(duration, options), 5, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -386,7 +386,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(20f, 0f, 20f), GetDuration(duration), 12, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(20f, 0f, 20f), GetDuration(duration, options), 12, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -416,7 +416,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0f, 12f, 12f), GetDuration(duration), 8, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(0f, 12f, 12f), GetDuration(duration, options), 8, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -438,7 +438,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0f, 7f, 7f), GetDuration(duration), 5, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(0f, 7f, 7f), GetDuration(duration, options), 5, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -460,7 +460,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0f, 20f, 20f), GetDuration(duration), 12, 0.5f)
+            return target.transform.DOPunchRotation(new Vector3(0f, 20f, 20f), GetDuration(duration, options), 12, 0.5f)
                 .WithDefaults(options, target);
         }
     }

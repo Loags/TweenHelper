@@ -22,7 +22,7 @@ The main entry point is the fluent builder accessed via extension methods:
 TweenBuilderExtensions.cs    → .Tween() extension on Transform/GameObject/Component
 TweenBuilder.cs              → Fluent builder: move/rotate/scale/fade/preset/sequence composition
 TweenHandle.cs               → Wrapper returned by Play()/Build() with control, status, async/await
-TweenOptions.cs              → Value type struct for per-call overrides (ease, delay, loops, etc.)
+TweenOptions.cs              → Value type struct for per-call overrides (duration, ease, delay, loops, startScale, targetScale, etc.)
 TweenDefaults.cs             → .WithDefaults() extension to apply settings to raw DOTween tweens
 ```
 
@@ -75,16 +75,22 @@ transform.Tween().Move(target).WithEase(Ease.OutBounce).Play()
 - **Implicit Conversion**: `TweenHandle` converts to/from DOTween `Tween` transparently
 - **Singleton Settings**: `TweenHelperSettings.Instance` lazy-loaded from Resources
 
+### Duration Resolution
+
+Duration follows a fallback chain: `explicit float? duration param → TweenOptions.Duration → preset DefaultDuration (or TweenHelperSettings.DefaultDuration for builder methods)`. The explicit parameter always wins; `TweenOptions.Duration` provides a convenient alternative when bundling duration with other options.
+
 ### Preset Easing System
 
 Presets support primary/secondary/tertiary ease overrides via `TweenOptions.WithEases()`. Multi-tween presets (e.g., DropIn with fall + bounce) use `ResolveEase()`, `ResolveSecondaryEase()`, `ResolveTertiaryEase()` to pick per-phase easing.
+
+Scale-based entrance/exit presets support `StartScale`/`TargetScale` overrides via `TweenOptions.WithStartScale()`/`WithTargetScale()`. Entrance presets (PopIn, PopInFade, SwirlIn) use `ResolveStartScale()` (default zero) and `ResolveTargetScale()` (default originalScale). Exit presets (PopOut, PopOutFade, SpinScaleOut, Explode) use `ResolveTargetScale()` (default zero or multiplied scale).
 
 Looping presets (Float, Orbit) use manual callback-based loops with `WithLoopDefaults()` instead of DOTween's built-in loop system, applying delay only on the first cycle.
 
 ## Coding Standards
 
 - **Namespace**: `LB.TweenHelper` for all code
-- **Parameters**: Optional `float? duration` (null → preset default or settings default), optional `TweenOptions`
+- **Parameters**: Optional `float? duration` (null → `options.Duration` → preset default or settings default), optional `TweenOptions`
 - **Returns**: DOTween `Tween`/`Sequence` from presets; `TweenHandle` from builder
 - **Defaults**: Always pull from `TweenHelperSettings.Instance`
 - **Presets**: Always call `.WithDefaults(options, target)` at the end of `CreateTween()`
