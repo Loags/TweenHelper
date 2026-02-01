@@ -115,7 +115,7 @@ namespace LB.TweenHelper
     /// Up phases use <c>Ease.OutQuad</c>, down phases use <c>Ease.InQuad</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.7s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
     /// <b>Easing override:</b> Primary ease controls up phases; secondary ease controls down phases.
     /// </para>
     /// <para>
@@ -128,7 +128,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "Bounce";
         public override string Description => "Positional Y bounce with decreasing hops";
-        public override float DefaultDuration => 0.7f;
+        public override float DefaultDuration => 1.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
@@ -154,7 +154,7 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft positional Y bounce with small hops.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutQuad (up), InQuad (down)
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.9s | <b>Default ease:</b> OutQuad (up), InQuad (down)
     /// </para>
     /// Usage: <c>transform.Tween().Preset("BounceSoft").Play();</c>
     /// </summary>
@@ -163,7 +163,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "BounceSoft";
         public override string Description => "Soft bounce";
-        public override float DefaultDuration => 0.6f;
+        public override float DefaultDuration => 0.9f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
@@ -189,7 +189,7 @@ namespace LB.TweenHelper
     /// <summary>
     /// Heavy positional Y bounce with tall hops.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutQuad (up), InQuad (down)
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.3s | <b>Default ease:</b> OutQuad (up), InQuad (down)
     /// </para>
     /// Usage: <c>transform.Tween().Preset("BounceHard").Play();</c>
     /// </summary>
@@ -198,7 +198,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "BounceHard";
         public override string Description => "Heavy bounce with tall hops";
-        public override float DefaultDuration => 1.0f;
+        public override float DefaultDuration => 1.3f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)

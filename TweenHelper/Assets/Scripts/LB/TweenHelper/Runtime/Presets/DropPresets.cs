@@ -147,7 +147,7 @@ namespace LB.TweenHelper
     /// Falls use <c>Ease.InQuad</c>, bounces use <c>Ease.OutQuad</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.6s | <b>Default ease:</b> InQuad (fall), OutQuad (bounce)<br/>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.0s | <b>Default ease:</b> InQuad (fall), OutQuad (bounce)<br/>
     /// <b>Easing override:</b> Primary ease controls falls; secondary ease controls bounce-ups.
     /// </para>
     /// <para>
@@ -160,7 +160,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "BounceLand";
         public override string Description => "Drop with bounce and squash-stretch on landing";
-        public override float DefaultDuration => 1.6f;
+        public override float DefaultDuration => 2.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
@@ -250,6 +250,236 @@ namespace LB.TweenHelper
                 .Append(t.DOScale(originalScale, dur * 0.03f).SetEase(Ease.InQuad))
                 // Hop 3
                 .Append(t.DOLocalMoveY(baseY + 0.5f, dur * 0.08f).SetEase(hopEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.08f).SetEase(fallEase))
+                // Squash 3
+                .Append(t.DOScale(squash3, dur * 0.03f).SetEase(Ease.OutQuad))
+                .Append(t.DOScale(originalScale, dur * 0.03f).SetEase(Ease.InQuad))
+                // Final settle
+                .AppendInterval(dur * 0.14f)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Gentle drop from 4 units above with soft bounce and mild squash-stretch on landing.
+    /// <para>
+    /// Offsets Y by <c>+4</c>, then builds a multi-step sequence with <c>InSine</c> fall
+    /// and gentle squash deformation <c>(1.2x, 0.8y)</c> / <c>(1.1x, 0.9y)</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.4s | <b>Default ease:</b> InSine (fall), OutSine (bounce)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("BounceLandSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class BounceLandSoftPreset : CodePreset
+    {
+        public override string PresetName => "BounceLandSoft";
+        public override string Description => "Gentle drop with soft bounce and mild squash-stretch";
+        public override float DefaultDuration => 2.4f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var targetY = t.localPosition.y;
+            var dropHeight = 4f;
+            t.localPosition = t.localPosition + Vector3.up * dropHeight;
+
+            var dur = GetDuration(duration);
+            var fallEase = ResolveEase(options, Ease.InSine);
+            var bounceEase = ResolveSecondaryEase(options, Ease.OutSine);
+            var presetOptions = MergeWithDefaultEase(options, fallEase);
+
+            var squash1 = new Vector3(originalScale.x * 1.2f, originalScale.y * 0.8f, originalScale.z);
+            var squash2 = new Vector3(originalScale.x * 1.1f, originalScale.y * 0.9f, originalScale.z);
+
+            return DOTween.Sequence()
+                // Fall
+                .Append(t.DOLocalMoveY(targetY, dur * 0.3f).SetEase(fallEase))
+                // Squash on first impact
+                .Append(t.DOScale(squash1, dur * 0.05f).SetEase(Ease.OutSine))
+                .Append(t.DOScale(originalScale, dur * 0.05f).SetEase(Ease.InSine))
+                // Bounce 1 up
+                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.35f, dur * 0.12f).SetEase(bounceEase))
+                .Append(t.DOLocalMoveY(targetY, dur * 0.12f).SetEase(fallEase))
+                // Squash on second impact
+                .Append(t.DOScale(squash2, dur * 0.04f).SetEase(Ease.OutSine))
+                .Append(t.DOScale(originalScale, dur * 0.04f).SetEase(Ease.InSine))
+                // Bounce 2 up (smaller)
+                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.1f, dur * 0.09f).SetEase(bounceEase))
+                .Append(t.DOLocalMoveY(targetY, dur * 0.09f).SetEase(fallEase))
+                // Final settle
+                .Append(t.DOScale(originalScale, dur * 0.05f).SetEase(Ease.OutSine))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Heavy drop from 7 units above with sharp bounce and exaggerated squash-stretch on landing.
+    /// <para>
+    /// Offsets Y by <c>+7</c>, then builds a multi-step sequence with <c>InCubic</c> fall
+    /// and strong squash deformation <c>(1.45x, 0.55y)</c> / <c>(1.25x, 0.75y)</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.6s | <b>Default ease:</b> InCubic (fall), OutQuad (bounce)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("BounceLandHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class BounceLandHardPreset : CodePreset
+    {
+        public override string PresetName => "BounceLandHard";
+        public override string Description => "Heavy drop with sharp bounce and exaggerated squash-stretch";
+        public override float DefaultDuration => 1.6f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var targetY = t.localPosition.y;
+            var dropHeight = 7f;
+            t.localPosition = t.localPosition + Vector3.up * dropHeight;
+
+            var dur = GetDuration(duration);
+            var fallEase = ResolveEase(options, Ease.InCubic);
+            var bounceEase = ResolveSecondaryEase(options, Ease.OutQuad);
+            var presetOptions = MergeWithDefaultEase(options, fallEase);
+
+            var squash1 = new Vector3(originalScale.x * 1.45f, originalScale.y * 0.55f, originalScale.z);
+            var squash2 = new Vector3(originalScale.x * 1.25f, originalScale.y * 0.75f, originalScale.z);
+
+            return DOTween.Sequence()
+                // Fall
+                .Append(t.DOLocalMoveY(targetY, dur * 0.3f).SetEase(fallEase))
+                // Squash on first impact
+                .Append(t.DOScale(squash1, dur * 0.05f).SetEase(Ease.OutQuad))
+                .Append(t.DOScale(originalScale, dur * 0.05f).SetEase(Ease.InQuad))
+                // Bounce 1 up
+                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.35f, dur * 0.12f).SetEase(bounceEase))
+                .Append(t.DOLocalMoveY(targetY, dur * 0.12f).SetEase(fallEase))
+                // Squash on second impact
+                .Append(t.DOScale(squash2, dur * 0.04f).SetEase(Ease.OutQuad))
+                .Append(t.DOScale(originalScale, dur * 0.04f).SetEase(Ease.InQuad))
+                // Bounce 2 up (smaller)
+                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.1f, dur * 0.09f).SetEase(bounceEase))
+                .Append(t.DOLocalMoveY(targetY, dur * 0.09f).SetEase(fallEase))
+                // Final settle
+                .Append(t.DOScale(originalScale, dur * 0.05f).SetEase(Ease.OutQuad))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Soft cartoon-style bounce with smaller hops and gentler squash-stretch.
+    /// <para>
+    /// Builds a multi-step sequence: initial hop to 1.5 units, then decreasing hops (0.7, 0.3)
+    /// with mild squash deformation. Uses <c>InSine</c>/<c>OutSine</c> easing.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.8s | <b>Default ease:</b> InSine (fall), OutSine (hop)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("BounceCartoonSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class BounceCartoonSoftPreset : CodePreset
+    {
+        public override string PresetName => "BounceCartoonSoft";
+        public override string Description => "Soft cartoon bounce with gentle squash-stretch";
+        public override float DefaultDuration => 1.8f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var baseY = t.localPosition.y;
+            var dur = GetDuration(duration);
+            var fallEase = ResolveEase(options, Ease.InSine);
+            var hopEase = ResolveSecondaryEase(options, Ease.OutSine);
+            var presetOptions = MergeWithDefaultEase(options, fallEase);
+
+            var squash1 = new Vector3(originalScale.x * 1.25f, originalScale.y * 0.75f, originalScale.z);
+            var squash2 = new Vector3(originalScale.x * 1.15f, originalScale.y * 0.85f, originalScale.z);
+            var squash3 = new Vector3(originalScale.x * 1.08f, originalScale.y * 0.92f, originalScale.z);
+
+            return DOTween.Sequence()
+                // Big hop up
+                .Append(t.DOLocalMoveY(baseY + 1.5f, dur * 0.15f).SetEase(hopEase))
+                // Fall down
+                .Append(t.DOLocalMoveY(baseY, dur * 0.15f).SetEase(fallEase))
+                // Squash on landing
+                .Append(t.DOScale(squash1, dur * 0.04f).SetEase(Ease.OutSine))
+                .Append(t.DOScale(originalScale, dur * 0.04f).SetEase(Ease.InSine))
+                // Hop 2
+                .Append(t.DOLocalMoveY(baseY + 0.7f, dur * 0.1f).SetEase(hopEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.1f).SetEase(fallEase))
+                // Squash 2
+                .Append(t.DOScale(squash2, dur * 0.03f).SetEase(Ease.OutSine))
+                .Append(t.DOScale(originalScale, dur * 0.03f).SetEase(Ease.InSine))
+                // Hop 3
+                .Append(t.DOLocalMoveY(baseY + 0.3f, dur * 0.08f).SetEase(hopEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.08f).SetEase(fallEase))
+                // Squash 3
+                .Append(t.DOScale(squash3, dur * 0.03f).SetEase(Ease.OutSine))
+                .Append(t.DOScale(originalScale, dur * 0.03f).SetEase(Ease.InSine))
+                // Final settle
+                .AppendInterval(dur * 0.14f)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Hard cartoon-style bounce with exaggerated hops and strong squash-stretch.
+    /// <para>
+    /// Builds a multi-step sequence: initial hop to 3.5 units, then decreasing hops (1.8, 0.8)
+    /// with heavy squash deformation. Uses <c>InCubic</c>/<c>OutQuad</c> easing.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.1s | <b>Default ease:</b> InCubic (fall), OutQuad (hop)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("BounceCartoonHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class BounceCartoonHardPreset : CodePreset
+    {
+        public override string PresetName => "BounceCartoonHard";
+        public override string Description => "Hard cartoon bounce with exaggerated squash-stretch";
+        public override float DefaultDuration => 1.1f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var baseY = t.localPosition.y;
+            var dur = GetDuration(duration);
+            var fallEase = ResolveEase(options, Ease.InCubic);
+            var hopEase = ResolveSecondaryEase(options, Ease.OutQuad);
+            var presetOptions = MergeWithDefaultEase(options, fallEase);
+
+            var squash1 = new Vector3(originalScale.x * 1.55f, originalScale.y * 0.45f, originalScale.z);
+            var squash2 = new Vector3(originalScale.x * 1.35f, originalScale.y * 0.65f, originalScale.z);
+            var squash3 = new Vector3(originalScale.x * 1.18f, originalScale.y * 0.82f, originalScale.z);
+
+            return DOTween.Sequence()
+                // Big hop up
+                .Append(t.DOLocalMoveY(baseY + 3.5f, dur * 0.15f).SetEase(hopEase))
+                // Fall down
+                .Append(t.DOLocalMoveY(baseY, dur * 0.15f).SetEase(fallEase))
+                // Squash on landing
+                .Append(t.DOScale(squash1, dur * 0.04f).SetEase(Ease.OutQuad))
+                .Append(t.DOScale(originalScale, dur * 0.04f).SetEase(Ease.InQuad))
+                // Hop 2
+                .Append(t.DOLocalMoveY(baseY + 1.8f, dur * 0.1f).SetEase(hopEase))
+                .Append(t.DOLocalMoveY(baseY, dur * 0.1f).SetEase(fallEase))
+                // Squash 2
+                .Append(t.DOScale(squash2, dur * 0.03f).SetEase(Ease.OutQuad))
+                .Append(t.DOScale(originalScale, dur * 0.03f).SetEase(Ease.InQuad))
+                // Hop 3
+                .Append(t.DOLocalMoveY(baseY + 0.8f, dur * 0.08f).SetEase(hopEase))
                 .Append(t.DOLocalMoveY(baseY, dur * 0.08f).SetEase(fallEase))
                 // Squash 3
                 .Append(t.DOScale(squash3, dur * 0.03f).SetEase(Ease.OutQuad))

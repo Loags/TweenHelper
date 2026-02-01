@@ -4,17 +4,30 @@ using UnityEngine;
 namespace LB.TweenHelper
 {
     /// <summary>
+    /// Internal factory for SlideIn variants sharing the same entrance animation structure.
+    /// </summary>
+    internal static class SlideInFactory
+    {
+        public static Tween Create(GameObject target, Vector3 offsetDirection, float distance, float duration, TweenOptions options)
+        {
+            var t = target.transform;
+            var targetPos = t.localPosition;
+            t.localPosition = targetPos + offsetDirection * distance;
+
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.OutCubic);
+            var ease = presetOptions.Ease ?? Ease.OutCubic;
+
+            return t.DOLocalMove(targetPos, duration)
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
     /// Slides the target downward from 500 units above its current local position to its original position.
     /// <para>
-    /// Offsets initial local position by <c>Vector3.up * 500</c>, then animates to the stored target position
-    /// using <c>DOLocalMove</c> with <c>Ease.OutCubic</c>. Mirrors SlideInUp but enters from above.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic<br/>
     /// <b>Easing override:</b> Primary ease replaces OutCubic.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> UI panel entrance from top, dropdown menu appearance, notification slide-in.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInDown").Play();</c>
     /// </summary>
@@ -23,35 +36,20 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SlideInDown";
         public override string Description => "Slides down from above";
-        public override float DefaultDuration => 0.6f;
+        public override float DefaultDuration => 1.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var targetPos = t.localPosition;
-            t.localPosition = targetPos + Vector3.up * 500f;
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
-            var ease = ResolveEase(presetOptions, Ease.OutCubic);
-
-            return t.DOLocalMove(targetPos, GetDuration(duration))
-                .SetEase(ease)
-                .WithDefaults(presetOptions, target);
+            return SlideInFactory.Create(target, Vector3.up, 500f, GetDuration(duration), options);
         }
     }
 
     /// <summary>
     /// Slides the target upward from 500 units below its current local position to its original position.
     /// <para>
-    /// Offsets initial local position by <c>Vector3.down * 500</c>, then animates to the stored target position
-    /// using <c>DOLocalMove</c> with <c>Ease.OutCubic</c>. Mirrors SlideInDown but enters from below.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic<br/>
     /// <b>Easing override:</b> Primary ease replaces OutCubic.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> UI panel entrance from bottom, toast notification, bottom sheet reveal.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInUp").Play();</c>
     /// </summary>
@@ -60,35 +58,20 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SlideInUp";
         public override string Description => "Slides up from below";
-        public override float DefaultDuration => 0.6f;
+        public override float DefaultDuration => 1.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var targetPos = t.localPosition;
-            t.localPosition = targetPos + Vector3.down * 500f;
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
-            var ease = ResolveEase(presetOptions, Ease.OutCubic);
-
-            return t.DOLocalMove(targetPos, GetDuration(duration))
-                .SetEase(ease)
-                .WithDefaults(presetOptions, target);
+            return SlideInFactory.Create(target, Vector3.down, 500f, GetDuration(duration), options);
         }
     }
 
     /// <summary>
     /// Slides the target in from 500 units to the left of its current local position.
     /// <para>
-    /// Offsets initial local position by <c>Vector3.left * 500</c>, then animates to the stored target position
-    /// using <c>DOLocalMove</c> with <c>Ease.OutCubic</c>. Mirrors SlideInRight but enters from the left.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic<br/>
     /// <b>Easing override:</b> Primary ease replaces OutCubic.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Side panel entrance, carousel item slide-in, horizontal menu reveal.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInLeft").Play();</c>
     /// </summary>
@@ -97,35 +80,20 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SlideInLeft";
         public override string Description => "Slides in from the left side";
-        public override float DefaultDuration => 0.6f;
+        public override float DefaultDuration => 1.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var targetPos = t.localPosition;
-            t.localPosition = targetPos + Vector3.left * 500f;
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
-            var ease = ResolveEase(presetOptions, Ease.OutCubic);
-
-            return t.DOLocalMove(targetPos, GetDuration(duration))
-                .SetEase(ease)
-                .WithDefaults(presetOptions, target);
+            return SlideInFactory.Create(target, Vector3.left, 500f, GetDuration(duration), options);
         }
     }
 
     /// <summary>
     /// Slides the target in from 500 units to the right of its current local position.
     /// <para>
-    /// Offsets initial local position by <c>Vector3.right * 500</c>, then animates to the stored target position
-    /// using <c>DOLocalMove</c> with <c>Ease.OutCubic</c>. Mirrors SlideInLeft but enters from the right.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic<br/>
     /// <b>Easing override:</b> Primary ease replaces OutCubic.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Side panel entrance, navigation drawer, horizontal content reveal.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInRight").Play();</c>
     /// </summary>
@@ -134,18 +102,202 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SlideInRight";
         public override string Description => "Slides in from the right side";
-        public override float DefaultDuration => 0.6f;
+        public override float DefaultDuration => 1.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var targetPos = t.localPosition;
-            t.localPosition = targetPos + Vector3.right * 500f;
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
-            var ease = ResolveEase(presetOptions, Ease.OutCubic);
+            return SlideInFactory.Create(target, Vector3.right, 500f, GetDuration(duration), options);
+        }
+    }
 
-            return t.DOLocalMove(targetPos, GetDuration(duration))
+    // --- SlideIn Soft variants (duration 1.5s) ---
+
+    /// <summary>
+    /// Soft slide in from above. Slower, gentler entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInDownSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInDownSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideInDownSoft";
+        public override string Description => "Slowly slides down from above";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFactory.Create(target, Vector3.up, 500f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Soft slide in from below. Slower, gentler entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInUpSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInUpSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideInUpSoft";
+        public override string Description => "Slowly slides up from below";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFactory.Create(target, Vector3.down, 500f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Soft slide in from the left. Slower, gentler entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInLeftSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInLeftSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideInLeftSoft";
+        public override string Description => "Slowly slides in from the left";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFactory.Create(target, Vector3.left, 500f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Soft slide in from the right. Slower, gentler entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInRightSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInRightSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideInRightSoft";
+        public override string Description => "Slowly slides in from the right";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFactory.Create(target, Vector3.right, 500f, GetDuration(duration), options);
+        }
+    }
+
+    // --- SlideIn Hard variants (duration 0.5s) ---
+
+    /// <summary>
+    /// Hard slide in from above. Fast, snappy entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInDownHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInDownHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideInDownHard";
+        public override string Description => "Quickly slides down from above";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFactory.Create(target, Vector3.up, 500f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Hard slide in from below. Fast, snappy entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInUpHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInUpHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideInUpHard";
+        public override string Description => "Quickly slides up from below";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFactory.Create(target, Vector3.down, 500f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Hard slide in from the left. Fast, snappy entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInLeftHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInLeftHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideInLeftHard";
+        public override string Description => "Quickly slides in from the left";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFactory.Create(target, Vector3.left, 500f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Hard slide in from the right. Fast, snappy entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInRightHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInRightHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideInRightHard";
+        public override string Description => "Quickly slides in from the right";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFactory.Create(target, Vector3.right, 500f, GetDuration(duration), options);
+        }
+    }
+
+    // --- SlideOut presets (duration fixed from 0.5s to 1.0s) ---
+
+    /// <summary>
+    /// Internal factory for SlideOut variants sharing the same exit animation structure.
+    /// </summary>
+    internal static class SlideOutFactory
+    {
+        public static Tween Create(GameObject target, Vector3 direction, float distance, float duration, TweenOptions options)
+        {
+            var t = target.transform;
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.InCubic);
+            var ease = presetOptions.Ease ?? Ease.InCubic;
+            var endPos = t.localPosition + direction * distance;
+
+            return t.DOLocalMove(endPos, duration)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -154,15 +306,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Slides the target 500 units upward off-screen, mirroring SlideInDown as an exit animation.
     /// <para>
-    /// Animates local Y position by <c>+500</c> using <c>DOLocalMoveY</c> with <c>Ease.InCubic</c>.
-    /// The accelerating ease creates momentum as the element exits upward. Does not return to origin.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic<br/>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InCubic<br/>
     /// <b>Easing override:</b> Primary ease replaces InCubic.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> UI panel dismiss upward, notification exit, top-exit transition.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutUp").Play();</c>
     /// </summary>
@@ -171,33 +316,20 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SlideOutUp";
         public override string Description => "Slides up off-screen";
-        public override float DefaultDuration => 0.5f;
+        public override float DefaultDuration => 1.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var presetOptions = MergeWithDefaultEase(options, Ease.InCubic);
-            var ease = ResolveEase(presetOptions, Ease.InCubic);
-
-            return t.DOLocalMoveY(t.localPosition.y + 500f, GetDuration(duration))
-                .SetEase(ease)
-                .WithDefaults(presetOptions, target);
+            return SlideOutFactory.Create(target, Vector3.up, 500f, GetDuration(duration), options);
         }
     }
 
     /// <summary>
     /// Slides the target 500 units downward off-screen, mirroring SlideInUp as an exit animation.
     /// <para>
-    /// Animates local Y position by <c>-500</c> using <c>DOLocalMoveY</c> with <c>Ease.InCubic</c>.
-    /// The accelerating ease creates momentum as the element exits downward. Does not return to origin.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic<br/>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InCubic<br/>
     /// <b>Easing override:</b> Primary ease replaces InCubic.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> UI panel dismiss downward, bottom-exit transition, dropdown close.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutDown").Play();</c>
     /// </summary>
@@ -206,33 +338,20 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SlideOutDown";
         public override string Description => "Slides down off-screen";
-        public override float DefaultDuration => 0.5f;
+        public override float DefaultDuration => 1.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var presetOptions = MergeWithDefaultEase(options, Ease.InCubic);
-            var ease = ResolveEase(presetOptions, Ease.InCubic);
-
-            return t.DOLocalMoveY(t.localPosition.y - 500f, GetDuration(duration))
-                .SetEase(ease)
-                .WithDefaults(presetOptions, target);
+            return SlideOutFactory.Create(target, Vector3.down, 500f, GetDuration(duration), options);
         }
     }
 
     /// <summary>
     /// Slides the target 500 units to the left off-screen, mirroring SlideInRight as an exit animation.
     /// <para>
-    /// Animates local X position by <c>-500</c> using <c>DOLocalMoveX</c> with <c>Ease.InCubic</c>.
-    /// The accelerating ease creates momentum as the element exits leftward. Does not return to origin.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic<br/>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InCubic<br/>
     /// <b>Easing override:</b> Primary ease replaces InCubic.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Left-exit transition, swipe dismiss, carousel item exit.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutLeft").Play();</c>
     /// </summary>
@@ -241,33 +360,20 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SlideOutLeft";
         public override string Description => "Slides left off-screen";
-        public override float DefaultDuration => 0.5f;
+        public override float DefaultDuration => 1.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var presetOptions = MergeWithDefaultEase(options, Ease.InCubic);
-            var ease = ResolveEase(presetOptions, Ease.InCubic);
-
-            return t.DOLocalMoveX(t.localPosition.x - 500f, GetDuration(duration))
-                .SetEase(ease)
-                .WithDefaults(presetOptions, target);
+            return SlideOutFactory.Create(target, Vector3.left, 500f, GetDuration(duration), options);
         }
     }
 
     /// <summary>
     /// Slides the target 500 units to the right off-screen, mirroring SlideInLeft as an exit animation.
     /// <para>
-    /// Animates local X position by <c>+500</c> using <c>DOLocalMoveX</c> with <c>Ease.InCubic</c>.
-    /// The accelerating ease creates momentum as the element exits rightward. Does not return to origin.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic<br/>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InCubic<br/>
     /// <b>Easing override:</b> Primary ease replaces InCubic.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Right-exit transition, swipe dismiss, carousel item exit.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutRight").Play();</c>
     /// </summary>
@@ -276,34 +382,221 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SlideOutRight";
         public override string Description => "Slides right off-screen";
+        public override float DefaultDuration => 1.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFactory.Create(target, Vector3.right, 500f, GetDuration(duration), options);
+        }
+    }
+
+    // --- SlideOut Soft variants (duration 1.5s) ---
+
+    /// <summary>
+    /// Soft slide out upward. Slower exit for gentle dismissal.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideOutUpSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutUpSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutUpSoft";
+        public override string Description => "Slowly slides up off-screen";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFactory.Create(target, Vector3.up, 500f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Soft slide out downward. Slower exit for gentle dismissal.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideOutDownSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutDownSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutDownSoft";
+        public override string Description => "Slowly slides down off-screen";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFactory.Create(target, Vector3.down, 500f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Soft slide out to the left. Slower exit for gentle dismissal.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideOutLeftSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutLeftSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutLeftSoft";
+        public override string Description => "Slowly slides left off-screen";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFactory.Create(target, Vector3.left, 500f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Soft slide out to the right. Slower exit for gentle dismissal.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideOutRightSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutRightSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutRightSoft";
+        public override string Description => "Slowly slides right off-screen";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFactory.Create(target, Vector3.right, 500f, GetDuration(duration), options);
+        }
+    }
+
+    // --- SlideOut Hard variants (duration 0.5s) ---
+
+    /// <summary>
+    /// Hard slide out upward. Fast snappy exit.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideOutUpHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutUpHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutUpHard";
+        public override string Description => "Quickly slides up off-screen";
         public override float DefaultDuration => 0.5f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var presetOptions = MergeWithDefaultEase(options, Ease.InCubic);
-            var ease = ResolveEase(presetOptions, Ease.InCubic);
+            return SlideOutFactory.Create(target, Vector3.up, 500f, GetDuration(duration), options);
+        }
+    }
 
-            return t.DOLocalMoveX(t.localPosition.x + 500f, GetDuration(duration))
-                .SetEase(ease)
-                .WithDefaults(presetOptions, target);
+    /// <summary>
+    /// Hard slide out downward. Fast snappy exit.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideOutDownHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutDownHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutDownHard";
+        public override string Description => "Quickly slides down off-screen";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFactory.Create(target, Vector3.down, 500f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Hard slide out to the left. Fast snappy exit.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideOutLeftHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutLeftHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutLeftHard";
+        public override string Description => "Quickly slides left off-screen";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFactory.Create(target, Vector3.left, 500f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Hard slide out to the right. Fast snappy exit.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideOutRightHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutRightHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutRightHard";
+        public override string Description => "Quickly slides right off-screen";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFactory.Create(target, Vector3.right, 500f, GetDuration(duration), options);
+        }
+    }
+
+    // --- SlideInFade presets (durations fixed) ---
+
+    /// <summary>
+    /// Internal factory for SlideInFade variants sharing the same slide + fade entrance structure.
+    /// </summary>
+    internal static class SlideInFadeFactory
+    {
+        public static Tween Create(GameObject target, Vector3 offsetDirection, float distance, float duration, TweenOptions options)
+        {
+            var t = target.transform;
+            var targetPos = t.localPosition;
+            t.localPosition = targetPos + offsetDirection * distance;
+
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.OutCubic);
+            var ease = presetOptions.Ease ?? Ease.OutCubic;
+
+            var seq = DOTween.Sequence();
+            seq.Append(t.DOLocalMove(targetPos, duration).SetEase(ease));
+
+            var fadeTween = CodePreset.CreateFadeTweenStatic(target, 1f, duration * 0.7f);
+            if (fadeTween != null)
+            {
+                CodePreset.SetAlphaStatic(target, 0f);
+                seq.Join(fadeTween.SetEase(Ease.Linear));
+            }
+
+            return seq.WithDefaults(presetOptions, target);
         }
     }
 
     /// <summary>
     /// Slides the target upward from 100 units below while simultaneously fading in (fade completes at 70% duration).
     /// <para>
-    /// Offsets initial position by <c>Vector3.down * 100</c> and sets alpha to <c>0</c>.
-    /// Builds a parallel sequence: position animates over full duration with <c>Ease.OutCubic</c>,
-    /// fade animates over 70% duration with <c>Ease.Linear</c>. Same pattern as SlideInFadeDown but from below.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
-    /// <b>Easing override:</b> Primary ease controls movement; fade is always Linear.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> List item stagger entrance, card reveal, content section entrance, bottom-up reveal.
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeUp").Play();</c>
     /// </summary>
@@ -312,30 +605,12 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SlideInFadeUp";
         public override string Description => "Slides up from below with fade in";
-        public override float DefaultDuration => 1.0f;
+        public override float DefaultDuration => 2.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var targetPos = t.localPosition;
-            t.localPosition = targetPos + Vector3.down * 100f;
-
-            var dur = GetDuration(duration);
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
-            var ease = ResolveEase(presetOptions, Ease.OutCubic);
-
-            var seq = DOTween.Sequence();
-            seq.Append(t.DOLocalMove(targetPos, dur).SetEase(ease));
-
-            var fadeTween = CreateFadeTween(target, 1f, dur * 0.7f);
-            if (fadeTween != null)
-            {
-                SetAlpha(target, 0f);
-                seq.Join(fadeTween.SetEase(Ease.Linear));
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return SlideInFadeFactory.Create(target, Vector3.down, 100f, GetDuration(duration), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -344,16 +619,7 @@ namespace LB.TweenHelper
     /// <summary>
     /// Slides the target downward from 100 units above while simultaneously fading in (fade completes at 70% duration).
     /// <para>
-    /// Offsets initial position by <c>Vector3.up * 100</c> and sets alpha to <c>0</c>.
-    /// Builds a parallel sequence: position animates over full duration with <c>Ease.OutCubic</c>,
-    /// fade animates over 70% duration with <c>Ease.Linear</c>. Same pattern as SlideInFadeUp but from above.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
-    /// <b>Easing override:</b> Primary ease controls movement; fade is always Linear.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Dropdown content reveal, notification entrance, header slide-in, top-down reveal.
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeDown").Play();</c>
     /// </summary>
@@ -362,30 +628,12 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SlideInFadeDown";
         public override string Description => "Slides down from above with fade in";
-        public override float DefaultDuration => 1.0f;
+        public override float DefaultDuration => 2.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var targetPos = t.localPosition;
-            t.localPosition = targetPos + Vector3.up * 100f;
-
-            var dur = GetDuration(duration);
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
-            var ease = ResolveEase(presetOptions, Ease.OutCubic);
-
-            var seq = DOTween.Sequence();
-            seq.Append(t.DOLocalMove(targetPos, dur).SetEase(ease));
-
-            var fadeTween = CreateFadeTween(target, 1f, dur * 0.7f);
-            if (fadeTween != null)
-            {
-                SetAlpha(target, 0f);
-                seq.Join(fadeTween.SetEase(Ease.Linear));
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return SlideInFadeFactory.Create(target, Vector3.up, 100f, GetDuration(duration), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -394,16 +642,7 @@ namespace LB.TweenHelper
     /// <summary>
     /// Slides the target in from 100 units to the left while simultaneously fading in (fade completes at 70% duration).
     /// <para>
-    /// Offsets initial position by <c>Vector3.left * 100</c> and sets alpha to <c>0</c>.
-    /// Builds a parallel sequence: position animates over full duration with <c>Ease.OutCubic</c>,
-    /// fade animates over 70% duration with <c>Ease.Linear</c>. Same pattern as SlideInFadeUp but from the left.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
-    /// <b>Easing override:</b> Primary ease controls movement; fade is always Linear.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Side panel reveal, horizontal content entrance, left-to-right reveal.
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeLeft").Play();</c>
     /// </summary>
@@ -412,30 +651,12 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SlideInFadeLeft";
         public override string Description => "Slides in from the left with fade in";
-        public override float DefaultDuration => 1.5f;
+        public override float DefaultDuration => 2.5f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var targetPos = t.localPosition;
-            t.localPosition = targetPos + Vector3.left * 100f;
-
-            var dur = GetDuration(duration);
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
-            var ease = ResolveEase(presetOptions, Ease.OutCubic);
-
-            var seq = DOTween.Sequence();
-            seq.Append(t.DOLocalMove(targetPos, dur).SetEase(ease));
-
-            var fadeTween = CreateFadeTween(target, 1f, dur * 0.7f);
-            if (fadeTween != null)
-            {
-                SetAlpha(target, 0f);
-                seq.Join(fadeTween.SetEase(Ease.Linear));
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return SlideInFadeFactory.Create(target, Vector3.left, 100f, GetDuration(duration), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -444,16 +665,7 @@ namespace LB.TweenHelper
     /// <summary>
     /// Slides the target in from 100 units to the right while simultaneously fading in (fade completes at 70% duration).
     /// <para>
-    /// Offsets initial position by <c>Vector3.right * 100</c> and sets alpha to <c>0</c>.
-    /// Builds a parallel sequence: position animates over full duration with <c>Ease.OutCubic</c>,
-    /// fade animates over 70% duration with <c>Ease.Linear</c>. Same pattern as SlideInFadeUp but from the right.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
-    /// <b>Easing override:</b> Primary ease controls movement; fade is always Linear.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Side panel reveal, horizontal content entrance, right-to-left reveal.
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeRight").Play();</c>
     /// </summary>
@@ -462,30 +674,200 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SlideInFadeRight";
         public override string Description => "Slides in from the right with fade in";
+        public override float DefaultDuration => 2.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFadeFactory.Create(target, Vector3.right, 100f, GetDuration(duration), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    // --- SlideInFade Soft variants ---
+
+    /// <summary>
+    /// Soft slide-in-fade from below. Slower, gentler entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 3.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInFadeUpSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInFadeUpSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideInFadeUpSoft";
+        public override string Description => "Slowly slides up from below with fade in";
+        public override float DefaultDuration => 3.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFadeFactory.Create(target, Vector3.down, 100f, GetDuration(duration), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Soft slide-in-fade from above. Slower, gentler entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 3.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInFadeDownSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInFadeDownSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideInFadeDownSoft";
+        public override string Description => "Slowly slides down from above with fade in";
+        public override float DefaultDuration => 3.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFadeFactory.Create(target, Vector3.up, 100f, GetDuration(duration), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Soft slide-in-fade from the left. Slower, gentler entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 3.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInFadeLeftSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInFadeLeftSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideInFadeLeftSoft";
+        public override string Description => "Slowly slides in from the left with fade in";
+        public override float DefaultDuration => 3.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFadeFactory.Create(target, Vector3.left, 100f, GetDuration(duration), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Soft slide-in-fade from the right. Slower, gentler entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 3.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInFadeRightSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInFadeRightSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideInFadeRightSoft";
+        public override string Description => "Slowly slides in from the right with fade in";
+        public override float DefaultDuration => 3.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFadeFactory.Create(target, Vector3.right, 100f, GetDuration(duration), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    // --- SlideInFade Hard variants ---
+
+    /// <summary>
+    /// Hard slide-in-fade from below. Fast, snappy entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInFadeUpHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInFadeUpHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideInFadeUpHard";
+        public override string Description => "Quickly slides up from below with fade in";
+        public override float DefaultDuration => 1.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFadeFactory.Create(target, Vector3.down, 100f, GetDuration(duration), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Hard slide-in-fade from above. Fast, snappy entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInFadeDownHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInFadeDownHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideInFadeDownHard";
+        public override string Description => "Quickly slides down from above with fade in";
+        public override float DefaultDuration => 1.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFadeFactory.Create(target, Vector3.up, 100f, GetDuration(duration), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Hard slide-in-fade from the left. Fast, snappy entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInFadeLeftHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInFadeLeftHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideInFadeLeftHard";
+        public override string Description => "Quickly slides in from the left with fade in";
         public override float DefaultDuration => 1.5f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var targetPos = t.localPosition;
-            t.localPosition = targetPos + Vector3.right * 100f;
+            return SlideInFadeFactory.Create(target, Vector3.left, 100f, GetDuration(duration), options);
+        }
 
-            var dur = GetDuration(duration);
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
-            var ease = ResolveEase(presetOptions, Ease.OutCubic);
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
 
-            var seq = DOTween.Sequence();
-            seq.Append(t.DOLocalMove(targetPos, dur).SetEase(ease));
+    /// <summary>
+    /// Hard slide-in-fade from the right. Fast, snappy entrance.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideInFadeRightHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideInFadeRightHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideInFadeRightHard";
+        public override string Description => "Quickly slides in from the right with fade in";
+        public override float DefaultDuration => 1.5f;
 
-            var fadeTween = CreateFadeTween(target, 1f, dur * 0.7f);
-            if (fadeTween != null)
-            {
-                SetAlpha(target, 0f);
-                seq.Join(fadeTween.SetEase(Ease.Linear));
-            }
 
-            return seq.WithDefaults(presetOptions, target);
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideInFadeFactory.Create(target, Vector3.right, 100f, GetDuration(duration), options);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;

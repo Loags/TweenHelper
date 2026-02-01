@@ -117,6 +117,12 @@ namespace LB.TweenHelper
         /// Creates a fade tween for the appropriate component type.
         /// Supports CanvasGroup, SpriteRenderer, Image, Text, and Renderer (material).
         /// </summary>
+        /// <summary>
+        /// Internal entry point for <see cref="CreateFadeTween"/> used by shared factories.
+        /// </summary>
+        internal static Tween CreateFadeTweenStatic(GameObject target, float alpha, float duration)
+            => CreateFadeTween(target, alpha, duration);
+
         protected static Tween CreateFadeTween(GameObject target, float alpha, float duration)
         {
             var canvasGroup = target.GetComponent<CanvasGroup>();
@@ -147,6 +153,12 @@ namespace LB.TweenHelper
         /// Sets the alpha for the appropriate component type.
         /// Supports CanvasGroup, SpriteRenderer, Image, Text, and Renderer (material).
         /// </summary>
+        /// <summary>
+        /// Internal entry point for <see cref="SetAlpha"/> used by shared factories.
+        /// </summary>
+        internal static void SetAlphaStatic(GameObject target, float alpha)
+            => SetAlpha(target, alpha);
+
         protected static void SetAlpha(GameObject target, float alpha)
         {
             var canvasGroup = target.GetComponent<CanvasGroup>();

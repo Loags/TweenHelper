@@ -40,14 +40,14 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Scales the target from zero to its original scale with elastic overshoot.
+    /// Scales the target from zero past its original scale (1.2x), then settles back.
     /// <para>
-    /// Sets initial scale to <c>Vector3.zero</c>, then animates to the stored original scale using
-    /// <c>Ease.OutBack</c> with an overshoot parameter of <c>4.0</c>.
+    /// Sets initial scale to <c>Vector3.zero</c>, scales up to <c>originalScale * 1.2</c> in the first half,
+    /// then eases back to <c>originalScale</c> in the second half.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutBack (4.0 overshoot)<br/>
-    /// <b>Easing override:</b> Primary ease replaces OutBack.
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutQuad (scale-up), InOutSine (settle)<br/>
+    /// <b>Easing override:</b> Primary ease applies to the sequence.
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Bouncy UI entrance, item spawn with pop, playful notification.
@@ -59,7 +59,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "PopInOvershoot";
         public override string Description => "Scales from 0 to original scale with overshoot";
-        public override float DefaultDuration => 0.6f;
+        public override float DefaultDuration => 1.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
@@ -67,12 +67,14 @@ namespace LB.TweenHelper
             var t = target.transform;
             var originalScale = t.localScale;
             t.localScale = Vector3.zero;
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutBack);
-            var ease = ResolveEase(presetOptions, Ease.OutBack);
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
+            var overshootScale = originalScale * 1.2f;
 
-            return t.DOScale(originalScale, GetDuration(duration))
-                .SetEase(ease, 4.0f)
-                .WithDefaults(presetOptions, target);
+            var seq = DOTween.Sequence();
+            seq.Append(t.DOScale(overshootScale, dur).SetEase(Ease.OutQuad));
+            seq.Append(t.DOScale(originalScale, dur * 0.5f).SetEase(Ease.InOutSine));
+            return seq.WithDefaults(presetOptions, target);
         }
     }
 
@@ -182,18 +184,28 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var t = target.transform;
+            var dur = GetDuration(duration);
             var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
             var ease = ResolveEase(presetOptions, Ease.InBack);
-            return target.transform.DOScale(Vector3.zero, GetDuration(duration))
-                .SetEase(ease, 4.0f)
-                .WithDefaults(presetOptions, target);
+
+            var seq = DOTween.Sequence();
+            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease));
+            return seq.WithDefaults(presetOptions, target);
         }
     }
 
     /// <summary>
-    /// Soft exit scaling to zero with mild InBack overshoot (overshoot 2.5).
+    /// Scales the target down to zero with a mild anticipation pull-back (overshoot 2.5).
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.6s | <b>Default ease:</b> InBack (overshoot 2.5)
+    /// Animates scale to <c>Vector3.zero</c> using <c>Ease.InBack</c> with overshoot 2.5.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.6s | <b>Default ease:</b> InBack (overshoot 2.5)<br/>
+    /// <b>Easing override:</b> Primary ease replaces InBack; overshoot parameter is preserved.
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> Gentle UI dismissal with subtle anticipation, soft dialog close, understated exit.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PopOutOvershootSoft").Play();</c>
     /// </summary>
@@ -207,18 +219,28 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var t = target.transform;
+            var dur = GetDuration(duration);
             var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
             var ease = ResolveEase(presetOptions, Ease.InBack);
-            return target.transform.DOScale(Vector3.zero, GetDuration(duration))
-                .SetEase(ease, 2.5f)
-                .WithDefaults(presetOptions, target);
+
+            var seq = DOTween.Sequence();
+            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease, 2.5f));
+            return seq.WithDefaults(presetOptions, target);
         }
     }
 
     /// <summary>
-    /// Hard exit scaling to zero with strong InBack overshoot (overshoot 6.0).
+    /// Scales the target down to zero with a strong anticipation pull-back (overshoot 6.0).
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.25s | <b>Default ease:</b> InBack (overshoot 6.0)
+    /// Animates scale to <c>Vector3.zero</c> using <c>Ease.InBack</c> with overshoot 6.0.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.25s | <b>Default ease:</b> InBack (overshoot 6.0)<br/>
+    /// <b>Easing override:</b> Primary ease replaces InBack; overshoot parameter is preserved.
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> Emphatic UI dismissal, punchy item collection, dramatic dialog close with strong wind-up.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PopOutOvershootHard").Play();</c>
     /// </summary>
@@ -232,11 +254,14 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var t = target.transform;
+            var dur = GetDuration(duration);
             var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
             var ease = ResolveEase(presetOptions, Ease.InBack);
-            return target.transform.DOScale(Vector3.zero, GetDuration(duration))
-                .SetEase(ease, 6.0f)
-                .WithDefaults(presetOptions, target);
+
+            var seq = DOTween.Sequence();
+            seq.Join(t.DOScale(Vector3.zero, dur).SetEase(ease, 6.0f));
+            return seq.WithDefaults(presetOptions, target);
         }
     }
 
@@ -270,9 +295,17 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Gentle entrance scaling from zero with mild OutBack overshoot (overshoot param 2.5).
+    /// Scales the target from zero past its original scale (1.1x), then gently settles back.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.8s | <b>Default ease:</b> OutBack (overshoot 2.5)
+    /// Sets initial scale to <c>Vector3.zero</c>, scales up to <c>originalScale * 1.1</c> in the first half,
+    /// then eases back to <c>originalScale</c> in the second half.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.2s | <b>Default ease:</b> OutQuad (scale-up), InOutSine (settle)<br/>
+    /// <b>Easing override:</b> Primary ease applies to the sequence.
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> Gentle bouncy UI entrance, subtle item spawn, soft notification pop.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PopInOvershootSoft").Play();</c>
     /// </summary>
@@ -281,7 +314,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "PopInOvershootSoft";
         public override string Description => "Gentle scale entrance with mild OutBack overshoot";
-        public override float DefaultDuration => 0.8f;
+        public override float DefaultDuration => 1.2f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
@@ -289,12 +322,14 @@ namespace LB.TweenHelper
             var t = target.transform;
             var originalScale = t.localScale;
             t.localScale = Vector3.zero;
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutBack);
-            var ease = ResolveEase(presetOptions, Ease.OutBack);
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
+            var overshootScale = originalScale * 1.1f;
 
-            return t.DOScale(originalScale, GetDuration(duration))
-                .SetEase(ease, 2.5f)
-                .WithDefaults(presetOptions, target);
+            var seq = DOTween.Sequence();
+            seq.Append(t.DOScale(overshootScale, dur).SetEase(Ease.OutQuad));
+            seq.Append(t.DOScale(originalScale, dur * 0.5f).SetEase(Ease.InOutSine));
+            return seq.WithDefaults(presetOptions, target);
         }
     }
 
@@ -328,9 +363,17 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Snappy entrance scaling from zero with OutBack and high overshoot parameter.
+    /// Scales the target from zero past its original scale (1.4x), then snaps back.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutBack (6.0 overshoot)
+    /// Sets initial scale to <c>Vector3.zero</c>, scales up to <c>originalScale * 1.4</c> in the first half,
+    /// then eases back to <c>originalScale</c> in the second half.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.8s | <b>Default ease:</b> OutQuad (scale-up), InOutSine (settle)<br/>
+    /// <b>Easing override:</b> Primary ease applies to the sequence.
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> Punchy UI entrance, dramatic item spawn, emphatic notification pop.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PopInOvershootHard").Play();</c>
     /// </summary>
@@ -339,7 +382,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "PopInOvershootHard";
         public override string Description => "Snappy scale entrance with strong overshoot";
-        public override float DefaultDuration => 0.4f;
+        public override float DefaultDuration => 0.8f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
@@ -347,12 +390,14 @@ namespace LB.TweenHelper
             var t = target.transform;
             var originalScale = t.localScale;
             t.localScale = Vector3.zero;
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutBack);
-            var ease = ResolveEase(presetOptions, Ease.OutBack);
+            var dur = GetDuration(duration);
+            var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
+            var overshootScale = originalScale * 1.4f;
 
-            return t.DOScale(originalScale, GetDuration(duration))
-                .SetEase(ease, 6.0f)
-                .WithDefaults(presetOptions, target);
+            var seq = DOTween.Sequence();
+            seq.Append(t.DOScale(overshootScale, dur).SetEase(Ease.OutQuad));
+            seq.Append(t.DOScale(originalScale, dur * 0.5f).SetEase(Ease.InOutSine));
+            return seq.WithDefaults(presetOptions, target);
         }
     }
 }

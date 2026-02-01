@@ -274,6 +274,50 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
+    /// Soft diagonal XY wobble with smaller angle and fewer vibrations.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXYSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleDiagonalXYSoftPreset : CodePreset
+    {
+        public override string PresetName => "WobbleDiagonalXYSoft";
+        public override string Description => "Soft diagonal XY wobble";
+        public override float DefaultDuration => 0.4f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(7f, 7f, 0f), GetDuration(duration), 5, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Heavy diagonal XY wobble with larger angle and more vibrations.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXYHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleDiagonalXYHardPreset : CodePreset
+    {
+        public override string PresetName => "WobbleDiagonalXYHard";
+        public override string Description => "Heavy diagonal XY wobble";
+        public override float DefaultDuration => 0.6f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(20f, 20f, 0f), GetDuration(duration), 12, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
     /// Wobbles the target's rotation diagonally across both X and Z axes simultaneously.
     /// <para>
     /// Uses <c>DOPunchRotation</c> with punch vector <c>(12, 0, 12)</c> (12° amplitude per axis),
@@ -304,6 +348,50 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
+    /// Soft diagonal XZ wobble with smaller angle and fewer vibrations.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXZSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleDiagonalXZSoftPreset : CodePreset
+    {
+        public override string PresetName => "WobbleDiagonalXZSoft";
+        public override string Description => "Soft diagonal XZ wobble";
+        public override float DefaultDuration => 0.4f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(7f, 0f, 7f), GetDuration(duration), 5, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Heavy diagonal XZ wobble with larger angle and more vibrations.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXZHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleDiagonalXZHardPreset : CodePreset
+    {
+        public override string PresetName => "WobbleDiagonalXZHard";
+        public override string Description => "Heavy diagonal XZ wobble";
+        public override float DefaultDuration => 0.6f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(20f, 0f, 20f), GetDuration(duration), 12, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
     /// Wobbles the target's rotation diagonally across both Y and Z axes simultaneously.
     /// <para>
     /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 12, 12)</c> (12° amplitude per axis),
@@ -329,6 +417,50 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             return target.transform.DOPunchRotation(new Vector3(0f, 12f, 12f), GetDuration(duration), 8, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Soft diagonal YZ wobble with smaller angle and fewer vibrations.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalYZSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleDiagonalYZSoftPreset : CodePreset
+    {
+        public override string PresetName => "WobbleDiagonalYZSoft";
+        public override string Description => "Soft diagonal YZ wobble";
+        public override float DefaultDuration => 0.4f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(0f, 7f, 7f), GetDuration(duration), 5, 0.5f)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Heavy diagonal YZ wobble with larger angle and more vibrations.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalYZHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleDiagonalYZHardPreset : CodePreset
+    {
+        public override string PresetName => "WobbleDiagonalYZHard";
+        public override string Description => "Heavy diagonal YZ wobble";
+        public override float DefaultDuration => 0.6f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return target.transform.DOPunchRotation(new Vector3(0f, 20f, 20f), GetDuration(duration), 12, 0.5f)
                 .WithDefaults(options, target);
         }
     }

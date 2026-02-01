@@ -117,4 +117,172 @@ namespace LB.TweenHelper
             return LaunchFactory.Create(target, Vector3.right, 3f, GetDuration(duration), options);
         }
     }
+
+    /// <summary>
+    /// Gentle upward launch — shorter distance (1.5 units) for a subtle lift.
+    /// <para>
+    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("LaunchUpSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class LaunchUpSoftPreset : CodePreset
+    {
+        public override string PresetName => "LaunchUpSoft";
+        public override string Description => "Gentle upward motion with ease-out";
+        public override float DefaultDuration => 0.3f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return LaunchFactory.Create(target, Vector3.up, 1.5f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Forceful upward launch — longer distance (5 units) for a dramatic lift.
+    /// <para>
+    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("LaunchUpHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class LaunchUpHardPreset : CodePreset
+    {
+        public override string PresetName => "LaunchUpHard";
+        public override string Description => "Forceful upward motion with ease-out";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return LaunchFactory.Create(target, Vector3.up, 5f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Gentle downward launch — shorter distance (1.5 units) for a subtle drop.
+    /// <para>
+    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("LaunchDownSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class LaunchDownSoftPreset : CodePreset
+    {
+        public override string PresetName => "LaunchDownSoft";
+        public override string Description => "Gentle downward motion with ease-out";
+        public override float DefaultDuration => 0.3f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return LaunchFactory.Create(target, Vector3.down, 1.5f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Forceful downward launch — longer distance (5 units) for a dramatic drop.
+    /// <para>
+    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("LaunchDownHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class LaunchDownHardPreset : CodePreset
+    {
+        public override string PresetName => "LaunchDownHard";
+        public override string Description => "Forceful downward motion with ease-out";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return LaunchFactory.Create(target, Vector3.down, 5f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Gentle leftward launch — shorter distance (1.5 units) for a subtle slide.
+    /// <para>
+    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("LaunchLeftSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class LaunchLeftSoftPreset : CodePreset
+    {
+        public override string PresetName => "LaunchLeftSoft";
+        public override string Description => "Gentle leftward motion with ease-out";
+        public override float DefaultDuration => 0.3f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return LaunchFactory.Create(target, Vector3.left, 1.5f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Forceful leftward launch — longer distance (5 units) for a dramatic exit.
+    /// <para>
+    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("LaunchLeftHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class LaunchLeftHardPreset : CodePreset
+    {
+        public override string PresetName => "LaunchLeftHard";
+        public override string Description => "Forceful leftward motion with ease-out";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return LaunchFactory.Create(target, Vector3.left, 5f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Gentle rightward launch — shorter distance (1.5 units) for a subtle slide.
+    /// <para>
+    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("LaunchRightSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class LaunchRightSoftPreset : CodePreset
+    {
+        public override string PresetName => "LaunchRightSoft";
+        public override string Description => "Gentle rightward motion with ease-out";
+        public override float DefaultDuration => 0.3f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return LaunchFactory.Create(target, Vector3.right, 1.5f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Forceful rightward launch — longer distance (5 units) for a dramatic exit.
+    /// <para>
+    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("LaunchRightHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class LaunchRightHardPreset : CodePreset
+    {
+        public override string PresetName => "LaunchRightHard";
+        public override string Description => "Forceful rightward motion with ease-out";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return LaunchFactory.Create(target, Vector3.right, 5f, GetDuration(duration), options);
+        }
+    }
 }

@@ -128,44 +128,6 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Scales from zero to original with a tight elastic snap, producing rapid oscillation before settling.
-    /// <para>
-    /// Sets initial scale to <c>Vector3.zero</c>, then animates to original scale using
-    /// <c>Ease.OutElastic</c> with amplitude <c>0.7</c> and period <c>0.3</c>.
-    /// The low period produces faster oscillations than the default elastic, creating a snappy, spring-like feel.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutElastic (amplitude 0.7, period 0.3)<br/>
-    /// <b>Easing override:</b> Primary ease replaces OutElastic (amplitude/period parameters still apply).
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Springy UI element entrance, badge pop-in, slot-machine result, snappy icon appearance.
-    /// </para>
-    /// Usage: <c>transform.Tween().Preset("ElasticSnapIn").Play();</c>
-    /// </summary>
-    [AutoRegisterPreset]
-    public class ElasticSnapInPreset : CodePreset
-    {
-        public override string PresetName => "ElasticSnapIn";
-        public override string Description => "Scale from 0 with tight elastic oscillation";
-        public override float DefaultDuration => 0.5f;
-
-
-        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
-        {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            t.localScale = Vector3.zero;
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutElastic);
-            var ease = ResolveEase(presetOptions, Ease.OutElastic);
-
-            return t.DOScale(originalScale, GetDuration(duration))
-                .SetEase(ease, 0.7f, 0.3f)
-                .WithDefaults(presetOptions, target);
-        }
-    }
-
-    /// <summary>
     /// Gently bobs the target up and down on the Y axis in a continuous hovering loop using callback-chain looping.
     /// <para>
     /// Alternates between moving <c>+0.5</c> and <c>-0.5</c> on local Y (relative), each leg taking
@@ -351,47 +313,6 @@ namespace LB.TweenHelper
             return DOTween.Sequence()
                 .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 12f), dur * 0.4f).SetEase(leanEase))
                 .Append(t.DOLocalRotate(originalRot, dur * 0.6f).SetEase(returnEase))
-                .WithDefaults(presetOptions, target);
-        }
-    }
-
-    /// <summary>
-    /// Winds up the target's rotation backward on Z, snaps forward past the origin, then settles to rest.
-    /// <para>
-    /// Builds a 3-step sequence: (1) rotate to <c>original + (0, 0, -30)</c> over 40% duration with
-    /// <c>Ease.InQuad</c> (wind-up), (2) snap to <c>original + (0, 0, +5)</c> over 35% with
-    /// <c>Ease.OutBack</c> (overshoot forward), (3) settle to original over 25% with <c>Ease.OutQuad</c>.
-    /// </para>
-    /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InQuad (wind), OutBack (snap)<br/>
-    /// <b>Easing override:</b> Primary ease controls wind-up; secondary ease controls snap-forward.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Spring release, wind-up toy, throwing preparation, mechanical action.
-    /// </para>
-    /// Usage: <c>transform.Tween().Preset("WindUp").Play();</c>
-    /// </summary>
-    [AutoRegisterPreset]
-    public class WindUpPreset : CodePreset
-    {
-        public override string PresetName => "WindUp";
-        public override string Description => "Wind up rotation then snap forward and settle";
-        public override float DefaultDuration => 0.5f;
-
-
-        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
-        {
-            var t = target.transform;
-            var originalRot = t.localEulerAngles;
-            var dur = GetDuration(duration);
-            var windEase = ResolveEase(options, Ease.InQuad);
-            var snapEase = ResolveSecondaryEase(options, Ease.OutBack);
-            var presetOptions = MergeWithDefaultEase(options, windEase);
-
-            return DOTween.Sequence()
-                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, -30f), dur * 0.4f).SetEase(windEase))
-                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 5f), dur * 0.35f).SetEase(snapEase))
-                .Append(t.DOLocalRotate(originalRot, dur * 0.25f).SetEase(Ease.OutQuad))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -599,64 +520,6 @@ namespace LB.TweenHelper
             Beat();
 
             return tween;
-        }
-    }
-
-    /// <summary>
-    /// Soft elastic snap in with lower amplitude and longer period.
-    /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutElastic (amplitude 0.4, period 0.4)
-    /// </para>
-    /// Usage: <c>transform.Tween().Preset("ElasticSnapInSoft").Play();</c>
-    /// </summary>
-    [AutoRegisterPreset]
-    public class ElasticSnapInSoftPreset : CodePreset
-    {
-        public override string PresetName => "ElasticSnapInSoft";
-        public override string Description => "Soft elastic snap from zero";
-        public override float DefaultDuration => 0.6f;
-
-
-        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
-        {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            t.localScale = Vector3.zero;
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutElastic);
-            var ease = ResolveEase(presetOptions, Ease.OutElastic);
-
-            return t.DOScale(originalScale, GetDuration(duration))
-                .SetEase(ease, 0.4f, 0.4f)
-                .WithDefaults(presetOptions, target);
-        }
-    }
-
-    /// <summary>
-    /// Hard elastic snap in with higher amplitude and shorter period.
-    /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutElastic (amplitude 1.0, period 0.2)
-    /// </para>
-    /// Usage: <c>transform.Tween().Preset("ElasticSnapInHard").Play();</c>
-    /// </summary>
-    [AutoRegisterPreset]
-    public class ElasticSnapInHardPreset : CodePreset
-    {
-        public override string PresetName => "ElasticSnapInHard";
-        public override string Description => "Hard elastic snap from zero";
-        public override float DefaultDuration => 0.4f;
-
-
-        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
-        {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            t.localScale = Vector3.zero;
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutElastic);
-            var ease = ResolveEase(presetOptions, Ease.OutElastic);
-
-            return t.DOScale(originalScale, GetDuration(duration))
-                .SetEase(ease, 1.0f, 0.2f)
-                .WithDefaults(presetOptions, target);
         }
     }
 
@@ -964,67 +827,4 @@ namespace LB.TweenHelper
         }
     }
 
-    /// <summary>
-    /// Soft wind-up with smaller rotation and slower speed.
-    /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s | <b>Default ease:</b> InQuad (wind), OutBack (snap)
-    /// </para>
-    /// Usage: <c>transform.Tween().Preset("WindUpSoft").Play();</c>
-    /// </summary>
-    [AutoRegisterPreset]
-    public class WindUpSoftPreset : CodePreset
-    {
-        public override string PresetName => "WindUpSoft";
-        public override string Description => "Soft wind up then snap forward";
-        public override float DefaultDuration => 0.6f;
-
-
-        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
-        {
-            var t = target.transform;
-            var originalRot = t.localEulerAngles;
-            var dur = GetDuration(duration);
-            var windEase = ResolveEase(options, Ease.InQuad);
-            var snapEase = ResolveSecondaryEase(options, Ease.OutBack);
-            var presetOptions = MergeWithDefaultEase(options, windEase);
-
-            return DOTween.Sequence()
-                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, -15f), dur * 0.4f).SetEase(windEase))
-                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 3f), dur * 0.35f).SetEase(snapEase))
-                .Append(t.DOLocalRotate(originalRot, dur * 0.25f).SetEase(Ease.OutQuad))
-                .WithDefaults(presetOptions, target);
-        }
-    }
-
-    /// <summary>
-    /// Hard wind-up with larger rotation and faster speed.
-    /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s | <b>Default ease:</b> InQuad (wind), OutBack (snap)
-    /// </para>
-    /// Usage: <c>transform.Tween().Preset("WindUpHard").Play();</c>
-    /// </summary>
-    [AutoRegisterPreset]
-    public class WindUpHardPreset : CodePreset
-    {
-        public override string PresetName => "WindUpHard";
-        public override string Description => "Hard wind up then snap forward";
-        public override float DefaultDuration => 0.4f;
-
-
-        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
-        {
-            var t = target.transform;
-            var originalRot = t.localEulerAngles;
-            var dur = GetDuration(duration);
-            var windEase = ResolveEase(options, Ease.InQuad);
-            var snapEase = ResolveSecondaryEase(options, Ease.OutBack);
-            var presetOptions = MergeWithDefaultEase(options, windEase);
-
-            return DOTween.Sequence()
-                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, -50f), dur * 0.4f).SetEase(windEase))
-                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 8f), dur * 0.35f).SetEase(snapEase))
-                .Append(t.DOLocalRotate(originalRot, dur * 0.25f).SetEase(Ease.OutQuad))
-                .WithDefaults(presetOptions, target);
-        }
-    }
 }

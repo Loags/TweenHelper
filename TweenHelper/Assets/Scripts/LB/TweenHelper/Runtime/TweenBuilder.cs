@@ -591,25 +591,25 @@ namespace LB.TweenHelper
         /// <summary>Gentle horizontal sway loop.</summary>
         public TweenBuilder Sway(float? duration = null) => Preset("Sway", duration);
         /// <summary>Circles around a point on XZ plane.</summary>
-        public TweenBuilder Orbit(float? duration = null) => Preset("Orbit", duration);
+        public TweenBuilder OrbitXZ(float? duration = null) => Preset("OrbitXZ", duration);
         /// <summary>Circles around a point on XZ plane with custom radius.</summary>
-        public TweenBuilder Orbit(float startRadius, float? endRadius = null, float? duration = null)
+        public TweenBuilder OrbitXZ(float startRadius, float? endRadius = null, float? duration = null)
         {
             AddStep(() => OrbitTweenFactory.Create(_gameObject, duration, _currentOptions, false, startRadius, endRadius ?? startRadius));
             return this;
         }
         /// <summary>Circles clockwise around a point on XZ plane.</summary>
-        public TweenBuilder OrbitClockwise(float? duration = null) => Preset("OrbitClockwise", duration);
+        public TweenBuilder OrbitXZClockwise(float? duration = null) => Preset("OrbitXZClockwise", duration);
         /// <summary>Circles clockwise around a point on XZ plane with custom radius.</summary>
-        public TweenBuilder OrbitClockwise(float startRadius, float? endRadius = null, float? duration = null)
+        public TweenBuilder OrbitXZClockwise(float startRadius, float? endRadius = null, float? duration = null)
         {
             AddStep(() => OrbitTweenFactory.Create(_gameObject, duration, _currentOptions, true, startRadius, endRadius ?? startRadius));
             return this;
         }
         /// <summary>Circles counter-clockwise around a point on XZ plane.</summary>
-        public TweenBuilder OrbitCounterClockwise(float? duration = null) => Preset("OrbitCounterClockwise", duration);
+        public TweenBuilder OrbitXZCounterClockwise(float? duration = null) => Preset("OrbitXZCounterClockwise", duration);
         /// <summary>Circles counter-clockwise around a point on XZ plane with custom radius.</summary>
-        public TweenBuilder OrbitCounterClockwise(float startRadius, float? endRadius = null, float? duration = null)
+        public TweenBuilder OrbitXZCounterClockwise(float startRadius, float? endRadius = null, float? duration = null)
         {
             AddStep(() => OrbitTweenFactory.Create(_gameObject, duration, _currentOptions, false, startRadius, endRadius ?? startRadius));
             return this;
@@ -629,7 +629,7 @@ namespace LB.TweenHelper
         /// <summary>Small push right then spring back.</summary>
         public TweenBuilder Nudge(float? duration = null) => Preset("Nudge", duration);
         /// <summary>Circular orbit on XY plane.</summary>
-        public TweenBuilder Orbit2D(float? duration = null) => Preset("Orbit2D", duration);
+        public TweenBuilder OrbitXY(float? duration = null) => Preset("OrbitXY", duration);
         /// <summary>Alternating diagonal zig-zag movement.</summary>
         public TweenBuilder ZigZag(float? duration = null) => Preset("ZigZag", duration);
 
@@ -667,7 +667,7 @@ namespace LB.TweenHelper
         /// <summary>180° flip on Y axis.</summary>
         public TweenBuilder FlipY(float? duration = null) => Preset("FlipY", duration);
         /// <summary>Gentle Z-axis pendulum loop.</summary>
-        public TweenBuilder Rock(float? duration = null) => Preset("Rock", duration);
+        public TweenBuilder PendulumZ(float? duration = null) => Preset("PendulumZ", duration);
         /// <summary>X-axis tilt forward then spring back.</summary>
         public TweenBuilder Nod(float? duration = null) => Preset("Nod", duration);
         /// <summary>Wind up rotation then snap forward and settle.</summary>
@@ -761,9 +761,9 @@ namespace LB.TweenHelper
         /// <summary>Wide horizontal sway loop.</summary>
         public TweenBuilder SwayHard(float? duration = null) => Preset("SwayHard", duration);
         /// <summary>Soft Z-axis pendulum loop.</summary>
-        public TweenBuilder RockSoft(float? duration = null) => Preset("RockSoft", duration);
+        public TweenBuilder PendulumZSoft(float? duration = null) => Preset("PendulumZSoft", duration);
         /// <summary>Wide Z-axis pendulum loop.</summary>
-        public TweenBuilder RockHard(float? duration = null) => Preset("RockHard", duration);
+        public TweenBuilder PendulumZHard(float? duration = null) => Preset("PendulumZHard", duration);
         /// <summary>Soft forward tilt and spring back.</summary>
         public TweenBuilder NodSoft(float? duration = null) => Preset("NodSoft", duration);
         /// <summary>Deep forward tilt and spring back.</summary>

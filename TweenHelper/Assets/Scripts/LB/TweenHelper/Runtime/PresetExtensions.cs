@@ -150,109 +150,109 @@ namespace LB.TweenHelper
         /// <summary>
         /// Circles around a point on XZ plane.
         /// </summary>
-        public static TweenHandle Orbit(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset("Orbit", duration).WithOptions(ApplyEases(options, ease)).Play();
+        public static TweenHandle OrbitXZ(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
+            => new TweenBuilder(t).Preset("OrbitXZ", duration).WithOptions(ApplyEases(options, ease)).Play();
 
         /// <summary>
         /// Circles with a custom radius on XZ plane.
         /// </summary>
-        public static TweenHandle Orbit(this Transform t, float radius, float? duration = null, TweenOptions options = default, Ease? ease = null)
+        public static TweenHandle OrbitXZ(this Transform t, float radius, float? duration = null, TweenOptions options = default, Ease? ease = null)
             => OrbitInternal(t.gameObject, duration, ApplyEases(options, ease), clockwise: false, startRadius: radius, endRadius: radius);
 
         /// <summary>
         /// Circles with custom start and end radii on XZ plane.
         /// </summary>
-        public static TweenHandle Orbit(this Transform t, float startRadius, float endRadius, float? duration = null, TweenOptions options = default, Ease? ease = null)
+        public static TweenHandle OrbitXZ(this Transform t, float startRadius, float endRadius, float? duration = null, TweenOptions options = default, Ease? ease = null)
             => OrbitInternal(t.gameObject, duration, ApplyEases(options, ease), clockwise: false, startRadius: startRadius, endRadius: endRadius);
 
         /// <summary>
         /// Circles around a point on XZ plane.
         /// </summary>
-        public static TweenHandle Orbit(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset("Orbit", duration).WithOptions(ApplyEases(options, ease)).Play();
+        public static TweenHandle OrbitXZ(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
+            => new TweenBuilder(go).Preset("OrbitXZ", duration).WithOptions(ApplyEases(options, ease)).Play();
 
         /// <summary>
         /// Circles with a custom radius on XZ plane.
         /// </summary>
-        public static TweenHandle Orbit(this GameObject go, float radius, float? duration = null, TweenOptions options = default, Ease? ease = null)
+        public static TweenHandle OrbitXZ(this GameObject go, float radius, float? duration = null, TweenOptions options = default, Ease? ease = null)
             => OrbitInternal(go, duration, ApplyEases(options, ease), clockwise: false, startRadius: radius, endRadius: radius);
 
         /// <summary>
         /// Circles with custom start and end radii on XZ plane.
         /// </summary>
-        public static TweenHandle Orbit(this GameObject go, float startRadius, float endRadius, float? duration = null, TweenOptions options = default, Ease? ease = null)
+        public static TweenHandle OrbitXZ(this GameObject go, float startRadius, float endRadius, float? duration = null, TweenOptions options = default, Ease? ease = null)
             => OrbitInternal(go, duration, ApplyEases(options, ease), clockwise: false, startRadius: startRadius, endRadius: endRadius);
 
         /// <summary>
         /// Circles clockwise on XZ plane.
         /// </summary>
-        public static TweenHandle OrbitClockwise(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset("OrbitClockwise", duration).WithOptions(ApplyEases(options, ease)).Play();
+        public static TweenHandle OrbitXZClockwise(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
+            => new TweenBuilder(t).Preset("OrbitXZClockwise", duration).WithOptions(ApplyEases(options, ease)).Play();
 
         /// <summary>
         /// Circles clockwise with a custom radius on XZ plane.
         /// </summary>
-        public static TweenHandle OrbitClockwise(this Transform t, float radius, float? duration = null, TweenOptions options = default, Ease? ease = null)
+        public static TweenHandle OrbitXZClockwise(this Transform t, float radius, float? duration = null, TweenOptions options = default, Ease? ease = null)
             => OrbitInternal(t.gameObject, duration, ApplyEases(options, ease), clockwise: true, startRadius: radius, endRadius: radius);
 
         /// <summary>
         /// Circles clockwise with custom start and end radii on XZ plane.
         /// </summary>
-        public static TweenHandle OrbitClockwise(this Transform t, float startRadius, float endRadius, float? duration = null, TweenOptions options = default, Ease? ease = null)
+        public static TweenHandle OrbitXZClockwise(this Transform t, float startRadius, float endRadius, float? duration = null, TweenOptions options = default, Ease? ease = null)
             => OrbitInternal(t.gameObject, duration, ApplyEases(options, ease), clockwise: true, startRadius: startRadius, endRadius: endRadius);
 
         /// <summary>
         /// Circles clockwise on XZ plane.
         /// </summary>
-        public static TweenHandle OrbitClockwise(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset("OrbitClockwise", duration).WithOptions(ApplyEases(options, ease)).Play();
+        public static TweenHandle OrbitXZClockwise(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
+            => new TweenBuilder(go).Preset("OrbitXZClockwise", duration).WithOptions(ApplyEases(options, ease)).Play();
 
         /// <summary>
         /// Circles clockwise with a custom radius on XZ plane.
         /// </summary>
-        public static TweenHandle OrbitClockwise(this GameObject go, float radius, float? duration = null, TweenOptions options = default, Ease? ease = null)
+        public static TweenHandle OrbitXZClockwise(this GameObject go, float radius, float? duration = null, TweenOptions options = default, Ease? ease = null)
             => OrbitInternal(go, duration, ApplyEases(options, ease), clockwise: true, startRadius: radius, endRadius: radius);
 
         /// <summary>
         /// Circles clockwise with custom start and end radii on XZ plane.
         /// </summary>
-        public static TweenHandle OrbitClockwise(this GameObject go, float startRadius, float endRadius, float? duration = null, TweenOptions options = default, Ease? ease = null)
+        public static TweenHandle OrbitXZClockwise(this GameObject go, float startRadius, float endRadius, float? duration = null, TweenOptions options = default, Ease? ease = null)
             => OrbitInternal(go, duration, ApplyEases(options, ease), clockwise: true, startRadius: startRadius, endRadius: endRadius);
 
         /// <summary>
         /// Circles counter-clockwise on XZ plane.
         /// </summary>
-        public static TweenHandle OrbitCounterClockwise(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset("OrbitCounterClockwise", duration).WithOptions(ApplyEases(options, ease)).Play();
+        public static TweenHandle OrbitXZCounterClockwise(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
+            => new TweenBuilder(t).Preset("OrbitXZCounterClockwise", duration).WithOptions(ApplyEases(options, ease)).Play();
 
         /// <summary>
         /// Circles counter-clockwise with a custom radius on XZ plane.
         /// </summary>
-        public static TweenHandle OrbitCounterClockwise(this Transform t, float radius, float? duration = null, TweenOptions options = default, Ease? ease = null)
+        public static TweenHandle OrbitXZCounterClockwise(this Transform t, float radius, float? duration = null, TweenOptions options = default, Ease? ease = null)
             => OrbitInternal(t.gameObject, duration, ApplyEases(options, ease), clockwise: false, startRadius: radius, endRadius: radius);
 
         /// <summary>
         /// Circles counter-clockwise with custom start and end radii on XZ plane.
         /// </summary>
-        public static TweenHandle OrbitCounterClockwise(this Transform t, float startRadius, float endRadius, float? duration = null, TweenOptions options = default, Ease? ease = null)
+        public static TweenHandle OrbitXZCounterClockwise(this Transform t, float startRadius, float endRadius, float? duration = null, TweenOptions options = default, Ease? ease = null)
             => OrbitInternal(t.gameObject, duration, ApplyEases(options, ease), clockwise: false, startRadius: startRadius, endRadius: endRadius);
 
         /// <summary>
         /// Circles counter-clockwise on XZ plane.
         /// </summary>
-        public static TweenHandle OrbitCounterClockwise(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset("OrbitCounterClockwise", duration).WithOptions(ApplyEases(options, ease)).Play();
+        public static TweenHandle OrbitXZCounterClockwise(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
+            => new TweenBuilder(go).Preset("OrbitXZCounterClockwise", duration).WithOptions(ApplyEases(options, ease)).Play();
 
         /// <summary>
         /// Circles counter-clockwise with a custom radius on XZ plane.
         /// </summary>
-        public static TweenHandle OrbitCounterClockwise(this GameObject go, float radius, float? duration = null, TweenOptions options = default, Ease? ease = null)
+        public static TweenHandle OrbitXZCounterClockwise(this GameObject go, float radius, float? duration = null, TweenOptions options = default, Ease? ease = null)
             => OrbitInternal(go, duration, ApplyEases(options, ease), clockwise: false, startRadius: radius, endRadius: radius);
 
         /// <summary>
         /// Circles counter-clockwise with custom start and end radii on XZ plane.
         /// </summary>
-        public static TweenHandle OrbitCounterClockwise(this GameObject go, float startRadius, float endRadius, float? duration = null, TweenOptions options = default, Ease? ease = null)
+        public static TweenHandle OrbitXZCounterClockwise(this GameObject go, float startRadius, float endRadius, float? duration = null, TweenOptions options = default, Ease? ease = null)
             => OrbitInternal(go, duration, ApplyEases(options, ease), clockwise: false, startRadius: startRadius, endRadius: endRadius);
 
         /// <summary>

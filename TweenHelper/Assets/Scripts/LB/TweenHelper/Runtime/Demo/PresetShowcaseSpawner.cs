@@ -53,16 +53,9 @@ namespace LB.TweenHelper.Demo
         private static readonly Dictionary<string, string> FamilyOverrides = new Dictionary<string, string>
         {
             { "SwirlIn", "Spiral" },
-            { "Squash", "Misc" },
-            { "Breathe", "Misc" },
-            { "Heartbeat", "Misc" },
-            { "ElasticSnapIn", "Misc" },
-            { "Float", "Misc" },
-            { "ZigZag", "Misc" },
+            { "Swirl", "Spiral" },
             { "Blink", "Misc" },
             { "Flicker", "Misc" },
-            { "Tilt", "Misc" },
-            { "WindUp", "Misc" },
             { "Attention", "Misc" },
             { "Explode", "Misc" },
         };
@@ -72,9 +65,9 @@ namespace LB.TweenHelper.Demo
         /// </summary>
         private static readonly string[] KnownSuffixes =
         {
+            "CounterClockwise",
             "Overshoot",
             "Clockwise",
-            "CounterClockwise",
             "Diagonal",
             "Cartoon",
             "Heavy",
@@ -116,15 +109,27 @@ namespace LB.TweenHelper.Demo
             "Punch",
             "Sway",
             "Orbit",
-            "Rock",
+            "Pendulum",
             "Nod",
             "Jitter",
             "Launch",
+            "LaunchUp",
+            "LaunchDown",
+            "LaunchLeft",
+            "LaunchRight",
             "Fade",
             "Recoil",
+            "RecoilForward",
+            "RecoilBack",
             "Drop",
             "Flip",
             "Spiral",
+            "Breathe",
+            "Squash",
+            "Heartbeat",
+            "Float",
+            "Tilt",
+            "ZigZag",
             "Misc",
         };
 
@@ -282,6 +287,12 @@ namespace LB.TweenHelper.Demo
                 }
             }
 
+            // After stripping, check if the root name has a family override
+            if (FamilyOverrides.TryGetValue(candidate, out var strippedOverride))
+            {
+                return strippedOverride;
+            }
+
             // If stripping reduced to empty or single char, use original first word
             if (candidate.Length < 2)
             {
@@ -359,33 +370,37 @@ namespace LB.TweenHelper.Demo
 
         private static string StripTrailingLeaf(string variant)
         {
-            // Directions (longest first to avoid partial matches)
+            // Directions — keep as part of row key (they form distinct row groupings)
             string[] directions = { "Forward", "Right", "Left", "Down", "Back", "Up" };
             foreach (var d in directions)
             {
                 if (variant.EndsWith(d, StringComparison.Ordinal))
                 {
-                    return variant.Substring(0, variant.Length - d.Length);
+                    return variant;
                 }
             }
 
-            // Compound axes
+            // Compound axes — keep as part of row key (they form distinct row groupings)
             string[] compoundAxes = { "XY", "XZ", "YZ", "2D" };
             foreach (var a in compoundAxes)
             {
                 if (variant.EndsWith(a, StringComparison.Ordinal))
                 {
-                    return variant.Substring(0, variant.Length - a.Length);
+                    return variant;
                 }
             }
 
-            // Single axes (always strip)
+            // Single axes (strip only if remaining is non-empty)
             string[] singleAxes = { "X", "Y", "Z" };
             foreach (var a in singleAxes)
             {
                 if (variant.EndsWith(a, StringComparison.Ordinal))
                 {
-                    return variant.Substring(0, variant.Length - 1);
+                    var remaining = variant.Substring(0, variant.Length - 1);
+                    if (remaining.Length > 0)
+                    {
+                        return remaining;
+                    }
                 }
             }
 

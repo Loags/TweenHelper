@@ -4,18 +4,25 @@ using UnityEngine;
 namespace LB.TweenHelper
 {
     /// <summary>
+    /// Internal factory for single-axis spin presets.
+    /// </summary>
+    internal static class SpinFactory
+    {
+        public static Tween Create(GameObject target, Vector3 rotationAxis, float degrees, float duration, TweenOptions options)
+        {
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.InOutQuad);
+            var ease = presetOptions.Ease ?? Ease.InOutQuad;
+            return target.transform.DORotate(rotationAxis * degrees, duration, RotateMode.FastBeyond360)
+                .SetEase(ease)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
     /// Spins the target a full 360 degrees around the Y axis using FastBeyond360 rotation mode.
-    /// <para>
-    /// Rotates to <c>(0, 360, 0)</c> with <c>RotateMode.FastBeyond360</c> and <c>Ease.InOutQuad</c>.
-    /// The InOutQuad ease creates a smooth acceleration/deceleration spin. FastBeyond360 prevents
-    /// DOTween from clamping the rotation to the shortest path.
-    /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Coin spin, character turnaround, loading spinner, reveal rotation.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinY").Play();</c>
     /// </summary>
@@ -29,26 +36,57 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
-            var ease = ResolveEase(presetOptions, Ease.InOutQuad);
-            return target.transform.DORotate(new Vector3(0, 360f, 0), GetDuration(duration), RotateMode.FastBeyond360)
-                .SetEase(ease)
-                .WithDefaults(presetOptions, target);
+            return SpinFactory.Create(target, Vector3.up, 360f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Soft Y-axis spin. Slower, gentler rotation.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinYSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinYSoftPreset : CodePreset
+    {
+        public override string PresetName => "SpinYSoft";
+        public override string Description => "Slow spin on Y axis";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinFactory.Create(target, Vector3.up, 360f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Hard Y-axis spin. Fast, snappy rotation.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinYHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinYHardPreset : CodePreset
+    {
+        public override string PresetName => "SpinYHard";
+        public override string Description => "Fast spin on Y axis";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinFactory.Create(target, Vector3.up, 360f, GetDuration(duration), options);
         }
     }
 
     /// <summary>
     /// Spins the target a full 360 degrees around the X axis using FastBeyond360 rotation mode.
     /// <para>
-    /// Rotates to <c>(360, 0, 0)</c> with <c>RotateMode.FastBeyond360</c> and <c>Ease.InOutQuad</c>.
-    /// Creates a forward/backward tumble effect. Identical structure to SpinY but on the X axis.
-    /// </para>
-    /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Forward flip, tumble, barrel roll (pitch axis), acrobatic motion.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinX").Play();</c>
     /// </summary>
@@ -62,26 +100,57 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
-            var ease = ResolveEase(presetOptions, Ease.InOutQuad);
-            return target.transform.DORotate(new Vector3(360f, 0, 0), GetDuration(duration), RotateMode.FastBeyond360)
-                .SetEase(ease)
-                .WithDefaults(presetOptions, target);
+            return SpinFactory.Create(target, Vector3.right, 360f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Soft X-axis spin. Slower, gentler rotation.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinXSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinXSoftPreset : CodePreset
+    {
+        public override string PresetName => "SpinXSoft";
+        public override string Description => "Slow spin on X axis";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinFactory.Create(target, Vector3.right, 360f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Hard X-axis spin. Fast, snappy rotation.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinXHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinXHardPreset : CodePreset
+    {
+        public override string PresetName => "SpinXHard";
+        public override string Description => "Fast spin on X axis";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinFactory.Create(target, Vector3.right, 360f, GetDuration(duration), options);
         }
     }
 
     /// <summary>
     /// Spins the target a full 360 degrees around the Z axis using FastBeyond360 rotation mode.
     /// <para>
-    /// Rotates to <c>(0, 0, 360)</c> with <c>RotateMode.FastBeyond360</c> and <c>Ease.InOutQuad</c>.
-    /// Creates a clockface rotation effect. Ideal for 2D objects that rotate in-plane.
-    /// </para>
-    /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> 2D spin, loading spinner, wheel rotation, propeller, compass needle.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinZ").Play();</c>
     /// </summary>
@@ -95,9 +164,62 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
-            var ease = ResolveEase(presetOptions, Ease.InOutQuad);
-            return target.transform.DORotate(new Vector3(0, 0, 360f), GetDuration(duration), RotateMode.FastBeyond360)
+            return SpinFactory.Create(target, Vector3.forward, 360f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Soft Z-axis spin. Slower, gentler rotation.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinZSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinZSoftPreset : CodePreset
+    {
+        public override string PresetName => "SpinZSoft";
+        public override string Description => "Slow spin on Z axis";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinFactory.Create(target, Vector3.forward, 360f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Hard Z-axis spin. Fast, snappy rotation.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinZHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinZHardPreset : CodePreset
+    {
+        public override string PresetName => "SpinZHard";
+        public override string Description => "Fast spin on Z axis";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinFactory.Create(target, Vector3.forward, 360f, GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Internal factory for diagonal spin presets.
+    /// </summary>
+    internal static class SpinDiagonalFactory
+    {
+        public static Tween Create(GameObject target, Vector3 rotation, float duration, TweenOptions options)
+        {
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.InOutQuad);
+            var ease = presetOptions.Ease ?? Ease.InOutQuad;
+            return target.transform.DORotate(rotation, duration, RotateMode.FastBeyond360)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -106,15 +228,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Spins the target 360 degrees simultaneously on both X and Y axes, creating a diagonal tumble.
     /// <para>
-    /// Rotates to <c>(360, 360, 0)</c> with <c>RotateMode.FastBeyond360</c> and <c>Ease.InOutQuad</c>.
-    /// The combined dual-axis rotation produces a complex, visually interesting tumbling motion.
-    /// </para>
-    /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Dramatic object tumble, acrobatic flip, item toss, complex rotation flourish.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinDiagonalXY").Play();</c>
     /// </summary>
@@ -128,27 +243,57 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var dur = GetDuration(duration);
-            var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
-            var ease = ResolveEase(presetOptions, Ease.InOutQuad);
-            return target.transform.DORotate(new Vector3(360f, 360f, 0f), dur, RotateMode.FastBeyond360)
-                .SetEase(ease)
-                .WithDefaults(presetOptions, target);
+            return SpinDiagonalFactory.Create(target, new Vector3(360f, 360f, 0f), GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Soft diagonal XY spin. Slower rotation.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinDiagonalXYSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinDiagonalXYSoftPreset : CodePreset
+    {
+        public override string PresetName => "SpinDiagonalXYSoft";
+        public override string Description => "Slow diagonal spin across X and Y";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinDiagonalFactory.Create(target, new Vector3(360f, 360f, 0f), GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Hard diagonal XY spin. Fast rotation.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinDiagonalXYHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinDiagonalXYHardPreset : CodePreset
+    {
+        public override string PresetName => "SpinDiagonalXYHard";
+        public override string Description => "Fast diagonal spin across X and Y";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinDiagonalFactory.Create(target, new Vector3(360f, 360f, 0f), GetDuration(duration), options);
         }
     }
 
     /// <summary>
     /// Spins the target 360 degrees simultaneously on both X and Z axes, creating a diagonal tumble.
     /// <para>
-    /// Rotates to <c>(360, 0, 360)</c> with <c>RotateMode.FastBeyond360</c> and <c>Ease.InOutQuad</c>.
-    /// Combines pitch and roll for an off-axis spinning effect.
-    /// </para>
-    /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Off-axis tumble, item toss, chaotic rotation, dramatic spinning exit.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinDiagonalXZ").Play();</c>
     /// </summary>
@@ -162,27 +307,57 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var dur = GetDuration(duration);
-            var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
-            var ease = ResolveEase(presetOptions, Ease.InOutQuad);
-            return target.transform.DORotate(new Vector3(360f, 0f, 360f), dur, RotateMode.FastBeyond360)
-                .SetEase(ease)
-                .WithDefaults(presetOptions, target);
+            return SpinDiagonalFactory.Create(target, new Vector3(360f, 0f, 360f), GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Soft diagonal XZ spin. Slower rotation.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinDiagonalXZSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinDiagonalXZSoftPreset : CodePreset
+    {
+        public override string PresetName => "SpinDiagonalXZSoft";
+        public override string Description => "Slow diagonal spin across X and Z";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinDiagonalFactory.Create(target, new Vector3(360f, 0f, 360f), GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Hard diagonal XZ spin. Fast rotation.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinDiagonalXZHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinDiagonalXZHardPreset : CodePreset
+    {
+        public override string PresetName => "SpinDiagonalXZHard";
+        public override string Description => "Fast diagonal spin across X and Z";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinDiagonalFactory.Create(target, new Vector3(360f, 0f, 360f), GetDuration(duration), options);
         }
     }
 
     /// <summary>
     /// Spins the target 360 degrees simultaneously on both Y and Z axes, creating a diagonal tumble.
     /// <para>
-    /// Rotates to <c>(0, 360, 360)</c> with <c>RotateMode.FastBeyond360</c> and <c>Ease.InOutQuad</c>.
-    /// Combines yaw and roll for a sideways spinning tumble effect.
-    /// </para>
-    /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.
-    /// </para>
-    /// <para>
-    /// <b>Use cases:</b> Sideways tumble, stylized rotation, coin flip variant, dynamic transition.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinDiagonalYZ").Play();</c>
     /// </summary>
@@ -196,12 +371,49 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var dur = GetDuration(duration);
-            var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
-            var ease = ResolveEase(presetOptions, Ease.InOutQuad);
-            return target.transform.DORotate(new Vector3(0f, 360f, 360f), dur, RotateMode.FastBeyond360)
-                .SetEase(ease)
-                .WithDefaults(presetOptions, target);
+            return SpinDiagonalFactory.Create(target, new Vector3(0f, 360f, 360f), GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Soft diagonal YZ spin. Slower rotation.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinDiagonalYZSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinDiagonalYZSoftPreset : CodePreset
+    {
+        public override string PresetName => "SpinDiagonalYZSoft";
+        public override string Description => "Slow diagonal spin across Y and Z";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinDiagonalFactory.Create(target, new Vector3(0f, 360f, 360f), GetDuration(duration), options);
+        }
+    }
+
+    /// <summary>
+    /// Hard diagonal YZ spin. Fast rotation.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinDiagonalYZHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinDiagonalYZHardPreset : CodePreset
+    {
+        public override string PresetName => "SpinDiagonalYZHard";
+        public override string Description => "Fast diagonal spin across Y and Z";
+        public override float DefaultDuration => 0.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinDiagonalFactory.Create(target, new Vector3(0f, 360f, 360f), GetDuration(duration), options);
         }
     }
 

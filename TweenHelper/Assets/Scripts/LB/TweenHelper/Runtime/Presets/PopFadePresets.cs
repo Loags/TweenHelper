@@ -302,7 +302,7 @@ namespace LB.TweenHelper
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
-        {
+        { 
             var t = target.transform;
             var originalScale = t.localScale;
             var dur = GetDuration(duration);
@@ -445,6 +445,84 @@ namespace LB.TweenHelper
 
             var seq = DOTween.Sequence();
             seq.Join(t.DOScale(originalScale * 1.5f, dur).SetEase(scaleEase));
+
+            var fadeTween = CreateFadeTween(target, 0f, dur);
+            if (fadeTween != null)
+            {
+                seq.Join(fadeTween.SetEase(fadeEase));
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Gentle explosion effect with slower expansion and fade.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.8s | <b>Default ease:</b> OutSine (scale), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("ExplodeSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class ExplodeSoftPreset : CodePreset
+    {
+        public override string PresetName => "ExplodeSoft";
+        public override string Description => "Gentle scale up and fade out";
+        public override float DefaultDuration => 0.8f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var dur = GetDuration(duration);
+            var scaleEase = ResolveEase(options, Ease.OutSine);
+            var fadeEase = ResolveSecondaryEase(options, Ease.Linear);
+            var presetOptions = MergeWithDefaultEase(options, scaleEase);
+
+            var seq = DOTween.Sequence();
+            seq.Join(t.DOScale(originalScale * 1.3f, dur).SetEase(scaleEase));
+
+            var fadeTween = CreateFadeTween(target, 0f, dur);
+            if (fadeTween != null)
+            {
+                seq.Join(fadeTween.SetEase(fadeEase));
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Aggressive explosion effect with rapid expansion and fade.
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutCubic (scale), Linear (fade)
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("ExplodeHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class ExplodeHardPreset : CodePreset
+    {
+        public override string PresetName => "ExplodeHard";
+        public override string Description => "Aggressive scale up and fade out";
+        public override float DefaultDuration => 0.4f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var dur = GetDuration(duration);
+            var scaleEase = ResolveEase(options, Ease.OutCubic);
+            var fadeEase = ResolveSecondaryEase(options, Ease.Linear);
+            var presetOptions = MergeWithDefaultEase(options, scaleEase);
+
+            var seq = DOTween.Sequence();
+            seq.Join(t.DOScale(originalScale * 2.0f, dur).SetEase(scaleEase));
 
             var fadeTween = CreateFadeTween(target, 0f, dur);
             if (fadeTween != null)
