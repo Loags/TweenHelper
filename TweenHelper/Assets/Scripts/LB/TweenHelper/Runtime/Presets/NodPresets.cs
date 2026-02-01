@@ -11,7 +11,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.35s | <b>Default ease:</b> OutQuad (lean), OutBack (return)<br/>
-    /// <b>Easing override:</b> Primary ease controls forward lean; secondary ease controls springy return.
+    /// <b>Easing override:</b> Primary ease controls forward lean; secondary ease controls springy return.<br/>
+    /// <b>Strength override:</b> Multiplies tilt angle (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Agreeing nod, acknowledgment gesture, bow, forward peek.
@@ -28,6 +29,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var t = target.transform;
             var originalRot = t.localEulerAngles;
             var dur = GetDuration(duration, options);
@@ -36,7 +38,7 @@ namespace LB.TweenHelper
             var presetOptions = MergeWithDefaultEase(options, leanEase);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalRotate(originalRot + new Vector3(11f, 0f, 0f), dur * 0.4f).SetEase(leanEase))
+                .Append(t.DOLocalRotate(originalRot + new Vector3(11f * strength, 0f, 0f), dur * 0.4f).SetEase(leanEase))
                 .Append(t.DOLocalRotate(originalRot, dur * 0.6f).SetEase(returnEase))
                 .WithDefaults(presetOptions, target);
         }
@@ -49,6 +51,7 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, float angle, float duration, TweenOptions options)
         {
+            var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
             var originalRot = t.localEulerAngles;
             var leanEase = options.Ease ?? Ease.OutQuad;
@@ -56,7 +59,7 @@ namespace LB.TweenHelper
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(leanEase);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalRotate(originalRot + new Vector3(angle, 0f, 0f), duration * 0.4f).SetEase(leanEase))
+                .Append(t.DOLocalRotate(originalRot + new Vector3(angle * strength, 0f, 0f), duration * 0.4f).SetEase(leanEase))
                 .Append(t.DOLocalRotate(originalRot, duration * 0.6f).SetEase(returnEase))
                 .WithDefaults(presetOptions, target);
         }
@@ -65,7 +68,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft forward tilt and spring back on X axis.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (lean), OutBack (return)
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (lean), OutBack (return)<br/>
+    /// <b>Strength override:</b> Multiplies tilt angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("NodSoft").Play();</c>
     /// </summary>
@@ -86,7 +90,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Deep forward tilt and spring back on X axis.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (lean), OutBack (return)
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (lean), OutBack (return)<br/>
+    /// <b>Strength override:</b> Multiplies tilt angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("NodHard").Play();</c>
     /// </summary>

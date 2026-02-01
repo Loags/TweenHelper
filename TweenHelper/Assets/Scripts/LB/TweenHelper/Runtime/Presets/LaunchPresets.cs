@@ -11,7 +11,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutCubic<br/>
-    /// <b>Easing override:</b> Primary ease replaces OutCubic.
+    /// <b>Easing override:</b> Primary ease replaces OutCubic.<br/>
+    /// <b>Strength override:</b> Multiplies launch distance (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Projectile launch, item toss, upward exit, jump start.
@@ -28,11 +29,12 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var t = target.transform;
             var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
             var ease = ResolveEase(presetOptions, Ease.OutCubic);
 
-            return t.DOLocalMoveY(t.localPosition.y + 3f, GetDuration(duration, options))
+            return t.DOLocalMoveY(t.localPosition.y + 3f * strength, GetDuration(duration, options))
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -45,11 +47,12 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, Vector3 direction, float distance, float duration, TweenOptions options)
         {
+            var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
             var ease = options.Ease ?? Ease.OutCubic;
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(ease);
 
-            return t.DOLocalMove(t.localPosition + direction * distance, duration)
+            return t.DOLocalMove(t.localPosition + direction * (distance * strength), duration)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -121,7 +124,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Gentle upward launch — shorter distance (1.5 units) for a subtle lift.
     /// <para>
-    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutCubic
+    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Strength override:</b> Multiplies launch distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("LaunchUpSoft").Play();</c>
     /// </summary>
@@ -142,7 +146,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Forceful upward launch — longer distance (5 units) for a dramatic lift.
     /// <para>
-    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
+    /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Strength override:</b> Multiplies launch distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("LaunchUpHard").Play();</c>
     /// </summary>

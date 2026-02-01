@@ -10,9 +10,10 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, Vector3 rotationAxis, float degrees, float duration, TweenOptions options)
         {
+            var strength = CodePreset.ResolveStrengthStatic(options);
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.InOutQuad);
             var ease = presetOptions.Ease ?? Ease.InOutQuad;
-            return target.transform.DORotate(rotationAxis * degrees, duration, RotateMode.FastBeyond360)
+            return target.transform.DORotate(rotationAxis * (degrees * strength), duration, RotateMode.FastBeyond360)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -22,7 +23,8 @@ namespace LB.TweenHelper
     /// Spins the target a full 360 degrees around the Y axis using FastBeyond360 rotation mode.
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
-    /// <b>Easing override:</b> Primary ease replaces InOutQuad.
+    /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinY").Play();</c>
     /// </summary>
@@ -43,7 +45,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft Y-axis spin. Slower, gentler rotation.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinYSoft").Play();</c>
     /// </summary>
@@ -64,7 +67,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard Y-axis spin. Fast, snappy rotation.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinYHard").Play();</c>
     /// </summary>
@@ -86,7 +90,8 @@ namespace LB.TweenHelper
     /// Spins the target a full 360 degrees around the X axis using FastBeyond360 rotation mode.
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
-    /// <b>Easing override:</b> Primary ease replaces InOutQuad.
+    /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinX").Play();</c>
     /// </summary>
@@ -107,7 +112,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft X-axis spin. Slower, gentler rotation.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinXSoft").Play();</c>
     /// </summary>
@@ -128,7 +134,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard X-axis spin. Fast, snappy rotation.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinXHard").Play();</c>
     /// </summary>
@@ -150,7 +157,8 @@ namespace LB.TweenHelper
     /// Spins the target a full 360 degrees around the Z axis using FastBeyond360 rotation mode.
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
-    /// <b>Easing override:</b> Primary ease replaces InOutQuad.
+    /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinZ").Play();</c>
     /// </summary>
@@ -171,7 +179,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft Z-axis spin. Slower, gentler rotation.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinZSoft").Play();</c>
     /// </summary>
@@ -192,7 +201,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard Z-axis spin. Fast, snappy rotation.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinZHard").Play();</c>
     /// </summary>
@@ -217,9 +227,10 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, Vector3 rotation, float duration, TweenOptions options)
         {
+            var strength = CodePreset.ResolveStrengthStatic(options);
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.InOutQuad);
             var ease = presetOptions.Ease ?? Ease.InOutQuad;
-            return target.transform.DORotate(rotation, duration, RotateMode.FastBeyond360)
+            return target.transform.DORotate(rotation * strength, duration, RotateMode.FastBeyond360)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -229,7 +240,8 @@ namespace LB.TweenHelper
     /// Spins the target 360 degrees simultaneously on both X and Y axes, creating a diagonal tumble.
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
-    /// <b>Easing override:</b> Primary ease replaces InOutQuad.
+    /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinDiagonalXY").Play();</c>
     /// </summary>
@@ -250,7 +262,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft diagonal XY spin. Slower rotation.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinDiagonalXYSoft").Play();</c>
     /// </summary>
@@ -271,7 +284,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard diagonal XY spin. Fast rotation.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinDiagonalXYHard").Play();</c>
     /// </summary>
@@ -293,7 +307,8 @@ namespace LB.TweenHelper
     /// Spins the target 360 degrees simultaneously on both X and Z axes, creating a diagonal tumble.
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
-    /// <b>Easing override:</b> Primary ease replaces InOutQuad.
+    /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinDiagonalXZ").Play();</c>
     /// </summary>
@@ -314,7 +329,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft diagonal XZ spin. Slower rotation.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinDiagonalXZSoft").Play();</c>
     /// </summary>
@@ -335,7 +351,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard diagonal XZ spin. Fast rotation.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinDiagonalXZHard").Play();</c>
     /// </summary>
@@ -357,7 +374,8 @@ namespace LB.TweenHelper
     /// Spins the target 360 degrees simultaneously on both Y and Z axes, creating a diagonal tumble.
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
-    /// <b>Easing override:</b> Primary ease replaces InOutQuad.
+    /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinDiagonalYZ").Play();</c>
     /// </summary>
@@ -378,7 +396,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft diagonal YZ spin. Slower rotation.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinDiagonalYZSoft").Play();</c>
     /// </summary>
@@ -399,7 +418,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard diagonal YZ spin. Fast rotation.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinDiagonalYZHard").Play();</c>
     /// </summary>
@@ -426,7 +446,9 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.7s | <b>Default ease:</b> InCubic (scale), Linear (spin)<br/>
-    /// <b>Easing override:</b> Primary ease controls scale; secondary ease controls spin.
+    /// <b>Easing override:</b> Primary ease controls scale; secondary ease controls spin.<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Collectible pickup, item absorption, vortex exit, magical disappearance.
@@ -443,6 +465,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var t = target.transform;
             var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.InCubic);
@@ -452,7 +475,7 @@ namespace LB.TweenHelper
             var endScale = ResolveTargetScale(options, Vector3.zero);
             return DOTween.Sequence()
                 .Join(t.DOScale(endScale, dur).SetEase(scaleEase))
-                .Join(t.DORotate(new Vector3(0f, 720f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
+                .Join(t.DORotate(new Vector3(0f, 720f * strength, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -465,7 +488,9 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.7s | <b>Default ease:</b> InBack (scale), Linear (spin)<br/>
-    /// <b>Easing override:</b> Primary ease controls scale; secondary ease controls spin.
+    /// <b>Easing override:</b> Primary ease controls scale; secondary ease controls spin.<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Collectible pickup, item absorption, vortex exit, magical disappearance.
@@ -483,6 +508,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var t = target.transform;
             var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.InBack);
@@ -493,7 +519,7 @@ namespace LB.TweenHelper
             var endScale = ResolveTargetScale(options, Vector3.zero);
             return DOTween.Sequence()
                 .Join(t.DOScale(endScale, dur).SetEase(scaleEase, os))
-                .Join(t.DORotate(new Vector3(0f, 720f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
+                .Join(t.DORotate(new Vector3(0f, 720f * strength, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -501,7 +527,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft spin and shrink — slower rotation with gentle scale-down.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.9s | <b>Default ease:</b> InSine (scale), Linear (spin)
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.9s | <b>Default ease:</b> InSine (scale), Linear (spin)<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinScaleOutSoft").Play();</c>
     /// </summary>
@@ -515,6 +543,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var t = target.transform;
             var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.InSine);
@@ -524,7 +553,7 @@ namespace LB.TweenHelper
             var endScale = ResolveTargetScale(options, Vector3.zero);
             return DOTween.Sequence()
                 .Join(t.DOScale(endScale, dur).SetEase(scaleEase))
-                .Join(t.DORotate(new Vector3(0f, 360f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
+                .Join(t.DORotate(new Vector3(0f, 360f * strength, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -532,7 +561,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard spin and shrink — fast triple rotation with snappy scale-down.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InQuart (scale), Linear (spin)
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InQuart (scale), Linear (spin)<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinScaleOutHard").Play();</c>
     /// </summary>
@@ -546,6 +577,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var t = target.transform;
             var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.InQuart);
@@ -555,7 +587,7 @@ namespace LB.TweenHelper
             var endScale = ResolveTargetScale(options, Vector3.zero);
             return DOTween.Sequence()
                 .Join(t.DOScale(endScale, dur).SetEase(scaleEase))
-                .Join(t.DORotate(new Vector3(0f, 1080f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
+                .Join(t.DORotate(new Vector3(0f, 1080f * strength, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -563,7 +595,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft spin and shrink with mild anticipation overshoot on scale.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.9s | <b>Default ease:</b> InBack (1.2 overshoot, scale), Linear (spin)
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.9s | <b>Default ease:</b> InBack (1.2 overshoot, scale), Linear (spin)<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinScaleOutOvershootSoft").Play();</c>
     /// </summary>
@@ -578,6 +612,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var t = target.transform;
             var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.InBack);
@@ -588,7 +623,7 @@ namespace LB.TweenHelper
             var endScale = ResolveTargetScale(options, Vector3.zero);
             return DOTween.Sequence()
                 .Join(t.DOScale(endScale, dur).SetEase(scaleEase, os))
-                .Join(t.DORotate(new Vector3(0f, 360f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
+                .Join(t.DORotate(new Vector3(0f, 360f * strength, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -596,7 +631,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard spin and shrink with strong anticipation overshoot on scale.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InBack (2.0 overshoot, scale), Linear (spin)
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InBack (2.0 overshoot, scale), Linear (spin)<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpinScaleOutOvershootHard").Play();</c>
     /// </summary>
@@ -611,6 +648,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var t = target.transform;
             var dur = GetDuration(duration, options);
             var scaleEase = ResolveEase(options, Ease.InBack);
@@ -621,7 +659,7 @@ namespace LB.TweenHelper
             var endScale = ResolveTargetScale(options, Vector3.zero);
             return DOTween.Sequence()
                 .Join(t.DOScale(endScale, dur).SetEase(scaleEase, os))
-                .Join(t.DORotate(new Vector3(0f, 1080f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
+                .Join(t.DORotate(new Vector3(0f, 1080f * strength, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
     }

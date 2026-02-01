@@ -11,7 +11,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 3.5s | <b>Default ease:</b> InOutSine<br/>
-    /// <b>Easing override:</b> Primary ease controls rightward leg; secondary ease controls leftward leg.
+    /// <b>Easing override:</b> Primary ease controls rightward leg; secondary ease controls leftward leg.<br/>
+    /// <b>Strength override:</b> Multiplies sway amplitude (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Pendulum motion, hanging object sway, idle animation, ambient horizontal drift.
@@ -28,6 +29,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var t = target.transform;
             var halfDur = GetDuration(duration, options) * 0.5f;
             var moveRightEase = options.Ease ?? Ease.InOutSine;
@@ -41,7 +43,7 @@ namespace LB.TweenHelper
 
             void MoveRight()
             {
-                tween = t.DOLocalMoveX(0.35f, halfDur)
+                tween = t.DOLocalMoveX(0.35f * strength, halfDur)
                     .SetRelative(true)
                     .SetEase(moveRightEase)
                     .WithLoopDefaults(rightOptions, target, applyDelay);
@@ -52,7 +54,7 @@ namespace LB.TweenHelper
 
             void MoveLeft()
             {
-                tween = t.DOLocalMoveX(-0.35f, halfDur)
+                tween = t.DOLocalMoveX(-0.35f * strength, halfDur)
                     .SetRelative(true)
                     .SetEase(moveLeftEase)
                     .WithLoopDefaults(leftOptions, target, applyDelay);
@@ -74,6 +76,7 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, float amplitude, float duration, TweenOptions options)
         {
+            var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
             var halfDur = duration * 0.5f;
             var moveRightEase = options.Ease ?? Ease.InOutSine;
@@ -87,7 +90,7 @@ namespace LB.TweenHelper
 
             void MoveRight()
             {
-                tween = t.DOLocalMoveX(amplitude, halfDur)
+                tween = t.DOLocalMoveX(amplitude * strength, halfDur)
                     .SetRelative(true)
                     .SetEase(moveRightEase)
                     .WithLoopDefaults(rightOptions, target, applyDelay);
@@ -98,7 +101,7 @@ namespace LB.TweenHelper
 
             void MoveLeft()
             {
-                tween = t.DOLocalMoveX(-amplitude, halfDur)
+                tween = t.DOLocalMoveX(-amplitude * strength, halfDur)
                     .SetRelative(true)
                     .SetEase(moveLeftEase)
                     .WithLoopDefaults(leftOptions, target, applyDelay);
@@ -116,7 +119,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft horizontal sway loop with small amplitude.
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 3.0s | <b>Default ease:</b> InOutSine
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 3.0s | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Strength override:</b> Multiplies sway amplitude (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SwaySoft").Play();</c>
     /// </summary>
@@ -137,7 +141,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Wide horizontal sway loop with large amplitude.
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InOutSine
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Strength override:</b> Multiplies sway amplitude (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SwayHard").Play();</c>
     /// </summary>

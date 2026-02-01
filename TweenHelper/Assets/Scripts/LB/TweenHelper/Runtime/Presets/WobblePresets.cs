@@ -11,7 +11,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> DOTween punch default<br/>
-    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).
+    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> "No" gesture, shake-to-settle, spin wobble, rotational impact.
@@ -28,7 +29,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0, 15f, 0), GetDuration(duration, options), 8, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(0, 15f * strength, 0), GetDuration(duration, options), 8, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -39,7 +41,8 @@ namespace LB.TweenHelper
     /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 8, 0)</c>, vibrato <c>5</c>, elasticity <c>0.5</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("WobbleYSoft").Play();</c>
     /// </summary>
@@ -53,7 +56,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0, 8f, 0), GetDuration(duration, options), 5, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(0, 8f * strength, 0), GetDuration(duration, options), 5, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -64,7 +68,8 @@ namespace LB.TweenHelper
     /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 25, 0)</c>, vibrato <c>12</c>, elasticity <c>0.5</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("WobbleYHard").Play();</c>
     /// </summary>
@@ -78,7 +83,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0, 25f, 0), GetDuration(duration, options), 12, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(0, 25f * strength, 0), GetDuration(duration, options), 12, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -91,7 +97,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> DOTween punch default<br/>
-    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).
+    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Nodding motion, forward/back wobble, rocking chair, impact tilt.
@@ -108,7 +115,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(15f, 0, 0), GetDuration(duration, options), 8, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(15f * strength, 0, 0), GetDuration(duration, options), 8, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -119,7 +127,8 @@ namespace LB.TweenHelper
     /// Uses <c>DOPunchRotation</c> with punch vector <c>(8, 0, 0)</c>, vibrato <c>5</c>, elasticity <c>0.5</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("WobbleXSoft").Play();</c>
     /// </summary>
@@ -133,7 +142,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(8f, 0, 0), GetDuration(duration, options), 5, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(8f * strength, 0, 0), GetDuration(duration, options), 5, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -144,7 +154,8 @@ namespace LB.TweenHelper
     /// Uses <c>DOPunchRotation</c> with punch vector <c>(25, 0, 0)</c>, vibrato <c>12</c>, elasticity <c>0.5</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("WobbleXHard").Play();</c>
     /// </summary>
@@ -158,7 +169,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(25f, 0, 0), GetDuration(duration, options), 12, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(25f * strength, 0, 0), GetDuration(duration, options), 12, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -171,7 +183,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.45s | <b>Default ease:</b> DOTween punch default<br/>
-    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).
+    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> 2D wobble, pendulum swing, teeter-totter, balance recovery.
@@ -188,7 +201,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0, 0, 11f), GetDuration(duration, options), 7, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(0, 0, 11f * strength), GetDuration(duration, options), 7, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -199,7 +213,8 @@ namespace LB.TweenHelper
     /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 0, 8)</c>, vibrato <c>6</c>, elasticity <c>0.5</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("WobbleZSoft").Play();</c>
     /// </summary>
@@ -213,7 +228,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0, 0, 8f), GetDuration(duration, options), 6, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(0, 0, 8f * strength), GetDuration(duration, options), 6, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -224,7 +240,8 @@ namespace LB.TweenHelper
     /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 0, 25)</c>, vibrato <c>10</c>, elasticity <c>0.5</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("WobbleZHard").Play();</c>
     /// </summary>
@@ -238,7 +255,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0, 0, 25f), GetDuration(duration, options), 10, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(0, 0, 25f * strength), GetDuration(duration, options), 10, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -251,7 +269,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> DOTween punch default<br/>
-    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).
+    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Complex wobble, impact reaction, organic jiggle, multi-axis disturbance.
@@ -268,7 +287,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(12f, 12f, 0f), GetDuration(duration, options), 8, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(12f * strength, 12f * strength, 0f), GetDuration(duration, options), 8, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -276,7 +296,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft diagonal XY wobble with smaller angle and fewer vibrations.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXYSoft").Play();</c>
     /// </summary>
@@ -290,7 +311,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(7f, 7f, 0f), GetDuration(duration, options), 5, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(7f * strength, 7f * strength, 0f), GetDuration(duration, options), 5, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -298,7 +320,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Heavy diagonal XY wobble with larger angle and more vibrations.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXYHard").Play();</c>
     /// </summary>
@@ -312,7 +335,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(20f, 20f, 0f), GetDuration(duration, options), 12, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(20f * strength, 20f * strength, 0f), GetDuration(duration, options), 12, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -325,7 +349,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> DOTween punch default<br/>
-    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).
+    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Tumble wobble, unsteady object, physical disturbance, off-balance reaction.
@@ -342,7 +367,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(12f, 0f, 12f), GetDuration(duration, options), 8, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(12f * strength, 0f, 12f * strength), GetDuration(duration, options), 8, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -350,7 +376,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft diagonal XZ wobble with smaller angle and fewer vibrations.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXZSoft").Play();</c>
     /// </summary>
@@ -364,7 +391,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(7f, 0f, 7f), GetDuration(duration, options), 5, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(7f * strength, 0f, 7f * strength), GetDuration(duration, options), 5, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -372,7 +400,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Heavy diagonal XZ wobble with larger angle and more vibrations.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXZHard").Play();</c>
     /// </summary>
@@ -386,7 +415,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(20f, 0f, 20f), GetDuration(duration, options), 12, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(20f * strength, 0f, 20f * strength), GetDuration(duration, options), 12, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -399,7 +429,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> DOTween punch default<br/>
-    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).
+    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Sideways wobble, wind-blown object, lateral disturbance, off-kilter reaction.
@@ -416,7 +447,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0f, 12f, 12f), GetDuration(duration, options), 8, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(0f, 12f * strength, 12f * strength), GetDuration(duration, options), 8, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -424,7 +456,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft diagonal YZ wobble with smaller angle and fewer vibrations.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("WobbleDiagonalYZSoft").Play();</c>
     /// </summary>
@@ -438,7 +471,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0f, 7f, 7f), GetDuration(duration, options), 5, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(0f, 7f * strength, 7f * strength), GetDuration(duration, options), 5, 0.5f)
                 .WithDefaults(options, target);
         }
     }
@@ -446,7 +480,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Heavy diagonal YZ wobble with larger angle and more vibrations.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s<br/>
+    /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("WobbleDiagonalYZHard").Play();</c>
     /// </summary>
@@ -460,7 +495,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchRotation(new Vector3(0f, 20f, 20f), GetDuration(duration, options), 12, 0.5f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchRotation(new Vector3(0f, 20f * strength, 20f * strength), GetDuration(duration, options), 12, 0.5f)
                 .WithDefaults(options, target);
         }
     }

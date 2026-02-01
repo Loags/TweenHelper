@@ -13,7 +13,9 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.0s | <b>Default ease:</b> OutCubic (scale), Linear (fade)<br/>
-    /// <b>Easing override:</b> Primary ease controls scale; fade is always Linear.
+    /// <b>Easing override:</b> Primary ease controls scale; fade is always Linear.<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// <para>
     /// <b>Use cases:</b> UI element entrance, dialog appearance, smooth combined reveal, material-design entrance.
@@ -43,10 +45,10 @@ namespace LB.TweenHelper
 
             seq.Append(t.DOScale(scaleTarget, dur).SetEase(ease));
 
-            var fadeTween = CreateFadeTween(target, 1f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 1f), dur);
             if (fadeTween != null)
             {
-                SetAlpha(target, 0f);
+                SetAlpha(target, ResolveStartAlpha(options, 0f));
                 // Use Linear ease for fade so alpha doesn't rush ahead of scale
                 seq.Join(fadeTween.SetEase(Ease.Linear));
             }
@@ -63,7 +65,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft scales the target from zero to original while simultaneously fading in.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.5s | <b>Default ease:</b> OutSine (scale), Linear (fade)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.5s | <b>Default ease:</b> OutSine (scale), Linear (fade)<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PopInFadeSoft").Play();</c>
     /// </summary>
@@ -90,10 +94,10 @@ namespace LB.TweenHelper
 
             seq.Append(t.DOScale(scaleTarget, dur).SetEase(ease));
 
-            var fadeTween = CreateFadeTween(target, 1f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 1f), dur);
             if (fadeTween != null)
             {
-                SetAlpha(target, 0f);
+                SetAlpha(target, ResolveStartAlpha(options, 0f));
                 seq.Join(fadeTween.SetEase(Ease.Linear));
             }
 
@@ -109,7 +113,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard scales the target from zero to original while simultaneously fading in.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.4s | <b>Default ease:</b> OutQuart (scale), Linear (fade)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.4s | <b>Default ease:</b> OutQuart (scale), Linear (fade)<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PopInFadeHard").Play();</c>
     /// </summary>
@@ -136,10 +142,10 @@ namespace LB.TweenHelper
 
             seq.Append(t.DOScale(scaleTarget, dur).SetEase(ease));
 
-            var fadeTween = CreateFadeTween(target, 1f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 1f), dur);
             if (fadeTween != null)
             {
-                SetAlpha(target, 0f);
+                SetAlpha(target, ResolveStartAlpha(options, 0f));
                 seq.Join(fadeTween.SetEase(Ease.Linear));
             }
 
@@ -160,7 +166,9 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.2s | <b>Default ease:</b> InCubic (scale), Linear (fade)<br/>
-    /// <b>Easing override:</b> Primary ease controls scale; fade is always Linear.
+    /// <b>Easing override:</b> Primary ease controls scale; fade is always Linear.<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
     /// <para>
     /// <b>Use cases:</b> UI element dismissal, dialog close, combined exit, material-design exit.
@@ -187,7 +195,7 @@ namespace LB.TweenHelper
             var seq = DOTween.Sequence();
             seq.Join(t.DOScale(endScale, dur).SetEase(ease));
 
-            var fadeTween = CreateFadeTween(target, 0f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
             if (fadeTween != null)
             {
                 fadeTween.SetEase(Ease.Linear);
@@ -206,7 +214,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft scales the target down to zero while simultaneously fading out.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.6s | <b>Default ease:</b> InSine (scale), Linear (fade)
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.6s | <b>Default ease:</b> InSine (scale), Linear (fade)<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PopOutFadeSoft").Play();</c>
     /// </summary>
@@ -229,7 +239,7 @@ namespace LB.TweenHelper
             var seq = DOTween.Sequence();
             seq.Join(t.DOScale(endScale, dur).SetEase(ease));
 
-            var fadeTween = CreateFadeTween(target, 0f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
             if (fadeTween != null)
             {
                 fadeTween.SetEase(Ease.Linear);
@@ -248,7 +258,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard scales the target down to zero while simultaneously fading out.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InQuart (scale), Linear (fade)
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InQuart (scale), Linear (fade)<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PopOutFadeHard").Play();</c>
     /// </summary>
@@ -271,7 +283,7 @@ namespace LB.TweenHelper
             var seq = DOTween.Sequence();
             seq.Join(t.DOScale(endScale, dur).SetEase(ease));
 
-            var fadeTween = CreateFadeTween(target, 0f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
             if (fadeTween != null)
             {
                 fadeTween.SetEase(Ease.Linear);
@@ -295,7 +307,9 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.2s | <b>Default ease:</b> InBack (scale), Linear (fade)<br/>
-    /// <b>Easing override:</b> Primary ease controls scale; fade is always Linear.
+    /// <b>Easing override:</b> Primary ease controls scale; fade is always Linear.<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
     /// <para>
     /// <b>Use cases:</b> UI element dismissal with anticipation, dialog close with overshoot, combined exit.
@@ -322,7 +336,7 @@ namespace LB.TweenHelper
             var seq = DOTween.Sequence();
             seq.Join(t.DOScale(endScale, dur).SetEase(ease));
 
-            var fadeTween = CreateFadeTween(target, 0f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
             if (fadeTween != null)
             {
                 fadeTween.SetEase(Ease.Linear);
@@ -341,7 +355,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft scales the target down to zero while fading out, with mild anticipation overshoot on scale.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.6s | <b>Default ease:</b> InBack (overshoot 2.5, scale), Linear (fade)
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.6s | <b>Default ease:</b> InBack (overshoot 2.5, scale), Linear (fade)<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PopOutFadeOvershootSoft").Play();</c>
     /// </summary>
@@ -364,7 +380,7 @@ namespace LB.TweenHelper
             var seq = DOTween.Sequence();
             seq.Join(t.DOScale(endScale, dur).SetEase(ease, 2.5f));
 
-            var fadeTween = CreateFadeTween(target, 0f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
             if (fadeTween != null)
             {
                 fadeTween.SetEase(Ease.Linear);
@@ -383,7 +399,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard scales the target down to zero while fading out, with strong anticipation overshoot on scale.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InBack (overshoot 6.0, scale), Linear (fade)
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InBack (overshoot 6.0, scale), Linear (fade)<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PopOutFadeOvershootHard").Play();</c>
     /// </summary>
@@ -406,7 +424,7 @@ namespace LB.TweenHelper
             var seq = DOTween.Sequence();
             seq.Join(t.DOScale(endScale, dur).SetEase(ease, 6.0f));
 
-            var fadeTween = CreateFadeTween(target, 0f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
             if (fadeTween != null)
             {
                 fadeTween.SetEase(Ease.Linear);
@@ -431,7 +449,9 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutQuad (scale), Linear (fade)<br/>
-    /// <b>Easing override:</b> Primary ease controls scale; secondary ease controls fade.
+    /// <b>Easing override:</b> Primary ease controls scale; secondary ease controls fade.<br/>
+    /// <b>Scale override:</b> TargetScale replaces the expanded scale (originalScale × 1.5).<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Explosion effect, particle burst, destruction animation, energy release.
@@ -459,7 +479,7 @@ namespace LB.TweenHelper
             var seq = DOTween.Sequence();
             seq.Join(t.DOScale(explodeTarget, dur).SetEase(scaleEase));
 
-            var fadeTween = CreateFadeTween(target, 0f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
             if (fadeTween != null)
             {
                 seq.Join(fadeTween.SetEase(fadeEase));
@@ -474,7 +494,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Gentle explosion effect with slower expansion and fade.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.8s | <b>Default ease:</b> OutSine (scale), Linear (fade)
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.8s | <b>Default ease:</b> OutSine (scale), Linear (fade)<br/>
+    /// <b>Scale override:</b> TargetScale replaces the expanded scale (originalScale × 1.3).<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("ExplodeSoft").Play();</c>
     /// </summary>
@@ -499,7 +521,7 @@ namespace LB.TweenHelper
             var seq = DOTween.Sequence();
             seq.Join(t.DOScale(explodeTarget, dur).SetEase(scaleEase));
 
-            var fadeTween = CreateFadeTween(target, 0f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
             if (fadeTween != null)
             {
                 seq.Join(fadeTween.SetEase(fadeEase));
@@ -514,7 +536,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Aggressive explosion effect with rapid expansion and fade.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutCubic (scale), Linear (fade)
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutCubic (scale), Linear (fade)<br/>
+    /// <b>Scale override:</b> TargetScale replaces the expanded scale (originalScale × 2.0).<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("ExplodeHard").Play();</c>
     /// </summary>
@@ -539,7 +563,7 @@ namespace LB.TweenHelper
             var seq = DOTween.Sequence();
             seq.Join(t.DOScale(explodeTarget, dur).SetEase(scaleEase));
 
-            var fadeTween = CreateFadeTween(target, 0f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
             if (fadeTween != null)
             {
                 seq.Join(fadeTween.SetEase(fadeEase));

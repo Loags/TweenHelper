@@ -12,7 +12,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
-    /// <b>Easing override:</b> Primary ease replaces InOutQuad.
+    /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
+    /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Card flip, page turn, reveal animation, object inspection.
@@ -29,9 +30,10 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
             var ease = ResolveEase(presetOptions, Ease.InOutQuad);
-            return target.transform.DOLocalRotate(new Vector3(180f, 0f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(180f * strength, 0f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -43,7 +45,8 @@ namespace LB.TweenHelper
     /// Rotates by <c>(180, 0, 0)</c> using <c>RotateMode.LocalAxisAdd</c> with <c>Ease.InOutSine</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InOutSine
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("FlipXSoft").Play();</c>
     /// </summary>
@@ -57,9 +60,10 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
             var ease = ResolveEase(presetOptions, Ease.InOutSine);
-            return target.transform.DOLocalRotate(new Vector3(180f, 0f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(180f * strength, 0f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -71,7 +75,8 @@ namespace LB.TweenHelper
     /// Rotates by <c>(180, 0, 0)</c> using <c>RotateMode.LocalAxisAdd</c> with <c>Ease.OutQuad</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad<br/>
+    /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("FlipXHard").Play();</c>
     /// </summary>
@@ -85,9 +90,10 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
             var ease = ResolveEase(presetOptions, Ease.OutQuad);
-            return target.transform.DOLocalRotate(new Vector3(180f, 0f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(180f * strength, 0f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -102,7 +108,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
-    /// <b>Easing override:</b> Primary ease replaces InOutQuad.
+    /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
+    /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Horizontal card flip, character turn-around, mirror reveal, about-face.
@@ -119,9 +126,10 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
             var ease = ResolveEase(presetOptions, Ease.InOutQuad);
-            return target.transform.DOLocalRotate(new Vector3(0f, 180f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(0f, 180f * strength, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -133,7 +141,8 @@ namespace LB.TweenHelper
     /// Rotates by <c>(0, 180, 0)</c> using <c>RotateMode.LocalAxisAdd</c> with <c>Ease.InOutSine</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InOutSine
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("FlipYSoft").Play();</c>
     /// </summary>
@@ -147,9 +156,10 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
             var ease = ResolveEase(presetOptions, Ease.InOutSine);
-            return target.transform.DOLocalRotate(new Vector3(0f, 180f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(0f, 180f * strength, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -161,7 +171,8 @@ namespace LB.TweenHelper
     /// Rotates by <c>(0, 180, 0)</c> using <c>RotateMode.LocalAxisAdd</c> with <c>Ease.OutQuad</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad<br/>
+    /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("FlipYHard").Play();</c>
     /// </summary>
@@ -175,9 +186,10 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
             var ease = ResolveEase(presetOptions, Ease.OutQuad);
-            return target.transform.DOLocalRotate(new Vector3(0f, 180f, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(0f, 180f * strength, 0f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -192,7 +204,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
-    /// <b>Easing override:</b> Primary ease replaces InOutQuad.
+    /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
+    /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Barrel roll, coin spin, stylized rotation transition.
@@ -209,9 +222,10 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutQuad);
             var ease = ResolveEase(presetOptions, Ease.InOutQuad);
-            return target.transform.DOLocalRotate(new Vector3(0f, 0f, 180f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(0f, 0f, 180f * strength), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -223,7 +237,8 @@ namespace LB.TweenHelper
     /// Rotates by <c>(0, 0, 180)</c> using <c>RotateMode.LocalAxisAdd</c> with <c>Ease.InOutSine</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InOutSine
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("FlipZSoft").Play();</c>
     /// </summary>
@@ -237,9 +252,10 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
             var ease = ResolveEase(presetOptions, Ease.InOutSine);
-            return target.transform.DOLocalRotate(new Vector3(0f, 0f, 180f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(0f, 0f, 180f * strength), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -251,7 +267,8 @@ namespace LB.TweenHelper
     /// Rotates by <c>(0, 0, 180)</c> using <c>RotateMode.LocalAxisAdd</c> with <c>Ease.OutQuad</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad<br/>
+    /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("FlipZHard").Play();</c>
     /// </summary>
@@ -265,9 +282,10 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
             var ease = ResolveEase(presetOptions, Ease.OutQuad);
-            return target.transform.DOLocalRotate(new Vector3(0f, 0f, 180f), GetDuration(duration, options), RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(new Vector3(0f, 0f, 180f * strength), GetDuration(duration, options), RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }

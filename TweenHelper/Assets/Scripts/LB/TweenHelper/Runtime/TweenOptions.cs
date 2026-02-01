@@ -25,6 +25,9 @@ namespace LB.TweenHelper
         [SerializeField] private float? duration;
         [SerializeField] private Vector3? startScale;
         [SerializeField] private Vector3? targetScale;
+        [SerializeField] private float? strength;
+        [SerializeField] private float? startAlpha;
+        [SerializeField] private float? targetAlpha;
 
         /// <summary>
         /// Creates a new TweenOptions with the specified duration override.
@@ -162,6 +165,37 @@ namespace LB.TweenHelper
         public static TweenOptions WithTargetScale(Vector3 targetScale)
         {
             return new TweenOptions { targetScale = targetScale };
+        }
+
+        /// <summary>
+        /// Creates a new TweenOptions with the specified strength multiplier.
+        /// Multiplies a preset's core magnitude (distance, angle, height, etc.). Default 1.0.
+        /// </summary>
+        /// <param name="strength">The strength multiplier. 0.5 = half, 2.0 = double.</param>
+        /// <returns>A new TweenOptions instance.</returns>
+        public static TweenOptions WithStrength(float strength)
+        {
+            return new TweenOptions { strength = strength };
+        }
+
+        /// <summary>
+        /// Creates a new TweenOptions with the specified start alpha override for fade entrance presets.
+        /// </summary>
+        /// <param name="startAlpha">The start alpha to use instead of the preset default (typically 0).</param>
+        /// <returns>A new TweenOptions instance.</returns>
+        public static TweenOptions WithStartAlpha(float startAlpha)
+        {
+            return new TweenOptions { startAlpha = startAlpha };
+        }
+
+        /// <summary>
+        /// Creates a new TweenOptions with the specified target alpha override for fade presets.
+        /// </summary>
+        /// <param name="targetAlpha">The target alpha to use instead of the preset default.</param>
+        /// <returns>A new TweenOptions instance.</returns>
+        public static TweenOptions WithTargetAlpha(float targetAlpha)
+        {
+            return new TweenOptions { targetAlpha = targetAlpha };
         }
 
 
@@ -333,6 +367,40 @@ namespace LB.TweenHelper
             return this;
         }
 
+        /// <summary>
+        /// Sets the strength multiplier for this TweenOptions.
+        /// Multiplies a preset's core magnitude (distance, angle, height, etc.). Default 1.0.
+        /// </summary>
+        /// <param name="strength">The strength multiplier. 0.5 = half, 2.0 = double.</param>
+        /// <returns>This TweenOptions instance for chaining.</returns>
+        public TweenOptions SetStrength(float strength)
+        {
+            this.strength = strength;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the start alpha override for fade entrance presets.
+        /// </summary>
+        /// <param name="startAlpha">The start alpha to use instead of the preset default (typically 0).</param>
+        /// <returns>This TweenOptions instance for chaining.</returns>
+        public TweenOptions SetStartAlpha(float startAlpha)
+        {
+            this.startAlpha = startAlpha;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the target alpha override for fade presets.
+        /// </summary>
+        /// <param name="targetAlpha">The target alpha to use instead of the preset default.</param>
+        /// <returns>This TweenOptions instance for chaining.</returns>
+        public TweenOptions SetTargetAlpha(float targetAlpha)
+        {
+            this.targetAlpha = targetAlpha;
+            return this;
+        }
+
         #endregion
         
         #region Internal Property Access
@@ -352,6 +420,9 @@ namespace LB.TweenHelper
         internal float? Duration => duration;
         internal Vector3? StartScale => startScale;
         internal Vector3? TargetScale => targetScale;
+        internal float? Strength => strength;
+        internal float? StartAlpha => startAlpha;
+        internal float? TargetAlpha => targetAlpha;
 
         #endregion
         
@@ -379,6 +450,9 @@ namespace LB.TweenHelper
             if (duration.HasValue) parts.Add($"Duration:{duration.Value:F2}");
             if (startScale.HasValue) parts.Add($"StartScale:{startScale.Value}");
             if (targetScale.HasValue) parts.Add($"TargetScale:{targetScale.Value}");
+            if (strength.HasValue) parts.Add($"Strength:{strength.Value:F2}");
+            if (startAlpha.HasValue) parts.Add($"StartAlpha:{startAlpha.Value:F2}");
+            if (targetAlpha.HasValue) parts.Add($"TargetAlpha:{targetAlpha.Value:F2}");
 
             return parts.Count > 0 ? $"TweenOptions({string.Join(", ", parts)})" : "TweenOptions(None)";
         }

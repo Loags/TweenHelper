@@ -12,7 +12,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (push), OutBack (return)<br/>
-    /// <b>Easing override:</b> Primary ease controls push; secondary ease controls springy return.
+    /// <b>Easing override:</b> Primary ease controls push; secondary ease controls springy return.<br/>
+    /// <b>Strength override:</b> Multiplies nudge distance (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Notification nudge, attention tap, gentle directional hint, interactive prompt.
@@ -29,6 +30,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var t = target.transform;
             var dur = GetDuration(duration, options);
             var pushEase = ResolveEase(options, Ease.OutQuad);
@@ -36,8 +38,8 @@ namespace LB.TweenHelper
             var presetOptions = MergeWithDefaultEase(options, pushEase);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalMoveX(0.3f, dur * 0.3f).SetRelative(true).SetEase(pushEase))
-                .Append(t.DOLocalMoveX(-0.3f, dur * 0.7f).SetRelative(true).SetEase(returnEase))
+                .Append(t.DOLocalMoveX(0.3f * strength, dur * 0.3f).SetRelative(true).SetEase(pushEase))
+                .Append(t.DOLocalMoveX(-0.3f * strength, dur * 0.7f).SetRelative(true).SetEase(returnEase))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -49,8 +51,9 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, Vector3 direction, float distance, float duration, TweenOptions options)
         {
+            var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
-            var offset = direction * distance;
+            var offset = direction * (distance * strength);
             var pushEase = options.Ease ?? Ease.OutQuad;
             var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.OutBack;
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(pushEase);
@@ -151,7 +154,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft nudge to the right then spring back. Smaller distance, shorter duration.
     /// <para>
-    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad (push), OutBack (return)
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad (push), OutBack (return)<br/>
+    /// <b>Strength override:</b> Multiplies nudge distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("NudgeSoft").Play();</c>
     /// </summary>
@@ -258,7 +262,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard nudge to the right then spring back. Larger distance, snappier feel.
     /// <para>
-    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.35s | <b>Default ease:</b> OutQuad (push), OutBack (return)
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.35s | <b>Default ease:</b> OutQuad (push), OutBack (return)<br/>
+    /// <b>Strength override:</b> Multiplies nudge distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("NudgeHard").Play();</c>
     /// </summary>

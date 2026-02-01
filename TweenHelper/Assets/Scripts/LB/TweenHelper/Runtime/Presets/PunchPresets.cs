@@ -11,7 +11,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.18s | <b>Default ease:</b> DOTween punch default<br/>
-    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).
+    /// <b>Easing override:</b> No ease override (punch tweens use internal oscillation).<br/>
+    /// <b>Strength override:</b> Multiplies punch magnitude (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Button press feedback, hit confirmation, score increment, interaction acknowledgment.
@@ -28,7 +29,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchScale(Vector3.one * 0.11f, GetDuration(duration, options), 5, 0.7f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchScale(Vector3.one * (0.11f * strength), GetDuration(duration, options), 5, 0.7f)
                 .WithDefaults(options, target);
         }
     }
@@ -39,7 +41,8 @@ namespace LB.TweenHelper
     /// Uses <c>DOPunchScale</c> with punch vector <c>Vector3.one * 0.08</c>, vibrato <c>4</c>, elasticity <c>0.7</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.15s
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.15s<br/>
+    /// <b>Strength override:</b> Multiplies punch magnitude (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PunchSoft").Play();</c>
     /// </summary>
@@ -53,7 +56,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchScale(Vector3.one * 0.08f, GetDuration(duration, options), 4, 0.7f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchScale(Vector3.one * (0.08f * strength), GetDuration(duration, options), 4, 0.7f)
                 .WithDefaults(options, target);
         }
     }
@@ -64,7 +68,8 @@ namespace LB.TweenHelper
     /// Uses <c>DOPunchScale</c> with punch vector <c>Vector3.one * 0.25</c>, vibrato <c>8</c>, elasticity <c>0.7</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.25s
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.25s<br/>
+    /// <b>Strength override:</b> Multiplies punch magnitude (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PunchHard").Play();</c>
     /// </summary>
@@ -78,7 +83,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOPunchScale(Vector3.one * 0.25f, GetDuration(duration, options), 8, 0.7f)
+            var strength = ResolveStrength(options);
+            return target.transform.DOPunchScale(Vector3.one * (0.25f * strength), GetDuration(duration, options), 8, 0.7f)
                 .WithDefaults(options, target);
         }
     }

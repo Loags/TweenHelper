@@ -13,6 +13,10 @@ namespace LB.TweenHelper.Demo
     /// </summary>
     public class PresetShowcaseSpawner : MonoBehaviour
     {
+        /// <summary>
+        /// Singleton instance for access by PresetConsole.
+        /// </summary>
+        public static PresetShowcaseSpawner Instance { get; private set; }
         [Header("Cluster Layout")]
         [SerializeField] private int familiesPerRow = 4;
         [SerializeField] private float intraClusterSpacing = 6f;
@@ -45,6 +49,11 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private bool clearExistingOnSpawn = true;
 
         private readonly List<GameObject> _spawnedObjects = new List<GameObject>();
+        private readonly Dictionary<string, GameObject> _presetObjects = new Dictionary<string, GameObject>();
+        private readonly Dictionary<string, string> _presetFamilies = new Dictionary<string, string>();
+        private List<ITweenPreset> _allPresets;
+        private Transform _container;
+        private GameObject _groundObject;
 
         /// <summary>
         /// Override dictionary for preset names that don't follow standard prefix rules.
@@ -140,6 +149,16 @@ namespace LB.TweenHelper.Demo
             public int MaxColumnsInRow;
         }
 
+        private void Awake()
+        {
+            Instance = this;
+        }
+
+        private void OnDestroy()
+        {
+            if (Instance == this) Instance = null;
+        }
+
         private void Start()
         {
             if (spawnOnStart)
@@ -153,6 +172,7 @@ namespace LB.TweenHelper.Demo
             }
 
             SetupResetManager();
+            SetupConsole();
         }
 
         private void SetupResetManager()
@@ -162,6 +182,13 @@ namespace LB.TweenHelper.Demo
                 var managerGO = new GameObject("AnimationResetManager");
                 managerGO.AddComponent<AnimationResetManager>();
             }
+        }
+
+        private void SetupConsole()
+        {
+            var consoleGO = new GameObject("PresetConsole");
+            consoleGO.transform.SetParent(transform);
+            consoleGO.AddComponent<PresetConsole>();
         }
 
         [ContextMenu("Spawn All Preset Objects")]
@@ -174,20 +201,28 @@ namespace LB.TweenHelper.Demo
 
             TweenPresetRegistry.ScanForCodePresets();
 
-            var presets = TweenPresetRegistry.Presets.ToList();
-            if (presets.Count == 0)
+            _allPresets = TweenPresetRegistry.Presets.ToList();
+            if (_allPresets.Count == 0)
             {
                 Debug.LogWarning("PresetShowcaseSpawner: No presets registered. Make sure presets are auto-registered.");
                 return;
             }
 
-            var families = GroupPresetsByFamily(presets);
+            // Build family lookup
+            _presetFamilies.Clear();
+            foreach (var preset in _allPresets)
+            {
+                _presetFamilies[preset.PresetName] = GetPresetFamily(preset);
+            }
 
-            Debug.Log($"PresetShowcaseSpawner: Spawning {presets.Count} preset objects across {families.Count} families...");
+            var families = GroupPresetsByFamily(_allPresets);
+
+            Debug.Log($"PresetShowcaseSpawner: Spawning {_allPresets.Count} preset objects across {families.Count} families...");
 
             var container = new GameObject("PresetShowcase");
             container.transform.SetParent(transform);
             container.transform.localPosition = Vector3.zero;
+            _container = container.transform;
 
             // Track layout bounds for ground plane
             float maxX = 0f;
@@ -217,6 +252,7 @@ namespace LB.TweenHelper.Demo
                         var position = clusterOrigin + new Vector3(c * intraClusterSpacing, 0f, r * intraClusterSpacing);
                         var obj = SpawnPresetObject(subRow[c], position, container.transform);
                         _spawnedObjects.Add(obj);
+                        _presetObjects[subRow[c].PresetName] = obj;
 
                         maxX = Mathf.Max(maxX, position.x);
                         maxZ = Mathf.Max(maxZ, position.z);
@@ -243,7 +279,7 @@ namespace LB.TweenHelper.Demo
 
             if (spawnGround)
             {
-                SpawnGroundPlane(container.transform, maxX - startPosition.x, totalDepth);
+                _groundObject = SpawnGroundPlane(container.transform, maxX - startPosition.x, totalDepth);
             }
 
             Debug.Log($"PresetShowcaseSpawner: Spawned {_spawnedObjects.Count} objects.");
@@ -514,7 +550,7 @@ namespace LB.TweenHelper.Demo
             return obj;
         }
 
-        private void SpawnGroundPlane(Transform parent, float totalWidth, float totalDepth)
+        private GameObject SpawnGroundPlane(Transform parent, float totalWidth, float totalDepth)
         {
             var ground = GameObject.CreatePrimitive(PrimitiveType.Quad);
             ground.name = "Ground";
@@ -538,6 +574,7 @@ namespace LB.TweenHelper.Demo
             }
 
             _spawnedObjects.Add(ground);
+            return ground;
         }
 
         /// <summary>
@@ -580,6 +617,144 @@ namespace LB.TweenHelper.Demo
             return mat;
         }
 
+        /// <summary>
+        /// Returns the family name for a given preset name, or null if unknown.
+        /// </summary>
+        public string GetPresetFamilyName(string presetName)
+        {
+            return _presetFamilies.TryGetValue(presetName, out var family) ? family : null;
+        }
+
+        /// <summary>
+        /// Returns all distinct family names, sorted alphabetically.
+        /// </summary>
+        public List<string> GetAllFamilyNames()
+        {
+            return _presetFamilies.Values.Distinct().OrderBy(f => f).ToList();
+        }
+
+        /// <summary>
+        /// Returns the number of currently visible (active) preset objects.
+        /// </summary>
+        public int GetVisibleCount()
+        {
+            int count = 0;
+            foreach (var kvp in _presetObjects)
+            {
+                if (kvp.Value != null && kvp.Value.activeSelf)
+                    count++;
+            }
+            return count;
+        }
+
+        /// <summary>
+        /// Returns the total number of preset objects.
+        /// </summary>
+        public int GetTotalCount()
+        {
+            return _presetObjects.Count;
+        }
+
+        /// <summary>
+        /// Returns all preset names, sorted alphabetically.
+        /// </summary>
+        public List<string> GetAllPresetNames()
+        {
+            return _presetObjects.Keys.OrderBy(n => n).ToList();
+        }
+
+        /// <summary>
+        /// Filters visible presets and re-lays out the remaining ones with no gaps.
+        /// </summary>
+        public void RelayoutWithFilter(Func<string, bool> visibilityFilter)
+        {
+            if (_allPresets == null) return;
+
+            // Apply visibility
+            var visiblePresets = new List<ITweenPreset>();
+            foreach (var preset in _allPresets)
+            {
+                var isVisible = visibilityFilter(preset.PresetName);
+                if (_presetObjects.TryGetValue(preset.PresetName, out var obj) && obj != null)
+                {
+                    obj.SetActive(isVisible);
+                    if (isVisible) visiblePresets.Add(preset);
+                }
+            }
+
+            // Re-layout visible presets
+            var families = GroupPresetsByFamily(visiblePresets);
+
+            float maxX = 0f;
+            float maxZ = 0f;
+            int familyCol = 0;
+            float rowOffsetZ = 0f;
+            float rowMaxDepth = 0f;
+            float currentX = 0f;
+
+            for (int f = 0; f < families.Count; f++)
+            {
+                var family = families[f];
+                float clusterWidth = (family.MaxColumnsInRow - 1) * intraClusterSpacing;
+                float clusterDepth = (family.Rows.Count - 1) * intraClusterSpacing;
+                var clusterOrigin = startPosition + new Vector3(currentX, 0f, rowOffsetZ);
+
+                for (int r = 0; r < family.Rows.Count; r++)
+                {
+                    var subRow = family.Rows[r];
+                    for (int c = 0; c < subRow.Count; c++)
+                    {
+                        var position = clusterOrigin + new Vector3(c * intraClusterSpacing, 0f, r * intraClusterSpacing);
+                        if (_presetObjects.TryGetValue(subRow[c].PresetName, out var obj) && obj != null)
+                        {
+                            var display = obj.GetComponent<AnimationPresetDisplay>();
+                            if (display != null) display.ResetAnimation();
+
+                            obj.transform.localPosition = position;
+                            obj.transform.localScale = objectScale;
+                            obj.transform.localRotation = Quaternion.identity;
+
+                            if (display != null) display.SaveOriginalState();
+                        }
+
+                        maxX = Mathf.Max(maxX, position.x);
+                        maxZ = Mathf.Max(maxZ, position.z);
+                    }
+                }
+
+                rowMaxDepth = Mathf.Max(rowMaxDepth, clusterDepth);
+                familyCol++;
+                currentX += clusterWidth + interClusterGapX;
+
+                if (familyCol >= familiesPerRow)
+                {
+                    familyCol = 0;
+                    currentX = 0f;
+                    rowOffsetZ += rowMaxDepth + interClusterGapZ;
+                    rowMaxDepth = 0f;
+                }
+            }
+
+            // Resize ground plane
+            float totalDepth = rowOffsetZ + rowMaxDepth;
+            if (_groundObject != null)
+            {
+                float totalWidth = maxX - startPosition.x;
+                float width = totalWidth + groundPadding * 2f;
+                float depth = totalDepth + groundPadding * 2f;
+                _groundObject.transform.localScale = new Vector3(width, depth, 1f);
+                float centerX = startPosition.x + totalWidth * 0.5f;
+                float centerZ = startPosition.z + totalDepth * 0.5f;
+                _groundObject.transform.localPosition = new Vector3(centerX, groundYOffset, centerZ);
+
+                var renderer = _groundObject.GetComponent<Renderer>();
+                if (renderer != null && renderer.material != null)
+                {
+                    renderer.material.mainTextureScale = new Vector2(width / groundTiling, depth / groundTiling);
+                }
+            }
+        }
+
         [ContextMenu("Clear Spawned Objects")]
         public void ClearSpawned()
         {
@@ -598,6 +773,9 @@ namespace LB.TweenHelper.Demo
                 }
             }
             _spawnedObjects.Clear();
+            _presetObjects.Clear();
+            _presetFamilies.Clear();
+            _groundObject = null;
 
             var container = transform.Find("PresetShowcase");
             if (container != null)

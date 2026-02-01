@@ -13,6 +13,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot entry | <b>Default duration:</b> 3.0s | <b>Default ease:</b> OutQuad<br/>
     /// <b>Easing override:</b> Standard options apply via <c>WithDefaults</c>.<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.<br/>
     /// <b>Requires:</b> A fadeable component (CanvasGroup, SpriteRenderer, Image, Text, or Renderer with material).
     /// </para>
     /// <para>
@@ -30,8 +31,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            SetAlpha(target, 0f);
-            var tween = CreateFadeTween(target, 1f, GetDuration(duration, options));
+            SetAlpha(target, ResolveStartAlpha(options, 0f));
+            var tween = CreateFadeTween(target, ResolveTargetAlpha(options, 1f), GetDuration(duration, options));
             // Quick start getting visible, decelerating toward full opacity
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
             var ease = ResolveEase(presetOptions, Ease.OutQuad);
@@ -49,6 +50,7 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot entry | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InQuad<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("FadeInSoft").Play();</c>
@@ -63,8 +65,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            SetAlpha(target, 0f);
-            var tween = CreateFadeTween(target, 1f, GetDuration(duration, options));
+            SetAlpha(target, ResolveStartAlpha(options, 0f));
+            var tween = CreateFadeTween(target, ResolveTargetAlpha(options, 1f), GetDuration(duration, options));
             var presetOptions = MergeWithDefaultEase(options, Ease.InQuad);
             var ease = ResolveEase(presetOptions, Ease.InQuad);
             return tween?.SetEase(ease).WithDefaults(presetOptions, target);
@@ -81,6 +83,7 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot entry | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutQuad<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("FadeInHard").Play();</c>
@@ -95,8 +98,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            SetAlpha(target, 0f);
-            var tween = CreateFadeTween(target, 1f, GetDuration(duration, options));
+            SetAlpha(target, ResolveStartAlpha(options, 0f));
+            var tween = CreateFadeTween(target, ResolveTargetAlpha(options, 1f), GetDuration(duration, options));
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
             var ease = ResolveEase(presetOptions, Ease.OutQuad);
             return tween?.SetEase(ease).WithDefaults(presetOptions, target);
@@ -115,6 +118,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 3.0s | <b>Default ease:</b> Settings default<br/>
     /// <b>Easing override:</b> Standard options apply via <c>WithDefaults</c>.<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.<br/>
     /// <b>Requires:</b> A fadeable component (CanvasGroup, SpriteRenderer, Image, Text, or Renderer with material).
     /// </para>
     /// <para>
@@ -132,7 +136,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var tween = CreateFadeTween(target, 0f, GetDuration(duration, options));
+            var tween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), GetDuration(duration, options));
             return tween?.WithDefaults(options, target);
         }
 
@@ -147,6 +151,7 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InQuad<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("FadeOutSoft").Play();</c>
@@ -163,7 +168,7 @@ namespace LB.TweenHelper
         {
             var presetOptions = MergeWithDefaultEase(options, Ease.InQuad);
             var ease = ResolveEase(presetOptions, Ease.InQuad);
-            var tween = CreateFadeTween(target, 0f, GetDuration(duration, options));
+            var tween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), GetDuration(duration, options));
             return tween?.SetEase(ease).WithDefaults(presetOptions, target);
         }
 
@@ -178,6 +183,7 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutQuad<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("FadeOutHard").Play();</c>
@@ -194,7 +200,7 @@ namespace LB.TweenHelper
         {
             var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
             var ease = ResolveEase(presetOptions, Ease.OutQuad);
-            var tween = CreateFadeTween(target, 0f, GetDuration(duration, options));
+            var tween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), GetDuration(duration, options));
             return tween?.SetEase(ease).WithDefaults(presetOptions, target);
         }
 
@@ -211,6 +217,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 0.4s (0.2s per leg) | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Easing override:</b> Primary ease controls fade-off; secondary ease controls fade-on.<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0 (off alpha).<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
     /// <para>
@@ -240,7 +247,7 @@ namespace LB.TweenHelper
 
             void FadeOff()
             {
-                var fadeTween = CreateFadeTween(target, 0f, halfDur);
+                var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), halfDur);
                 if (fadeTween == null) return;
                 tween = fadeTween
                     .SetEase(offEase)
@@ -278,6 +285,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 0.8s (0.4s per leg) | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Easing override:</b> Primary ease controls fade-off; secondary ease controls fade-on.<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0 (off alpha).<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("BlinkSoft").Play();</c>
@@ -304,7 +312,7 @@ namespace LB.TweenHelper
 
             void FadeOff()
             {
-                var fadeTween = CreateFadeTween(target, 0f, halfDur);
+                var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), halfDur);
                 if (fadeTween == null) return;
                 tween = fadeTween
                     .SetEase(offEase)
@@ -342,6 +350,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 0.2s (0.1s per leg) | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Easing override:</b> Primary ease controls fade-off; secondary ease controls fade-on.<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0 (off alpha).<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("BlinkHard").Play();</c>
@@ -368,7 +377,7 @@ namespace LB.TweenHelper
 
             void FadeOff()
             {
-                var fadeTween = CreateFadeTween(target, 0f, halfDur);
+                var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), halfDur);
                 if (fadeTween == null) return;
                 tween = fadeTween
                     .SetEase(offEase)
@@ -408,6 +417,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s (1.0s per leg) | <b>Default ease:</b> InOutSine<br/>
     /// <b>Easing override:</b> Primary ease controls fade-down; secondary ease controls fade-up.<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces low-point alpha.<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
     /// <para>
@@ -437,7 +447,7 @@ namespace LB.TweenHelper
 
             void FadeDown()
             {
-                var fadeTween = CreateFadeTween(target, 0.3f, halfDur);
+                var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0.3f), halfDur);
                 if (fadeTween == null) return;
                 tween = fadeTween
                     .SetEase(fadeOutEase)
@@ -476,6 +486,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 3.0s (1.5s per leg) | <b>Default ease:</b> InOutSine<br/>
     /// <b>Easing override:</b> Primary ease controls fade-down; secondary ease controls fade-up.<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces low-point alpha.<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PulseFadeSoft").Play();</c>
@@ -502,7 +513,7 @@ namespace LB.TweenHelper
 
             void FadeDown()
             {
-                var fadeTween = CreateFadeTween(target, 0.5f, halfDur);
+                var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0.5f), halfDur);
                 if (fadeTween == null) return;
                 tween = fadeTween
                     .SetEase(fadeOutEase)
@@ -541,6 +552,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 1.0s (0.5s per leg) | <b>Default ease:</b> InOutSine<br/>
     /// <b>Easing override:</b> Primary ease controls fade-down; secondary ease controls fade-up.<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces low-point alpha.<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PulseFadeHard").Play();</c>
@@ -567,7 +579,7 @@ namespace LB.TweenHelper
 
             void FadeDown()
             {
-                var fadeTween = CreateFadeTween(target, 0.1f, halfDur);
+                var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0.1f), halfDur);
                 if (fadeTween == null) return;
                 tween = fadeTween
                     .SetEase(fadeOutEase)
@@ -721,6 +733,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 2.0s | <b>Default ease:</b> InOutSine (both phases)<br/>
     /// <b>Easing override:</b> Primary ease controls fade-in; secondary ease controls fade-out.<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1 (peak).<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
     /// <para>
@@ -743,10 +756,11 @@ namespace LB.TweenHelper
             var fadeOutEase = ResolveSecondaryEase(options, Ease.InOutSine);
             var presetOptions = MergeWithDefaultEase(options, fadeInEase);
 
-            SetAlpha(target, 0f);
+            var startAlpha = ResolveStartAlpha(options, 0f);
+            SetAlpha(target, startAlpha);
 
-            var fadeIn = CreateFadeTween(target, 1f, dur * 0.35f);
-            var fadeOut = CreateFadeTween(target, 0f, dur * 0.65f);
+            var fadeIn = CreateFadeTween(target, ResolveTargetAlpha(options, 1f), dur * 0.35f);
+            var fadeOut = CreateFadeTween(target, startAlpha, dur * 0.65f);
 
             if (fadeIn == null || fadeOut == null) return null;
 
@@ -770,10 +784,11 @@ namespace LB.TweenHelper
             var fadeOutEase = options.SecondaryEase ?? options.Ease ?? defaultEase;
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(fadeInEase);
 
-            CodePreset.SetAlphaStatic(target, 0f);
+            var startAlpha = CodePreset.ResolveStartAlphaStatic(options, 0f);
+            CodePreset.SetAlphaStatic(target, startAlpha);
 
-            var fadeIn = CodePreset.CreateFadeTweenStatic(target, 1f, duration * fadeInRatio);
-            var fadeOut = CodePreset.CreateFadeTweenStatic(target, 0f, duration * (1f - fadeInRatio));
+            var fadeIn = CodePreset.CreateFadeTweenStatic(target, CodePreset.ResolveTargetAlphaStatic(options, 1f), duration * fadeInRatio);
+            var fadeOut = CodePreset.CreateFadeTweenStatic(target, startAlpha, duration * (1f - fadeInRatio));
 
             if (fadeIn == null || fadeOut == null) return null;
 
@@ -793,6 +808,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 3.0s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Easing override:</b> Primary ease controls fade-in; secondary ease controls fade-out.<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1 (peak).<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("FadeInOutSoft").Play();</c>
@@ -822,6 +838,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Easing override:</b> Primary ease controls fade-in; secondary ease controls fade-out.<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1 (peak).<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("FadeInOutHard").Play();</c>

@@ -30,9 +30,10 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var rb = target.GetComponent<Rigidbody>();
+            var strength = CodePreset.ResolveStrengthStatic(options);
 
-            startRadius = Mathf.Max(0.01f, startRadius);
-            endRadius = Mathf.Max(0.01f, endRadius);
+            startRadius = Mathf.Max(0.01f, startRadius) * strength;
+            endRadius = Mathf.Max(0.01f, endRadius) * strength;
 
             float dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
             var initialCenter = t.position;
@@ -95,6 +96,8 @@ namespace LB.TweenHelper
         public static Tween Create(GameObject target, float? duration, TweenOptions options, bool clockwise, float radius)
         {
             var t = target.transform;
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            float scaledRadius = radius * strength;
             float dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
             var initialCenter = t.position;
             float direction = clockwise ? -1f : 1f;
@@ -115,8 +118,8 @@ namespace LB.TweenHelper
                     {
                         float directedAngle = angle * direction;
                         Vector3 offset = new Vector3(
-                            Mathf.Cos(directedAngle) * radius,
-                            Mathf.Sin(directedAngle) * radius,
+                            Mathf.Cos(directedAngle) * scaledRadius,
+                            Mathf.Sin(directedAngle) * scaledRadius,
                             0f
                         );
                         t.position = initialCenter + offset;
@@ -142,7 +145,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
-    /// <b>Easing override:</b> Primary ease controls angular progression (Linear recommended for uniform speed).
+    /// <b>Easing override:</b> Primary ease controls angular progression (Linear recommended for uniform speed).<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Orbiting satellite, patrol path, circular particle motion, planetary display.
@@ -171,7 +175,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
-    /// <b>Easing override:</b> Primary ease controls angular progression.
+    /// <b>Easing override:</b> Primary ease controls angular progression.<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Clockwise patrol, reversed orbital motion, mirrored satellite.
@@ -200,7 +205,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
-    /// <b>Easing override:</b> Primary ease controls angular progression.
+    /// <b>Easing override:</b> Primary ease controls angular progression.<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Counter-clockwise patrol, explicit direction pairing with OrbitXZClockwise.
@@ -224,7 +230,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft clockwise XZ-plane orbit with a small radius (0.5).
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("OrbitXZClockwiseSoft").Play();</c>
     /// </summary>
@@ -245,7 +252,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard clockwise XZ-plane orbit with a large radius (2.0).
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("OrbitXZClockwiseHard").Play();</c>
     /// </summary>
@@ -266,7 +274,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft counter-clockwise XZ-plane orbit with a small radius (0.5).
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("OrbitXZCounterClockwiseSoft").Play();</c>
     /// </summary>
@@ -287,7 +296,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard counter-clockwise XZ-plane orbit with a large radius (2.0).
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("OrbitXZCounterClockwiseHard").Play();</c>
     /// </summary>
@@ -308,7 +318,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft XZ-plane orbit with a small radius (0.5).
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("OrbitXZSoft").Play();</c>
     /// </summary>
@@ -329,7 +340,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard XZ-plane orbit with a large radius (2.0).
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("OrbitXZHard").Play();</c>
     /// </summary>
@@ -357,7 +369,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
-    /// <b>Easing override:</b> Primary ease controls angular progression.
+    /// <b>Easing override:</b> Primary ease controls angular progression.<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> 2D orbiting object, circular indicator, shield rotation, radial menu animation.
@@ -382,7 +395,8 @@ namespace LB.TweenHelper
     /// Orbits the target clockwise on the XY plane using callback-chain looping.
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
-    /// <b>Easing override:</b> Primary ease controls angular progression.
+    /// <b>Easing override:</b> Primary ease controls angular progression.<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("OrbitXYClockwise").Play();</c>
     /// </summary>
@@ -404,7 +418,8 @@ namespace LB.TweenHelper
     /// Orbits the target counter-clockwise on the XY plane using callback-chain looping.
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
-    /// <b>Easing override:</b> Primary ease controls angular progression.
+    /// <b>Easing override:</b> Primary ease controls angular progression.<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("OrbitXYCounterClockwise").Play();</c>
     /// </summary>
@@ -425,7 +440,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft clockwise XY-plane orbit with a small radius (0.5).
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("OrbitXYClockwiseSoft").Play();</c>
     /// </summary>
@@ -446,7 +462,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard clockwise XY-plane orbit with a large radius (2.0).
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("OrbitXYClockwiseHard").Play();</c>
     /// </summary>
@@ -467,7 +484,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft counter-clockwise XY-plane orbit with a small radius (0.5).
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("OrbitXYCounterClockwiseSoft").Play();</c>
     /// </summary>
@@ -488,7 +506,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard counter-clockwise XY-plane orbit with a large radius (2.0).
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("OrbitXYCounterClockwiseHard").Play();</c>
     /// </summary>
@@ -509,7 +528,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft XY-plane orbit with a small radius (0.5).
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("OrbitXYSoft").Play();</c>
     /// </summary>
@@ -530,7 +550,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard XY-plane orbit with a large radius (2.0).
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("OrbitXYHard").Play();</c>
     /// </summary>

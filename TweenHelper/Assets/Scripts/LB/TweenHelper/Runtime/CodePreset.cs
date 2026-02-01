@@ -136,6 +136,55 @@ namespace LB.TweenHelper
         }
 
         /// <summary>
+        /// Resolves the strength multiplier from options, defaulting to 1.0 (no change).
+        /// Presets multiply their base magnitude values by this.
+        /// </summary>
+        protected float ResolveStrength(TweenOptions options)
+        {
+            return options.Strength ?? 1f;
+        }
+
+        /// <summary>
+        /// Resolves the start alpha from options, falling back to the provided default.
+        /// </summary>
+        protected float ResolveStartAlpha(TweenOptions options, float defaultAlpha)
+        {
+            return options.StartAlpha ?? defaultAlpha;
+        }
+
+        /// <summary>
+        /// Resolves the target alpha from options, falling back to the provided default.
+        /// </summary>
+        protected float ResolveTargetAlpha(TweenOptions options, float defaultAlpha)
+        {
+            return options.TargetAlpha ?? defaultAlpha;
+        }
+
+        /// <summary>
+        /// Internal entry point for <see cref="ResolveStrength"/> used by shared factories.
+        /// </summary>
+        internal static float ResolveStrengthStatic(TweenOptions options)
+        {
+            return options.Strength ?? 1f;
+        }
+
+        /// <summary>
+        /// Internal entry point for <see cref="ResolveStartAlpha"/> used by shared factories.
+        /// </summary>
+        internal static float ResolveStartAlphaStatic(TweenOptions options, float defaultAlpha)
+        {
+            return options.StartAlpha ?? defaultAlpha;
+        }
+
+        /// <summary>
+        /// Internal entry point for <see cref="ResolveTargetAlpha"/> used by shared factories.
+        /// </summary>
+        internal static float ResolveTargetAlphaStatic(TweenOptions options, float defaultAlpha)
+        {
+            return options.TargetAlpha ?? defaultAlpha;
+        }
+
+        /// <summary>
         /// Registers this preset with the registry.
         /// Call this if not using [AutoRegisterPreset] attribute.
         /// </summary>

@@ -10,7 +10,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutQuad<br/>
-    /// <b>Easing override:</b> Primary ease replaces OutQuad.
+    /// <b>Easing override:</b> Primary ease replaces OutQuad.<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.
     /// </para>
     /// <para>
     /// <b>Use cases:</b> UI element entrance, item spawn, notification pop-up, dialog appearance.
@@ -49,7 +50,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutQuad (scale-up), InOutSine (settle)<br/>
-    /// <b>Easing override:</b> Primary ease applies to the sequence.
+    /// <b>Easing override:</b> Primary ease applies to the sequence.<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale (overshoot is relative to TargetScale).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Bouncy UI entrance, item spawn with pop, playful notification.
@@ -90,7 +92,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.4s | <b>Default ease:</b> InCubic<br/>
-    /// <b>Easing override:</b> Primary ease replaces InCubic.
+    /// <b>Easing override:</b> Primary ease replaces InCubic.<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.
     /// </para>
     /// <para>
     /// <b>Use cases:</b> UI element dismissal, item collection, dialog close, notification dismiss.
@@ -119,7 +122,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft exit scaling to zero with a slow InSine ease.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.6s | <b>Default ease:</b> InSine
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.6s | <b>Default ease:</b> InSine<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PopOutSoft").Play();</c>
     /// </summary>
@@ -145,7 +149,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard exit scaling to zero with a snappy InQuart ease.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.25s | <b>Default ease:</b> InQuart
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.25s | <b>Default ease:</b> InQuart<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PopOutHard").Play();</c>
     /// </summary>
@@ -175,7 +180,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.4s | <b>Default ease:</b> InBack<br/>
-    /// <b>Easing override:</b> Primary ease replaces InBack.
+    /// <b>Easing override:</b> Primary ease replaces InBack.<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.
     /// </para>
     /// <para>
     /// <b>Use cases:</b> UI element dismissal with anticipation, item collection, dialog close with overshoot.
@@ -213,7 +219,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.6s | <b>Default ease:</b> InBack (overshoot 2.5)<br/>
-    /// <b>Easing override:</b> Primary ease replaces InBack; overshoot parameter is preserved.
+    /// <b>Easing override:</b> Primary ease replaces InBack; overshoot parameter is preserved.<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Gentle UI dismissal with subtle anticipation, soft dialog close, understated exit.
@@ -251,7 +258,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.25s | <b>Default ease:</b> InBack (overshoot 6.0)<br/>
-    /// <b>Easing override:</b> Primary ease replaces InBack; overshoot parameter is preserved.
+    /// <b>Easing override:</b> Primary ease replaces InBack; overshoot parameter is preserved.<br/>
+    /// <b>Scale override:</b> TargetScale replaces zero.
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Emphatic UI dismissal, punchy item collection, dramatic dialog close with strong wind-up.
@@ -285,7 +293,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Gentle entrance scaling from zero with a slow OutSine ease, no overshoot.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.8s | <b>Default ease:</b> OutSine
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.8s | <b>Default ease:</b> OutSine<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PopInSoft").Play();</c>
     /// </summary>
@@ -321,7 +330,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.2s | <b>Default ease:</b> OutQuad (scale-up), InOutSine (settle)<br/>
-    /// <b>Easing override:</b> Primary ease applies to the sequence.
+    /// <b>Easing override:</b> Primary ease applies to the sequence.<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale (overshoot is relative to TargetScale).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Gentle bouncy UI entrance, subtle item spawn, soft notification pop.
@@ -358,7 +368,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Fast entrance scaling from zero with a snappy OutQuart ease, no overshoot.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuart
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuart<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PopInHard").Play();</c>
     /// </summary>
@@ -394,7 +405,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.8s | <b>Default ease:</b> OutQuad (scale-up), InOutSine (settle)<br/>
-    /// <b>Easing override:</b> Primary ease applies to the sequence.
+    /// <b>Easing override:</b> Primary ease applies to the sequence.<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale (overshoot is relative to TargetScale).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Punchy UI entrance, dramatic item spawn, emphatic notification pop.

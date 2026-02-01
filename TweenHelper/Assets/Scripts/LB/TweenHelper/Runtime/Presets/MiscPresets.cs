@@ -12,7 +12,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 4.0s (2.0s per leg) | <b>Default ease:</b> InOutSine<br/>
-    /// <b>Easing override:</b> Primary ease controls expand leg; secondary ease controls contract leg.
+    /// <b>Easing override:</b> Primary ease controls expand leg; secondary ease controls contract leg.<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Idle animation, living object indicator, ambient pulsing, selectable item highlight.
@@ -31,6 +32,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
+            var strength = ResolveStrength(options);
             var halfDur = GetDuration(duration, options) * 0.5f;
             var expandEase = options.Ease ?? Ease.InOutSine;
             var contractEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
@@ -43,7 +45,7 @@ namespace LB.TweenHelper
 
             void Expand()
             {
-                tween = t.DOScale(originalScale * 1.08f, halfDur)
+                tween = t.DOScale(originalScale * (1f + 0.08f * strength), halfDur)
                     .SetEase(expandEase)
                     .WithLoopDefaults(upOptions, target, applyDelay);
 
@@ -76,7 +78,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> Looping (callback-chain, sequence per cycle) | <b>Default duration:</b> 0.8s per cycle | <b>Default ease:</b> OutQuad (beat), InQuad (return)<br/>
-    /// <b>Easing override:</b> Primary ease controls beat pulses; secondary ease controls return-to-rest phases.
+    /// <b>Easing override:</b> Primary ease controls beat pulses; secondary ease controls return-to-rest phases.<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Health indicator, living entity, emotional feedback, interactive object highlight.
@@ -95,6 +98,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
+            var strength = ResolveStrength(options);
             var dur = GetDuration(duration, options);
             var beatEase = options.Ease ?? Ease.OutQuad;
             var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
@@ -107,10 +111,10 @@ namespace LB.TweenHelper
             {
                 var seq = DOTween.Sequence()
                     // First beat (smaller)
-                    .Append(t.DOScale(originalScale * 1.15f, dur * 0.12f).SetEase(beatEase))
+                    .Append(t.DOScale(originalScale * (1f + 0.15f * strength), dur * 0.12f).SetEase(beatEase))
                     .Append(t.DOScale(originalScale, dur * 0.12f).SetEase(returnEase))
                     // Second beat (larger)
-                    .Append(t.DOScale(originalScale * 1.25f, dur * 0.12f).SetEase(beatEase))
+                    .Append(t.DOScale(originalScale * (1f + 0.25f * strength), dur * 0.12f).SetEase(beatEase))
                     .Append(t.DOScale(originalScale, dur * 0.14f).SetEase(returnEase))
                     // Pause before next cycle
                     .AppendInterval(dur * 0.5f)
@@ -136,7 +140,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 6.0s (3.0s per leg) | <b>Default ease:</b> InOutCubic<br/>
-    /// <b>Easing override:</b> Primary ease controls upward leg; secondary ease controls downward leg.
+    /// <b>Easing override:</b> Primary ease controls upward leg; secondary ease controls downward leg.<br/>
+    /// <b>Strength override:</b> Multiplies float height (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Floating collectible, hover indicator, ambient object bob, idle character float.
@@ -154,6 +159,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
+            var strength = ResolveStrength(options);
             var halfDur = GetDuration(duration, options) * 0.5f;
             var moveUpEase = options.Ease ?? Ease.InOutCubic;
             var moveDownEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutCubic;
@@ -167,7 +173,7 @@ namespace LB.TweenHelper
 
             void MoveUp()
             {
-                tween = t.DOLocalMoveY(0.5f, halfDur)
+                tween = t.DOLocalMoveY(0.5f * strength, halfDur)
                     .SetRelative(true)
                     .SetEase(moveUpEase)
                     .WithLoopDefaults(upOptions, target, applyDelay);
@@ -178,7 +184,7 @@ namespace LB.TweenHelper
 
             void MoveDown()
             {
-                tween = t.DOLocalMoveY(-0.5f, halfDur)
+                tween = t.DOLocalMoveY(-0.5f * strength, halfDur)
                     .SetRelative(true)
                     .SetEase(moveDownEase)
                     .WithLoopDefaults(downOptions, target, applyDelay);
@@ -202,7 +208,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutSine<br/>
-    /// <b>Easing override:</b> Primary ease replaces InOutSine on all steps.
+    /// <b>Easing override:</b> Primary ease replaces InOutSine on all steps.<br/>
+    /// <b>Strength override:</b> Multiplies zigzag distance (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Evasive movement, playful path, snake-like motion, decorative trail.
@@ -220,15 +227,16 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
+            var strength = ResolveStrength(options);
             var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
             var ease = ResolveEase(presetOptions, Ease.InOutSine);
             var stepDur = dur / 3f;
 
             return DOTween.Sequence()
-                .Append(t.DOLocalMove(new Vector3(0.5f, 0.5f, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .Append(t.DOLocalMove(new Vector3(-1f, 0.5f, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .Append(t.DOLocalMove(new Vector3(0.5f, 0.5f, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(0.5f * strength, 0.5f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(-1f * strength, 0.5f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(0.5f * strength, 0.5f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -243,7 +251,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect (plays twice via SetLoops) | <b>Default duration:</b> 0.8s per loop | <b>Default ease:</b> OutCubic, InCubic<br/>
-    /// <b>Easing override:</b> Primary ease controls expand steps; secondary ease controls contract step.
+    /// <b>Easing override:</b> Primary ease controls expand steps; secondary ease controls contract step.<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Call-to-action highlight, notification emphasis, important element pulse, "look here" effect.
@@ -262,15 +271,16 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
+            var strength = ResolveStrength(options);
             var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
             var ease = ResolveEase(presetOptions, Ease.OutCubic);
             var secondaryEase = ResolveSecondaryEase(presetOptions, Ease.InCubic);
 
             return DOTween.Sequence()
-                .Append(t.DOScale(originalScale * 1.1f, dur * 0.15f).SetEase(ease))
-                .Append(t.DOScale(originalScale * 0.95f, dur * 0.15f).SetEase(secondaryEase))
-                .Append(t.DOScale(originalScale * 1.05f, dur * 0.15f).SetEase(ease))
+                .Append(t.DOScale(originalScale * (1f + 0.1f * strength), dur * 0.15f).SetEase(ease))
+                .Append(t.DOScale(originalScale * (1f - 0.05f * strength), dur * 0.15f).SetEase(secondaryEase))
+                .Append(t.DOScale(originalScale * (1f + 0.05f * strength), dur * 0.15f).SetEase(ease))
                 .Append(t.DOScale(originalScale, dur * 0.15f).SetEase(ease))
                 .SetLoops(2)
                 .WithDefaults(presetOptions, target);
@@ -286,7 +296,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutQuad (lean), OutBack (return)<br/>
-    /// <b>Easing override:</b> Primary ease controls lean; secondary ease controls springy return.
+    /// <b>Easing override:</b> Primary ease controls lean; secondary ease controls springy return.<br/>
+    /// <b>Strength override:</b> Multiplies tilt angle (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Curiosity peek, notification tilt, playful head tilt, attention gesture.
@@ -305,13 +316,14 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalRot = t.localEulerAngles;
+            var strength = ResolveStrength(options);
             var dur = GetDuration(duration, options);
             var leanEase = ResolveEase(options, Ease.OutQuad);
             var returnEase = ResolveSecondaryEase(options, Ease.OutBack);
             var presetOptions = MergeWithDefaultEase(options, leanEase);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 12f), dur * 0.4f).SetEase(leanEase))
+                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 12f * strength), dur * 0.4f).SetEase(leanEase))
                 .Append(t.DOLocalRotate(originalRot, dur * 0.6f).SetEase(returnEase))
                 .WithDefaults(presetOptions, target);
         }
@@ -320,7 +332,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft breathing loop with smaller scale range and slower rhythm.
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InOutSine
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("BreatheSoft").Play();</c>
     /// </summary>
@@ -336,6 +349,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
+            var strength = ResolveStrength(options);
             var halfDur = GetDuration(duration, options) * 0.5f;
             var expandEase = options.Ease ?? Ease.InOutSine;
             var contractEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
@@ -348,7 +362,7 @@ namespace LB.TweenHelper
 
             void Expand()
             {
-                tween = t.DOScale(originalScale * 1.04f, halfDur)
+                tween = t.DOScale(originalScale * (1f + 0.04f * strength), halfDur)
                     .SetEase(expandEase)
                     .WithLoopDefaults(upOptions, target, applyDelay);
 
@@ -375,7 +389,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard breathing loop with larger scale range and faster rhythm.
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 3.0s | <b>Default ease:</b> InOutSine
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 3.0s | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("BreatheHard").Play();</c>
     /// </summary>
@@ -391,6 +406,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
+            var strength = ResolveStrength(options);
             var halfDur = GetDuration(duration, options) * 0.5f;
             var expandEase = options.Ease ?? Ease.InOutSine;
             var contractEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
@@ -403,7 +419,7 @@ namespace LB.TweenHelper
 
             void Expand()
             {
-                tween = t.DOScale(originalScale * 1.15f, halfDur)
+                tween = t.DOScale(originalScale * (1f + 0.15f * strength), halfDur)
                     .SetEase(expandEase)
                     .WithLoopDefaults(upOptions, target, applyDelay);
 
@@ -430,7 +446,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft heartbeat with smaller pulses and slower rhythm.
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 1.0s per cycle | <b>Default ease:</b> OutQuad (beat), InQuad (return)
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 1.0s per cycle | <b>Default ease:</b> OutQuad (beat), InQuad (return)<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("HeartbeatSoft").Play();</c>
     /// </summary>
@@ -446,6 +463,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
+            var strength = ResolveStrength(options);
             var dur = GetDuration(duration, options);
             var beatEase = options.Ease ?? Ease.OutQuad;
             var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
@@ -457,9 +475,9 @@ namespace LB.TweenHelper
             void Beat()
             {
                 var seq = DOTween.Sequence()
-                    .Append(t.DOScale(originalScale * 1.08f, dur * 0.12f).SetEase(beatEase))
+                    .Append(t.DOScale(originalScale * (1f + 0.08f * strength), dur * 0.12f).SetEase(beatEase))
                     .Append(t.DOScale(originalScale, dur * 0.12f).SetEase(returnEase))
-                    .Append(t.DOScale(originalScale * 1.15f, dur * 0.12f).SetEase(beatEase))
+                    .Append(t.DOScale(originalScale * (1f + 0.15f * strength), dur * 0.12f).SetEase(beatEase))
                     .Append(t.DOScale(originalScale, dur * 0.14f).SetEase(returnEase))
                     .AppendInterval(dur * 0.5f)
                     .WithLoopDefaults(loopOptions, target, applyDelay);
@@ -478,7 +496,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard heartbeat with larger pulses and faster rhythm.
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 0.6s per cycle | <b>Default ease:</b> OutQuad (beat), InQuad (return)
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 0.6s per cycle | <b>Default ease:</b> OutQuad (beat), InQuad (return)<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("HeartbeatHard").Play();</c>
     /// </summary>
@@ -494,6 +513,7 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
+            var strength = ResolveStrength(options);
             var dur = GetDuration(duration, options);
             var beatEase = options.Ease ?? Ease.OutQuad;
             var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
@@ -505,9 +525,9 @@ namespace LB.TweenHelper
             void Beat()
             {
                 var seq = DOTween.Sequence()
-                    .Append(t.DOScale(originalScale * 1.25f, dur * 0.12f).SetEase(beatEase))
+                    .Append(t.DOScale(originalScale * (1f + 0.25f * strength), dur * 0.12f).SetEase(beatEase))
                     .Append(t.DOScale(originalScale, dur * 0.12f).SetEase(returnEase))
-                    .Append(t.DOScale(originalScale * 1.4f, dur * 0.12f).SetEase(beatEase))
+                    .Append(t.DOScale(originalScale * (1f + 0.4f * strength), dur * 0.12f).SetEase(beatEase))
                     .Append(t.DOScale(originalScale, dur * 0.14f).SetEase(returnEase))
                     .AppendInterval(dur * 0.5f)
                     .WithLoopDefaults(loopOptions, target, applyDelay);
@@ -526,7 +546,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft float with smaller range and slower speed.
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 7.0s | <b>Default ease:</b> InOutCubic
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 7.0s | <b>Default ease:</b> InOutCubic<br/>
+    /// <b>Strength override:</b> Multiplies float height (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("FloatSoft").Play();</c>
     /// </summary>
@@ -541,6 +562,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
+            var strength = ResolveStrength(options);
             var halfDur = GetDuration(duration, options) * 0.5f;
             var moveUpEase = options.Ease ?? Ease.InOutCubic;
             var moveDownEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutCubic;
@@ -553,7 +575,7 @@ namespace LB.TweenHelper
 
             void MoveUp()
             {
-                tween = t.DOLocalMoveY(0.25f, halfDur)
+                tween = t.DOLocalMoveY(0.25f * strength, halfDur)
                     .SetRelative(true)
                     .SetEase(moveUpEase)
                     .WithLoopDefaults(upOptions, target, applyDelay);
@@ -564,7 +586,7 @@ namespace LB.TweenHelper
 
             void MoveDown()
             {
-                tween = t.DOLocalMoveY(-0.25f, halfDur)
+                tween = t.DOLocalMoveY(-0.25f * strength, halfDur)
                     .SetRelative(true)
                     .SetEase(moveDownEase)
                     .WithLoopDefaults(downOptions, target, applyDelay);
@@ -582,7 +604,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard float with larger range and faster speed.
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InOutCubic
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InOutCubic<br/>
+    /// <b>Strength override:</b> Multiplies float height (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("FloatHard").Play();</c>
     /// </summary>
@@ -597,6 +620,7 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
+            var strength = ResolveStrength(options);
             var halfDur = GetDuration(duration, options) * 0.5f;
             var moveUpEase = options.Ease ?? Ease.InOutCubic;
             var moveDownEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutCubic;
@@ -609,7 +633,7 @@ namespace LB.TweenHelper
 
             void MoveUp()
             {
-                tween = t.DOLocalMoveY(0.8f, halfDur)
+                tween = t.DOLocalMoveY(0.8f * strength, halfDur)
                     .SetRelative(true)
                     .SetEase(moveUpEase)
                     .WithLoopDefaults(upOptions, target, applyDelay);
@@ -620,7 +644,7 @@ namespace LB.TweenHelper
 
             void MoveDown()
             {
-                tween = t.DOLocalMoveY(-0.8f, halfDur)
+                tween = t.DOLocalMoveY(-0.8f * strength, halfDur)
                     .SetRelative(true)
                     .SetEase(moveDownEase)
                     .WithLoopDefaults(downOptions, target, applyDelay);
@@ -638,7 +662,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft zig-zag with smaller steps and slower speed.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.2s | <b>Default ease:</b> InOutSine
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.2s | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Strength override:</b> Multiplies zigzag distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("ZigZagSoft").Play();</c>
     /// </summary>
@@ -653,15 +678,16 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
+            var strength = ResolveStrength(options);
             var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
             var ease = ResolveEase(presetOptions, Ease.InOutSine);
             var stepDur = dur / 3f;
 
             return DOTween.Sequence()
-                .Append(t.DOLocalMove(new Vector3(0.25f, 0.25f, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .Append(t.DOLocalMove(new Vector3(-0.5f, 0.25f, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .Append(t.DOLocalMove(new Vector3(0.25f, 0.25f, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(0.25f * strength, 0.25f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(-0.5f * strength, 0.25f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(0.25f * strength, 0.25f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -669,7 +695,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard zig-zag with larger steps and faster speed.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InOutSine
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Strength override:</b> Multiplies zigzag distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("ZigZagHard").Play();</c>
     /// </summary>
@@ -684,15 +711,16 @@ namespace LB.TweenHelper
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
             var t = target.transform;
+            var strength = ResolveStrength(options);
             var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
             var ease = ResolveEase(presetOptions, Ease.InOutSine);
             var stepDur = dur / 3f;
 
             return DOTween.Sequence()
-                .Append(t.DOLocalMove(new Vector3(0.8f, 0.8f, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .Append(t.DOLocalMove(new Vector3(-1.6f, 0.8f, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .Append(t.DOLocalMove(new Vector3(0.8f, 0.8f, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(0.8f * strength, 0.8f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(-1.6f * strength, 0.8f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(0.8f * strength, 0.8f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -700,7 +728,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft attention pulse with smaller oscillations and slower rhythm.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic, InCubic
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic, InCubic<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("AttentionSoft").Play();</c>
     /// </summary>
@@ -716,15 +745,16 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
+            var strength = ResolveStrength(options);
             var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
             var ease = ResolveEase(presetOptions, Ease.OutCubic);
             var secondaryEase = ResolveSecondaryEase(presetOptions, Ease.InCubic);
 
             return DOTween.Sequence()
-                .Append(t.DOScale(originalScale * 1.05f, dur * 0.15f).SetEase(ease))
-                .Append(t.DOScale(originalScale * 0.97f, dur * 0.15f).SetEase(secondaryEase))
-                .Append(t.DOScale(originalScale * 1.03f, dur * 0.15f).SetEase(ease))
+                .Append(t.DOScale(originalScale * (1f + 0.05f * strength), dur * 0.15f).SetEase(ease))
+                .Append(t.DOScale(originalScale * (1f - 0.03f * strength), dur * 0.15f).SetEase(secondaryEase))
+                .Append(t.DOScale(originalScale * (1f + 0.03f * strength), dur * 0.15f).SetEase(ease))
                 .Append(t.DOScale(originalScale, dur * 0.15f).SetEase(ease))
                 .SetLoops(2)
                 .WithDefaults(presetOptions, target);
@@ -734,7 +764,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard attention pulse with larger oscillations and faster rhythm.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutCubic, InCubic
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutCubic, InCubic<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("AttentionHard").Play();</c>
     /// </summary>
@@ -750,15 +781,16 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
+            var strength = ResolveStrength(options);
             var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
             var ease = ResolveEase(presetOptions, Ease.OutCubic);
             var secondaryEase = ResolveSecondaryEase(presetOptions, Ease.InCubic);
 
             return DOTween.Sequence()
-                .Append(t.DOScale(originalScale * 1.2f, dur * 0.15f).SetEase(ease))
-                .Append(t.DOScale(originalScale * 0.9f, dur * 0.15f).SetEase(secondaryEase))
-                .Append(t.DOScale(originalScale * 1.1f, dur * 0.15f).SetEase(ease))
+                .Append(t.DOScale(originalScale * (1f + 0.2f * strength), dur * 0.15f).SetEase(ease))
+                .Append(t.DOScale(originalScale * (1f - 0.1f * strength), dur * 0.15f).SetEase(secondaryEase))
+                .Append(t.DOScale(originalScale * (1f + 0.1f * strength), dur * 0.15f).SetEase(ease))
                 .Append(t.DOScale(originalScale, dur * 0.15f).SetEase(ease))
                 .SetLoops(2)
                 .WithDefaults(presetOptions, target);
@@ -768,7 +800,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft tilt with smaller angle and slower speed.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (lean), OutBack (return)
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (lean), OutBack (return)<br/>
+    /// <b>Strength override:</b> Multiplies tilt angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("TiltSoft").Play();</c>
     /// </summary>
@@ -784,13 +817,14 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalRot = t.localEulerAngles;
+            var strength = ResolveStrength(options);
             var dur = GetDuration(duration, options);
             var leanEase = ResolveEase(options, Ease.OutQuad);
             var returnEase = ResolveSecondaryEase(options, Ease.OutBack);
             var presetOptions = MergeWithDefaultEase(options, leanEase);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 6f), dur * 0.4f).SetEase(leanEase))
+                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 6f * strength), dur * 0.4f).SetEase(leanEase))
                 .Append(t.DOLocalRotate(originalRot, dur * 0.6f).SetEase(returnEase))
                 .WithDefaults(presetOptions, target);
         }
@@ -799,7 +833,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard tilt with larger angle and faster speed.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (lean), OutBack (return)
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (lean), OutBack (return)<br/>
+    /// <b>Strength override:</b> Multiplies tilt angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("TiltHard").Play();</c>
     /// </summary>
@@ -815,13 +850,14 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalRot = t.localEulerAngles;
+            var strength = ResolveStrength(options);
             var dur = GetDuration(duration, options);
             var leanEase = ResolveEase(options, Ease.OutQuad);
             var returnEase = ResolveSecondaryEase(options, Ease.OutBack);
             var presetOptions = MergeWithDefaultEase(options, leanEase);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 20f), dur * 0.4f).SetEase(leanEase))
+                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 20f * strength), dur * 0.4f).SetEase(leanEase))
                 .Append(t.DOLocalRotate(originalRot, dur * 0.6f).SetEase(returnEase))
                 .WithDefaults(presetOptions, target);
         }

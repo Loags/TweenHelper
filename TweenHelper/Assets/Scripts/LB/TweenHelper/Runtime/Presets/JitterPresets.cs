@@ -11,7 +11,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.25s | <b>Default ease:</b> DOTween shake default<br/>
-    /// <b>Easing override:</b> No ease override (shake tweens use internal decay).
+    /// <b>Easing override:</b> No ease override (shake tweens use internal decay).<br/>
+    /// <b>Strength override:</b> Multiplies jitter range (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Nervous tremor, electrical buzz, cold shiver, error micro-shake.
@@ -28,7 +29,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOShakePosition(GetDuration(duration, options), 0.06f, 35, 90f, false, true)
+            var strength = ResolveStrength(options);
+            return target.transform.DOShakePosition(GetDuration(duration, options), 0.06f * strength, 35, 90f, false, true)
                 .WithDefaults(options, target);
         }
     }
@@ -39,7 +41,8 @@ namespace LB.TweenHelper
     /// Uses <c>DOShakePosition</c> with strength <c>0.04</c>, vibrato <c>30</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.2s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.2s<br/>
+    /// <b>Strength override:</b> Multiplies jitter range (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("JitterSoft").Play();</c>
     /// </summary>
@@ -53,7 +56,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOShakePosition(GetDuration(duration, options), 0.04f, 30, 90f, false, true)
+            var strength = ResolveStrength(options);
+            return target.transform.DOShakePosition(GetDuration(duration, options), 0.04f * strength, 30, 90f, false, true)
                 .WithDefaults(options, target);
         }
     }
@@ -64,7 +68,8 @@ namespace LB.TweenHelper
     /// Uses <c>DOShakePosition</c> with strength <c>0.15</c>, vibrato <c>50</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
+    /// <b>Strength override:</b> Multiplies jitter range (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("JitterHard").Play();</c>
     /// </summary>
@@ -78,7 +83,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOShakePosition(GetDuration(duration, options), 0.15f, 50, 90f, false, true)
+            var strength = ResolveStrength(options);
+            return target.transform.DOShakePosition(GetDuration(duration, options), 0.15f * strength, 50, 90f, false, true)
                 .WithDefaults(options, target);
         }
     }

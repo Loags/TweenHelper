@@ -10,9 +10,10 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, Vector3 offsetDirection, float distance, float duration, TweenOptions options)
         {
+            var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
             var targetPos = t.localPosition;
-            t.localPosition = targetPos + offsetDirection * distance;
+            t.localPosition = targetPos + offsetDirection * (distance * strength);
 
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.OutCubic);
             var ease = presetOptions.Ease ?? Ease.OutCubic;
@@ -27,7 +28,8 @@ namespace LB.TweenHelper
     /// Slides the target downward from 500 units above its current local position to its original position.
     /// <para>
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic<br/>
-    /// <b>Easing override:</b> Primary ease replaces OutCubic.
+    /// <b>Easing override:</b> Primary ease replaces OutCubic.<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInDown").Play();</c>
     /// </summary>
@@ -49,7 +51,8 @@ namespace LB.TweenHelper
     /// Slides the target upward from 500 units below its current local position to its original position.
     /// <para>
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic<br/>
-    /// <b>Easing override:</b> Primary ease replaces OutCubic.
+    /// <b>Easing override:</b> Primary ease replaces OutCubic.<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInUp").Play();</c>
     /// </summary>
@@ -71,7 +74,8 @@ namespace LB.TweenHelper
     /// Slides the target in from 500 units to the left of its current local position.
     /// <para>
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic<br/>
-    /// <b>Easing override:</b> Primary ease replaces OutCubic.
+    /// <b>Easing override:</b> Primary ease replaces OutCubic.<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInLeft").Play();</c>
     /// </summary>
@@ -93,7 +97,8 @@ namespace LB.TweenHelper
     /// Slides the target in from 500 units to the right of its current local position.
     /// <para>
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic<br/>
-    /// <b>Easing override:</b> Primary ease replaces OutCubic.
+    /// <b>Easing override:</b> Primary ease replaces OutCubic.<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInRight").Play();</c>
     /// </summary>
@@ -116,7 +121,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft slide in from above. Slower, gentler entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInDownSoft").Play();</c>
     /// </summary>
@@ -137,7 +143,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft slide in from below. Slower, gentler entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInUpSoft").Play();</c>
     /// </summary>
@@ -158,7 +165,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft slide in from the left. Slower, gentler entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInLeftSoft").Play();</c>
     /// </summary>
@@ -179,7 +187,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft slide in from the right. Slower, gentler entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInRightSoft").Play();</c>
     /// </summary>
@@ -202,7 +211,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard slide in from above. Fast, snappy entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInDownHard").Play();</c>
     /// </summary>
@@ -223,7 +233,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard slide in from below. Fast, snappy entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInUpHard").Play();</c>
     /// </summary>
@@ -244,7 +255,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard slide in from the left. Fast, snappy entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInLeftHard").Play();</c>
     /// </summary>
@@ -265,7 +277,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard slide in from the right. Fast, snappy entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInRightHard").Play();</c>
     /// </summary>
@@ -292,10 +305,11 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, Vector3 direction, float distance, float duration, TweenOptions options)
         {
+            var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.InCubic);
             var ease = presetOptions.Ease ?? Ease.InCubic;
-            var endPos = t.localPosition + direction * distance;
+            var endPos = t.localPosition + direction * (distance * strength);
 
             return t.DOLocalMove(endPos, duration)
                 .SetEase(ease)
@@ -307,7 +321,8 @@ namespace LB.TweenHelper
     /// Slides the target 500 units upward off-screen, mirroring SlideInDown as an exit animation.
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InCubic<br/>
-    /// <b>Easing override:</b> Primary ease replaces InCubic.
+    /// <b>Easing override:</b> Primary ease replaces InCubic.<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutUp").Play();</c>
     /// </summary>
@@ -329,7 +344,8 @@ namespace LB.TweenHelper
     /// Slides the target 500 units downward off-screen, mirroring SlideInUp as an exit animation.
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InCubic<br/>
-    /// <b>Easing override:</b> Primary ease replaces InCubic.
+    /// <b>Easing override:</b> Primary ease replaces InCubic.<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutDown").Play();</c>
     /// </summary>
@@ -351,7 +367,8 @@ namespace LB.TweenHelper
     /// Slides the target 500 units to the left off-screen, mirroring SlideInRight as an exit animation.
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InCubic<br/>
-    /// <b>Easing override:</b> Primary ease replaces InCubic.
+    /// <b>Easing override:</b> Primary ease replaces InCubic.<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutLeft").Play();</c>
     /// </summary>
@@ -373,7 +390,8 @@ namespace LB.TweenHelper
     /// Slides the target 500 units to the right off-screen, mirroring SlideInLeft as an exit animation.
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InCubic<br/>
-    /// <b>Easing override:</b> Primary ease replaces InCubic.
+    /// <b>Easing override:</b> Primary ease replaces InCubic.<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutRight").Play();</c>
     /// </summary>
@@ -396,7 +414,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft slide out upward. Slower exit for gentle dismissal.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutUpSoft").Play();</c>
     /// </summary>
@@ -417,7 +436,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft slide out downward. Slower exit for gentle dismissal.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutDownSoft").Play();</c>
     /// </summary>
@@ -438,7 +458,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft slide out to the left. Slower exit for gentle dismissal.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutLeftSoft").Play();</c>
     /// </summary>
@@ -459,7 +480,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft slide out to the right. Slower exit for gentle dismissal.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutRightSoft").Play();</c>
     /// </summary>
@@ -482,7 +504,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard slide out upward. Fast snappy exit.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutUpHard").Play();</c>
     /// </summary>
@@ -503,7 +526,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard slide out downward. Fast snappy exit.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutDownHard").Play();</c>
     /// </summary>
@@ -524,7 +548,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard slide out to the left. Fast snappy exit.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutLeftHard").Play();</c>
     /// </summary>
@@ -545,7 +570,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard slide out to the right. Fast snappy exit.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideOutRightHard").Play();</c>
     /// </summary>
@@ -572,9 +598,10 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, Vector3 offsetDirection, float distance, float duration, TweenOptions options)
         {
+            var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
             var targetPos = t.localPosition;
-            t.localPosition = targetPos + offsetDirection * distance;
+            t.localPosition = targetPos + offsetDirection * (distance * strength);
 
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.OutCubic);
             var ease = presetOptions.Ease ?? Ease.OutCubic;
@@ -582,10 +609,10 @@ namespace LB.TweenHelper
             var seq = DOTween.Sequence();
             seq.Append(t.DOLocalMove(targetPos, duration).SetEase(ease));
 
-            var fadeTween = CodePreset.CreateFadeTweenStatic(target, 1f, duration * 0.7f);
+            var fadeTween = CodePreset.CreateFadeTweenStatic(target, CodePreset.ResolveTargetAlphaStatic(options, 1f), duration * 0.7f);
             if (fadeTween != null)
             {
-                CodePreset.SetAlphaStatic(target, 0f);
+                CodePreset.SetAlphaStatic(target, CodePreset.ResolveStartAlphaStatic(options, 0f));
                 seq.Join(fadeTween.SetEase(Ease.Linear));
             }
 
@@ -596,7 +623,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Slides the target upward from 100 units below while simultaneously fading in (fade completes at 70% duration).
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeUp").Play();</c>
     /// </summary>
@@ -619,7 +648,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Slides the target downward from 100 units above while simultaneously fading in (fade completes at 70% duration).
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeDown").Play();</c>
     /// </summary>
@@ -642,7 +673,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Slides the target in from 100 units to the left while simultaneously fading in (fade completes at 70% duration).
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeLeft").Play();</c>
     /// </summary>
@@ -665,7 +698,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Slides the target in from 100 units to the right while simultaneously fading in (fade completes at 70% duration).
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeRight").Play();</c>
     /// </summary>
@@ -690,7 +725,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft slide-in-fade from below. Slower, gentler entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 3.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 3.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeUpSoft").Play();</c>
     /// </summary>
@@ -713,7 +750,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft slide-in-fade from above. Slower, gentler entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 3.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 3.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeDownSoft").Play();</c>
     /// </summary>
@@ -736,7 +775,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft slide-in-fade from the left. Slower, gentler entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 3.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 3.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeLeftSoft").Play();</c>
     /// </summary>
@@ -759,7 +800,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft slide-in-fade from the right. Slower, gentler entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 3.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 3.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeRightSoft").Play();</c>
     /// </summary>
@@ -784,7 +827,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard slide-in-fade from below. Fast, snappy entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeUpHard").Play();</c>
     /// </summary>
@@ -807,7 +852,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard slide-in-fade from above. Fast, snappy entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeDownHard").Play();</c>
     /// </summary>
@@ -830,7 +877,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard slide-in-fade from the left. Fast, snappy entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeLeftHard").Play();</c>
     /// </summary>
@@ -853,7 +902,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard slide-in-fade from the right. Fast, snappy entrance.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic (move), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SlideInFadeRightHard").Play();</c>
     /// </summary>

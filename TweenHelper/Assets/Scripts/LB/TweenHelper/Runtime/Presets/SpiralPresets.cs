@@ -13,7 +13,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutQuad<br/>
-    /// <b>Easing override:</b> Primary ease controls progress curve (affects spiral speed distribution).
+    /// <b>Easing override:</b> Primary ease controls progress curve (affects spiral speed distribution).<br/>
+    /// <b>Strength override:</b> Multiplies spiral radius and height (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Item ascension, magical effect, tornado-style rise, collectible pickup trail.
@@ -34,6 +35,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var t = target.transform;
             var startPos = t.localPosition;
             var dur = GetDuration(duration, options);
@@ -46,9 +48,9 @@ namespace LB.TweenHelper
                     progress = x;
                     var rad = progress * Mathf.PI * 2f * turns;
                     t.localPosition = startPos + new Vector3(
-                        Mathf.Cos(rad) * radius * (1f - progress),
-                        progress * height,
-                        Mathf.Sin(rad) * radius * (1f - progress)
+                        Mathf.Cos(rad) * radius * strength * (1f - progress),
+                        progress * height * strength,
+                        Mathf.Sin(rad) * radius * strength * (1f - progress)
                     );
                 }, 1f, dur)
                 .SetEase(ease)
@@ -63,6 +65,7 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, float turns, float height, float radius, float duration, TweenOptions options)
         {
+            var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
             var startPos = t.localPosition;
             var ease = options.Ease ?? Ease.OutQuad;
@@ -74,9 +77,9 @@ namespace LB.TweenHelper
                     progress = x;
                     var rad = progress * Mathf.PI * 2f * turns;
                     t.localPosition = startPos + new Vector3(
-                        Mathf.Cos(rad) * radius * (1f - progress),
-                        progress * height,
-                        Mathf.Sin(rad) * radius * (1f - progress)
+                        Mathf.Cos(rad) * radius * strength * (1f - progress),
+                        progress * height * strength,
+                        Mathf.Sin(rad) * radius * strength * (1f - progress)
                     );
                 }, 1f, duration)
                 .SetEase(ease)
@@ -87,7 +90,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Gentle upward spiral with smaller radius.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.2s | <b>Default ease:</b> OutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.2s | <b>Default ease:</b> OutQuad<br/>
+    /// <b>Strength override:</b> Multiplies spiral radius and height (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpiralSoft").Play();</c>
     /// </summary>
@@ -108,7 +112,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Dramatic upward spiral with wider radius.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 2.0s | <b>Default ease:</b> OutQuad
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 2.0s | <b>Default ease:</b> OutQuad<br/>
+    /// <b>Strength override:</b> Multiplies spiral radius and height (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SpiralHard").Play();</c>
     /// </summary>
@@ -136,7 +141,9 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutBack (scale), Linear (spin)<br/>
-    /// <b>Easing override:</b> Primary ease controls scale; secondary ease controls spin.
+    /// <b>Easing override:</b> Primary ease controls scale; secondary ease controls spin.<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
+    /// <b>Strength override:</b> Multiplies spin degrees (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Magical entrance, vortex appearance, power-up spawn, dramatic reveal.
@@ -153,6 +160,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var t = target.transform;
             var originalScale = t.localScale;
             var start = ResolveStartScale(options, Vector3.zero);
@@ -165,7 +173,7 @@ namespace LB.TweenHelper
 
             return DOTween.Sequence()
                 .Append(t.DOScale(scaleTarget, dur).SetEase(scaleEase))
-                .Join(t.DORotate(new Vector3(0f, 360f, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
+                .Join(t.DORotate(new Vector3(0f, 360f * strength, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -177,6 +185,7 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, float spinDegrees, Ease scaleEaseDefault, float duration, TweenOptions options)
         {
+            var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
             var originalScale = t.localScale;
             var start = options.StartScale ?? Vector3.zero;
@@ -188,7 +197,7 @@ namespace LB.TweenHelper
 
             return DOTween.Sequence()
                 .Append(t.DOScale(scaleTarget, duration).SetEase(scaleEase))
-                .Join(t.DORotate(new Vector3(0f, spinDegrees, 0f), duration, RotateMode.FastBeyond360).SetEase(spinEase))
+                .Join(t.DORotate(new Vector3(0f, spinDegrees * strength, 0f), duration, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -196,7 +205,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Gentle spin and scale in from zero with less rotation.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.8s | <b>Default ease:</b> OutQuad (scale), Linear (spin)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.8s | <b>Default ease:</b> OutQuad (scale), Linear (spin)<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
+    /// <b>Strength override:</b> Multiplies spin degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SwirlInSoft").Play();</c>
     /// </summary>
@@ -217,7 +228,9 @@ namespace LB.TweenHelper
     /// <summary>
     /// Dramatic spin and scale in from zero with extra rotation.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.3s | <b>Default ease:</b> OutBack (scale), Linear (spin)
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.3s | <b>Default ease:</b> OutBack (scale), Linear (spin)<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
+    /// <b>Strength override:</b> Multiplies spin degrees (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("SwirlInHard").Play();</c>
     /// </summary>

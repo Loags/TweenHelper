@@ -12,7 +12,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)<br/>
-    /// <b>Easing override:</b> Primary ease controls pull-back; secondary ease controls snap-forward.
+    /// <b>Easing override:</b> Primary ease controls pull-back; secondary ease controls snap-forward.<br/>
+    /// <b>Strength override:</b> Multiplies recoil distance (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Weapon recoil, spring release, knockback response, firing animation.
@@ -29,6 +30,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var t = target.transform;
             var dur = GetDuration(duration, options);
             var pullEase = ResolveEase(options, Ease.OutQuad);
@@ -36,8 +38,8 @@ namespace LB.TweenHelper
             var presetOptions = MergeWithDefaultEase(options, pullEase);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalMoveZ(-0.5f, dur * 0.4f).SetRelative(true).SetEase(pullEase))
-                .Append(t.DOLocalMoveZ(0.5f, dur * 0.6f).SetRelative(true).SetEase(snapEase))
+                .Append(t.DOLocalMoveZ(-0.5f * strength, dur * 0.4f).SetRelative(true).SetEase(pullEase))
+                .Append(t.DOLocalMoveZ(0.5f * strength, dur * 0.6f).SetRelative(true).SetEase(snapEase))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -49,14 +51,15 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, float pullZ, float duration, TweenOptions options)
         {
+            var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
             var pullEase = options.Ease ?? Ease.OutQuad;
             var snapEase = options.SecondaryEase ?? options.Ease ?? Ease.OutCubic;
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(pullEase);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalMoveZ(pullZ, duration * 0.4f).SetRelative(true).SetEase(pullEase))
-                .Append(t.DOLocalMoveZ(-pullZ, duration * 0.6f).SetRelative(true).SetEase(snapEase))
+                .Append(t.DOLocalMoveZ(pullZ * strength, duration * 0.4f).SetRelative(true).SetEase(pullEase))
+                .Append(t.DOLocalMoveZ(-pullZ * strength, duration * 0.6f).SetRelative(true).SetEase(snapEase))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -190,7 +193,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft recoil with shorter pull-back distance.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)<br/>
+    /// <b>Strength override:</b> Multiplies recoil distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("RecoilSoft").Play();</c>
     /// </summary>
@@ -211,7 +215,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard recoil with longer pull-back distance.
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)<br/>
+    /// <b>Strength override:</b> Multiplies recoil distance (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("RecoilHard").Play();</c>
     /// </summary>

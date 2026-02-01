@@ -7,7 +7,8 @@ namespace LB.TweenHelper
     /// Gentle Z-axis pendulum loop. Swings left then right continuously.
     /// <para>
     /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.8s (1.4s per leg) | <b>Default ease:</b> InOutSine<br/>
-    /// <b>Easing override:</b> Primary ease controls left-swing; secondary ease controls right-swing.
+    /// <b>Easing override:</b> Primary ease controls left-swing; secondary ease controls right-swing.<br/>
+    /// <b>Strength override:</b> Multiplies swing angle (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Pendulum swing, cradle rock, hanging sign, idle sway, metronome.
@@ -24,6 +25,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            var strength = ResolveStrength(options);
             var t = target.transform;
             var originalRot = t.localEulerAngles;
             var halfDur = GetDuration(duration, options) * 0.5f;
@@ -38,7 +40,7 @@ namespace LB.TweenHelper
 
             void SwingLeft()
             {
-                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 6f), halfDur)
+                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 6f * strength), halfDur)
                     .SetEase(leftEase)
                     .WithLoopDefaults(leftOptions, target, applyDelay);
 
@@ -48,7 +50,7 @@ namespace LB.TweenHelper
 
             void SwingRight()
             {
-                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, -6f), halfDur)
+                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, -6f * strength), halfDur)
                     .SetEase(rightEase)
                     .WithLoopDefaults(rightOptions, target, applyDelay);
 
@@ -69,6 +71,7 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, float angle, float duration, TweenOptions options)
         {
+            var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
             var originalRot = t.localEulerAngles;
             var halfDur = duration * 0.5f;
@@ -83,7 +86,7 @@ namespace LB.TweenHelper
 
             void SwingLeft()
             {
-                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, angle), halfDur)
+                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, angle * strength), halfDur)
                     .SetEase(leftEase)
                     .WithLoopDefaults(leftOptions, target, applyDelay);
 
@@ -93,7 +96,7 @@ namespace LB.TweenHelper
 
             void SwingRight()
             {
-                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, -angle), halfDur)
+                tween = t.DOLocalRotate(originalRot + new Vector3(0f, 0f, -angle * strength), halfDur)
                     .SetEase(rightEase)
                     .WithLoopDefaults(rightOptions, target, applyDelay);
 
@@ -110,7 +113,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft Z-axis pendulum loop with small angle.
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.5s | <b>Default ease:</b> InOutSine
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.5s | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Strength override:</b> Multiplies swing angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PendulumZSoft").Play();</c>
     /// </summary>
@@ -131,7 +135,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Wide Z-axis pendulum loop with large angle.
     /// <para>
-    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 3.5s | <b>Default ease:</b> InOutSine
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 3.5s | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Strength override:</b> Multiplies swing angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PendulumZHard").Play();</c>
     /// </summary>

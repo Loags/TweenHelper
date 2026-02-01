@@ -11,7 +11,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.45s | <b>Default ease:</b> DOTween shake default<br/>
-    /// <b>Easing override:</b> No ease override (shake tweens use internal decay).
+    /// <b>Easing override:</b> No ease override (shake tweens use internal decay).<br/>
+    /// <b>Strength override:</b> Multiplies shake intensity (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Impact feedback, earthquake, error shake, camera shake, damage indication.
@@ -28,7 +29,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOShakePosition(GetDuration(duration, options), 0.22f, 12, 90f, false, true)
+            var strength = ResolveStrength(options);
+            return target.transform.DOShakePosition(GetDuration(duration, options), 0.22f * strength, 12, 90f, false, true)
                 .WithDefaults(options, target);
         }
     }
@@ -39,7 +41,8 @@ namespace LB.TweenHelper
     /// Uses <c>DOShakePosition</c> with strength <c>0.15</c>, vibrato <c>10</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
+    /// <b>Strength override:</b> Multiplies shake intensity (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("ShakeSoft").Play();</c>
     /// </summary>
@@ -53,7 +56,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOShakePosition(GetDuration(duration, options), 0.15f, 10, 90f, false, true)
+            var strength = ResolveStrength(options);
+            return target.transform.DOShakePosition(GetDuration(duration, options), 0.15f * strength, 10, 90f, false, true)
                 .WithDefaults(options, target);
         }
     }
@@ -64,7 +68,8 @@ namespace LB.TweenHelper
     /// Uses <c>DOShakePosition</c> with strength <c>0.5</c>, vibrato <c>20</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s<br/>
+    /// <b>Strength override:</b> Multiplies shake intensity (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("ShakeHard").Play();</c>
     /// </summary>
@@ -78,7 +83,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            return target.transform.DOShakePosition(GetDuration(duration, options), 0.5f, 20, 90f, false, true)
+            var strength = ResolveStrength(options);
+            return target.transform.DOShakePosition(GetDuration(duration, options), 0.5f * strength, 20, 90f, false, true)
                 .WithDefaults(options, target);
         }
     }
@@ -91,7 +97,9 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.8s | <b>Default ease:</b> Linear (sequence), InQuad (fade)<br/>
-    /// <b>Easing override:</b> Standard options apply; shake and fade eases are hardcoded.
+    /// <b>Easing override:</b> Standard options apply; shake and fade eases are hardcoded.<br/>
+    /// <b>Strength override:</b> Multiplies shake intensity (default 1.0).<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Enemy death, damage feedback, destruction effect, error dismiss with shake.
@@ -110,12 +118,13 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var dur = GetDuration(duration, options);
+            var strength = ResolveStrength(options);
             var presetOptions = MergeWithDefaultEase(options, Ease.Linear);
 
             var seq = DOTween.Sequence();
-            seq.Append(t.DOShakePosition(dur, 0.3f, 15, 90f, false, true));
+            seq.Append(t.DOShakePosition(dur, 0.3f * strength, 15, 90f, false, true));
 
-            var fadeTween = CreateFadeTween(target, 0f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
             if (fadeTween != null)
             {
                 fadeTween.SetEase(Ease.InQuad);
@@ -134,7 +143,9 @@ namespace LB.TweenHelper
     /// Uses <c>DOShakePosition</c> with strength <c>0.15</c>, vibrato <c>10</c>, joined with fade to <c>0</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.6s | <b>Default ease:</b> Linear (sequence), InQuad (fade)
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.6s | <b>Default ease:</b> Linear (sequence), InQuad (fade)<br/>
+    /// <b>Strength override:</b> Multiplies shake intensity (default 1.0).<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("ShakeFadeSoft").Play();</c>
     /// </summary>
@@ -152,10 +163,11 @@ namespace LB.TweenHelper
             var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.Linear);
 
+            var strength = ResolveStrength(options);
             var seq = DOTween.Sequence();
-            seq.Append(t.DOShakePosition(dur, 0.15f, 10, 90f, false, true));
+            seq.Append(t.DOShakePosition(dur, 0.15f * strength, 10, 90f, false, true));
 
-            var fadeTween = CreateFadeTween(target, 0f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
             if (fadeTween != null)
             {
                 fadeTween.SetEase(Ease.InQuad);
@@ -174,7 +186,9 @@ namespace LB.TweenHelper
     /// Uses <c>DOShakePosition</c> with strength <c>0.5</c>, vibrato <c>20</c>, joined with fade to <c>0</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.0s | <b>Default ease:</b> Linear (sequence), InQuad (fade)
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.0s | <b>Default ease:</b> Linear (sequence), InQuad (fade)<br/>
+    /// <b>Strength override:</b> Multiplies shake intensity (default 1.0).<br/>
+    /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
     /// Usage: <c>transform.Tween().Preset("ShakeFadeHard").Play();</c>
     /// </summary>
@@ -192,10 +206,11 @@ namespace LB.TweenHelper
             var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.Linear);
 
+            var strength = ResolveStrength(options);
             var seq = DOTween.Sequence();
-            seq.Append(t.DOShakePosition(dur, 0.5f, 20, 90f, false, true));
+            seq.Append(t.DOShakePosition(dur, 0.5f * strength, 20, 90f, false, true));
 
-            var fadeTween = CreateFadeTween(target, 0f, dur);
+            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
             if (fadeTween != null)
             {
                 fadeTween.SetEase(Ease.InQuad);

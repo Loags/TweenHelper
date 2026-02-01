@@ -11,7 +11,8 @@ namespace LB.TweenHelper
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.28s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
-    /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.
+    /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
     /// <para>
     /// <b>Use cases:</b> Button tap feedback, toggle state change, counter increment, selection highlight.
@@ -31,12 +32,13 @@ namespace LB.TweenHelper
             var t = target.transform;
             var originalScale = t.localScale;
             var dur = GetDuration(duration, options);
+            var strength = ResolveStrength(options);
             var upEase = ResolveEase(options, Ease.OutQuad);
             var downEase = ResolveSecondaryEase(options, Ease.InQuad);
             var presetOptions = MergeWithDefaultEase(options, upEase);
 
             return DOTween.Sequence()
-                .Append(t.DOScale(originalScale * 1.14f, dur * 0.4f).SetEase(upEase))
+                .Append(t.DOScale(originalScale * (1f + 0.14f * strength), dur * 0.4f).SetEase(upEase))
                 .Append(t.DOScale(originalScale, dur * 0.6f).SetEase(downEase))
                 .WithDefaults(presetOptions, target);
         }
@@ -51,12 +53,13 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
+            var strength = CodePreset.ResolveStrengthStatic(options);
             var upEase = options.Ease ?? Ease.OutQuad;
             var downEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(upEase);
 
             return DOTween.Sequence()
-                .Append(t.DOScale(originalScale * peak, duration * 0.4f).SetEase(upEase))
+                .Append(t.DOScale(originalScale * (1f + (peak - 1f) * strength), duration * 0.4f).SetEase(upEase))
                 .Append(t.DOScale(originalScale, duration * 0.6f).SetEase(downEase))
                 .WithDefaults(presetOptions, target);
         }
@@ -66,7 +69,8 @@ namespace LB.TweenHelper
     /// Soft scale bump to 1.08x then back to original, for understated feedback.
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
-    /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.
+    /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PulseScaleSoft").Play();</c>
     /// </summary>
@@ -88,7 +92,8 @@ namespace LB.TweenHelper
     /// Bold scale bump to 1.25x then back to original, for emphatic feedback.
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.35s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
-    /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.
+    /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset("PulseScaleHard").Play();</c>
     /// </summary>

@@ -72,7 +72,11 @@ namespace LB.TweenHelper.Demo
             UpdateLabel();
         }
 
-        private void SaveOriginalState()
+        /// <summary>
+        /// Saves the current transform as the original state used for animation resets.
+        /// Call after repositioning to update the reset target.
+        /// </summary>
+        public void SaveOriginalState()
         {
             _originalPosition = transform.localPosition;
             _originalScale = transform.localScale;
