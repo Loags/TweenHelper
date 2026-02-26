@@ -56,53 +56,6 @@ namespace LB.TweenHelper.Demo
         private GameObject _groundObject;
 
         /// <summary>
-        /// Override dictionary for preset names that don't follow standard prefix rules.
-        /// Maps preset name to family name.
-        /// </summary>
-        private static readonly Dictionary<string, string> FamilyOverrides = new Dictionary<string, string>
-        {
-            { "SwirlIn", "Spiral" },
-            { "Swirl", "Spiral" },
-            { "Blink", "Misc" },
-            { "Flicker", "Misc" },
-            { "Attention", "Misc" },
-            { "Explode", "Misc" },
-        };
-
-        /// <summary>
-        /// Known suffixes stripped during family detection, ordered longest first.
-        /// </summary>
-        private static readonly string[] KnownSuffixes =
-        {
-            "CounterClockwise",
-            "Overshoot",
-            "Clockwise",
-            "Diagonal",
-            "Cartoon",
-            "Heavy",
-            "Fade",
-            "Land",
-            "Soft",
-            "Hard",
-            "Down",
-            "Left",
-            "Right",
-            "Up",
-            "Out",
-            "In",
-            "XY",
-            "XZ",
-            "YZ",
-            "2D",
-            "S",
-            "M",
-            "L",
-            "X",
-            "Y",
-            "Z",
-        };
-
-        /// <summary>
         /// Order in which families appear. Families not listed sort alphabetically after these.
         /// </summary>
         private static readonly string[] FamilyOrder =
@@ -287,55 +240,7 @@ namespace LB.TweenHelper.Demo
 
         private string GetPresetFamily(ITweenPreset preset)
         {
-            var name = preset.PresetName;
-
-            if (FamilyOverrides.TryGetValue(name, out var familyOverride))
-            {
-                return familyOverride;
-            }
-
-            // Iteratively strip known suffixes to find the root family name
-            var candidate = name;
-            bool stripped = true;
-            while (stripped && candidate.Length > 0)
-            {
-                stripped = false;
-                foreach (var suffix in KnownSuffixes)
-                {
-                    // Only strip single-char suffixes (S/M/L/X/Y/Z) if the remaining part
-                    // is at least 3 chars and ends with a lowercase letter (to avoid over-stripping)
-                    if (suffix.Length == 1 && candidate.Length > 1 && candidate.EndsWith(suffix, StringComparison.Ordinal))
-                    {
-                        var remaining = candidate.Substring(0, candidate.Length - 1);
-                        if (remaining.Length >= 3 && char.IsLower(remaining[remaining.Length - 1]))
-                        {
-                            candidate = remaining;
-                            stripped = true;
-                            break;
-                        }
-                    }
-                    else if (suffix.Length > 1 && candidate.Length > suffix.Length && candidate.EndsWith(suffix, StringComparison.Ordinal))
-                    {
-                        candidate = candidate.Substring(0, candidate.Length - suffix.Length);
-                        stripped = true;
-                        break;
-                    }
-                }
-            }
-
-            // After stripping, check if the root name has a family override
-            if (FamilyOverrides.TryGetValue(candidate, out var strippedOverride))
-            {
-                return strippedOverride;
-            }
-
-            // If stripping reduced to empty or single char, use original first word
-            if (candidate.Length < 2)
-            {
-                candidate = name;
-            }
-
-            return candidate;
+            return LB.TweenHelper.PresetFamilyClassifier.GetFamilyName(preset.PresetName);
         }
 
         private List<PresetFamilyCluster> GroupPresetsByFamily(List<ITweenPreset> presets)
@@ -391,125 +296,17 @@ namespace LB.TweenHelper.Demo
 
         private static string GetSubRowKey(string family, string presetName)
         {
-            // Remove intensity modifiers (these become column variations)
-            var name = presetName.Replace("Soft", "").Replace("Hard", "");
-
-            // Strip family prefix
-            if (name.StartsWith(family, StringComparison.Ordinal))
-            {
-                name = name.Substring(family.Length);
-            }
-
-            // Strip trailing leaf modifier to get the row key
-            return StripTrailingLeaf(name);
-        }
-
-        private static string StripTrailingLeaf(string variant)
-        {
-            // Directions — keep as part of row key (they form distinct row groupings)
-            string[] directions = { "Forward", "Right", "Left", "Down", "Back", "Up" };
-            foreach (var d in directions)
-            {
-                if (variant.EndsWith(d, StringComparison.Ordinal))
-                {
-                    return variant;
-                }
-            }
-
-            // Compound axes — keep as part of row key (they form distinct row groupings)
-            string[] compoundAxes = { "XY", "XZ", "YZ", "2D" };
-            foreach (var a in compoundAxes)
-            {
-                if (variant.EndsWith(a, StringComparison.Ordinal))
-                {
-                    return variant;
-                }
-            }
-
-            // Single axes (strip only if remaining is non-empty)
-            string[] singleAxes = { "X", "Y", "Z" };
-            foreach (var a in singleAxes)
-            {
-                if (variant.EndsWith(a, StringComparison.Ordinal))
-                {
-                    var remaining = variant.Substring(0, variant.Length - 1);
-                    if (remaining.Length > 0)
-                    {
-                        return remaining;
-                    }
-                }
-            }
-
-            // Sizes (only strip if remaining is non-empty)
-            string[] sizes = { "S", "M", "L" };
-            foreach (var s in sizes)
-            {
-                if (variant.EndsWith(s, StringComparison.Ordinal))
-                {
-                    var remaining = variant.Substring(0, variant.Length - 1);
-                    if (remaining.Length > 0)
-                    {
-                        return remaining;
-                    }
-                }
-            }
-
-            return variant;
+            return LB.TweenHelper.PresetVariantParser.Parse(presetName).SubRowKey;
         }
 
         private static int GetSubRowOrder(string rowKey)
         {
-            int score = 0;
-
-            if (string.IsNullOrEmpty(rowKey)) return -1;
-
-            if (rowKey.Contains("In") && !rowKey.Contains("Out")) score += 0;
-            else if (rowKey.Contains("Out")) score += 100;
-
-            if (rowKey.Contains("Diagonal")) score += 5;
-            if (rowKey.Contains("Overshoot")) score += 10;
-            if (rowKey.Contains("Land")) score += 15;
-            if (rowKey.Contains("Fade")) score += 20;
-            if (rowKey.Contains("Cartoon")) score += 25;
-            if (rowKey.Contains("Scale")) score += 30;
-            if (rowKey.Contains("Clockwise") && !rowKey.Contains("Counter")) score += 40;
-            if (rowKey.Contains("CounterClockwise")) score += 45;
-
-            return score;
+            return LB.TweenHelper.PresetVariantParser.GetSubRowSortScore(rowKey);
         }
 
         private static int GetColumnOrder(string family, string presetName)
         {
-            int score = 0;
-
-            // Intensity modifiers: Soft, Default, Hard
-            if (presetName.Contains("Soft")) score += 0;
-            else if (presetName.Contains("Hard")) score += 2;
-            else score += 1;
-
-            // Directions
-            if (presetName.Contains("Up")) score += 0;
-            else if (presetName.Contains("Down")) score += 10;
-            else if (presetName.Contains("Left")) score += 20;
-            else if (presetName.Contains("Right")) score += 30;
-            else if (presetName.Contains("Forward")) score += 40;
-            else if (presetName.Contains("Back") && !presetName.Contains("Backflip")) score += 50;
-
-            // Axes
-            if (presetName.EndsWith("XY")) score += 100;
-            else if (presetName.EndsWith("XZ")) score += 110;
-            else if (presetName.EndsWith("YZ")) score += 120;
-            else if (presetName.EndsWith("2D")) score += 130;
-            else if (presetName.EndsWith("X")) score += 100;
-            else if (presetName.EndsWith("Y")) score += 110;
-            else if (presetName.EndsWith("Z")) score += 120;
-
-            // Sizes
-            if (presetName.EndsWith("S") && !presetName.EndsWith("XS")) score += 1000;
-            else if (presetName.EndsWith("M")) score += 1100;
-            else if (presetName.EndsWith("L")) score += 1200;
-
-            return score;
+            return LB.TweenHelper.PresetVariantParser.GetColumnSortScore(presetName);
         }
 
         private GameObject SpawnPresetObject(ITweenPreset preset, Vector3 position, Transform parent)

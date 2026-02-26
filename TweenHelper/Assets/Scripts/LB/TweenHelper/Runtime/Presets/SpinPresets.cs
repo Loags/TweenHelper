@@ -465,18 +465,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            var t = target.transform;
-            var dur = GetDuration(duration, options);
-            var scaleEase = ResolveEase(options, Ease.InCubic);
-            var spinEase = ResolveSecondaryEase(options, Ease.Linear);
-            var presetOptions = MergeWithDefaultEase(options, scaleEase);
-
-            var endScale = ResolveTargetScale(options, Vector3.zero);
-            return DOTween.Sequence()
-                .Join(t.DOScale(endScale, dur).SetEase(scaleEase))
-                .Join(t.DORotate(new Vector3(0f, 720f * strength, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
-                .WithDefaults(presetOptions, target);
+            return SpinScaleFactory.Create(target, GetDuration(duration, options), options, Ease.InCubic, 720f, scaleIn: false, useOvershoot: false);
         }
     }
 
@@ -508,19 +497,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            var t = target.transform;
-            var dur = GetDuration(duration, options);
-            var scaleEase = ResolveEase(options, Ease.InBack);
-            var spinEase = ResolveSecondaryEase(options, Ease.Linear);
-            var presetOptions = MergeWithDefaultEase(options, scaleEase);
-            var os = DefaultOvershoot * ResolveOvershootMultiplier(presetOptions);
-
-            var endScale = ResolveTargetScale(options, Vector3.zero);
-            return DOTween.Sequence()
-                .Join(t.DOScale(endScale, dur).SetEase(scaleEase, os))
-                .Join(t.DORotate(new Vector3(0f, 720f * strength, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
-                .WithDefaults(presetOptions, target);
+            return SpinScaleFactory.Create(target, GetDuration(duration, options), options, Ease.InBack, 720f, scaleIn: false, useOvershoot: true, defaultOvershoot: DefaultOvershoot);
         }
     }
 
@@ -543,18 +520,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            var t = target.transform;
-            var dur = GetDuration(duration, options);
-            var scaleEase = ResolveEase(options, Ease.InSine);
-            var spinEase = ResolveSecondaryEase(options, Ease.Linear);
-            var presetOptions = MergeWithDefaultEase(options, scaleEase);
-
-            var endScale = ResolveTargetScale(options, Vector3.zero);
-            return DOTween.Sequence()
-                .Join(t.DOScale(endScale, dur).SetEase(scaleEase))
-                .Join(t.DORotate(new Vector3(0f, 360f * strength, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
-                .WithDefaults(presetOptions, target);
+            return SpinScaleFactory.Create(target, GetDuration(duration, options), options, Ease.InSine, 360f, scaleIn: false, useOvershoot: false);
         }
     }
 
@@ -577,18 +543,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            var t = target.transform;
-            var dur = GetDuration(duration, options);
-            var scaleEase = ResolveEase(options, Ease.InQuart);
-            var spinEase = ResolveSecondaryEase(options, Ease.Linear);
-            var presetOptions = MergeWithDefaultEase(options, scaleEase);
-
-            var endScale = ResolveTargetScale(options, Vector3.zero);
-            return DOTween.Sequence()
-                .Join(t.DOScale(endScale, dur).SetEase(scaleEase))
-                .Join(t.DORotate(new Vector3(0f, 1080f * strength, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
-                .WithDefaults(presetOptions, target);
+            return SpinScaleFactory.Create(target, GetDuration(duration, options), options, Ease.InQuart, 1080f, scaleIn: false, useOvershoot: false);
         }
     }
 
@@ -612,19 +567,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            var t = target.transform;
-            var dur = GetDuration(duration, options);
-            var scaleEase = ResolveEase(options, Ease.InBack);
-            var spinEase = ResolveSecondaryEase(options, Ease.Linear);
-            var presetOptions = MergeWithDefaultEase(options, scaleEase);
-            var os = DefaultOvershoot * ResolveOvershootMultiplier(presetOptions);
-
-            var endScale = ResolveTargetScale(options, Vector3.zero);
-            return DOTween.Sequence()
-                .Join(t.DOScale(endScale, dur).SetEase(scaleEase, os))
-                .Join(t.DORotate(new Vector3(0f, 360f * strength, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
-                .WithDefaults(presetOptions, target);
+            return SpinScaleFactory.Create(target, GetDuration(duration, options), options, Ease.InBack, 360f, scaleIn: false, useOvershoot: true, defaultOvershoot: DefaultOvershoot);
         }
     }
 
@@ -648,19 +591,206 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            var t = target.transform;
-            var dur = GetDuration(duration, options);
-            var scaleEase = ResolveEase(options, Ease.InBack);
-            var spinEase = ResolveSecondaryEase(options, Ease.Linear);
-            var presetOptions = MergeWithDefaultEase(options, scaleEase);
-            var os = DefaultOvershoot * ResolveOvershootMultiplier(presetOptions);
+            return SpinScaleFactory.Create(target, GetDuration(duration, options), options, Ease.InBack, 1080f, scaleIn: false, useOvershoot: true, defaultOvershoot: DefaultOvershoot);
+        }
+    }
 
-            var endScale = ResolveTargetScale(options, Vector3.zero);
+    /// <summary>
+    /// Internal factory for spin + scale variants (in/out with optional overshoot).
+    /// </summary>
+    internal static class SpinScaleFactory
+    {
+        public static Tween Create(
+            GameObject target,
+            float duration,
+            TweenOptions options,
+            Ease defaultScaleEase,
+            float rotationDegrees,
+            bool scaleIn,
+            bool useOvershoot,
+            float defaultOvershoot = 0f)
+        {
+            var t = target.transform;
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            var scaleEase = options.Ease ?? defaultScaleEase;
+            var spinEase = options.SecondaryEase ?? options.Ease ?? Ease.Linear;
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(defaultScaleEase);
+
+            Tweener scaleTween;
+            if (scaleIn)
+            {
+                var originalScale = t.localScale;
+                var startScale = options.StartScale ?? Vector3.zero;
+                var endScale = options.TargetScale ?? originalScale;
+                t.localScale = startScale;
+                scaleTween = t.DOScale(endScale, duration);
+            }
+            else
+            {
+                var endScale = options.TargetScale ?? Vector3.zero;
+                scaleTween = t.DOScale(endScale, duration);
+            }
+
+            if (useOvershoot)
+            {
+                var overshoot = defaultOvershoot * (presetOptions.Overshoot ?? 1f);
+                scaleTween.SetEase(scaleEase, overshoot);
+            }
+            else
+            {
+                scaleTween.SetEase(scaleEase);
+            }
+
             return DOTween.Sequence()
-                .Join(t.DOScale(endScale, dur).SetEase(scaleEase, os))
-                .Join(t.DORotate(new Vector3(0f, 1080f * strength, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
+                .Join(scaleTween)
+                .Join(t.DORotate(new Vector3(0f, rotationDegrees * strength, 0f), duration, RotateMode.FastBeyond360).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Spins the target 720 degrees on the Y axis while scaling in from zero, creating a pickup spawn effect.
+    /// <para>
+    /// Builds a parallel sequence: sets scale to zero, then scales to original size with <c>Ease.OutCubic</c>,
+    /// joined with 720° Y rotation using <c>RotateMode.FastBeyond360</c> and <c>Ease.Linear</c>.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.1s | <b>Default ease:</b> OutCubic (scale), Linear (spin)<br/>
+    /// <b>Easing override:</b> Primary ease controls scale; secondary ease controls spin.<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinScaleIn").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinScaleInPreset : CodePreset
+    {
+        public override string PresetName => "SpinScaleIn";
+        public override string Description => "Spin and grow in from zero";
+        public override float DefaultDuration => 2.1f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinScaleFactory.Create(target, GetDuration(duration, options), options, Ease.OutCubic, 720f, scaleIn: true, useOvershoot: false);
+        }
+    }
+
+    /// <summary>
+    /// Scales in from zero while spinning 720° on Y, with overshoot on the scale settle.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.1s | <b>Default ease:</b> OutBack (scale), Linear (spin)<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinScaleInOvershoot").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinScaleInOvershootPreset : CodePreset
+    {
+        public override string PresetName => "SpinScaleInOvershoot";
+        public override string Description => "Spin and grow in with overshoot settle";
+        public override float DefaultDuration => 2.1f;
+        public override float DefaultOvershoot => 1.70158f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinScaleFactory.Create(target, GetDuration(duration, options), options, Ease.OutBack, 720f, scaleIn: true, useOvershoot: true, defaultOvershoot: DefaultOvershoot);
+        }
+    }
+
+    /// <summary>
+    /// Soft spin and scale-in — slower rotation with gentle growth.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.7s | <b>Default ease:</b> OutSine (scale), Linear (spin)<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinScaleInSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinScaleInSoftPreset : CodePreset
+    {
+        public override string PresetName => "SpinScaleInSoft";
+        public override string Description => "Soft spin and grow in from zero";
+        public override float DefaultDuration => 2.7f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinScaleFactory.Create(target, GetDuration(duration, options), options, Ease.OutSine, 360f, scaleIn: true, useOvershoot: false);
+        }
+    }
+
+    /// <summary>
+    /// Hard spin and scale-in — fast triple rotation with snappy growth.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutQuart (scale), Linear (spin)<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinScaleInHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinScaleInHardPreset : CodePreset
+    {
+        public override string PresetName => "SpinScaleInHard";
+        public override string Description => "Hard spin and grow in from zero";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinScaleFactory.Create(target, GetDuration(duration, options), options, Ease.OutQuart, 1080f, scaleIn: true, useOvershoot: false);
+        }
+    }
+
+    /// <summary>
+    /// Soft spin and scale-in with mild overshoot on the scale settle.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.7s | <b>Default ease:</b> OutBack (1.2 overshoot, scale), Linear (spin)<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinScaleInOvershootSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinScaleInOvershootSoftPreset : CodePreset
+    {
+        public override string PresetName => "SpinScaleInOvershootSoft";
+        public override string Description => "Soft spin and grow in with mild overshoot";
+        public override float DefaultDuration => 2.7f;
+        public override float DefaultOvershoot => 1.2f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinScaleFactory.Create(target, GetDuration(duration, options), options, Ease.OutBack, 360f, scaleIn: true, useOvershoot: true, defaultOvershoot: DefaultOvershoot);
+        }
+    }
+
+    /// <summary>
+    /// Hard spin and scale-in with strong overshoot on the scale settle.
+    /// <para>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutBack (2.0 overshoot, scale), Linear (spin)<br/>
+    /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
+    /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SpinScaleInOvershootHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SpinScaleInOvershootHardPreset : CodePreset
+    {
+        public override string PresetName => "SpinScaleInOvershootHard";
+        public override string Description => "Hard spin and grow in with strong overshoot";
+        public override float DefaultDuration => 1.5f;
+        public override float DefaultOvershoot => 2.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SpinScaleFactory.Create(target, GetDuration(duration, options), options, Ease.OutBack, 1080f, scaleIn: true, useOvershoot: true, defaultOvershoot: DefaultOvershoot);
         }
     }
 }

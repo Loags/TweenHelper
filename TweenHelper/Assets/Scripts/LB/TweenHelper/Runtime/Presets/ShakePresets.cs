@@ -4,6 +4,43 @@ using UnityEngine;
 namespace LB.TweenHelper
 {
     /// <summary>
+    /// Internal factory for position shake presets.
+    /// </summary>
+    internal static class ShakePositionFactory
+    {
+        public static Tween Create(GameObject target, float duration, TweenOptions options, float baseStrength, int vibrato)
+        {
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            return target.transform.DOShakePosition(duration, baseStrength * strength, vibrato, 90f, false, true)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Internal factory for shake + fade-out presets.
+    /// </summary>
+    internal static class ShakePositionFadeFactory
+    {
+        public static Tween Create(GameObject target, float duration, TweenOptions options, float baseStrength, int vibrato)
+        {
+            var t = target.transform;
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.Linear);
+            var strength = CodePreset.ResolveStrengthStatic(options);
+
+            var seq = DOTween.Sequence();
+            seq.Append(t.DOShakePosition(duration, baseStrength * strength, vibrato, 90f, false, true));
+
+            var fadeTween = CodePreset.CreateFadeTweenStatic(target, CodePreset.ResolveTargetAlphaStatic(options, 0f), duration);
+            if (fadeTween != null)
+            {
+                seq.Join(fadeTween.SetEase(Ease.InQuad));
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
     /// Shakes the target's position randomly, creating an impact or earthquake effect.
     /// <para>
     /// Uses <c>DOShakePosition</c> with strength <c>0.22</c>, vibrato <c>12</c>, randomness <c>90°</c>,
@@ -29,9 +66,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOShakePosition(GetDuration(duration, options), 0.22f * strength, 12, 90f, false, true)
-                .WithDefaults(options, target);
+            return ShakePositionFactory.Create(target, GetDuration(duration, options), options, 0.22f, 12);
         }
     }
 
@@ -56,9 +91,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOShakePosition(GetDuration(duration, options), 0.15f * strength, 10, 90f, false, true)
-                .WithDefaults(options, target);
+            return ShakePositionFactory.Create(target, GetDuration(duration, options), options, 0.15f, 10);
         }
     }
 
@@ -83,9 +116,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOShakePosition(GetDuration(duration, options), 0.5f * strength, 20, 90f, false, true)
-                .WithDefaults(options, target);
+            return ShakePositionFactory.Create(target, GetDuration(duration, options), options, 0.5f, 20);
         }
     }
 
@@ -116,22 +147,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var dur = GetDuration(duration, options);
-            var strength = ResolveStrength(options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.Linear);
-
-            var seq = DOTween.Sequence();
-            seq.Append(t.DOShakePosition(dur, 0.3f * strength, 15, 90f, false, true));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
-            if (fadeTween != null)
-            {
-                fadeTween.SetEase(Ease.InQuad);
-                seq.Join(fadeTween);
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return ShakePositionFadeFactory.Create(target, GetDuration(duration, options), options, 0.3f, 15);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -159,22 +175,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.Linear);
-
-            var strength = ResolveStrength(options);
-            var seq = DOTween.Sequence();
-            seq.Append(t.DOShakePosition(dur, 0.15f * strength, 10, 90f, false, true));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
-            if (fadeTween != null)
-            {
-                fadeTween.SetEase(Ease.InQuad);
-                seq.Join(fadeTween);
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return ShakePositionFadeFactory.Create(target, GetDuration(duration, options), options, 0.15f, 10);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -202,22 +203,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.Linear);
-
-            var strength = ResolveStrength(options);
-            var seq = DOTween.Sequence();
-            seq.Append(t.DOShakePosition(dur, 0.5f * strength, 20, 90f, false, true));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
-            if (fadeTween != null)
-            {
-                fadeTween.SetEase(Ease.InQuad);
-                seq.Join(fadeTween);
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return ShakePositionFadeFactory.Create(target, GetDuration(duration, options), options, 0.5f, 20);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;

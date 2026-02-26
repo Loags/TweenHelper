@@ -110,4 +110,119 @@ namespace LB.TweenHelper
             return PulseScaleFactory.Create(target, 1.25f, GetDuration(duration, options), options);
         }
     }
+
+    /// <summary>
+    /// Internal factory for PulseScaleFade variants with scale pulse + alpha dip/return behavior.
+    /// </summary>
+    internal static class PulseScaleFadeFactory
+    {
+        public static Tween Create(GameObject target, float peak, float dipAlphaDefault, float duration, TweenOptions options)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            var upEase = options.Ease ?? Ease.OutQuad;
+            var downEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(upEase);
+
+            var seq = DOTween.Sequence();
+            seq.Append(t.DOScale(originalScale * (1f + (peak - 1f) * strength), duration * 0.4f).SetEase(upEase));
+            seq.Append(t.DOScale(originalScale, duration * 0.6f).SetEase(downEase));
+
+            float startAlpha = CodePreset.ResolveStartAlphaStatic(options, 1f);
+            float dipAlpha = CodePreset.ResolveTargetAlphaStatic(options, dipAlphaDefault);
+
+            CodePreset.SetAlphaStatic(target, startAlpha);
+            var fadeOut = CodePreset.CreateFadeTweenStatic(target, dipAlpha, duration * 0.4f);
+            var fadeIn = CodePreset.CreateFadeTweenStatic(target, startAlpha, duration * 0.6f);
+            if (fadeOut != null && fadeIn != null)
+            {
+                var fadeSeq = DOTween.Sequence()
+                    .Append(fadeOut.SetEase(Ease.Linear))
+                    .Append(fadeIn.SetEase(Ease.Linear));
+
+                seq.Join(fadeSeq);
+                seq.OnComplete(() => CodePreset.SetAlphaStatic(target, startAlpha));
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Pulse-scale feedback with a brief alpha dip, then returns to full alpha.
+    /// <para>
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.84s | <b>Default ease:</b> OutQuad/InQuad (scale), Linear (fade)<br/>
+    /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces start/end alpha (default 1); TargetAlpha replaces dip alpha (default 0.6).<br/>
+    /// If no fadeable component exists, only the scale pulse is played.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PulseScaleFade").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PulseScaleFadePreset : CodePreset
+    {
+        public override string PresetName => "PulseScaleFade";
+        public override string Description => "Pulse scale with alpha dip and return";
+        public override float DefaultDuration => 0.84f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return PulseScaleFadeFactory.Create(target, 1.14f, 0.6f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Soft pulse-scale feedback with a mild alpha dip, then returns to full alpha.
+    /// <para>
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.75s | <b>Default ease:</b> OutQuad/InQuad (scale), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces start/end alpha; TargetAlpha replaces dip alpha (default 0.75).
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PulseScaleFadeSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PulseScaleFadeSoftPreset : CodePreset
+    {
+        public override string PresetName => "PulseScaleFadeSoft";
+        public override string Description => "Soft pulse scale with alpha dip and return";
+        public override float DefaultDuration => 0.75f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return PulseScaleFadeFactory.Create(target, 1.08f, 0.75f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Hard pulse-scale feedback with a deep alpha dip, then returns to full alpha.
+    /// <para>
+    /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 1.05s | <b>Default ease:</b> OutQuad/InQuad (scale), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces start/end alpha; TargetAlpha replaces dip alpha (default 0.4).
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("PulseScaleFadeHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class PulseScaleFadeHardPreset : CodePreset
+    {
+        public override string PresetName => "PulseScaleFadeHard";
+        public override string Description => "Bold pulse scale with deep alpha dip and return";
+        public override float DefaultDuration => 1.05f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return PulseScaleFadeFactory.Create(target, 1.25f, 0.4f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
 }

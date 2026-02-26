@@ -4,6 +4,104 @@ using UnityEngine;
 namespace LB.TweenHelper
 {
     /// <summary>
+    /// Internal factory for composite pop + fade presets.
+    /// </summary>
+    internal static class PopFadeFactory
+    {
+        private static TweenOptions WithDefaultEase(TweenOptions options, Ease defaultEase)
+            => options.Ease.HasValue ? options : options.SetEase(defaultEase);
+
+        private static float ResolveDuration(float? duration, float defaultDuration, TweenOptions options)
+            => duration ?? options.Duration ?? defaultDuration;
+
+        public static Tween CreatePopInFade(GameObject target, float? duration, float defaultDuration, TweenOptions options, Ease defaultScaleEase)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var startScale = options.StartScale ?? Vector3.zero;
+            var scaleTarget = options.TargetScale ?? originalScale;
+            t.localScale = startScale;
+
+            var dur = ResolveDuration(duration, defaultDuration, options);
+            var presetOptions = WithDefaultEase(options, defaultScaleEase);
+            var scaleEase = presetOptions.Ease ?? defaultScaleEase;
+            var seq = DOTween.Sequence();
+
+            seq.Append(t.DOScale(scaleTarget, dur).SetEase(scaleEase));
+
+            var fadeTween = CodePreset.CreateFadeTweenStatic(target, CodePreset.ResolveTargetAlphaStatic(options, 1f), dur);
+            if (fadeTween != null)
+            {
+                CodePreset.SetAlphaStatic(target, CodePreset.ResolveStartAlphaStatic(options, 0f));
+                seq.Join(fadeTween.SetEase(Ease.Linear));
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+
+        public static Tween CreatePopOutFade(
+            GameObject target,
+            float? duration,
+            float defaultDuration,
+            TweenOptions options,
+            Ease defaultScaleEase,
+            float? explicitOvershoot = null)
+        {
+            var t = target.transform;
+            var dur = ResolveDuration(duration, defaultDuration, options);
+            var presetOptions = WithDefaultEase(options, defaultScaleEase);
+            var scaleEase = presetOptions.Ease ?? defaultScaleEase;
+            var endScale = options.TargetScale ?? Vector3.zero;
+            var seq = DOTween.Sequence();
+
+            if (explicitOvershoot.HasValue)
+            {
+                seq.Join(t.DOScale(endScale, dur).SetEase(scaleEase, explicitOvershoot.Value));
+            }
+            else
+            {
+                seq.Join(t.DOScale(endScale, dur).SetEase(scaleEase));
+            }
+
+            var fadeTween = CodePreset.CreateFadeTweenStatic(target, CodePreset.ResolveTargetAlphaStatic(options, 0f), dur);
+            if (fadeTween != null)
+            {
+                seq.Join(fadeTween.SetEase(Ease.Linear));
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+
+        public static Tween CreateExplode(
+            GameObject target,
+            float? duration,
+            float defaultDuration,
+            TweenOptions options,
+            Ease defaultScaleEase,
+            float scaleMultiplier)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var dur = ResolveDuration(duration, defaultDuration, options);
+            var scaleEase = options.Ease ?? defaultScaleEase;
+            var fadeEase = options.SecondaryEase ?? options.Ease ?? Ease.Linear;
+            var presetOptions = WithDefaultEase(options, defaultScaleEase);
+            var explodeTarget = options.TargetScale ?? (originalScale * scaleMultiplier);
+            var seq = DOTween.Sequence();
+
+            seq.Join(t.DOScale(explodeTarget, dur).SetEase(scaleEase));
+
+            var fadeTween = CodePreset.CreateFadeTweenStatic(target, CodePreset.ResolveTargetAlphaStatic(options, 0f), dur);
+            if (fadeTween != null)
+            {
+                seq.Join(fadeTween.SetEase(fadeEase));
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
     /// Scales the target from zero to original while simultaneously fading in from transparent to opaque.
     /// <para>
     /// Sets initial scale to <c>Vector3.zero</c> and alpha to <c>0</c>. Builds a parallel sequence:
@@ -32,28 +130,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var start = ResolveStartScale(options, Vector3.zero);
-            var scaleTarget = ResolveTargetScale(options, originalScale);
-            t.localScale = start;
-
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
-            var ease = ResolveEase(presetOptions, Ease.OutCubic);
-            var seq = DOTween.Sequence();
-
-            seq.Append(t.DOScale(scaleTarget, dur).SetEase(ease));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 1f), dur);
-            if (fadeTween != null)
-            {
-                SetAlpha(target, ResolveStartAlpha(options, 0f));
-                // Use Linear ease for fade so alpha doesn't rush ahead of scale
-                seq.Join(fadeTween.SetEase(Ease.Linear));
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return PopFadeFactory.CreatePopInFade(target, duration, DefaultDuration, options, Ease.OutCubic);
         }
 
         public override bool CanApplyTo(GameObject target)
@@ -81,27 +158,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var start = ResolveStartScale(options, Vector3.zero);
-            var scaleTarget = ResolveTargetScale(options, originalScale);
-            t.localScale = start;
-
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutSine);
-            var ease = ResolveEase(presetOptions, Ease.OutSine);
-            var seq = DOTween.Sequence();
-
-            seq.Append(t.DOScale(scaleTarget, dur).SetEase(ease));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 1f), dur);
-            if (fadeTween != null)
-            {
-                SetAlpha(target, ResolveStartAlpha(options, 0f));
-                seq.Join(fadeTween.SetEase(Ease.Linear));
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return PopFadeFactory.CreatePopInFade(target, duration, DefaultDuration, options, Ease.OutSine);
         }
 
         public override bool CanApplyTo(GameObject target)
@@ -129,27 +186,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var start = ResolveStartScale(options, Vector3.zero);
-            var scaleTarget = ResolveTargetScale(options, originalScale);
-            t.localScale = start;
-
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutQuart);
-            var ease = ResolveEase(presetOptions, Ease.OutQuart);
-            var seq = DOTween.Sequence();
-
-            seq.Append(t.DOScale(scaleTarget, dur).SetEase(ease));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 1f), dur);
-            if (fadeTween != null)
-            {
-                SetAlpha(target, ResolveStartAlpha(options, 0f));
-                seq.Join(fadeTween.SetEase(Ease.Linear));
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return PopFadeFactory.CreatePopInFade(target, duration, DefaultDuration, options, Ease.OutQuart);
         }
 
         public override bool CanApplyTo(GameObject target)
@@ -185,24 +222,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.InCubic);
-            var ease = ResolveEase(presetOptions, Ease.InCubic);
-
-            var endScale = ResolveTargetScale(options, Vector3.zero);
-            var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(endScale, dur).SetEase(ease));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
-            if (fadeTween != null)
-            {
-                fadeTween.SetEase(Ease.Linear);
-                seq.Join(fadeTween);
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return PopFadeFactory.CreatePopOutFade(target, duration, DefaultDuration, options, Ease.InCubic);
         }
 
         public override bool CanApplyTo(GameObject target)
@@ -230,23 +250,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.InSine);
-            var ease = ResolveEase(presetOptions, Ease.InSine);
-
-            var endScale = ResolveTargetScale(options, Vector3.zero);
-            var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(endScale, dur).SetEase(ease));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
-            if (fadeTween != null)
-            {
-                fadeTween.SetEase(Ease.Linear);
-                seq.Join(fadeTween);
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return PopFadeFactory.CreatePopOutFade(target, duration, DefaultDuration, options, Ease.InSine);
         }
 
         public override bool CanApplyTo(GameObject target)
@@ -274,23 +278,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.InQuart);
-            var ease = ResolveEase(presetOptions, Ease.InQuart);
-
-            var endScale = ResolveTargetScale(options, Vector3.zero);
-            var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(endScale, dur).SetEase(ease));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
-            if (fadeTween != null)
-            {
-                fadeTween.SetEase(Ease.Linear);
-                seq.Join(fadeTween);
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return PopFadeFactory.CreatePopOutFade(target, duration, DefaultDuration, options, Ease.InQuart);
         }
 
         public override bool CanApplyTo(GameObject target)
@@ -325,25 +313,8 @@ namespace LB.TweenHelper
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
-        { 
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
-            var ease = ResolveEase(presetOptions, Ease.InBack);
-
-            var endScale = ResolveTargetScale(options, Vector3.zero);
-            var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(endScale, dur).SetEase(ease));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
-            if (fadeTween != null)
-            {
-                fadeTween.SetEase(Ease.Linear);
-                seq.Join(fadeTween);
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+        {
+            return PopFadeFactory.CreatePopOutFade(target, duration, DefaultDuration, options, Ease.InBack);
         }
 
         public override bool CanApplyTo(GameObject target)
@@ -371,23 +342,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
-            var ease = ResolveEase(presetOptions, Ease.InBack);
-
-            var endScale = ResolveTargetScale(options, Vector3.zero);
-            var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(endScale, dur).SetEase(ease, 2.5f));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
-            if (fadeTween != null)
-            {
-                fadeTween.SetEase(Ease.Linear);
-                seq.Join(fadeTween);
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return PopFadeFactory.CreatePopOutFade(target, duration, DefaultDuration, options, Ease.InBack, explicitOvershoot: 2.5f);
         }
 
         public override bool CanApplyTo(GameObject target)
@@ -415,23 +370,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.InBack);
-            var ease = ResolveEase(presetOptions, Ease.InBack);
-
-            var endScale = ResolveTargetScale(options, Vector3.zero);
-            var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(endScale, dur).SetEase(ease, 6.0f));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
-            if (fadeTween != null)
-            {
-                fadeTween.SetEase(Ease.Linear);
-                seq.Join(fadeTween);
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return PopFadeFactory.CreatePopOutFade(target, duration, DefaultDuration, options, Ease.InBack, explicitOvershoot: 6.0f);
         }
 
         public override bool CanApplyTo(GameObject target)
@@ -468,24 +407,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var dur = GetDuration(duration, options);
-            var scaleEase = ResolveEase(options, Ease.OutQuad);
-            var fadeEase = ResolveSecondaryEase(options, Ease.Linear);
-            var presetOptions = MergeWithDefaultEase(options, scaleEase);
-
-            var explodeTarget = ResolveTargetScale(options, originalScale * 1.5f);
-            var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(explodeTarget, dur).SetEase(scaleEase));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
-            if (fadeTween != null)
-            {
-                seq.Join(fadeTween.SetEase(fadeEase));
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return PopFadeFactory.CreateExplode(target, duration, DefaultDuration, options, Ease.OutQuad, 1.5f);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -510,24 +432,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var dur = GetDuration(duration, options);
-            var scaleEase = ResolveEase(options, Ease.OutSine);
-            var fadeEase = ResolveSecondaryEase(options, Ease.Linear);
-            var presetOptions = MergeWithDefaultEase(options, scaleEase);
-
-            var explodeTarget = ResolveTargetScale(options, originalScale * 1.3f);
-            var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(explodeTarget, dur).SetEase(scaleEase));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
-            if (fadeTween != null)
-            {
-                seq.Join(fadeTween.SetEase(fadeEase));
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return PopFadeFactory.CreateExplode(target, duration, DefaultDuration, options, Ease.OutSine, 1.3f);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;
@@ -552,24 +457,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var dur = GetDuration(duration, options);
-            var scaleEase = ResolveEase(options, Ease.OutCubic);
-            var fadeEase = ResolveSecondaryEase(options, Ease.Linear);
-            var presetOptions = MergeWithDefaultEase(options, scaleEase);
-
-            var explodeTarget = ResolveTargetScale(options, originalScale * 2.0f);
-            var seq = DOTween.Sequence();
-            seq.Join(t.DOScale(explodeTarget, dur).SetEase(scaleEase));
-
-            var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), dur);
-            if (fadeTween != null)
-            {
-                seq.Join(fadeTween.SetEase(fadeEase));
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return PopFadeFactory.CreateExplode(target, duration, DefaultDuration, options, Ease.OutCubic, 2.0f);
         }
 
         public override bool CanApplyTo(GameObject target) => target != null;

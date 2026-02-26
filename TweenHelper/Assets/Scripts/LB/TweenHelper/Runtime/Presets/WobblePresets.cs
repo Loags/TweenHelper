@@ -4,6 +4,19 @@ using UnityEngine;
 namespace LB.TweenHelper
 {
     /// <summary>
+    /// Internal factory for non-fade Wobble variants sharing the same punch rotation structure.
+    /// </summary>
+    internal static class WobbleFactory
+    {
+        public static Tween Create(GameObject target, Vector3 punchVector, float duration, int vibrato, float elasticity, TweenOptions options)
+        {
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            return target.transform.DOPunchRotation(punchVector * strength, duration, vibrato, elasticity)
+                .WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
     /// Wobbles the target's rotation back and forth on the Y axis using DOTween's punch rotation.
     /// <para>
     /// Uses <c>DOPunchRotation</c> with punch vector <c>(0, 15, 0)</c> (15° amplitude), vibrato <c>8</c>,
@@ -29,9 +42,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(0, 15f * strength, 0), GetDuration(duration, options), 8, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(0, 15f, 0), GetDuration(duration, options), 8, 0.5f, options);
         }
     }
 
@@ -56,9 +67,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(0, 8f * strength, 0), GetDuration(duration, options), 5, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(0, 8f, 0), GetDuration(duration, options), 5, 0.5f, options);
         }
     }
 
@@ -83,9 +92,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(0, 25f * strength, 0), GetDuration(duration, options), 12, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(0, 25f, 0), GetDuration(duration, options), 12, 0.5f, options);
         }
     }
 
@@ -115,9 +122,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(15f * strength, 0, 0), GetDuration(duration, options), 8, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(15f, 0, 0), GetDuration(duration, options), 8, 0.5f, options);
         }
     }
 
@@ -142,9 +147,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(8f * strength, 0, 0), GetDuration(duration, options), 5, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(8f, 0, 0), GetDuration(duration, options), 5, 0.5f, options);
         }
     }
 
@@ -169,9 +172,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(25f * strength, 0, 0), GetDuration(duration, options), 12, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(25f, 0, 0), GetDuration(duration, options), 12, 0.5f, options);
         }
     }
 
@@ -201,9 +202,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(0, 0, 11f * strength), GetDuration(duration, options), 7, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(0, 0, 11f), GetDuration(duration, options), 7, 0.5f, options);
         }
     }
 
@@ -228,9 +227,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(0, 0, 8f * strength), GetDuration(duration, options), 6, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(0, 0, 8f), GetDuration(duration, options), 6, 0.5f, options);
         }
     }
 
@@ -255,9 +252,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(0, 0, 25f * strength), GetDuration(duration, options), 10, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(0, 0, 25f), GetDuration(duration, options), 10, 0.5f, options);
         }
     }
 
@@ -287,9 +282,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(12f * strength, 12f * strength, 0f), GetDuration(duration, options), 8, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(12f, 12f, 0f), GetDuration(duration, options), 8, 0.5f, options);
         }
     }
 
@@ -311,9 +304,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(7f * strength, 7f * strength, 0f), GetDuration(duration, options), 5, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(7f, 7f, 0f), GetDuration(duration, options), 5, 0.5f, options);
         }
     }
 
@@ -335,9 +326,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(20f * strength, 20f * strength, 0f), GetDuration(duration, options), 12, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(20f, 20f, 0f), GetDuration(duration, options), 12, 0.5f, options);
         }
     }
 
@@ -367,9 +356,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(12f * strength, 0f, 12f * strength), GetDuration(duration, options), 8, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(12f, 0f, 12f), GetDuration(duration, options), 8, 0.5f, options);
         }
     }
 
@@ -391,9 +378,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(7f * strength, 0f, 7f * strength), GetDuration(duration, options), 5, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(7f, 0f, 7f), GetDuration(duration, options), 5, 0.5f, options);
         }
     }
 
@@ -415,9 +400,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(20f * strength, 0f, 20f * strength), GetDuration(duration, options), 12, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(20f, 0f, 20f), GetDuration(duration, options), 12, 0.5f, options);
         }
     }
 
@@ -447,9 +430,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(0f, 12f * strength, 12f * strength), GetDuration(duration, options), 8, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(0f, 12f, 12f), GetDuration(duration, options), 8, 0.5f, options);
         }
     }
 
@@ -471,9 +452,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(0f, 7f * strength, 7f * strength), GetDuration(duration, options), 5, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(0f, 7f, 7f), GetDuration(duration, options), 5, 0.5f, options);
         }
     }
 
@@ -495,9 +474,259 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            return target.transform.DOPunchRotation(new Vector3(0f, 20f * strength, 20f * strength), GetDuration(duration, options), 12, 0.5f)
-                .WithDefaults(options, target);
+            return WobbleFactory.Create(target, new Vector3(0f, 20f, 20f), GetDuration(duration, options), 12, 0.5f, options);
         }
+    }
+
+    /// <summary>
+    /// Internal factory for WobbleFade variants sharing the same punch rotation + optional fade structure.
+    /// </summary>
+    internal static class WobbleFadeFactory
+    {
+        public static Tween Create(GameObject target, Vector3 punchVector, float duration, int vibrato, float elasticity, TweenOptions options)
+        {
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            var seq = DOTween.Sequence();
+            var endAlpha = CodePreset.ResolveTargetAlphaStatic(options, 0f);
+
+            seq.Join(target.transform.DOPunchRotation(punchVector * strength, duration, vibrato, elasticity));
+
+            var startAlpha = CodePreset.ResolveStartAlphaStatic(options, 1f);
+            var fadeTween = CodePreset.CreateFadeTweenStatic(target, endAlpha, duration);
+            if (fadeTween != null)
+            {
+                CodePreset.SetAlphaStatic(target, startAlpha);
+                seq.Join(fadeTween.SetEase(Ease.Linear));
+                seq.OnComplete(() => CodePreset.SetAlphaStatic(target, endAlpha));
+            }
+
+            return seq.WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Wobbles on X axis while fading out in parallel.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 2.0s | <b>Default fade:</b> Linear to alpha 0<br/>
+    /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.<br/>
+    /// If no fadeable component exists, only the wobble is played.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleFadeX").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleFadeXPreset : CodePreset
+    {
+        public override string PresetName => "WobbleFadeX";
+        public override string Description => "Wobble on X axis with fade out";
+        public override float DefaultDuration => 2.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return WobbleFadeFactory.Create(target, new Vector3(15f, 0f, 0f), GetDuration(duration, options), 8, 0.5f, options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Soft X-axis wobble while fading out.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.6s | <b>Default fade:</b> Linear to alpha 0<br/>
+    /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleFadeXSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleFadeXSoftPreset : CodePreset
+    {
+        public override string PresetName => "WobbleFadeXSoft";
+        public override string Description => "Soft wobble on X axis with fade out";
+        public override float DefaultDuration => 1.6f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return WobbleFadeFactory.Create(target, new Vector3(8f, 0f, 0f), GetDuration(duration, options), 5, 0.5f, options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Heavy X-axis wobble while fading out.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 2.4s | <b>Default fade:</b> Linear to alpha 0<br/>
+    /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleFadeXHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleFadeXHardPreset : CodePreset
+    {
+        public override string PresetName => "WobbleFadeXHard";
+        public override string Description => "Heavy wobble on X axis with fade out";
+        public override float DefaultDuration => 2.4f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return WobbleFadeFactory.Create(target, new Vector3(25f, 0f, 0f), GetDuration(duration, options), 12, 0.5f, options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Wobbles on Y axis while fading out in parallel.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 2.0s | <b>Default fade:</b> Linear to alpha 0<br/>
+    /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleFadeY").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleFadeYPreset : CodePreset
+    {
+        public override string PresetName => "WobbleFadeY";
+        public override string Description => "Wobble on Y axis with fade out";
+        public override float DefaultDuration => 2.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return WobbleFadeFactory.Create(target, new Vector3(0f, 15f, 0f), GetDuration(duration, options), 8, 0.5f, options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Soft Y-axis wobble while fading out.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.6s | <b>Default fade:</b> Linear to alpha 0<br/>
+    /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleFadeYSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleFadeYSoftPreset : CodePreset
+    {
+        public override string PresetName => "WobbleFadeYSoft";
+        public override string Description => "Soft wobble on Y axis with fade out";
+        public override float DefaultDuration => 1.6f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return WobbleFadeFactory.Create(target, new Vector3(0f, 8f, 0f), GetDuration(duration, options), 5, 0.5f, options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Heavy Y-axis wobble while fading out.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 2.4s | <b>Default fade:</b> Linear to alpha 0<br/>
+    /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleFadeYHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleFadeYHardPreset : CodePreset
+    {
+        public override string PresetName => "WobbleFadeYHard";
+        public override string Description => "Heavy wobble on Y axis with fade out";
+        public override float DefaultDuration => 2.4f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return WobbleFadeFactory.Create(target, new Vector3(0f, 25f, 0f), GetDuration(duration, options), 12, 0.5f, options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Wobbles on Z axis while fading out in parallel.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.8s | <b>Default fade:</b> Linear to alpha 0<br/>
+    /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleFadeZ").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleFadeZPreset : CodePreset
+    {
+        public override string PresetName => "WobbleFadeZ";
+        public override string Description => "Wobble on Z axis with fade out";
+        public override float DefaultDuration => 1.8f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return WobbleFadeFactory.Create(target, new Vector3(0f, 0f, 11f), GetDuration(duration, options), 7, 0.5f, options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Soft Z-axis wobble while fading out.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.6s | <b>Default fade:</b> Linear to alpha 0<br/>
+    /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleFadeZSoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleFadeZSoftPreset : CodePreset
+    {
+        public override string PresetName => "WobbleFadeZSoft";
+        public override string Description => "Soft wobble on Z axis with fade out";
+        public override float DefaultDuration => 1.6f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return WobbleFadeFactory.Create(target, new Vector3(0f, 0f, 8f), GetDuration(duration, options), 6, 0.5f, options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Heavy Z-axis wobble while fading out.
+    /// <para>
+    /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 2.4s | <b>Default fade:</b> Linear to alpha 0<br/>
+    /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("WobbleFadeZHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class WobbleFadeZHardPreset : CodePreset
+    {
+        public override string PresetName => "WobbleFadeZHard";
+        public override string Description => "Heavy wobble on Z axis with fade out";
+        public override float DefaultDuration => 2.4f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return WobbleFadeFactory.Create(target, new Vector3(0f, 0f, 25f), GetDuration(duration, options), 10, 0.5f, options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
     }
 }

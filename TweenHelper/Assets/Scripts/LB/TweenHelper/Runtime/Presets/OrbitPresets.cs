@@ -568,4 +568,221 @@ namespace LB.TweenHelper
             return OrbitXYFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: false, radius: 2f);
         }
     }
+
+    /// <summary>
+    /// Internal factory for YZ-plane orbit variants sharing the same callback-chain loop structure.
+    /// </summary>
+    internal static class OrbitYZFactory
+    {
+        public static Tween Create(GameObject target, float? duration, TweenOptions options, bool clockwise, float radius)
+        {
+            var t = target.transform;
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            float scaledRadius = radius * strength;
+            float dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
+            var initialCenter = t.position;
+            float direction = clockwise ? -1f : 1f;
+            const float fullCycle = Mathf.PI * 2f;
+            var orbitEase = options.Ease ?? Ease.Linear;
+            var loopOptions = options;
+            if (!loopOptions.Ease.HasValue)
+            {
+                loopOptions = loopOptions.SetEase(orbitEase);
+            }
+
+            bool applyDelay = true;
+            Tween tween = null;
+
+            Tween CreateCycle()
+            {
+                tween = DOVirtual.Float(0f, fullCycle, dur, angle =>
+                    {
+                        float directedAngle = angle * direction;
+                        Vector3 offset = new Vector3(
+                            0f,
+                            Mathf.Cos(directedAngle) * scaledRadius,
+                            Mathf.Sin(directedAngle) * scaledRadius
+                        );
+                        t.position = initialCenter + offset;
+                    })
+                    .SetEase(orbitEase)
+                    .WithLoopDefaults(loopOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(() => CreateCycle());
+                return tween;
+            }
+
+            return CreateCycle();
+        }
+    }
+
+    /// <summary>
+    /// Orbits the target in a circle on the YZ plane using callback-chain looping.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Easing override:</b> Primary ease controls angular progression.<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("OrbitYZ").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class OrbitYZPreset : CodePreset
+    {
+        public override string PresetName => "OrbitYZ";
+        public override string Description => "Circular orbit on YZ plane";
+        public override float DefaultDuration => 2.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return OrbitYZFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: false, radius: 1f);
+        }
+    }
+
+    /// <summary>
+    /// Orbits the target clockwise on the YZ plane using callback-chain looping.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("OrbitYZClockwise").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class OrbitYZClockwisePreset : CodePreset
+    {
+        public override string PresetName => "OrbitYZClockwise";
+        public override string Description => "Circular orbit on YZ plane (clockwise)";
+        public override float DefaultDuration => 2.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return OrbitYZFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: true, radius: 1f);
+        }
+    }
+
+    /// <summary>
+    /// Orbits the target counter-clockwise on the YZ plane using callback-chain looping.
+    /// <para>
+    /// <b>Type:</b> Looping (callback-chain) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
+    /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("OrbitYZCounterClockwise").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class OrbitYZCounterClockwisePreset : CodePreset
+    {
+        public override string PresetName => "OrbitYZCounterClockwise";
+        public override string Description => "Circular orbit on YZ plane (counter-clockwise)";
+        public override float DefaultDuration => 2.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return OrbitYZFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: false, radius: 1f);
+        }
+    }
+
+    /// <summary>
+    /// Soft clockwise YZ-plane orbit with a small radius (0.5).
+    /// </summary>
+    [AutoRegisterPreset]
+    public class OrbitYZClockwiseSoftPreset : CodePreset
+    {
+        public override string PresetName => "OrbitYZClockwiseSoft";
+        public override string Description => "Small-radius clockwise orbit on YZ plane";
+        public override float DefaultDuration => 2.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return OrbitYZFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: true, radius: 0.5f);
+        }
+    }
+
+    /// <summary>
+    /// Hard clockwise YZ-plane orbit with a large radius (2.0).
+    /// </summary>
+    [AutoRegisterPreset]
+    public class OrbitYZClockwiseHardPreset : CodePreset
+    {
+        public override string PresetName => "OrbitYZClockwiseHard";
+        public override string Description => "Large-radius clockwise orbit on YZ plane";
+        public override float DefaultDuration => 2.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return OrbitYZFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: true, radius: 2f);
+        }
+    }
+
+    /// <summary>
+    /// Soft counter-clockwise YZ-plane orbit with a small radius (0.5).
+    /// </summary>
+    [AutoRegisterPreset]
+    public class OrbitYZCounterClockwiseSoftPreset : CodePreset
+    {
+        public override string PresetName => "OrbitYZCounterClockwiseSoft";
+        public override string Description => "Small-radius counter-clockwise orbit on YZ plane";
+        public override float DefaultDuration => 2.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return OrbitYZFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: false, radius: 0.5f);
+        }
+    }
+
+    /// <summary>
+    /// Hard counter-clockwise YZ-plane orbit with a large radius (2.0).
+    /// </summary>
+    [AutoRegisterPreset]
+    public class OrbitYZCounterClockwiseHardPreset : CodePreset
+    {
+        public override string PresetName => "OrbitYZCounterClockwiseHard";
+        public override string Description => "Large-radius counter-clockwise orbit on YZ plane";
+        public override float DefaultDuration => 2.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return OrbitYZFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: false, radius: 2f);
+        }
+    }
+
+    /// <summary>
+    /// Soft YZ-plane orbit with a small radius (0.5).
+    /// </summary>
+    [AutoRegisterPreset]
+    public class OrbitYZSoftPreset : CodePreset
+    {
+        public override string PresetName => "OrbitYZSoft";
+        public override string Description => "Small-radius orbit on YZ plane";
+        public override float DefaultDuration => 2.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return OrbitYZFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: false, radius: 0.5f);
+        }
+    }
+
+    /// <summary>
+    /// Hard YZ-plane orbit with a large radius (2.0).
+    /// </summary>
+    [AutoRegisterPreset]
+    public class OrbitYZHardPreset : CodePreset
+    {
+        public override string PresetName => "OrbitYZHard";
+        public override string Description => "Large-radius orbit on YZ plane";
+        public override float DefaultDuration => 2.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return OrbitYZFactory.Create(target, duration ?? GetDuration(null, options), options, clockwise: false, radius: 2f);
+        }
+    }
 }

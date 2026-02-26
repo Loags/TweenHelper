@@ -1,0 +1,4214 @@
+﻿=== TweenHelper — Built-In Animation Presets ===
+Generated: 2026-02-26
+
+────────────────────────────────────────
+Project Information
+────────────────────────────────────────
+
+Unity Version:   6000.0.67f1
+DOTween Version: 1.2.765
+Repository:      https://github.com/Loags/TweenHelper
+Author:          Loags
+License:         MIT
+
+────────────────────────────────────────
+About TweenHelper
+────────────────────────────────────────
+
+TweenHelper is a high-level animation facade built on DOTween for Unity.
+It provides a fluent builder API, named presets with auto-registration,
+sequence composition, and automatic cleanup via GameObject linking.
+
+────────────────────────────────────────
+What's Included
+────────────────────────────────────────
+
+Total Presets: 279
+
+Builder Capabilities:
+  Move, Rotate, Scale, Fade, Sequence (Then/With), Async/Await
+
+────────────────────────────────────────
+Architecture Overview
+────────────────────────────────────────
+
+Fluent Builder    — transform.Tween().Move(...).WithEase(...).Play()
+Preset System     — [AutoRegisterPreset] attribute + TweenPresetRegistry auto-discovery
+TweenHandle       — Wrapper with control (Pause/Resume/Kill), status, and async/await
+TweenOptions      — Value-type struct with nullable fields for per-call overrides
+Auto-Cleanup      — SetLink(gameObject) + TweenLifecycleTracker fallback
+Global Defaults   — TweenHelperSettings singleton ScriptableObject
+
+────────────────────────────────────────
+Current Default Settings
+────────────────────────────────────────
+
+Default Duration:  1s
+Default Ease:      OutQuart
+Default Delay:     0s
+
+Safe Mode:         True
+Auto Play:         True
+Auto Kill:         True
+
+Tweener Capacity:  200
+Sequence Capacity: 50
+
+
+────────────────────────────────────────
+Presets
+────────────────────────────────────────
+
+[Attention]
+Description: Attention-grabbing pulse
+
+Performs an attention-grabbing scale pulse with multiple oscillations, looped twice for emphasis.
+
+Builds a 4-step scale sequence: (1) scale to 1.1x at 15% with OutCubic,
+(2) scale to 0.95x at 15% with InCubic, (3) scale to 1.05x at 15% with OutCubic,
+(4) return to original at 15% with OutCubic. The sequence is set to loop 2 times via
+SetLoops(2) (DOTween built-in loops, not callback-chain).
+
+Type: One-shot effect (plays twice via SetLoops) | Default duration: 0.8s per loop | Default ease: OutCubic, InCubic
+
+Easing override: Primary ease controls expand steps; secondary ease controls contract step.
+
+Strength override: Multiplies scale pulse intensity (default 1.0).
+
+Use cases: Call-to-action highlight, notification emphasis, important element pulse, "look here" effect.
+
+Usage: transform.Tween().Preset("Attention").Play();
+
+────────────────────────────────────────
+
+[AttentionHard]
+Description: Hard attention-grabbing pulse
+
+Hard attention pulse with larger oscillations and faster rhythm.
+
+Type: One-shot effect | Default duration: 0.6s | Default ease: OutCubic, InCubic
+
+Strength override: Multiplies scale pulse intensity (default 1.0).
+
+Usage: transform.Tween().Preset("AttentionHard").Play();
+
+────────────────────────────────────────
+
+[AttentionSoft]
+Description: Soft attention-grabbing pulse
+
+Soft attention pulse with smaller oscillations and slower rhythm.
+
+Type: One-shot effect | Default duration: 1.0s | Default ease: OutCubic, InCubic
+
+Strength override: Multiplies scale pulse intensity (default 1.0).
+
+Usage: transform.Tween().Preset("AttentionSoft").Play();
+
+────────────────────────────────────────
+
+[Blink]
+Description: Rapid alpha on/off loop
+
+Rapidly toggles alpha between fully opaque and fully transparent in a continuous loop.
+
+Alternates between fading to 0 and fading to 1, each leg taking half the total duration.
+Uses callback-chain looping so delay applies only on the first cycle.
+Supports CanvasGroup, SpriteRenderer, Image, Text, and Renderer materials.
+
+Type: Looping (callback-chain) | Default duration: 0.4s (0.2s per leg) | Default ease: InOutQuad
+
+Easing override: Primary ease controls fade-off; secondary ease controls fade-on.
+
+Alpha override: TargetAlpha replaces 0 (off alpha).
+
+Requires: A fadeable component.
+
+Use cases: Invincibility blink, warning indicator, cursor blink, selection flash.
+
+Usage: transform.Tween().Preset("Blink").Play();
+
+────────────────────────────────────────
+
+[BlinkHard]
+Description: Rapid alpha on/off loop
+
+Rapid blink that toggles alpha between fully opaque and fully transparent in a continuous loop.
+
+Same callback-chain loop pattern as Blink but with a shorter cycle time for a more urgent effect.
+
+Type: Looping (callback-chain) | Default duration: 0.2s (0.1s per leg) | Default ease: InOutQuad
+
+Easing override: Primary ease controls fade-off; secondary ease controls fade-on.
+
+Alpha override: TargetAlpha replaces 0 (off alpha).
+
+Requires: A fadeable component.
+
+Usage: transform.Tween().Preset("BlinkHard").Play();
+
+────────────────────────────────────────
+
+[BlinkSoft]
+Description: Slow alpha on/off loop
+
+Slower blink that toggles alpha between fully opaque and fully transparent in a continuous loop.
+
+Same callback-chain loop pattern as Blink but with a longer cycle time.
+
+Type: Looping (callback-chain) | Default duration: 0.8s (0.4s per leg) | Default ease: InOutQuad
+
+Easing override: Primary ease controls fade-off; secondary ease controls fade-on.
+
+Alpha override: TargetAlpha replaces 0 (off alpha).
+
+Requires: A fadeable component.
+
+Usage: transform.Tween().Preset("BlinkSoft").Play();
+
+────────────────────────────────────────
+
+[Bounce]
+Description: Positional Y bounce with decreasing hops
+
+Bounces the target on the Y axis with three progressively smaller hops using a sequence.
+
+Builds a 6-step Y-axis sequence: hop 1 rises +1.1, hop 2 rises +0.6, hop 3 rises +0.22.
+Up phases use Ease.OutQuad, down phases use Ease.InQuad.
+
+Type: One-shot effect | Default duration: 1.0s | Default ease: OutQuad (up), InQuad (down)
+
+Easing override: Primary ease controls up phases; secondary ease controls down phases.
+
+Strength override: Multiplies bounce height and squash intensity (default 1.0).
+
+Use cases: Ball bounce, character hop, playful feedback, item arrival.
+
+Usage: transform.Tween().Preset("Bounce").Play();
+
+────────────────────────────────────────
+
+[BounceCartoon]
+Description: Cartoon bounce with squash-stretch on landing
+
+Cartoon-style bounce with a big hop, squash-stretch on landing, and three decreasing hops.
+
+Builds a multi-step sequence: initial hop to 2.5 units, squash on landing (1.4x wide, 0.6y tall),
+then 3 decreasing hops with progressively smaller squash. Total duration 1.4s.
+
+Type: One-shot effect | Default duration: 1.4s | Default ease: InQuad (fall), OutQuad (hop)
+
+Strength override: Multiplies drop height and squash intensity (default 1.0).
+
+Usage: transform.Tween().Preset("BounceCartoon").Play();
+
+────────────────────────────────────────
+
+[BounceCartoonHard]
+Description: Hard cartoon bounce with exaggerated squash-stretch
+
+Hard cartoon-style bounce with exaggerated hops and strong squash-stretch.
+
+Builds a multi-step sequence: initial hop to 3.5 units, then decreasing hops (1.8, 0.8)
+with heavy squash deformation. Uses InCubic/OutQuad easing.
+
+Type: One-shot effect | Default duration: 1.1s | Default ease: InCubic (fall), OutQuad (hop)
+
+Strength override: Multiplies drop height and squash intensity (default 1.0).
+
+Usage: transform.Tween().Preset("BounceCartoonHard").Play();
+
+────────────────────────────────────────
+
+[BounceCartoonSoft]
+Description: Soft cartoon bounce with gentle squash-stretch
+
+Soft cartoon-style bounce with smaller hops and gentler squash-stretch.
+
+Builds a multi-step sequence: initial hop to 1.5 units, then decreasing hops (0.7, 0.3)
+with mild squash deformation. Uses InSine/OutSine easing.
+
+Type: One-shot effect | Default duration: 1.8s | Default ease: InSine (fall), OutSine (hop)
+
+Strength override: Multiplies drop height and squash intensity (default 1.0).
+
+Usage: transform.Tween().Preset("BounceCartoonSoft").Play();
+
+────────────────────────────────────────
+
+[BounceHard]
+Description: Heavy bounce with tall hops
+
+Heavy positional Y bounce with tall hops.
+
+Type: One-shot effect | Default duration: 1.3s | Default ease: OutQuad (up), InQuad (down)
+
+Strength override: Multiplies bounce height and squash intensity (default 1.0).
+
+Usage: transform.Tween().Preset("BounceHard").Play();
+
+────────────────────────────────────────
+
+[BounceLand]
+Description: Drop with bounce and squash-stretch on landing
+
+Drops the target from 5 units above with two bounces, applying squash-stretch deformation on each impact.
+
+Offsets Y by +5, then builds a multi-step sequence combining position and scale:
+(1) fall to target (30%), (2) squash on impact (1.3x, 0.7y) then restore (5%+5%),
+(3) bounce 1 up to 35% height (12%+12%), (4) smaller squash (1.15x, 0.85y) then restore (4%+4%),
+(5) bounce 2 up to 10% height (9%+9%), (6) final scale settle (5%).
+Falls use Ease.InQuad, bounces use Ease.OutQuad.
+
+Type: One-shot entrance | Default duration: 2.0s | Default ease: InQuad (fall), OutQuad (bounce)
+
+Easing override: Primary ease controls falls; secondary ease controls bounce-ups.
+
+Strength override: Multiplies drop height and squash intensity (default 1.0).
+
+Use cases: Heavy object landing, character ground pound, cartoon drop, dramatic arrival.
+
+Usage: transform.Tween().Preset("BounceLand").Play();
+
+────────────────────────────────────────
+
+[BounceLandHard]
+Description: Heavy drop with sharp bounce and exaggerated squash-stretch
+
+Heavy drop from 7 units above with sharp bounce and exaggerated squash-stretch on landing.
+
+Offsets Y by +7, then builds a multi-step sequence with InCubic fall
+and strong squash deformation (1.45x, 0.55y) / (1.25x, 0.75y).
+
+Type: One-shot entrance | Default duration: 1.6s | Default ease: InCubic (fall), OutQuad (bounce)
+
+Strength override: Multiplies drop height and squash intensity (default 1.0).
+
+Usage: transform.Tween().Preset("BounceLandHard").Play();
+
+────────────────────────────────────────
+
+[BounceLandSoft]
+Description: Gentle drop with soft bounce and mild squash-stretch
+
+Gentle drop from 4 units above with soft bounce and mild squash-stretch on landing.
+
+Offsets Y by +4, then builds a multi-step sequence with InSine fall
+and gentle squash deformation (1.2x, 0.8y) / (1.1x, 0.9y).
+
+Type: One-shot entrance | Default duration: 2.4s | Default ease: InSine (fall), OutSine (bounce)
+
+Strength override: Multiplies drop height and squash intensity (default 1.0).
+
+Usage: transform.Tween().Preset("BounceLandSoft").Play();
+
+────────────────────────────────────────
+
+[BounceSoft]
+Description: Soft bounce
+
+Soft positional Y bounce with small hops.
+
+Type: One-shot effect | Default duration: 0.9s | Default ease: OutQuad (up), InQuad (down)
+
+Strength override: Multiplies bounce height and squash intensity (default 1.0).
+
+Usage: transform.Tween().Preset("BounceSoft").Play();
+
+────────────────────────────────────────
+
+[Breathe]
+Description: Gentle scale pulse loop
+
+Continuously pulses scale between original and 1.08x in a smooth breathing rhythm using callback-chain looping.
+
+Alternates between expanding to originalScale * 1.08 and contracting back to original scale,
+each leg taking half the total duration. Uses callback-chain looping (not DOTween's built-in loops)
+so delay is applied only on the first cycle via WithLoopDefaults.
+
+Type: Looping (callback-chain) | Default duration: 4.0s (2.0s per leg) | Default ease: InOutSine
+
+Easing override: Primary ease controls expand leg; secondary ease controls contract leg.
+
+Strength override: Multiplies scale pulse intensity (default 1.0).
+
+Use cases: Idle animation, living object indicator, ambient pulsing, selectable item highlight.
+
+Usage: transform.Tween().Preset("Breathe").Play();
+
+────────────────────────────────────────
+
+[BreatheHard]
+Description: Hard intense scale pulse loop
+
+Hard breathing loop with larger scale range and faster rhythm.
+
+Type: Looping (callback-chain) | Default duration: 3.0s | Default ease: InOutSine
+
+Strength override: Multiplies scale pulse intensity (default 1.0).
+
+Usage: transform.Tween().Preset("BreatheHard").Play();
+
+────────────────────────────────────────
+
+[BreatheSoft]
+Description: Soft gentle scale pulse loop
+
+Soft breathing loop with smaller scale range and slower rhythm.
+
+Type: Looping (callback-chain) | Default duration: 5.0s | Default ease: InOutSine
+
+Strength override: Multiplies scale pulse intensity (default 1.0).
+
+Usage: transform.Tween().Preset("BreatheSoft").Play();
+
+────────────────────────────────────────
+
+[DropIn]
+Description: Falls from above with bounce on landing
+
+Drops the target from 8 units above with three progressively smaller bounces on landing.
+
+Offsets Y by +8, then builds a 7-step Y-axis sequence: fall to target (40%), then three
+bounce pairs (up/down) with decreasing heights: 30%→10%→3% of drop height. Fall phases use
+Ease.InQuad (accelerating), bounce-up phases use Ease.OutQuad (decelerating).
+
+Type: One-shot entrance | Default duration: 1.2s | Default ease: InQuad (fall), OutQuad (bounce)
+
+Easing override: Primary ease controls fall phases; secondary ease controls bounce-up phases.
+
+Strength override: Multiplies drop height and squash intensity (default 1.0).
+
+Use cases: Object drop entrance, physics-style landing, dramatic item reveal, game piece placement.
+
+Usage: transform.Tween().Preset("DropIn").Play();
+
+────────────────────────────────────────
+
+[DropInHard]
+Description: Heavy drop with sharp bounce decay
+
+Heavy drop from 10 units above with sharper bounce decay, creating a weighty landing effect.
+
+Offsets Y by +10, then builds a sequence with InCubic fall and 2 bounces
+with sharper height decay than standard DropIn.
+
+Type: One-shot entrance | Default duration: 0.9s | Default ease: InCubic (fall), OutQuad (bounce)
+
+Strength override: Multiplies drop height and squash intensity (default 1.0).
+
+Usage: transform.Tween().Preset("DropInHard").Play();
+
+────────────────────────────────────────
+
+[DropInSoft]
+Description: Gentle drop with soft bounce on landing
+
+Gentle drop from 6 units above with soft bounce on landing.
+
+Offsets Y by +6, then builds a sequence with InSine fall and 3 soft bounces
+with heights at 25%, 8%, 2% of drop height. Uses OutSine for bounce-up phases.
+
+Type: One-shot entrance | Default duration: 1.5s | Default ease: InSine (fall), OutSine (bounce)
+
+Strength override: Multiplies drop height and squash intensity (default 1.0).
+
+Usage: transform.Tween().Preset("DropInSoft").Play();
+
+────────────────────────────────────────
+
+[Explode]
+Description: Scale up and fade out simultaneously
+
+Scales the target up to 1.5x its original size while simultaneously fading out, creating a burst/explosion effect.
+
+Builds a parallel sequence: scale to originalScale * 1.5 with Ease.OutQuad
+(fast initial burst), joined with fade to 0 using Ease.Linear.
+If no fadeable component exists, only the scale animation plays.
+
+Type: One-shot exit | Default duration: 0.6s | Default ease: OutQuad (scale), Linear (fade)
+
+Easing override: Primary ease controls scale; secondary ease controls fade.
+
+Scale override: TargetScale replaces the expanded scale (originalScale × 1.5).
+
+Alpha override: TargetAlpha replaces 0.
+
+Use cases: Explosion effect, particle burst, destruction animation, energy release.
+
+Usage: transform.Tween().Preset("Explode").Play();
+
+────────────────────────────────────────
+
+[ExplodeHard]
+Description: Aggressive scale up and fade out
+
+Aggressive explosion effect with rapid expansion and fade.
+
+Type: One-shot exit | Default duration: 0.4s | Default ease: OutCubic (scale), Linear (fade)
+
+Scale override: TargetScale replaces the expanded scale (originalScale × 2.0).
+
+Alpha override: TargetAlpha replaces 0.
+
+Usage: transform.Tween().Preset("ExplodeHard").Play();
+
+────────────────────────────────────────
+
+[ExplodeSoft]
+Description: Gentle scale up and fade out
+
+Gentle explosion effect with slower expansion and fade.
+
+Type: One-shot exit | Default duration: 0.8s | Default ease: OutSine (scale), Linear (fade)
+
+Scale override: TargetScale replaces the expanded scale (originalScale × 1.3).
+
+Alpha override: TargetAlpha replaces 0.
+
+Usage: transform.Tween().Preset("ExplodeSoft").Play();
+
+────────────────────────────────────────
+
+[FadeIn]
+Description: Fades in from transparent (requires fadeable component)
+
+Fades the target in from fully transparent (alpha 0) to fully opaque (alpha 1).
+
+Initializes alpha to 0 at the start, then creates a fade tween to 1.0.
+Uses OutQuad ease by default for a quick start that decelerates toward full visibility.
+Supports CanvasGroup, SpriteRenderer, Image, Text, and Renderer materials.
+
+Type: One-shot entry | Default duration: 3.0s | Default ease: OutQuad
+
+Easing override: Standard options apply via WithDefaults.
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Requires: A fadeable component (CanvasGroup, SpriteRenderer, Image, Text, or Renderer with material).
+
+Use cases: Scene transition reveal, gradual element appearance, cinematic fade-in.
+
+Usage: transform.Tween().Preset("FadeIn").Play();
+
+────────────────────────────────────────
+
+[FadeInHard]
+Description: Quick fade in from transparent (requires fadeable component)
+
+Quick fade in from transparent — shorter duration for a snappy appearance.
+
+Initializes alpha to 0, then creates a fade tween to 1.0.
+Uses Ease.OutQuad for a fast start that decelerates toward full visibility.
+
+Type: One-shot entry | Default duration: 1.0s | Default ease: OutQuad
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Requires: A fadeable component.
+
+Usage: transform.Tween().Preset("FadeInHard").Play();
+
+────────────────────────────────────────
+
+[FadeInOut]
+Description: Fade in then fade out
+
+Fades in from transparent to opaque in the first half, then fades back out to transparent in the second half.
+
+Sets initial alpha to 0, then builds a 2-step sequence: (1) fade to 1.0 over 35% duration,
+(2) fade to 0.0 over 65% duration. Returns null if the target lacks a fadeable component.
+
+Type: One-shot effect | Default duration: 2.0s | Default ease: InOutSine (both phases)
+
+Easing override: Primary ease controls fade-in; secondary ease controls fade-out.
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1 (peak).
+
+Requires: A fadeable component.
+
+Use cases: Temporary reveal, ghost appearance, flash highlight, transient notification.
+
+Usage: transform.Tween().Preset("FadeInOut").Play();
+
+────────────────────────────────────────
+
+[FadeInOutHard]
+Description: Quick fade in then quick fade out
+
+Quick fade in then quick fade out — shorter duration for a snappy flash appearance.
+
+Sets initial alpha to 0, fades in over 35% of duration, fades out over 65%.
+Uses Ease.InOutSine for smooth transitions.
+
+Type: One-shot effect | Default duration: 1.0s | Default ease: InOutSine
+
+Easing override: Primary ease controls fade-in; secondary ease controls fade-out.
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1 (peak).
+
+Requires: A fadeable component.
+
+Usage: transform.Tween().Preset("FadeInOutHard").Play();
+
+────────────────────────────────────────
+
+[FadeInOutSoft]
+Description: Slow fade in then slow fade out
+
+Slow fade in then slow fade out — longer duration for a gentle, ambient appearance.
+
+Sets initial alpha to 0, fades in over 35% of duration, fades out over 65%.
+Uses Ease.InOutSine for smooth transitions.
+
+Type: One-shot effect | Default duration: 3.0s | Default ease: InOutSine
+
+Easing override: Primary ease controls fade-in; secondary ease controls fade-out.
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1 (peak).
+
+Requires: A fadeable component.
+
+Usage: transform.Tween().Preset("FadeInOutSoft").Play();
+
+────────────────────────────────────────
+
+[FadeInSoft]
+Description: Slow fade in from transparent (requires fadeable component)
+
+Slow fade in from transparent — longer duration for a gentle, gradual appearance.
+
+Initializes alpha to 0, then creates a fade tween to 1.0.
+Uses Ease.InQuad for a gentle start that slowly accelerates toward full visibility.
+
+Type: One-shot entry | Default duration: 5.0s | Default ease: InQuad
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Requires: A fadeable component.
+
+Usage: transform.Tween().Preset("FadeInSoft").Play();
+
+────────────────────────────────────────
+
+[FadeOut]
+Description: Fades out to transparent (requires fadeable component)
+
+Fades the target out from its current alpha to fully transparent (alpha 0).
+
+Creates a fade tween to 0.0 using the default ease from TweenHelperSettings.
+Does not override the initial alpha — fades from whatever the current value is.
+Supports CanvasGroup, SpriteRenderer, Image, Text, and Renderer materials.
+
+Type: One-shot exit | Default duration: 3.0s | Default ease: Settings default
+
+Easing override: Standard options apply via WithDefaults.
+
+Alpha override: TargetAlpha replaces 0.
+
+Requires: A fadeable component (CanvasGroup, SpriteRenderer, Image, Text, or Renderer with material).
+
+Use cases: Scene transition fade-out, element dismissal, death effect, gradual disappearance.
+
+Usage: transform.Tween().Preset("FadeOut").Play();
+
+────────────────────────────────────────
+
+[FadeOutHard]
+Description: Quick fade out to transparent (requires fadeable component)
+
+Quick fade out from current alpha to fully transparent with a fast start.
+
+Creates a fade tween to 0.0 using Ease.OutQuad for a snappy disappearance
+that decelerates toward full transparency.
+
+Type: One-shot exit | Default duration: 1.0s | Default ease: OutQuad
+
+Alpha override: TargetAlpha replaces 0.
+
+Requires: A fadeable component.
+
+Usage: transform.Tween().Preset("FadeOutHard").Play();
+
+────────────────────────────────────────
+
+[FadeOutSoft]
+Description: Slow fade out to transparent (requires fadeable component)
+
+Slow fade out from current alpha to fully transparent with a gradual start.
+
+Creates a fade tween to 0.0 using Ease.InQuad for a gentle, lingering disappearance.
+Does not override the initial alpha — fades from whatever the current value is.
+
+Type: One-shot exit | Default duration: 5.0s | Default ease: InQuad
+
+Alpha override: TargetAlpha replaces 0.
+
+Requires: A fadeable component.
+
+Usage: transform.Tween().Preset("FadeOutSoft").Play();
+
+────────────────────────────────────────
+
+[Flicker]
+Description: Randomized alpha flicker effect
+
+Produces randomized alpha flickering using Perlin noise, snapping to full opacity on completion.
+
+Uses DOVirtual.Float(0, 1, dur) with a per-invocation random seed to sample
+Mathf.PerlinNoise(seed + t * 12, 0) each frame, directly setting the target's alpha.
+The 12x time multiplier produces rapid, organic fluctuations. On complete, alpha is
+explicitly set to 1.0 to ensure a clean final state.
+
+Type: One-shot effect | Default duration: 1.0s | Default ease: Linear (progress)
+
+Easing override: Ease has minimal visible effect (controls progress, not noise).
+
+Requires: A fadeable component.
+
+Use cases: Torch/campfire flicker, electrical malfunction, glitch effect, dying light.
+
+Usage: transform.Tween().Preset("Flicker").Play();
+
+────────────────────────────────────────
+
+[FlickerHard]
+Description: Rapid randomized alpha flicker
+
+Rapid, aggressive alpha flicker using Perlin noise with double the oscillation frequency.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: Linear (progress)
+
+Requires: A fadeable component.
+
+Usage: transform.Tween().Preset("FlickerHard").Play();
+
+────────────────────────────────────────
+
+[FlickerSoft]
+Description: Slow randomized alpha flicker
+
+Slower, gentler alpha flicker using Perlin noise with half the oscillation frequency.
+
+Type: One-shot effect | Default duration: 1.5s | Default ease: Linear (progress)
+
+Requires: A fadeable component.
+
+Usage: transform.Tween().Preset("FlickerSoft").Play();
+
+────────────────────────────────────────
+
+[FlipX]
+Description: 180° flip on X axis
+
+Flips the target 180 degrees on the X axis using additive local rotation.
+
+Rotates by (180, 0, 0) using RotateMode.LocalAxisAdd with Ease.InOutQuad.
+LocalAxisAdd ensures the rotation is added to the current orientation rather than targeting
+an absolute angle, making it safe to chain multiple flips.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: InOutQuad
+
+Easing override: Primary ease replaces InOutQuad.
+
+Strength override: Multiplies flip degrees (default 1.0).
+
+Use cases: Card flip, page turn, reveal animation, object inspection.
+
+Usage: transform.Tween().Preset("FlipX").Play();
+
+────────────────────────────────────────
+
+[FlipXHard]
+Description: Quick 180° flip on X axis
+
+Quick 180° flip on the X axis — shorter duration for a snappy rotation.
+
+Rotates by (180, 0, 0) using RotateMode.LocalAxisAdd with Ease.OutQuad.
+
+Type: One-shot effect | Default duration: 0.25s | Default ease: OutQuad
+
+Strength override: Multiplies flip degrees (default 1.0).
+
+Usage: transform.Tween().Preset("FlipXHard").Play();
+
+────────────────────────────────────────
+
+[FlipXSoft]
+Description: Slow 180° flip on X axis
+
+Slow 180° flip on the X axis — longer duration for a gentle, cinematic rotation.
+
+Rotates by (180, 0, 0) using RotateMode.LocalAxisAdd with Ease.InOutSine.
+
+Type: One-shot effect | Default duration: 0.8s | Default ease: InOutSine
+
+Strength override: Multiplies flip degrees (default 1.0).
+
+Usage: transform.Tween().Preset("FlipXSoft").Play();
+
+────────────────────────────────────────
+
+[FlipY]
+Description: 180° flip on Y axis
+
+Flips the target 180 degrees on the Y axis using additive local rotation.
+
+Rotates by (0, 180, 0) using RotateMode.LocalAxisAdd with Ease.InOutQuad.
+LocalAxisAdd ensures the rotation is added to the current orientation rather than targeting
+an absolute angle, making it safe to chain multiple flips.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: InOutQuad
+
+Easing override: Primary ease replaces InOutQuad.
+
+Strength override: Multiplies flip degrees (default 1.0).
+
+Use cases: Horizontal card flip, character turn-around, mirror reveal, about-face.
+
+Usage: transform.Tween().Preset("FlipY").Play();
+
+────────────────────────────────────────
+
+[FlipYHard]
+Description: Quick 180° flip on Y axis
+
+Quick 180° flip on the Y axis — shorter duration for a snappy rotation.
+
+Rotates by (0, 180, 0) using RotateMode.LocalAxisAdd with Ease.OutQuad.
+
+Type: One-shot effect | Default duration: 0.25s | Default ease: OutQuad
+
+Strength override: Multiplies flip degrees (default 1.0).
+
+Usage: transform.Tween().Preset("FlipYHard").Play();
+
+────────────────────────────────────────
+
+[FlipYSoft]
+Description: Slow 180° flip on Y axis
+
+Slow 180° flip on the Y axis — longer duration for a gentle, cinematic rotation.
+
+Rotates by (0, 180, 0) using RotateMode.LocalAxisAdd with Ease.InOutSine.
+
+Type: One-shot effect | Default duration: 0.8s | Default ease: InOutSine
+
+Strength override: Multiplies flip degrees (default 1.0).
+
+Usage: transform.Tween().Preset("FlipYSoft").Play();
+
+────────────────────────────────────────
+
+[FlipZ]
+Description: 180° flip on Z axis
+
+Flips the target 180 degrees on the Z axis using additive local rotation.
+
+Rotates by (0, 0, 180) using RotateMode.LocalAxisAdd with Ease.InOutQuad.
+LocalAxisAdd ensures the rotation is added to the current orientation rather than targeting
+an absolute angle, making it safe to chain multiple flips.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: InOutQuad
+
+Easing override: Primary ease replaces InOutQuad.
+
+Strength override: Multiplies flip degrees (default 1.0).
+
+Use cases: Barrel roll, coin spin, stylized rotation transition.
+
+Usage: transform.Tween().Preset("FlipZ").Play();
+
+────────────────────────────────────────
+
+[FlipZHard]
+Description: Quick 180° flip on Z axis
+
+Quick 180° flip on the Z axis — shorter duration for a snappy rotation.
+
+Rotates by (0, 0, 180) using RotateMode.LocalAxisAdd with Ease.OutQuad.
+
+Type: One-shot effect | Default duration: 0.25s | Default ease: OutQuad
+
+Strength override: Multiplies flip degrees (default 1.0).
+
+Usage: transform.Tween().Preset("FlipZHard").Play();
+
+────────────────────────────────────────
+
+[FlipZSoft]
+Description: Slow 180° flip on Z axis
+
+Slow 180° flip on the Z axis — longer duration for a gentle, cinematic rotation.
+
+Rotates by (0, 0, 180) using RotateMode.LocalAxisAdd with Ease.InOutSine.
+
+Type: One-shot effect | Default duration: 0.8s | Default ease: InOutSine
+
+Strength override: Multiplies flip degrees (default 1.0).
+
+Usage: transform.Tween().Preset("FlipZSoft").Play();
+
+────────────────────────────────────────
+
+[Float]
+Description: Gentle up/down hovering loop
+
+Gently bobs the target up and down on the Y axis in a continuous hovering loop using callback-chain looping.
+
+Alternates between moving +0.5 and -0.5 on local Y (relative), each leg taking
+half the total duration. Uses SetRelative(true) for position-independent movement.
+Callback-chain looping ensures delay is applied only on the first cycle via WithLoopDefaults.
+
+Type: Looping (callback-chain) | Default duration: 6.0s (3.0s per leg) | Default ease: InOutCubic
+
+Easing override: Primary ease controls upward leg; secondary ease controls downward leg.
+
+Strength override: Multiplies float height (default 1.0).
+
+Use cases: Floating collectible, hover indicator, ambient object bob, idle character float.
+
+Usage: transform.Tween().Preset("Float").Play();
+
+────────────────────────────────────────
+
+[FloatHard]
+Description: Hard pronounced hovering loop
+
+Hard float with larger range and faster speed.
+
+Type: Looping (callback-chain) | Default duration: 5.0s | Default ease: InOutCubic
+
+Strength override: Multiplies float height (default 1.0).
+
+Usage: transform.Tween().Preset("FloatHard").Play();
+
+────────────────────────────────────────
+
+[FloatSoft]
+Description: Soft gentle hovering loop
+
+Soft float with smaller range and slower speed.
+
+Type: Looping (callback-chain) | Default duration: 7.0s | Default ease: InOutCubic
+
+Strength override: Multiplies float height (default 1.0).
+
+Usage: transform.Tween().Preset("FloatSoft").Play();
+
+────────────────────────────────────────
+
+[Heartbeat]
+Description: Double-pulse heartbeat loop
+
+Simulates a heartbeat with two scale pulses per cycle: a smaller beat followed by a larger beat, then a rest pause.
+
+Each cycle is a sequence: (1) scale to 1.15x at 12% duration, (2) return to original at 12%,
+(3) scale to 1.25x at 12%, (4) return to original at 14%, (5) pause for 50% duration.
+Uses callback-chain looping with a new sequence per cycle; delay applies only on first cycle.
+
+Type: Looping (callback-chain, sequence per cycle) | Default duration: 0.8s per cycle | Default ease: OutQuad (beat), InQuad (return)
+
+Easing override: Primary ease controls beat pulses; secondary ease controls return-to-rest phases.
+
+Strength override: Multiplies scale pulse intensity (default 1.0).
+
+Use cases: Health indicator, living entity, emotional feedback, interactive object highlight.
+
+Usage: transform.Tween().Preset("Heartbeat").Play();
+
+────────────────────────────────────────
+
+[HeartbeatHard]
+Description: Hard intense heartbeat loop
+
+Hard heartbeat with larger pulses and faster rhythm.
+
+Type: Looping (callback-chain) | Default duration: 0.6s per cycle | Default ease: OutQuad (beat), InQuad (return)
+
+Strength override: Multiplies scale pulse intensity (default 1.0).
+
+Usage: transform.Tween().Preset("HeartbeatHard").Play();
+
+────────────────────────────────────────
+
+[HeartbeatSoft]
+Description: Soft double-pulse heartbeat loop
+
+Soft heartbeat with smaller pulses and slower rhythm.
+
+Type: Looping (callback-chain) | Default duration: 1.0s per cycle | Default ease: OutQuad (beat), InQuad (return)
+
+Strength override: Multiplies scale pulse intensity (default 1.0).
+
+Usage: transform.Tween().Preset("HeartbeatSoft").Play();
+
+────────────────────────────────────────
+
+[Jitter]
+Description: Tight rapid vibration
+
+Produces a tight, rapid vibration effect using DOTween's position shake with very high frequency.
+
+Uses DOShakePosition with strength 0.06, vibrato 35, randomness 90°,
+snapping disabled, and fade-out enabled.
+
+Type: One-shot effect | Default duration: 0.25s | Default ease: DOTween shake default
+
+Easing override: No ease override (shake tweens use internal decay).
+
+Strength override: Multiplies jitter range (default 1.0).
+
+Use cases: Nervous tremor, electrical buzz, cold shiver, error micro-shake.
+
+Usage: transform.Tween().Preset("Jitter").Play();
+
+────────────────────────────────────────
+
+[JitterHard]
+Description: Intense rapid vibration
+
+Intense rapid vibration with high amplitude and extreme vibrato.
+
+Uses DOShakePosition with strength 0.15, vibrato 50.
+
+Type: One-shot effect | Default duration: 0.4s
+
+Strength override: Multiplies jitter range (default 1.0).
+
+Usage: transform.Tween().Preset("JitterHard").Play();
+
+────────────────────────────────────────
+
+[JitterSoft]
+Description: Soft rapid vibration
+
+Soft rapid vibration with very low amplitude and moderate vibrato.
+
+Uses DOShakePosition with strength 0.04, vibrato 30.
+
+Type: One-shot effect | Default duration: 0.2s
+
+Strength override: Multiplies jitter range (default 1.0).
+
+Usage: transform.Tween().Preset("JitterSoft").Play();
+
+────────────────────────────────────────
+
+[LaunchDown]
+Description: Quick downward motion with ease-out
+
+Launches the target 3 units downward from its current local position with a decelerating ease.
+
+Type: One-shot effect (non-returning) | Default duration: 0.4s | Default ease: OutCubic
+
+Usage: transform.Tween().Preset("LaunchDown").Play();
+
+────────────────────────────────────────
+
+[LaunchDownHard]
+Description: Forceful downward motion with ease-out
+
+Forceful downward launch — longer distance (5 units) for a dramatic drop.
+
+Type: One-shot effect (non-returning) | Default duration: 0.5s | Default ease: OutCubic
+
+Usage: transform.Tween().Preset("LaunchDownHard").Play();
+
+────────────────────────────────────────
+
+[LaunchDownSoft]
+Description: Gentle downward motion with ease-out
+
+Gentle downward launch — shorter distance (1.5 units) for a subtle drop.
+
+Type: One-shot effect (non-returning) | Default duration: 0.3s | Default ease: OutCubic
+
+Usage: transform.Tween().Preset("LaunchDownSoft").Play();
+
+────────────────────────────────────────
+
+[LaunchLeft]
+Description: Quick leftward motion with ease-out
+
+Launches the target 3 units to the left from its current local position with a decelerating ease.
+
+Type: One-shot effect (non-returning) | Default duration: 0.4s | Default ease: OutCubic
+
+Usage: transform.Tween().Preset("LaunchLeft").Play();
+
+────────────────────────────────────────
+
+[LaunchLeftHard]
+Description: Forceful leftward motion with ease-out
+
+Forceful leftward launch — longer distance (5 units) for a dramatic exit.
+
+Type: One-shot effect (non-returning) | Default duration: 0.5s | Default ease: OutCubic
+
+Usage: transform.Tween().Preset("LaunchLeftHard").Play();
+
+────────────────────────────────────────
+
+[LaunchLeftSoft]
+Description: Gentle leftward motion with ease-out
+
+Gentle leftward launch — shorter distance (1.5 units) for a subtle slide.
+
+Type: One-shot effect (non-returning) | Default duration: 0.3s | Default ease: OutCubic
+
+Usage: transform.Tween().Preset("LaunchLeftSoft").Play();
+
+────────────────────────────────────────
+
+[LaunchRight]
+Description: Quick rightward motion with ease-out
+
+Launches the target 3 units to the right from its current local position with a decelerating ease.
+
+Type: One-shot effect (non-returning) | Default duration: 0.4s | Default ease: OutCubic
+
+Usage: transform.Tween().Preset("LaunchRight").Play();
+
+────────────────────────────────────────
+
+[LaunchRightHard]
+Description: Forceful rightward motion with ease-out
+
+Forceful rightward launch — longer distance (5 units) for a dramatic exit.
+
+Type: One-shot effect (non-returning) | Default duration: 0.5s | Default ease: OutCubic
+
+Usage: transform.Tween().Preset("LaunchRightHard").Play();
+
+────────────────────────────────────────
+
+[LaunchRightSoft]
+Description: Gentle rightward motion with ease-out
+
+Gentle rightward launch — shorter distance (1.5 units) for a subtle slide.
+
+Type: One-shot effect (non-returning) | Default duration: 0.3s | Default ease: OutCubic
+
+Usage: transform.Tween().Preset("LaunchRightSoft").Play();
+
+────────────────────────────────────────
+
+[LaunchUp]
+Description: Quick upward motion with ease-out
+
+Launches the target 3 units upward from its current local Y position with a decelerating ease.
+
+Animates local Y position by +3 using DOLocalMoveY with Ease.OutCubic.
+The deceleration simulates a projectile losing momentum as it rises. Does not return to origin.
+
+Type: One-shot effect (non-returning) | Default duration: 0.4s | Default ease: OutCubic
+
+Easing override: Primary ease replaces OutCubic.
+
+Strength override: Multiplies launch distance (default 1.0).
+
+Use cases: Projectile launch, item toss, upward exit, jump start.
+
+Usage: transform.Tween().Preset("LaunchUp").Play();
+
+────────────────────────────────────────
+
+[LaunchUpHard]
+Description: Forceful upward motion with ease-out
+
+Forceful upward launch — longer distance (5 units) for a dramatic lift.
+
+Type: One-shot effect (non-returning) | Default duration: 0.5s | Default ease: OutCubic
+
+Strength override: Multiplies launch distance (default 1.0).
+
+Usage: transform.Tween().Preset("LaunchUpHard").Play();
+
+────────────────────────────────────────
+
+[LaunchUpSoft]
+Description: Gentle upward motion with ease-out
+
+Gentle upward launch — shorter distance (1.5 units) for a subtle lift.
+
+Type: One-shot effect (non-returning) | Default duration: 0.3s | Default ease: OutCubic
+
+Strength override: Multiplies launch distance (default 1.0).
+
+Usage: transform.Tween().Preset("LaunchUpSoft").Play();
+
+────────────────────────────────────────
+
+[Nod]
+Description: X-axis tilt forward then spring back
+
+Tilts the target forward on the X axis then springs back to the original rotation.
+
+Builds a 2-step sequence: (1) rotate to original + (11, 0, 0) over 40% duration with
+Ease.OutQuad, (2) return to original rotation over 60% duration with Ease.OutBack.
+
+Type: One-shot effect | Default duration: 0.35s | Default ease: OutQuad (lean), OutBack (return)
+
+Easing override: Primary ease controls forward lean; secondary ease controls springy return.
+
+Strength override: Multiplies tilt angle (default 1.0).
+
+Use cases: Agreeing nod, acknowledgment gesture, bow, forward peek.
+
+Usage: transform.Tween().Preset("Nod").Play();
+
+────────────────────────────────────────
+
+[NodHard]
+Description: Deep forward tilt and spring back
+
+Deep forward tilt and spring back on X axis.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: OutQuad (lean), OutBack (return)
+
+Strength override: Multiplies tilt angle (default 1.0).
+
+Usage: transform.Tween().Preset("NodHard").Play();
+
+────────────────────────────────────────
+
+[NodSoft]
+Description: Soft forward tilt and spring back
+
+Soft forward tilt and spring back on X axis.
+
+Type: One-shot effect | Default duration: 0.3s | Default ease: OutQuad (lean), OutBack (return)
+
+Strength override: Multiplies tilt angle (default 1.0).
+
+Usage: transform.Tween().Preset("NodSoft").Play();
+
+────────────────────────────────────────
+
+[Nudge]
+Description: Small push right then spring back
+
+Nudges the target slightly to the right then springs it back to the original position.
+
+Builds a 2-step relative sequence: (1) move +0.3 on local X over 30% duration with Ease.OutQuad,
+(2) move -0.3 on local X over 70% duration with Ease.OutBack (springy return).
+Both steps use SetRelative(true), so the target returns to its original position.
+
+Type: One-shot feedback | Default duration: 0.3s | Default ease: OutQuad (push), OutBack (return)
+
+Easing override: Primary ease controls push; secondary ease controls springy return.
+
+Strength override: Multiplies nudge distance (default 1.0).
+
+Use cases: Notification nudge, attention tap, gentle directional hint, interactive prompt.
+
+Usage: transform.Tween().Preset("Nudge").Play();
+
+────────────────────────────────────────
+
+[NudgeDown]
+Description: Small push down then spring back
+
+Nudges the target downward then springs back to original position.
+
+Type: One-shot feedback | Default duration: 0.3s | Default ease: OutQuad (push), OutBack (return)
+
+Usage: transform.Tween().Preset("NudgeDown").Play();
+
+────────────────────────────────────────
+
+[NudgeDownHard]
+Description: Strong push down then spring back
+
+Hard nudge downward then spring back.
+
+Type: One-shot feedback | Default duration: 0.35s | Default ease: OutQuad (push), OutBack (return)
+
+Usage: transform.Tween().Preset("NudgeDownHard").Play();
+
+────────────────────────────────────────
+
+[NudgeDownSoft]
+Description: Gentle push down then spring back
+
+Soft nudge downward then spring back.
+
+Type: One-shot feedback | Default duration: 0.25s | Default ease: OutQuad (push), OutBack (return)
+
+Usage: transform.Tween().Preset("NudgeDownSoft").Play();
+
+────────────────────────────────────────
+
+[NudgeHard]
+Description: Strong push right then spring back
+
+Hard nudge to the right then spring back. Larger distance, snappier feel.
+
+Type: One-shot feedback | Default duration: 0.35s | Default ease: OutQuad (push), OutBack (return)
+
+Strength override: Multiplies nudge distance (default 1.0).
+
+Usage: transform.Tween().Preset("NudgeHard").Play();
+
+────────────────────────────────────────
+
+[NudgeLeft]
+Description: Small push left then spring back
+
+Nudges the target to the left then springs back to original position.
+
+Type: One-shot feedback | Default duration: 0.3s | Default ease: OutQuad (push), OutBack (return)
+
+Usage: transform.Tween().Preset("NudgeLeft").Play();
+
+────────────────────────────────────────
+
+[NudgeLeftHard]
+Description: Strong push left then spring back
+
+Hard nudge to the left then spring back.
+
+Type: One-shot feedback | Default duration: 0.35s | Default ease: OutQuad (push), OutBack (return)
+
+Usage: transform.Tween().Preset("NudgeLeftHard").Play();
+
+────────────────────────────────────────
+
+[NudgeLeftSoft]
+Description: Gentle push left then spring back
+
+Soft nudge to the left then spring back.
+
+Type: One-shot feedback | Default duration: 0.25s | Default ease: OutQuad (push), OutBack (return)
+
+Usage: transform.Tween().Preset("NudgeLeftSoft").Play();
+
+────────────────────────────────────────
+
+[NudgeRight]
+Description: Small push right then spring back
+
+Nudges the target to the right then springs back to original position.
+
+Type: One-shot feedback | Default duration: 0.3s | Default ease: OutQuad (push), OutBack (return)
+
+Usage: transform.Tween().Preset("NudgeRight").Play();
+
+────────────────────────────────────────
+
+[NudgeRightHard]
+Description: Strong push right then spring back
+
+Hard nudge to the right then spring back.
+
+Type: One-shot feedback | Default duration: 0.35s | Default ease: OutQuad (push), OutBack (return)
+
+Usage: transform.Tween().Preset("NudgeRightHard").Play();
+
+────────────────────────────────────────
+
+[NudgeRightSoft]
+Description: Gentle push right then spring back
+
+Soft nudge to the right then spring back.
+
+Type: One-shot feedback | Default duration: 0.25s | Default ease: OutQuad (push), OutBack (return)
+
+Usage: transform.Tween().Preset("NudgeRightSoft").Play();
+
+────────────────────────────────────────
+
+[NudgeSoft]
+Description: Gentle push right then spring back
+
+Soft nudge to the right then spring back. Smaller distance, shorter duration.
+
+Type: One-shot feedback | Default duration: 0.25s | Default ease: OutQuad (push), OutBack (return)
+
+Strength override: Multiplies nudge distance (default 1.0).
+
+Usage: transform.Tween().Preset("NudgeSoft").Play();
+
+────────────────────────────────────────
+
+[NudgeUp]
+Description: Small push up then spring back
+
+Nudges the target upward then springs back to original position.
+
+Type: One-shot feedback | Default duration: 0.3s | Default ease: OutQuad (push), OutBack (return)
+
+Usage: transform.Tween().Preset("NudgeUp").Play();
+
+────────────────────────────────────────
+
+[NudgeUpHard]
+Description: Strong push up then spring back
+
+Hard nudge upward then spring back.
+
+Type: One-shot feedback | Default duration: 0.35s | Default ease: OutQuad (push), OutBack (return)
+
+Usage: transform.Tween().Preset("NudgeUpHard").Play();
+
+────────────────────────────────────────
+
+[NudgeUpSoft]
+Description: Gentle push up then spring back
+
+Soft nudge upward then spring back.
+
+Type: One-shot feedback | Default duration: 0.25s | Default ease: OutQuad (push), OutBack (return)
+
+Usage: transform.Tween().Preset("NudgeUpSoft").Play();
+
+────────────────────────────────────────
+
+[OrbitXY]
+Description: Circular orbit on XY plane
+
+Orbits the target in a circle on the XY plane (2D-friendly) using callback-chain looping.
+
+Uses DOVirtual.Float driving a parametric circle with cos on X and sin on Y,
+radius of 1.0, centered on the starting world position. Unlike the XZ-plane Orbit presets,
+this operates on XY for 2D games. Callback-chain looping restarts each full 2pi cycle;
+delay applies only on first cycle.
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Easing override: Primary ease controls angular progression.
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Use cases: 2D orbiting object, circular indicator, shield rotation, radial menu animation.
+
+Usage: transform.Tween().Preset("OrbitXY").Play();
+
+────────────────────────────────────────
+
+[OrbitXYClockwise]
+Description: Circular orbit on XY plane (clockwise)
+
+Orbits the target clockwise on the XY plane using callback-chain looping.
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Easing override: Primary ease controls angular progression.
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitXYClockwise").Play();
+
+────────────────────────────────────────
+
+[OrbitXYClockwiseHard]
+Description: Large-radius clockwise orbit on XY plane
+
+Hard clockwise XY-plane orbit with a large radius (2.0).
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitXYClockwiseHard").Play();
+
+────────────────────────────────────────
+
+[OrbitXYClockwiseSoft]
+Description: Small-radius clockwise orbit on XY plane
+
+Soft clockwise XY-plane orbit with a small radius (0.5).
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitXYClockwiseSoft").Play();
+
+────────────────────────────────────────
+
+[OrbitXYCounterClockwise]
+Description: Circular orbit on XY plane (counter-clockwise)
+
+Orbits the target counter-clockwise on the XY plane using callback-chain looping.
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Easing override: Primary ease controls angular progression.
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitXYCounterClockwise").Play();
+
+────────────────────────────────────────
+
+[OrbitXYCounterClockwiseHard]
+Description: Large-radius counter-clockwise orbit on XY plane
+
+Hard counter-clockwise XY-plane orbit with a large radius (2.0).
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitXYCounterClockwiseHard").Play();
+
+────────────────────────────────────────
+
+[OrbitXYCounterClockwiseSoft]
+Description: Small-radius counter-clockwise orbit on XY plane
+
+Soft counter-clockwise XY-plane orbit with a small radius (0.5).
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitXYCounterClockwiseSoft").Play();
+
+────────────────────────────────────────
+
+[OrbitXYHard]
+Description: Large-radius orbit on XY plane
+
+Hard XY-plane orbit with a large radius (2.0).
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitXYHard").Play();
+
+────────────────────────────────────────
+
+[OrbitXYSoft]
+Description: Small-radius orbit on XY plane
+
+Soft XY-plane orbit with a small radius (0.5).
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitXYSoft").Play();
+
+────────────────────────────────────────
+
+[OrbitXZ]
+Description: Circles around a point on XZ plane (counter-clockwise)
+
+Orbits the target counter-clockwise around its starting position on the XZ plane using callback-chain looping.
+
+Uses DOVirtual.Float to drive a parametric circle (cos/sin) on X/Z with configurable start/end radii
+(default 1.0). Supports Rigidbody targets via MovePosition. Runs on UpdateType.Fixed.
+Callback-chain looping restarts each full 2pi cycle; delay applies only on first cycle.
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Easing override: Primary ease controls angular progression (Linear recommended for uniform speed).
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Use cases: Orbiting satellite, patrol path, circular particle motion, planetary display.
+
+Usage: transform.Tween().Preset("OrbitXZ").Play();
+
+────────────────────────────────────────
+
+[OrbitXZClockwise]
+Description: Circles around a point on XZ plane (clockwise)
+
+Orbits the target clockwise around its starting position on the XZ plane using callback-chain looping.
+
+Identical to  but with reversed direction (clockwise). Uses the shared
+OrbitTweenFactory with clockwise: true, inverting the angular direction.
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Easing override: Primary ease controls angular progression.
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Use cases: Clockwise patrol, reversed orbital motion, mirrored satellite.
+
+Usage: transform.Tween().Preset("OrbitXZClockwise").Play();
+
+────────────────────────────────────────
+
+[OrbitXZClockwiseHard]
+Description: Large-radius clockwise orbit on XZ plane
+
+Hard clockwise XZ-plane orbit with a large radius (2.0).
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitXZClockwiseHard").Play();
+
+────────────────────────────────────────
+
+[OrbitXZClockwiseSoft]
+Description: Small-radius clockwise orbit on XZ plane
+
+Soft clockwise XZ-plane orbit with a small radius (0.5).
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitXZClockwiseSoft").Play();
+
+────────────────────────────────────────
+
+[OrbitXZCounterClockwise]
+Description: Circles around a point on XZ plane (counter-clockwise)
+
+Orbits the target counter-clockwise around its starting position on the XZ plane using callback-chain looping.
+
+Explicit counter-clockwise variant of . Functionally identical to OrbitXZ
+but provides a semantically clear name when both directions are used in the same project.
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Easing override: Primary ease controls angular progression.
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Use cases: Counter-clockwise patrol, explicit direction pairing with OrbitXZClockwise.
+
+Usage: transform.Tween().Preset("OrbitXZCounterClockwise").Play();
+
+────────────────────────────────────────
+
+[OrbitXZCounterClockwiseHard]
+Description: Large-radius counter-clockwise orbit on XZ plane
+
+Hard counter-clockwise XZ-plane orbit with a large radius (2.0).
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitXZCounterClockwiseHard").Play();
+
+────────────────────────────────────────
+
+[OrbitXZCounterClockwiseSoft]
+Description: Small-radius counter-clockwise orbit on XZ plane
+
+Soft counter-clockwise XZ-plane orbit with a small radius (0.5).
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitXZCounterClockwiseSoft").Play();
+
+────────────────────────────────────────
+
+[OrbitXZHard]
+Description: Large-radius orbit on XZ plane
+
+Hard XZ-plane orbit with a large radius (2.0).
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitXZHard").Play();
+
+────────────────────────────────────────
+
+[OrbitXZSoft]
+Description: Small-radius orbit on XZ plane
+
+Soft XZ-plane orbit with a small radius (0.5).
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitXZSoft").Play();
+
+────────────────────────────────────────
+
+[OrbitYZ]
+Description: Circular orbit on YZ plane
+
+Orbits the target in a circle on the YZ plane using callback-chain looping.
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Easing override: Primary ease controls angular progression.
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitYZ").Play();
+
+────────────────────────────────────────
+
+[OrbitYZClockwise]
+Description: Circular orbit on YZ plane (clockwise)
+
+Orbits the target clockwise on the YZ plane using callback-chain looping.
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitYZClockwise").Play();
+
+────────────────────────────────────────
+
+[OrbitYZClockwiseHard]
+Description: Large-radius clockwise orbit on YZ plane
+
+Hard clockwise YZ-plane orbit with a large radius (2.0).
+
+────────────────────────────────────────
+
+[OrbitYZClockwiseSoft]
+Description: Small-radius clockwise orbit on YZ plane
+
+Soft clockwise YZ-plane orbit with a small radius (0.5).
+
+────────────────────────────────────────
+
+[OrbitYZCounterClockwise]
+Description: Circular orbit on YZ plane (counter-clockwise)
+
+Orbits the target counter-clockwise on the YZ plane using callback-chain looping.
+
+Type: Looping (callback-chain) | Default duration: 2.0s per revolution | Default ease: Linear
+
+Strength override: Multiplies orbit radius (default 1.0).
+
+Usage: transform.Tween().Preset("OrbitYZCounterClockwise").Play();
+
+────────────────────────────────────────
+
+[OrbitYZCounterClockwiseHard]
+Description: Large-radius counter-clockwise orbit on YZ plane
+
+Hard counter-clockwise YZ-plane orbit with a large radius (2.0).
+
+────────────────────────────────────────
+
+[OrbitYZCounterClockwiseSoft]
+Description: Small-radius counter-clockwise orbit on YZ plane
+
+Soft counter-clockwise YZ-plane orbit with a small radius (0.5).
+
+────────────────────────────────────────
+
+[OrbitYZHard]
+Description: Large-radius orbit on YZ plane
+
+Hard YZ-plane orbit with a large radius (2.0).
+
+────────────────────────────────────────
+
+[OrbitYZSoft]
+Description: Small-radius orbit on YZ plane
+
+Soft YZ-plane orbit with a small radius (0.5).
+
+────────────────────────────────────────
+
+[PendulumX]
+Description: Gentle X-axis pendulum loop
+
+Gentle X-axis pendulum loop. Nods forward/back continuously.
+
+Type: Looping (callback-chain) | Default duration: 2.8s (1.4s per leg) | Default ease: InOutSine
+
+Easing override: Primary ease controls first swing; secondary ease controls return swing.
+
+Strength override: Multiplies swing angle (default 1.0).
+
+Usage: transform.Tween().Preset("PendulumX").Play();
+
+────────────────────────────────────────
+
+[PendulumXHard]
+Description: Wide X-axis pendulum loop
+
+Wide X-axis pendulum loop with large angle.
+
+Type: Looping (callback-chain) | Default duration: 3.5s | Default ease: InOutSine
+
+Strength override: Multiplies swing angle (default 1.0).
+
+Usage: transform.Tween().Preset("PendulumXHard").Play();
+
+────────────────────────────────────────
+
+[PendulumXSoft]
+Description: Soft X-axis pendulum loop
+
+Soft X-axis pendulum loop with small angle.
+
+Type: Looping (callback-chain) | Default duration: 2.5s | Default ease: InOutSine
+
+Strength override: Multiplies swing angle (default 1.0).
+
+Usage: transform.Tween().Preset("PendulumXSoft").Play();
+
+────────────────────────────────────────
+
+[PendulumY]
+Description: Gentle Y-axis pendulum loop
+
+Gentle Y-axis pendulum loop. Tilts side-to-side continuously.
+
+Type: Looping (callback-chain) | Default duration: 2.8s (1.4s per leg) | Default ease: InOutSine
+
+Easing override: Primary ease controls first swing; secondary ease controls return swing.
+
+Strength override: Multiplies swing angle (default 1.0).
+
+Usage: transform.Tween().Preset("PendulumY").Play();
+
+────────────────────────────────────────
+
+[PendulumYHard]
+Description: Wide Y-axis pendulum loop
+
+Wide Y-axis pendulum loop with large angle.
+
+Type: Looping (callback-chain) | Default duration: 3.5s | Default ease: InOutSine
+
+Strength override: Multiplies swing angle (default 1.0).
+
+Usage: transform.Tween().Preset("PendulumYHard").Play();
+
+────────────────────────────────────────
+
+[PendulumYSoft]
+Description: Soft Y-axis pendulum loop
+
+Soft Y-axis pendulum loop with small angle.
+
+Type: Looping (callback-chain) | Default duration: 2.5s | Default ease: InOutSine
+
+Strength override: Multiplies swing angle (default 1.0).
+
+Usage: transform.Tween().Preset("PendulumYSoft").Play();
+
+────────────────────────────────────────
+
+[PendulumZ]
+Description: Gentle Z-axis pendulum loop
+
+Gentle Z-axis pendulum loop. Swings left then right continuously.
+
+Type: Looping (callback-chain) | Default duration: 2.8s (1.4s per leg) | Default ease: InOutSine
+
+Easing override: Primary ease controls left-swing; secondary ease controls right-swing.
+
+Strength override: Multiplies swing angle (default 1.0).
+
+Use cases: Pendulum swing, cradle rock, hanging sign, idle sway, metronome.
+
+Usage: transform.Tween().Preset("PendulumZ").Play();
+
+────────────────────────────────────────
+
+[PendulumZHard]
+Description: Wide Z-axis pendulum loop
+
+Wide Z-axis pendulum loop with large angle.
+
+Type: Looping (callback-chain) | Default duration: 3.5s | Default ease: InOutSine
+
+Strength override: Multiplies swing angle (default 1.0).
+
+Usage: transform.Tween().Preset("PendulumZHard").Play();
+
+────────────────────────────────────────
+
+[PendulumZSoft]
+Description: Soft Z-axis pendulum loop
+
+Soft Z-axis pendulum loop with small angle.
+
+Type: Looping (callback-chain) | Default duration: 2.5s | Default ease: InOutSine
+
+Strength override: Multiplies swing angle (default 1.0).
+
+Usage: transform.Tween().Preset("PendulumZSoft").Play();
+
+────────────────────────────────────────
+
+[PopIn]
+Description: Scales from 0 to original scale, no overshoot
+
+Scales cleanly from zero to original scale without overshoot.
+
+Sets initial scale to Vector3.zero and animates to original scale using Ease.OutQuad.
+
+Type: One-shot entrance | Default duration: 0.6s | Default ease: OutQuad
+
+Easing override: Primary ease replaces OutQuad.
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Use cases: UI element entrance, item spawn, notification pop-up, dialog appearance.
+
+Usage: transform.Tween().Preset("PopIn").Play();
+
+────────────────────────────────────────
+
+[PopInFade]
+Description: Scales and fades in together
+
+Scales the target from zero to original while simultaneously fading in from transparent to opaque.
+
+Sets initial scale to Vector3.zero and alpha to 0. Builds a parallel sequence:
+scale uses Ease.OutCubic, fade uses Ease.Linear (so alpha doesn't rush ahead of scale).
+If no fadeable component exists, only the scale animation plays. Always returns a valid tween
+(CanApplyTo returns true for any non-null target).
+
+Type: One-shot entrance | Default duration: 2.0s | Default ease: OutCubic (scale), Linear (fade)
+
+Easing override: Primary ease controls scale; fade is always Linear.
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Use cases: UI element entrance, dialog appearance, smooth combined reveal, material-design entrance.
+
+Usage: transform.Tween().Preset("PopInFade").Play();
+
+────────────────────────────────────────
+
+[PopInFadeHard]
+Description: Hard scales and fades in together
+
+Hard scales the target from zero to original while simultaneously fading in.
+
+Type: One-shot entrance | Default duration: 1.4s | Default ease: OutQuart (scale), Linear (fade)
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Usage: transform.Tween().Preset("PopInFadeHard").Play();
+
+────────────────────────────────────────
+
+[PopInFadeSoft]
+Description: Soft scales and fades in together
+
+Soft scales the target from zero to original while simultaneously fading in.
+
+Type: One-shot entrance | Default duration: 2.5s | Default ease: OutSine (scale), Linear (fade)
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Usage: transform.Tween().Preset("PopInFadeSoft").Play();
+
+────────────────────────────────────────
+
+[PopInHard]
+Description: Fast scale entrance, no overshoot
+
+Fast entrance scaling from zero with a snappy OutQuart ease, no overshoot.
+
+Type: One-shot entrance | Default duration: 0.3s | Default ease: OutQuart
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Usage: transform.Tween().Preset("PopInHard").Play();
+
+────────────────────────────────────────
+
+[PopInOvershoot]
+Description: Scales from 0 to original scale with overshoot
+
+Scales the target from zero past its original scale (1.2x), then settles back.
+
+Sets initial scale to Vector3.zero, scales up to originalScale * 1.2 in the first half,
+then eases back to originalScale in the second half.
+
+Type: One-shot entrance | Default duration: 1.0s | Default ease: OutQuad (scale-up), InOutSine (settle)
+
+Easing override: Primary ease applies to the sequence.
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale (overshoot is relative to TargetScale).
+
+Use cases: Bouncy UI entrance, item spawn with pop, playful notification.
+
+Usage: transform.Tween().Preset("PopInOvershoot").Play();
+
+────────────────────────────────────────
+
+[PopInOvershootHard]
+Description: Snappy scale entrance with strong overshoot
+
+Scales the target from zero past its original scale (1.4x), then snaps back.
+
+Sets initial scale to Vector3.zero, scales up to originalScale * 1.4 in the first half,
+then eases back to originalScale in the second half.
+
+Type: One-shot entrance | Default duration: 0.8s | Default ease: OutQuad (scale-up), InOutSine (settle)
+
+Easing override: Primary ease applies to the sequence.
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale (overshoot is relative to TargetScale).
+
+Use cases: Punchy UI entrance, dramatic item spawn, emphatic notification pop.
+
+Usage: transform.Tween().Preset("PopInOvershootHard").Play();
+
+────────────────────────────────────────
+
+[PopInOvershootSoft]
+Description: Gentle scale entrance with mild OutBack overshoot
+
+Scales the target from zero past its original scale (1.1x), then gently settles back.
+
+Sets initial scale to Vector3.zero, scales up to originalScale * 1.1 in the first half,
+then eases back to originalScale in the second half.
+
+Type: One-shot entrance | Default duration: 1.2s | Default ease: OutQuad (scale-up), InOutSine (settle)
+
+Easing override: Primary ease applies to the sequence.
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale (overshoot is relative to TargetScale).
+
+Use cases: Gentle bouncy UI entrance, subtle item spawn, soft notification pop.
+
+Usage: transform.Tween().Preset("PopInOvershootSoft").Play();
+
+────────────────────────────────────────
+
+[PopInSoft]
+Description: Gentle scale entrance, no overshoot
+
+Gentle entrance scaling from zero with a slow OutSine ease, no overshoot.
+
+Type: One-shot entrance | Default duration: 0.8s | Default ease: OutSine
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Usage: transform.Tween().Preset("PopInSoft").Play();
+
+────────────────────────────────────────
+
+[PopOut]
+Description: Scales to 0, no anticipation
+
+Scales the target down to zero with a clean deceleration, no anticipation overshoot.
+
+Animates scale to Vector3.zero using Ease.InCubic.
+
+Type: One-shot exit | Default duration: 0.4s | Default ease: InCubic
+
+Easing override: Primary ease replaces InCubic.
+
+Scale override: TargetScale replaces zero.
+
+Use cases: UI element dismissal, item collection, dialog close, notification dismiss.
+
+Usage: transform.Tween().Preset("PopOut").Play();
+
+────────────────────────────────────────
+
+[PopOutFade]
+Description: Scales down and fades out together, no anticipation
+
+Scales the target down to zero while simultaneously fading out to transparent.
+
+Builds a parallel sequence: scale to Vector3.zero with Ease.InCubic (no anticipation),
+fade to 0 with Ease.Linear. If no fadeable component exists, only the scale animation plays.
+
+Type: One-shot exit | Default duration: 1.2s | Default ease: InCubic (scale), Linear (fade)
+
+Easing override: Primary ease controls scale; fade is always Linear.
+
+Scale override: TargetScale replaces zero.
+
+Alpha override: TargetAlpha replaces 0.
+
+Use cases: UI element dismissal, dialog close, combined exit, material-design exit.
+
+Usage: transform.Tween().Preset("PopOutFade").Play();
+
+────────────────────────────────────────
+
+[PopOutFadeHard]
+Description: Hard scales down and fades out together
+
+Hard scales the target down to zero while simultaneously fading out.
+
+Type: One-shot exit | Default duration: 0.8s | Default ease: InQuart (scale), Linear (fade)
+
+Scale override: TargetScale replaces zero.
+
+Alpha override: TargetAlpha replaces 0.
+
+Usage: transform.Tween().Preset("PopOutFadeHard").Play();
+
+────────────────────────────────────────
+
+[PopOutFadeOvershoot]
+Description: Scales down and fades out with anticipation overshoot
+
+Scales the target down to zero while fading out, with anticipation overshoot on scale.
+
+Builds a parallel sequence: scale to Vector3.zero with Ease.InBack (anticipation),
+joined with fade to 0 using Ease.Linear.
+
+Type: One-shot exit | Default duration: 1.2s | Default ease: InBack (scale), Linear (fade)
+
+Easing override: Primary ease controls scale; fade is always Linear.
+
+Scale override: TargetScale replaces zero.
+
+Alpha override: TargetAlpha replaces 0.
+
+Use cases: UI element dismissal with anticipation, dialog close with overshoot, combined exit.
+
+Usage: transform.Tween().Preset("PopOutFadeOvershoot").Play();
+
+────────────────────────────────────────
+
+[PopOutFadeOvershootHard]
+Description: Hard scales down and fades out with strong overshoot
+
+Hard scales the target down to zero while fading out, with strong anticipation overshoot on scale.
+
+Type: One-shot exit | Default duration: 0.8s | Default ease: InBack (overshoot 6.0, scale), Linear (fade)
+
+Scale override: TargetScale replaces zero.
+
+Alpha override: TargetAlpha replaces 0.
+
+Usage: transform.Tween().Preset("PopOutFadeOvershootHard").Play();
+
+────────────────────────────────────────
+
+[PopOutFadeOvershootSoft]
+Description: Soft scales down and fades out with mild overshoot
+
+Soft scales the target down to zero while fading out, with mild anticipation overshoot on scale.
+
+Type: One-shot exit | Default duration: 1.6s | Default ease: InBack (overshoot 2.5, scale), Linear (fade)
+
+Scale override: TargetScale replaces zero.
+
+Alpha override: TargetAlpha replaces 0.
+
+Usage: transform.Tween().Preset("PopOutFadeOvershootSoft").Play();
+
+────────────────────────────────────────
+
+[PopOutFadeSoft]
+Description: Soft scales down and fades out together
+
+Soft scales the target down to zero while simultaneously fading out.
+
+Type: One-shot exit | Default duration: 1.6s | Default ease: InSine (scale), Linear (fade)
+
+Scale override: TargetScale replaces zero.
+
+Alpha override: TargetAlpha replaces 0.
+
+Usage: transform.Tween().Preset("PopOutFadeSoft").Play();
+
+────────────────────────────────────────
+
+[PopOutHard]
+Description: Hard scale exit, no anticipation
+
+Hard exit scaling to zero with a snappy InQuart ease.
+
+Type: One-shot exit | Default duration: 0.25s | Default ease: InQuart
+
+Scale override: TargetScale replaces zero.
+
+Usage: transform.Tween().Preset("PopOutHard").Play();
+
+────────────────────────────────────────
+
+[PopOutOvershoot]
+Description: Scales to 0 with anticipation overshoot
+
+Scales the target down to zero with a brief anticipation pull-back.
+
+Animates scale to Vector3.zero using Ease.InBack.
+
+Type: One-shot exit | Default duration: 0.4s | Default ease: InBack
+
+Easing override: Primary ease replaces InBack.
+
+Scale override: TargetScale replaces zero.
+
+Use cases: UI element dismissal with anticipation, item collection, dialog close with overshoot.
+
+Usage: transform.Tween().Preset("PopOutOvershoot").Play();
+
+────────────────────────────────────────
+
+[PopOutOvershootHard]
+Description: Hard scale exit with strong overshoot
+
+Scales the target down to zero with a strong anticipation pull-back (overshoot 6.0).
+
+Animates scale to Vector3.zero using Ease.InBack with overshoot 6.0.
+
+Type: One-shot exit | Default duration: 0.25s | Default ease: InBack (overshoot 6.0)
+
+Easing override: Primary ease replaces InBack; overshoot parameter is preserved.
+
+Scale override: TargetScale replaces zero.
+
+Use cases: Emphatic UI dismissal, punchy item collection, dramatic dialog close with strong wind-up.
+
+Usage: transform.Tween().Preset("PopOutOvershootHard").Play();
+
+────────────────────────────────────────
+
+[PopOutOvershootSoft]
+Description: Soft scale exit with mild overshoot
+
+Scales the target down to zero with a mild anticipation pull-back (overshoot 2.5).
+
+Animates scale to Vector3.zero using Ease.InBack with overshoot 2.5.
+
+Type: One-shot exit | Default duration: 0.6s | Default ease: InBack (overshoot 2.5)
+
+Easing override: Primary ease replaces InBack; overshoot parameter is preserved.
+
+Scale override: TargetScale replaces zero.
+
+Use cases: Gentle UI dismissal with subtle anticipation, soft dialog close, understated exit.
+
+Usage: transform.Tween().Preset("PopOutOvershootSoft").Play();
+
+────────────────────────────────────────
+
+[PopOutSoft]
+Description: Soft scale exit, no anticipation
+
+Soft exit scaling to zero with a slow InSine ease.
+
+Type: One-shot exit | Default duration: 0.6s | Default ease: InSine
+
+Scale override: TargetScale replaces zero.
+
+Usage: transform.Tween().Preset("PopOutSoft").Play();
+
+────────────────────────────────────────
+
+[PulseFade]
+Description: Smooth alpha pulse loop
+
+Smoothly pulses alpha between fully opaque and 30% opacity in a continuous loop.
+
+Alternates between fading down to 0.3 and fading back to 1.0, each leg taking
+half the total duration. Unlike Blink (which goes to 0), this maintains partial visibility
+throughout. Uses callback-chain looping; delay applies only on the first cycle.
+
+Type: Looping (callback-chain) | Default duration: 2.0s (1.0s per leg) | Default ease: InOutSine
+
+Easing override: Primary ease controls fade-down; secondary ease controls fade-up.
+
+Alpha override: TargetAlpha replaces low-point alpha.
+
+Requires: A fadeable component.
+
+Use cases: Breathing glow, selection highlight pulse, ambient object shimmer, status indicator.
+
+Usage: transform.Tween().Preset("PulseFade").Play();
+
+────────────────────────────────────────
+
+[PulseFadeHard]
+Description: Fast punchy alpha pulse loop
+
+Fast, punchy alpha pulse between fully opaque and 10% opacity in a continuous loop.
+
+Same callback-chain loop pattern as PulseFade but with a shorter cycle time and deeper
+fade depth for a more intense, urgent effect.
+
+Type: Looping (callback-chain) | Default duration: 1.0s (0.5s per leg) | Default ease: InOutSine
+
+Easing override: Primary ease controls fade-down; secondary ease controls fade-up.
+
+Alpha override: TargetAlpha replaces low-point alpha.
+
+Requires: A fadeable component.
+
+Usage: transform.Tween().Preset("PulseFadeHard").Play();
+
+────────────────────────────────────────
+
+[PulseFadeSoft]
+Description: Slow gentle alpha pulse loop
+
+Slow, gentle alpha pulse between fully opaque and 50% opacity in a continuous loop.
+
+Same callback-chain loop pattern as PulseFade but with a longer cycle time and shallower
+fade depth for a more subtle breathing effect.
+
+Type: Looping (callback-chain) | Default duration: 3.0s (1.5s per leg) | Default ease: InOutSine
+
+Easing override: Primary ease controls fade-down; secondary ease controls fade-up.
+
+Alpha override: TargetAlpha replaces low-point alpha.
+
+Requires: A fadeable component.
+
+Usage: transform.Tween().Preset("PulseFadeSoft").Play();
+
+────────────────────────────────────────
+
+[PulseScale]
+Description: Quick scale bump for interactive feedback
+
+Performs a quick scale bump up to 1.14x then back to original, ideal for tap or click feedback.
+
+Builds a 2-step sequence: (1) scale to originalScale * 1.14 over 40% duration with Ease.OutQuad,
+(2) return to original scale over 60% duration with Ease.InQuad.
+
+Type: One-shot feedback | Default duration: 0.28s | Default ease: OutQuad (up), InQuad (down)
+
+Easing override: Primary ease controls scale-up; secondary ease controls scale-down.
+
+Strength override: Multiplies scale pulse intensity (default 1.0).
+
+Use cases: Button tap feedback, toggle state change, counter increment, selection highlight.
+
+Usage: transform.Tween().Preset("PulseScale").Play();
+
+────────────────────────────────────────
+
+[PulseScaleHard]
+Description: Bold scale bump for emphatic feedback
+
+Bold scale bump to 1.25x then back to original, for emphatic feedback.
+
+Type: One-shot feedback | Default duration: 0.35s | Default ease: OutQuad (up), InQuad (down)
+
+Easing override: Primary ease controls scale-up; secondary ease controls scale-down.
+
+Strength override: Multiplies scale pulse intensity (default 1.0).
+
+Usage: transform.Tween().Preset("PulseScaleHard").Play();
+
+────────────────────────────────────────
+
+[PulseScaleSoft]
+Description: Soft scale bump for light feedback
+
+Soft scale bump to 1.08x then back to original, for understated feedback.
+
+Type: One-shot feedback | Default duration: 0.25s | Default ease: OutQuad (up), InQuad (down)
+
+Easing override: Primary ease controls scale-up; secondary ease controls scale-down.
+
+Strength override: Multiplies scale pulse intensity (default 1.0).
+
+Usage: transform.Tween().Preset("PulseScaleSoft").Play();
+
+────────────────────────────────────────
+
+[Punch]
+Description: Quick scale punch for feedback
+
+Applies a quick scale punch for tactile feedback, snapping outward then settling back to original scale.
+
+Uses DOPunchScale with punch vector Vector3.one * 0.11, vibrato 5,
+and elasticity 0.7. The punch creates a brief scale burst that oscillates and decays.
+
+Type: One-shot feedback | Default duration: 0.18s | Default ease: DOTween punch default
+
+Easing override: No ease override (punch tweens use internal oscillation).
+
+Strength override: Multiplies punch magnitude (default 1.0).
+
+Use cases: Button press feedback, hit confirmation, score increment, interaction acknowledgment.
+
+Usage: transform.Tween().Preset("Punch").Play();
+
+────────────────────────────────────────
+
+[PunchHard]
+Description: Heavy scale punch for emphatic feedback
+
+Heavy scale punch with larger vector and more vibrations, for emphatic feedback.
+
+Uses DOPunchScale with punch vector Vector3.one * 0.25, vibrato 8, elasticity 0.7.
+
+Type: One-shot feedback | Default duration: 0.25s
+
+Strength override: Multiplies punch magnitude (default 1.0).
+
+Usage: transform.Tween().Preset("PunchHard").Play();
+
+────────────────────────────────────────
+
+[PunchSoft]
+Description: Soft scale punch for delicate feedback
+
+Soft scale punch with smaller vector and fewer vibrations, for delicate feedback.
+
+Uses DOPunchScale with punch vector Vector3.one * 0.08, vibrato 4, elasticity 0.7.
+
+Type: One-shot feedback | Default duration: 0.15s
+
+Strength override: Multiplies punch magnitude (default 1.0).
+
+Usage: transform.Tween().Preset("PunchSoft").Play();
+
+────────────────────────────────────────
+
+[Recoil]
+Description: Pull back then snap forward on local Z
+
+Pulls the target backward on local Z then snaps it forward past the origin, simulating a recoil action.
+
+Builds a 2-step relative sequence: (1) move -0.5 on local Z over 40% duration with Ease.OutQuad,
+(2) move +0.5 on local Z over 60% duration with Ease.OutCubic.
+Both steps use SetRelative(true), so the target returns to its original position.
+
+Type: One-shot effect | Default duration: 0.4s | Default ease: OutQuad (pull), OutCubic (snap)
+
+Easing override: Primary ease controls pull-back; secondary ease controls snap-forward.
+
+Strength override: Multiplies recoil distance (default 1.0).
+
+Use cases: Weapon recoil, spring release, knockback response, firing animation.
+
+Usage: transform.Tween().Preset("Recoil").Play();
+
+────────────────────────────────────────
+
+[RecoilBack]
+Description: Pull back then snap forward on local Z
+
+Pulls the target backward on local Z then snaps it forward, simulating a backward recoil.
+
+Type: One-shot effect | Default duration: 0.4s | Default ease: OutQuad (pull), OutCubic (snap)
+
+Usage: transform.Tween().Preset("RecoilBack").Play();
+
+────────────────────────────────────────
+
+[RecoilBackHard]
+Description: Hard pull back then snap forward on local Z
+
+Hard backward recoil with longer pull distance.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: OutQuad (pull), OutCubic (snap)
+
+Usage: transform.Tween().Preset("RecoilBackHard").Play();
+
+────────────────────────────────────────
+
+[RecoilBackSoft]
+Description: Soft pull back then snap forward on local Z
+
+Soft backward recoil with shorter pull distance.
+
+Type: One-shot effect | Default duration: 0.3s | Default ease: OutQuad (pull), OutCubic (snap)
+
+Usage: transform.Tween().Preset("RecoilBackSoft").Play();
+
+────────────────────────────────────────
+
+[RecoilForward]
+Description: Pull forward then snap back on local Z
+
+Pulls the target forward on local Z then snaps it back, simulating a forward recoil.
+
+Type: One-shot effect | Default duration: 0.4s | Default ease: OutQuad (pull), OutCubic (snap)
+
+Usage: transform.Tween().Preset("RecoilForward").Play();
+
+────────────────────────────────────────
+
+[RecoilForwardHard]
+Description: Hard pull forward then snap back on local Z
+
+Hard forward recoil with longer pull distance.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: OutQuad (pull), OutCubic (snap)
+
+Usage: transform.Tween().Preset("RecoilForwardHard").Play();
+
+────────────────────────────────────────
+
+[RecoilForwardSoft]
+Description: Soft pull forward then snap back on local Z
+
+Soft forward recoil with shorter pull distance.
+
+Type: One-shot effect | Default duration: 0.3s | Default ease: OutQuad (pull), OutCubic (snap)
+
+Usage: transform.Tween().Preset("RecoilForwardSoft").Play();
+
+────────────────────────────────────────
+
+[RecoilHard]
+Description: Hard pull back then snap forward
+
+Hard recoil with longer pull-back distance.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: OutQuad (pull), OutCubic (snap)
+
+Strength override: Multiplies recoil distance (default 1.0).
+
+Usage: transform.Tween().Preset("RecoilHard").Play();
+
+────────────────────────────────────────
+
+[RecoilSoft]
+Description: Soft pull back then snap forward
+
+Soft recoil with shorter pull-back distance.
+
+Type: One-shot effect | Default duration: 0.3s | Default ease: OutQuad (pull), OutCubic (snap)
+
+Strength override: Multiplies recoil distance (default 1.0).
+
+Usage: transform.Tween().Preset("RecoilSoft").Play();
+
+────────────────────────────────────────
+
+[Shake]
+Description: Random position shake
+
+Shakes the target's position randomly, creating an impact or earthquake effect.
+
+Uses DOShakePosition with strength 0.22, vibrato 12, randomness 90°,
+snapping disabled, and fade-out enabled.
+
+Type: One-shot effect | Default duration: 0.45s | Default ease: DOTween shake default
+
+Easing override: No ease override (shake tweens use internal decay).
+
+Strength override: Multiplies shake intensity (default 1.0).
+
+Use cases: Impact feedback, earthquake, error shake, camera shake, damage indication.
+
+Usage: transform.Tween().Preset("Shake").Play();
+
+────────────────────────────────────────
+
+[ShakeFade]
+Description: Shake position with fade out
+
+Shakes the target's position while simultaneously fading out to transparent, creating a damage/death effect.
+
+Builds a parallel sequence: DOShakePosition with strength 0.3, vibrato 15,
+randomness 90°, and fade-out enabled; joined with a fade to 0 using Ease.InQuad.
+
+Type: One-shot exit | Default duration: 0.8s | Default ease: Linear (sequence), InQuad (fade)
+
+Easing override: Standard options apply; shake and fade eases are hardcoded.
+
+Strength override: Multiplies shake intensity (default 1.0).
+
+Alpha override: TargetAlpha replaces 0.
+
+Use cases: Enemy death, damage feedback, destruction effect, error dismiss with shake.
+
+Usage: transform.Tween().Preset("ShakeFade").Play();
+
+────────────────────────────────────────
+
+[ShakeFadeHard]
+Description: Hard shake with fade out
+
+Hard shake with fade out — stronger shaking and more vibrations.
+
+Uses DOShakePosition with strength 0.5, vibrato 20, joined with fade to 0.
+
+Type: One-shot exit | Default duration: 1.0s | Default ease: Linear (sequence), InQuad (fade)
+
+Strength override: Multiplies shake intensity (default 1.0).
+
+Alpha override: TargetAlpha replaces 0.
+
+Usage: transform.Tween().Preset("ShakeFadeHard").Play();
+
+────────────────────────────────────────
+
+[ShakeFadeSoft]
+Description: Soft shake with fade out
+
+Soft shake with fade out — lighter strength and fewer vibrations.
+
+Uses DOShakePosition with strength 0.15, vibrato 10, joined with fade to 0.
+
+Type: One-shot exit | Default duration: 0.6s | Default ease: Linear (sequence), InQuad (fade)
+
+Strength override: Multiplies shake intensity (default 1.0).
+
+Alpha override: TargetAlpha replaces 0.
+
+Usage: transform.Tween().Preset("ShakeFadeSoft").Play();
+
+────────────────────────────────────────
+
+[ShakeHard]
+Description: Heavy position shake
+
+Heavy position shake with high strength and many oscillations.
+
+Uses DOShakePosition with strength 0.5, vibrato 20.
+
+Type: One-shot effect | Default duration: 0.6s
+
+Strength override: Multiplies shake intensity (default 1.0).
+
+Usage: transform.Tween().Preset("ShakeHard").Play();
+
+────────────────────────────────────────
+
+[ShakeSoft]
+Description: Soft position shake
+
+Soft position shake with low strength and fewer oscillations.
+
+Uses DOShakePosition with strength 0.15, vibrato 10.
+
+Type: One-shot effect | Default duration: 0.4s
+
+Strength override: Multiplies shake intensity (default 1.0).
+
+Usage: transform.Tween().Preset("ShakeSoft").Play();
+
+────────────────────────────────────────
+
+[SlideInDown]
+Description: Slides down from above
+
+Slides the target downward from 500 units above its current local position to its original position.
+
+Type: One-shot entrance | Default duration: 1.0s | Default ease: OutCubic
+
+Easing override: Primary ease replaces OutCubic.
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideInDown").Play();
+
+────────────────────────────────────────
+
+[SlideInDownHard]
+Description: Quickly slides down from above
+
+Hard slide in from above. Fast, snappy entrance.
+
+Type: One-shot entrance | Default duration: 0.5s | Default ease: OutCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideInDownHard").Play();
+
+────────────────────────────────────────
+
+[SlideInDownSoft]
+Description: Slowly slides down from above
+
+Soft slide in from above. Slower, gentler entrance.
+
+Type: One-shot entrance | Default duration: 1.5s | Default ease: OutCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideInDownSoft").Play();
+
+────────────────────────────────────────
+
+[SlideInFadeDown]
+Description: Slides down from above with fade in
+
+Slides the target downward from 100 units above while simultaneously fading in (fade completes at 70% duration).
+
+Type: One-shot entrance | Default duration: 2.0s | Default ease: OutCubic (move), Linear (fade)
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Usage: transform.Tween().Preset("SlideInFadeDown").Play();
+
+────────────────────────────────────────
+
+[SlideInFadeDownHard]
+Description: Quickly slides down from above with fade in
+
+Hard slide-in-fade from above. Fast, snappy entrance.
+
+Type: One-shot entrance | Default duration: 1.0s | Default ease: OutCubic (move), Linear (fade)
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Usage: transform.Tween().Preset("SlideInFadeDownHard").Play();
+
+────────────────────────────────────────
+
+[SlideInFadeDownSoft]
+Description: Slowly slides down from above with fade in
+
+Soft slide-in-fade from above. Slower, gentler entrance.
+
+Type: One-shot entrance | Default duration: 3.0s | Default ease: OutCubic (move), Linear (fade)
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Usage: transform.Tween().Preset("SlideInFadeDownSoft").Play();
+
+────────────────────────────────────────
+
+[SlideInFadeLeft]
+Description: Slides in from the left with fade in
+
+Slides the target in from 100 units to the left while simultaneously fading in (fade completes at 70% duration).
+
+Type: One-shot entrance | Default duration: 2.5s | Default ease: OutCubic (move), Linear (fade)
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Usage: transform.Tween().Preset("SlideInFadeLeft").Play();
+
+────────────────────────────────────────
+
+[SlideInFadeLeftHard]
+Description: Quickly slides in from the left with fade in
+
+Hard slide-in-fade from the left. Fast, snappy entrance.
+
+Type: One-shot entrance | Default duration: 1.5s | Default ease: OutCubic (move), Linear (fade)
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Usage: transform.Tween().Preset("SlideInFadeLeftHard").Play();
+
+────────────────────────────────────────
+
+[SlideInFadeLeftSoft]
+Description: Slowly slides in from the left with fade in
+
+Soft slide-in-fade from the left. Slower, gentler entrance.
+
+Type: One-shot entrance | Default duration: 3.5s | Default ease: OutCubic (move), Linear (fade)
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Usage: transform.Tween().Preset("SlideInFadeLeftSoft").Play();
+
+────────────────────────────────────────
+
+[SlideInFadeRight]
+Description: Slides in from the right with fade in
+
+Slides the target in from 100 units to the right while simultaneously fading in (fade completes at 70% duration).
+
+Type: One-shot entrance | Default duration: 2.5s | Default ease: OutCubic (move), Linear (fade)
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Usage: transform.Tween().Preset("SlideInFadeRight").Play();
+
+────────────────────────────────────────
+
+[SlideInFadeRightHard]
+Description: Quickly slides in from the right with fade in
+
+Hard slide-in-fade from the right. Fast, snappy entrance.
+
+Type: One-shot entrance | Default duration: 1.5s | Default ease: OutCubic (move), Linear (fade)
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Usage: transform.Tween().Preset("SlideInFadeRightHard").Play();
+
+────────────────────────────────────────
+
+[SlideInFadeRightSoft]
+Description: Slowly slides in from the right with fade in
+
+Soft slide-in-fade from the right. Slower, gentler entrance.
+
+Type: One-shot entrance | Default duration: 3.5s | Default ease: OutCubic (move), Linear (fade)
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Usage: transform.Tween().Preset("SlideInFadeRightSoft").Play();
+
+────────────────────────────────────────
+
+[SlideInFadeUp]
+Description: Slides up from below with fade in
+
+Slides the target upward from 100 units below while simultaneously fading in (fade completes at 70% duration).
+
+Type: One-shot entrance | Default duration: 2.0s | Default ease: OutCubic (move), Linear (fade)
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Usage: transform.Tween().Preset("SlideInFadeUp").Play();
+
+────────────────────────────────────────
+
+[SlideInFadeUpHard]
+Description: Quickly slides up from below with fade in
+
+Hard slide-in-fade from below. Fast, snappy entrance.
+
+Type: One-shot entrance | Default duration: 1.0s | Default ease: OutCubic (move), Linear (fade)
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Usage: transform.Tween().Preset("SlideInFadeUpHard").Play();
+
+────────────────────────────────────────
+
+[SlideInFadeUpSoft]
+Description: Slowly slides up from below with fade in
+
+Soft slide-in-fade from below. Slower, gentler entrance.
+
+Type: One-shot entrance | Default duration: 3.0s | Default ease: OutCubic (move), Linear (fade)
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Alpha override: StartAlpha replaces 0; TargetAlpha replaces 1.
+
+Usage: transform.Tween().Preset("SlideInFadeUpSoft").Play();
+
+────────────────────────────────────────
+
+[SlideInLeft]
+Description: Slides in from the left side
+
+Slides the target in from 500 units to the left of its current local position.
+
+Type: One-shot entrance | Default duration: 1.0s | Default ease: OutCubic
+
+Easing override: Primary ease replaces OutCubic.
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideInLeft").Play();
+
+────────────────────────────────────────
+
+[SlideInLeftHard]
+Description: Quickly slides in from the left
+
+Hard slide in from the left. Fast, snappy entrance.
+
+Type: One-shot entrance | Default duration: 0.5s | Default ease: OutCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideInLeftHard").Play();
+
+────────────────────────────────────────
+
+[SlideInLeftSoft]
+Description: Slowly slides in from the left
+
+Soft slide in from the left. Slower, gentler entrance.
+
+Type: One-shot entrance | Default duration: 1.5s | Default ease: OutCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideInLeftSoft").Play();
+
+────────────────────────────────────────
+
+[SlideInRight]
+Description: Slides in from the right side
+
+Slides the target in from 500 units to the right of its current local position.
+
+Type: One-shot entrance | Default duration: 1.0s | Default ease: OutCubic
+
+Easing override: Primary ease replaces OutCubic.
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideInRight").Play();
+
+────────────────────────────────────────
+
+[SlideInRightHard]
+Description: Quickly slides in from the right
+
+Hard slide in from the right. Fast, snappy entrance.
+
+Type: One-shot entrance | Default duration: 0.5s | Default ease: OutCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideInRightHard").Play();
+
+────────────────────────────────────────
+
+[SlideInRightSoft]
+Description: Slowly slides in from the right
+
+Soft slide in from the right. Slower, gentler entrance.
+
+Type: One-shot entrance | Default duration: 1.5s | Default ease: OutCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideInRightSoft").Play();
+
+────────────────────────────────────────
+
+[SlideInUp]
+Description: Slides up from below
+
+Slides the target upward from 500 units below its current local position to its original position.
+
+Type: One-shot entrance | Default duration: 1.0s | Default ease: OutCubic
+
+Easing override: Primary ease replaces OutCubic.
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideInUp").Play();
+
+────────────────────────────────────────
+
+[SlideInUpHard]
+Description: Quickly slides up from below
+
+Hard slide in from below. Fast, snappy entrance.
+
+Type: One-shot entrance | Default duration: 0.5s | Default ease: OutCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideInUpHard").Play();
+
+────────────────────────────────────────
+
+[SlideInUpSoft]
+Description: Slowly slides up from below
+
+Soft slide in from below. Slower, gentler entrance.
+
+Type: One-shot entrance | Default duration: 1.5s | Default ease: OutCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideInUpSoft").Play();
+
+────────────────────────────────────────
+
+[SlideOutDown]
+Description: Slides down off-screen
+
+Slides the target 500 units downward off-screen, mirroring SlideInUp as an exit animation.
+
+Type: One-shot exit | Default duration: 1.0s | Default ease: InCubic
+
+Easing override: Primary ease replaces InCubic.
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideOutDown").Play();
+
+────────────────────────────────────────
+
+[SlideOutDownHard]
+Description: Quickly slides down off-screen
+
+Hard slide out downward. Fast snappy exit.
+
+Type: One-shot exit | Default duration: 0.5s | Default ease: InCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideOutDownHard").Play();
+
+────────────────────────────────────────
+
+[SlideOutDownSoft]
+Description: Slowly slides down off-screen
+
+Soft slide out downward. Slower exit for gentle dismissal.
+
+Type: One-shot exit | Default duration: 1.5s | Default ease: InCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideOutDownSoft").Play();
+
+────────────────────────────────────────
+
+[SlideOutFadeDown]
+Description: Slides down while fading out
+
+Slides the target downward while fading out (fade completes at 70% duration).
+
+────────────────────────────────────────
+
+[SlideOutFadeDownHard]
+Description: Quickly slides down while fading out
+
+Hard slide-out-fade downward. Fast, snappy exit.
+
+────────────────────────────────────────
+
+[SlideOutFadeDownSoft]
+Description: Slowly slides down while fading out
+
+Soft slide-out-fade downward. Slower, gentler exit.
+
+────────────────────────────────────────
+
+[SlideOutFadeLeft]
+Description: Slides left while fading out
+
+Slides the target to the left while fading out (fade completes at 70% duration).
+
+────────────────────────────────────────
+
+[SlideOutFadeLeftHard]
+Description: Quickly slides left while fading out
+
+Hard slide-out-fade to the left. Fast, snappy exit.
+
+────────────────────────────────────────
+
+[SlideOutFadeLeftSoft]
+Description: Slowly slides left while fading out
+
+Soft slide-out-fade to the left. Slower, gentler exit.
+
+────────────────────────────────────────
+
+[SlideOutFadeRight]
+Description: Slides right while fading out
+
+Slides the target to the right while fading out (fade completes at 70% duration).
+
+────────────────────────────────────────
+
+[SlideOutFadeRightHard]
+Description: Quickly slides right while fading out
+
+Hard slide-out-fade to the right. Fast, snappy exit.
+
+────────────────────────────────────────
+
+[SlideOutFadeRightSoft]
+Description: Slowly slides right while fading out
+
+Soft slide-out-fade to the right. Slower, gentler exit.
+
+────────────────────────────────────────
+
+[SlideOutFadeUp]
+Description: Slides up while fading out
+
+Slides the target upward while fading out (fade completes at 70% duration).
+
+Type: One-shot exit | Default duration: 2.0s | Default ease: InCubic (move), Linear (fade)
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Alpha override: StartAlpha replaces 1; TargetAlpha replaces 0.
+
+Usage: transform.Tween().Preset("SlideOutFadeUp").Play();
+
+────────────────────────────────────────
+
+[SlideOutFadeUpHard]
+Description: Quickly slides up while fading out
+
+Hard slide-out-fade upward. Fast, snappy exit.
+
+────────────────────────────────────────
+
+[SlideOutFadeUpSoft]
+Description: Slowly slides up while fading out
+
+Soft slide-out-fade upward. Slower, gentler exit.
+
+────────────────────────────────────────
+
+[SlideOutLeft]
+Description: Slides left off-screen
+
+Slides the target 500 units to the left off-screen, mirroring SlideInRight as an exit animation.
+
+Type: One-shot exit | Default duration: 1.0s | Default ease: InCubic
+
+Easing override: Primary ease replaces InCubic.
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideOutLeft").Play();
+
+────────────────────────────────────────
+
+[SlideOutLeftHard]
+Description: Quickly slides left off-screen
+
+Hard slide out to the left. Fast snappy exit.
+
+Type: One-shot exit | Default duration: 0.5s | Default ease: InCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideOutLeftHard").Play();
+
+────────────────────────────────────────
+
+[SlideOutLeftSoft]
+Description: Slowly slides left off-screen
+
+Soft slide out to the left. Slower exit for gentle dismissal.
+
+Type: One-shot exit | Default duration: 1.5s | Default ease: InCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideOutLeftSoft").Play();
+
+────────────────────────────────────────
+
+[SlideOutRight]
+Description: Slides right off-screen
+
+Slides the target 500 units to the right off-screen, mirroring SlideInLeft as an exit animation.
+
+Type: One-shot exit | Default duration: 1.0s | Default ease: InCubic
+
+Easing override: Primary ease replaces InCubic.
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideOutRight").Play();
+
+────────────────────────────────────────
+
+[SlideOutRightHard]
+Description: Quickly slides right off-screen
+
+Hard slide out to the right. Fast snappy exit.
+
+Type: One-shot exit | Default duration: 0.5s | Default ease: InCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideOutRightHard").Play();
+
+────────────────────────────────────────
+
+[SlideOutRightSoft]
+Description: Slowly slides right off-screen
+
+Soft slide out to the right. Slower exit for gentle dismissal.
+
+Type: One-shot exit | Default duration: 1.5s | Default ease: InCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideOutRightSoft").Play();
+
+────────────────────────────────────────
+
+[SlideOutUp]
+Description: Slides up off-screen
+
+Slides the target 500 units upward off-screen, mirroring SlideInDown as an exit animation.
+
+Type: One-shot exit | Default duration: 1.0s | Default ease: InCubic
+
+Easing override: Primary ease replaces InCubic.
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideOutUp").Play();
+
+────────────────────────────────────────
+
+[SlideOutUpHard]
+Description: Quickly slides up off-screen
+
+Hard slide out upward. Fast snappy exit.
+
+Type: One-shot exit | Default duration: 0.5s | Default ease: InCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideOutUpHard").Play();
+
+────────────────────────────────────────
+
+[SlideOutUpSoft]
+Description: Slowly slides up off-screen
+
+Soft slide out upward. Slower exit for gentle dismissal.
+
+Type: One-shot exit | Default duration: 1.5s | Default ease: InCubic
+
+Strength override: Multiplies slide distance (default 1.0).
+
+Usage: transform.Tween().Preset("SlideOutUpSoft").Play();
+
+────────────────────────────────────────
+
+[SpinDiagonalXY]
+Description: Spins 360 degrees across X and Y axes
+
+Spins the target 360 degrees simultaneously on both X and Y axes, creating a diagonal tumble.
+
+Type: One-shot effect | Default duration: 1.0s | Default ease: InOutQuad
+
+Easing override: Primary ease replaces InOutQuad.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinDiagonalXY").Play();
+
+────────────────────────────────────────
+
+[SpinDiagonalXYHard]
+Description: Fast diagonal spin across X and Y
+
+Hard diagonal XY spin. Fast rotation.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: InOutQuad
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinDiagonalXYHard").Play();
+
+────────────────────────────────────────
+
+[SpinDiagonalXYSoft]
+Description: Slow diagonal spin across X and Y
+
+Soft diagonal XY spin. Slower rotation.
+
+Type: One-shot effect | Default duration: 1.5s | Default ease: InOutQuad
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinDiagonalXYSoft").Play();
+
+────────────────────────────────────────
+
+[SpinDiagonalXZ]
+Description: Spins 360 degrees across X and Z axes
+
+Spins the target 360 degrees simultaneously on both X and Z axes, creating a diagonal tumble.
+
+Type: One-shot effect | Default duration: 1.0s | Default ease: InOutQuad
+
+Easing override: Primary ease replaces InOutQuad.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinDiagonalXZ").Play();
+
+────────────────────────────────────────
+
+[SpinDiagonalXZHard]
+Description: Fast diagonal spin across X and Z
+
+Hard diagonal XZ spin. Fast rotation.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: InOutQuad
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinDiagonalXZHard").Play();
+
+────────────────────────────────────────
+
+[SpinDiagonalXZSoft]
+Description: Slow diagonal spin across X and Z
+
+Soft diagonal XZ spin. Slower rotation.
+
+Type: One-shot effect | Default duration: 1.5s | Default ease: InOutQuad
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinDiagonalXZSoft").Play();
+
+────────────────────────────────────────
+
+[SpinDiagonalYZ]
+Description: Spins 360 degrees across Y and Z axes
+
+Spins the target 360 degrees simultaneously on both Y and Z axes, creating a diagonal tumble.
+
+Type: One-shot effect | Default duration: 1.0s | Default ease: InOutQuad
+
+Easing override: Primary ease replaces InOutQuad.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinDiagonalYZ").Play();
+
+────────────────────────────────────────
+
+[SpinDiagonalYZHard]
+Description: Fast diagonal spin across Y and Z
+
+Hard diagonal YZ spin. Fast rotation.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: InOutQuad
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinDiagonalYZHard").Play();
+
+────────────────────────────────────────
+
+[SpinDiagonalYZSoft]
+Description: Slow diagonal spin across Y and Z
+
+Soft diagonal YZ spin. Slower rotation.
+
+Type: One-shot effect | Default duration: 1.5s | Default ease: InOutQuad
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinDiagonalYZSoft").Play();
+
+────────────────────────────────────────
+
+[SpinScaleIn]
+Description: Spin and grow in from zero
+
+Spins the target 720 degrees on the Y axis while scaling in from zero, creating a pickup spawn effect.
+
+Builds a parallel sequence: sets scale to zero, then scales to original size with Ease.OutCubic,
+joined with 720° Y rotation using RotateMode.FastBeyond360 and Ease.Linear.
+
+Type: One-shot entrance | Default duration: 0.7s | Default ease: OutCubic (scale), Linear (spin)
+
+Easing override: Primary ease controls scale; secondary ease controls spin.
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinScaleIn").Play();
+
+────────────────────────────────────────
+
+[SpinScaleInHard]
+Description: Hard spin and grow in from zero
+
+Hard spin and scale-in — fast triple rotation with snappy growth.
+
+Type: One-shot entrance | Default duration: 0.5s | Default ease: OutQuart (scale), Linear (spin)
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinScaleInHard").Play();
+
+────────────────────────────────────────
+
+[SpinScaleInOvershoot]
+Description: Spin and grow in with overshoot settle
+
+Scales in from zero while spinning 720° on Y, with overshoot on the scale settle.
+
+Type: One-shot entrance | Default duration: 0.7s | Default ease: OutBack (scale), Linear (spin)
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinScaleInOvershoot").Play();
+
+────────────────────────────────────────
+
+[SpinScaleInOvershootHard]
+Description: Hard spin and grow in with strong overshoot
+
+Hard spin and scale-in with strong overshoot on the scale settle.
+
+Type: One-shot entrance | Default duration: 0.5s | Default ease: OutBack (2.0 overshoot, scale), Linear (spin)
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinScaleInOvershootHard").Play();
+
+────────────────────────────────────────
+
+[SpinScaleInOvershootSoft]
+Description: Soft spin and grow in with mild overshoot
+
+Soft spin and scale-in with mild overshoot on the scale settle.
+
+Type: One-shot entrance | Default duration: 0.9s | Default ease: OutBack (1.2 overshoot, scale), Linear (spin)
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinScaleInOvershootSoft").Play();
+
+────────────────────────────────────────
+
+[SpinScaleInSoft]
+Description: Soft spin and grow in from zero
+
+Soft spin and scale-in — slower rotation with gentle growth.
+
+Type: One-shot entrance | Default duration: 0.9s | Default ease: OutSine (scale), Linear (spin)
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinScaleInSoft").Play();
+
+────────────────────────────────────────
+
+[SpinScaleOut]
+Description: Spin and shrink to zero, no anticipation
+
+Spins the target 720 degrees on the Y axis while shrinking to zero scale, creating a collectible pickup effect.
+
+Builds a parallel sequence: scale to Vector3.zero with Ease.InCubic (no anticipation),
+joined with 720° Y rotation using RotateMode.FastBeyond360 and Ease.Linear
+(uniform spin speed). The two full rotations during shrink create a vortex-like exit.
+
+Type: One-shot exit | Default duration: 0.7s | Default ease: InCubic (scale), Linear (spin)
+
+Easing override: Primary ease controls scale; secondary ease controls spin.
+
+Scale override: TargetScale replaces zero.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Use cases: Collectible pickup, item absorption, vortex exit, magical disappearance.
+
+Usage: transform.Tween().Preset("SpinScaleOut").Play();
+
+────────────────────────────────────────
+
+[SpinScaleOutHard]
+Description: Hard spin and shrink to zero
+
+Hard spin and shrink — fast triple rotation with snappy scale-down.
+
+Type: One-shot exit | Default duration: 0.5s | Default ease: InQuart (scale), Linear (spin)
+
+Scale override: TargetScale replaces zero.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinScaleOutHard").Play();
+
+────────────────────────────────────────
+
+[SpinScaleOutOvershoot]
+Description: Spin and shrink to zero with anticipation overshoot
+
+Shrinks the target to zero while spinning 720° on Y, with anticipation overshoot on scale.
+
+Builds a parallel sequence: scale to Vector3.zero with Ease.InBack (anticipation),
+joined with 720° Y rotation using RotateMode.FastBeyond360 and Ease.Linear.
+
+Type: One-shot exit | Default duration: 0.7s | Default ease: InBack (scale), Linear (spin)
+
+Easing override: Primary ease controls scale; secondary ease controls spin.
+
+Scale override: TargetScale replaces zero.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Use cases: Collectible pickup, item absorption, vortex exit, magical disappearance.
+
+Usage: transform.Tween().Preset("SpinScaleOutOvershoot").Play();
+
+────────────────────────────────────────
+
+[SpinScaleOutOvershootHard]
+Description: Hard spin and shrink with strong anticipation
+
+Hard spin and shrink with strong anticipation overshoot on scale.
+
+Type: One-shot exit | Default duration: 0.5s | Default ease: InBack (2.0 overshoot, scale), Linear (spin)
+
+Scale override: TargetScale replaces zero.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinScaleOutOvershootHard").Play();
+
+────────────────────────────────────────
+
+[SpinScaleOutOvershootSoft]
+Description: Soft spin and shrink with mild anticipation
+
+Soft spin and shrink with mild anticipation overshoot on scale.
+
+Type: One-shot exit | Default duration: 0.9s | Default ease: InBack (1.2 overshoot, scale), Linear (spin)
+
+Scale override: TargetScale replaces zero.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinScaleOutOvershootSoft").Play();
+
+────────────────────────────────────────
+
+[SpinScaleOutSoft]
+Description: Soft spin and shrink to zero
+
+Soft spin and shrink — slower rotation with gentle scale-down.
+
+Type: One-shot exit | Default duration: 0.9s | Default ease: InSine (scale), Linear (spin)
+
+Scale override: TargetScale replaces zero.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinScaleOutSoft").Play();
+
+────────────────────────────────────────
+
+[SpinX]
+Description: Spins 360 degrees on X axis
+
+Spins the target a full 360 degrees around the X axis using FastBeyond360 rotation mode.
+
+Type: One-shot effect | Default duration: 1.0s | Default ease: InOutQuad
+
+Easing override: Primary ease replaces InOutQuad.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinX").Play();
+
+────────────────────────────────────────
+
+[SpinXHard]
+Description: Fast spin on X axis
+
+Hard X-axis spin. Fast, snappy rotation.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: InOutQuad
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinXHard").Play();
+
+────────────────────────────────────────
+
+[SpinXSoft]
+Description: Slow spin on X axis
+
+Soft X-axis spin. Slower, gentler rotation.
+
+Type: One-shot effect | Default duration: 1.5s | Default ease: InOutQuad
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinXSoft").Play();
+
+────────────────────────────────────────
+
+[SpinY]
+Description: Spins 360 degrees on Y axis
+
+Spins the target a full 360 degrees around the Y axis using FastBeyond360 rotation mode.
+
+Type: One-shot effect | Default duration: 1.0s | Default ease: InOutQuad
+
+Easing override: Primary ease replaces InOutQuad.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinY").Play();
+
+────────────────────────────────────────
+
+[SpinYHard]
+Description: Fast spin on Y axis
+
+Hard Y-axis spin. Fast, snappy rotation.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: InOutQuad
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinYHard").Play();
+
+────────────────────────────────────────
+
+[SpinYSoft]
+Description: Slow spin on Y axis
+
+Soft Y-axis spin. Slower, gentler rotation.
+
+Type: One-shot effect | Default duration: 1.5s | Default ease: InOutQuad
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinYSoft").Play();
+
+────────────────────────────────────────
+
+[SpinZ]
+Description: Spins 360 degrees on Z axis
+
+Spins the target a full 360 degrees around the Z axis using FastBeyond360 rotation mode.
+
+Type: One-shot effect | Default duration: 1.0s | Default ease: InOutQuad
+
+Easing override: Primary ease replaces InOutQuad.
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinZ").Play();
+
+────────────────────────────────────────
+
+[SpinZHard]
+Description: Fast spin on Z axis
+
+Hard Z-axis spin. Fast, snappy rotation.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: InOutQuad
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinZHard").Play();
+
+────────────────────────────────────────
+
+[SpinZSoft]
+Description: Slow spin on Z axis
+
+Soft Z-axis spin. Slower, gentler rotation.
+
+Type: One-shot effect | Default duration: 1.5s | Default ease: InOutQuad
+
+Strength override: Multiplies rotation degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SpinZSoft").Play();
+
+────────────────────────────────────────
+
+[Spiral]
+Description: Spirals upward combining rotation and height
+
+Spirals the target upward in a helical path that tightens as it rises, combining circular XZ motion with vertical climb.
+
+Uses DOTween.To on a 0→1 progress value. At each frame, computes a helix position:
+X/Z from cos/sin of progress * 2π * turns (default 2 turns) scaled by radius * (1 - progress)
+(shrinking radius), Y from progress * height (default 2 units). Serialized fields:
+turns=2, height=2, radius=0.5.
+
+Type: One-shot effect | Default duration: 1.5s | Default ease: OutQuad
+
+Easing override: Primary ease controls progress curve (affects spiral speed distribution).
+
+Strength override: Multiplies spiral radius and height (default 1.0).
+
+Use cases: Item ascension, magical effect, tornado-style rise, collectible pickup trail.
+
+Usage: transform.Tween().Preset("Spiral").Play();
+
+────────────────────────────────────────
+
+[SpiralHard]
+Description: Dramatic upward spiral with wider radius
+
+Dramatic upward spiral with wider radius.
+
+Type: One-shot effect | Default duration: 2.0s | Default ease: OutQuad
+
+Strength override: Multiplies spiral radius and height (default 1.0).
+
+Usage: transform.Tween().Preset("SpiralHard").Play();
+
+────────────────────────────────────────
+
+[SpiralSoft]
+Description: Gentle upward spiral with smaller radius
+
+Gentle upward spiral with smaller radius.
+
+Type: One-shot effect | Default duration: 1.2s | Default ease: OutQuad
+
+Strength override: Multiplies spiral radius and height (default 1.0).
+
+Usage: transform.Tween().Preset("SpiralSoft").Play();
+
+────────────────────────────────────────
+
+[Squash]
+Description: Squash and stretch pulse
+
+Performs a squash-and-stretch scale pulse, compressing and elongating before settling back to original scale.
+
+Builds a 4-step sequence: (1) squash wide/short (1.3x, 0.7y) at 15% duration,
+(2) stretch tall/narrow (0.8x, 1.2y) at 15%, (3) slight overshoot (1.1x, 0.9y) at 15%,
+(4) settle to original scale at 25% with Ease.OutElastic. Z scale is unchanged.
+
+Type: One-shot feedback | Default duration: 0.6s | Default ease: OutElastic (final step only)
+
+Easing override: Primary ease replaces OutElastic on the final settle step.
+
+Strength override: Multiplies bounce height and squash intensity (default 1.0).
+
+Use cases: Character land impact, rubber-ball effect, playful UI feedback, cartoon-style emphasis.
+
+Usage: transform.Tween().Preset("Squash").Play();
+
+────────────────────────────────────────
+
+[SquashHard]
+Description: Hard squash and stretch pulse
+
+Hard squash-and-stretch with exaggerated deformation.
+
+Type: One-shot feedback | Default duration: 0.7s | Default ease: OutElastic (final step only)
+
+Strength override: Multiplies bounce height and squash intensity (default 1.0).
+
+Usage: transform.Tween().Preset("SquashHard").Play();
+
+────────────────────────────────────────
+
+[SquashSoft]
+Description: Soft squash and stretch pulse
+
+Soft squash-and-stretch with smaller deformation.
+
+Type: One-shot feedback | Default duration: 0.5s | Default ease: OutElastic (final step only)
+
+Strength override: Multiplies bounce height and squash intensity (default 1.0).
+
+Usage: transform.Tween().Preset("SquashSoft").Play();
+
+────────────────────────────────────────
+
+[Sway]
+Description: Gentle horizontal sway loop
+
+Gentle horizontal sway loop moving the target left and right.
+
+Creates a callback-chain loop alternating between rightward (+0.35) and leftward (-0.35) relative X movements.
+Each leg takes half the total duration; the cycle repeats indefinitely until stopped.
+
+Type: Looping (callback-chain) | Default duration: 3.5s | Default ease: InOutSine
+
+Easing override: Primary ease controls rightward leg; secondary ease controls leftward leg.
+
+Strength override: Multiplies sway amplitude (default 1.0).
+
+Use cases: Pendulum motion, hanging object sway, idle animation, ambient horizontal drift.
+
+Usage: transform.Tween().Preset("Sway").Play();
+
+────────────────────────────────────────
+
+[SwayHard]
+Description: Wide horizontal sway loop
+
+Wide horizontal sway loop with large amplitude.
+
+Type: Looping (callback-chain) | Default duration: 5.0s | Default ease: InOutSine
+
+Strength override: Multiplies sway amplitude (default 1.0).
+
+Usage: transform.Tween().Preset("SwayHard").Play();
+
+────────────────────────────────────────
+
+[SwaySoft]
+Description: Soft horizontal sway loop
+
+Soft horizontal sway loop with small amplitude.
+
+Type: Looping (callback-chain) | Default duration: 3.0s | Default ease: InOutSine
+
+Strength override: Multiplies sway amplitude (default 1.0).
+
+Usage: transform.Tween().Preset("SwaySoft").Play();
+
+────────────────────────────────────────
+
+[SwirlIn]
+Description: Spin and scale in from zero
+
+Scales the target from zero to original while spinning 360 degrees on Y, creating a whirl-in entrance.
+
+Sets initial scale to Vector3.zero. Builds a parallel sequence: scale to original with
+Ease.OutBack (overshoot entrance), joined with 360° Y rotation using
+RotateMode.FastBeyond360 and Ease.Linear (uniform spin).
+The inverse of SpinScaleOut (which shrinks while spinning).
+
+Type: One-shot entrance | Default duration: 1.0s | Default ease: OutBack (scale), Linear (spin)
+
+Easing override: Primary ease controls scale; secondary ease controls spin.
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Strength override: Multiplies spin degrees (default 1.0).
+
+Use cases: Magical entrance, vortex appearance, power-up spawn, dramatic reveal.
+
+Usage: transform.Tween().Preset("SwirlIn").Play();
+
+────────────────────────────────────────
+
+[SwirlInHard]
+Description: Dramatic spin and scale in from zero
+
+Dramatic spin and scale in from zero with extra rotation.
+
+Type: One-shot entrance | Default duration: 1.3s | Default ease: OutBack (scale), Linear (spin)
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Strength override: Multiplies spin degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SwirlInHard").Play();
+
+────────────────────────────────────────
+
+[SwirlInSoft]
+Description: Gentle spin and scale in from zero
+
+Gentle spin and scale in from zero with less rotation.
+
+Type: One-shot entrance | Default duration: 0.8s | Default ease: OutQuad (scale), Linear (spin)
+
+Scale override: StartScale replaces zero; TargetScale replaces original scale.
+
+Strength override: Multiplies spin degrees (default 1.0).
+
+Usage: transform.Tween().Preset("SwirlInSoft").Play();
+
+────────────────────────────────────────
+
+[Tilt]
+Description: Lean on Z then spring back
+
+Leans the target 12 degrees on the Z axis then springs back to the original rotation.
+
+Builds a 2-step sequence: (1) rotate to original + (0, 0, 12) over 40% duration with
+Ease.OutQuad, (2) return to original rotation over 60% duration with Ease.OutBack
+(springy overshoot on return). Uses DOLocalRotate for local-space rotation.
+
+Type: One-shot effect | Default duration: 0.4s | Default ease: OutQuad (lean), OutBack (return)
+
+Easing override: Primary ease controls lean; secondary ease controls springy return.
+
+Strength override: Multiplies tilt angle (default 1.0).
+
+Use cases: Curiosity peek, notification tilt, playful head tilt, attention gesture.
+
+Usage: transform.Tween().Preset("Tilt").Play();
+
+────────────────────────────────────────
+
+[TiltHard]
+Description: Hard lean on Z then spring back
+
+Hard tilt with larger angle and faster speed.
+
+Type: One-shot effect | Default duration: 0.3s | Default ease: OutQuad (lean), OutBack (return)
+
+Strength override: Multiplies tilt angle (default 1.0).
+
+Usage: transform.Tween().Preset("TiltHard").Play();
+
+────────────────────────────────────────
+
+[TiltSoft]
+Description: Soft lean on Z then spring back
+
+Soft tilt with smaller angle and slower speed.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: OutQuad (lean), OutBack (return)
+
+Strength override: Multiplies tilt angle (default 1.0).
+
+Usage: transform.Tween().Preset("TiltSoft").Play();
+
+────────────────────────────────────────
+
+[WobbleDiagonalXY]
+Description: Wobbles rotation diagonally across X and Y
+
+Wobbles the target's rotation diagonally across both X and Y axes simultaneously.
+
+Uses DOPunchRotation with punch vector (12, 12, 0) (12° amplitude per axis),
+vibrato 8, and elasticity 0.5.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: DOTween punch default
+
+Easing override: No ease override (punch tweens use internal oscillation).
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Use cases: Complex wobble, impact reaction, organic jiggle, multi-axis disturbance.
+
+Usage: transform.Tween().Preset("WobbleDiagonalXY").Play();
+
+────────────────────────────────────────
+
+[WobbleDiagonalXYHard]
+Description: Heavy diagonal XY wobble
+
+Heavy diagonal XY wobble with larger angle and more vibrations.
+
+Type: One-shot effect | Default duration: 0.6s
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Usage: transform.Tween().Preset("WobbleDiagonalXYHard").Play();
+
+────────────────────────────────────────
+
+[WobbleDiagonalXYSoft]
+Description: Soft diagonal XY wobble
+
+Soft diagonal XY wobble with smaller angle and fewer vibrations.
+
+Type: One-shot effect | Default duration: 0.4s
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Usage: transform.Tween().Preset("WobbleDiagonalXYSoft").Play();
+
+────────────────────────────────────────
+
+[WobbleDiagonalXZ]
+Description: Wobbles rotation diagonally across X and Z
+
+Wobbles the target's rotation diagonally across both X and Z axes simultaneously.
+
+Uses DOPunchRotation with punch vector (12, 0, 12) (12° amplitude per axis),
+vibrato 8, and elasticity 0.5.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: DOTween punch default
+
+Easing override: No ease override (punch tweens use internal oscillation).
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Use cases: Tumble wobble, unsteady object, physical disturbance, off-balance reaction.
+
+Usage: transform.Tween().Preset("WobbleDiagonalXZ").Play();
+
+────────────────────────────────────────
+
+[WobbleDiagonalXZHard]
+Description: Heavy diagonal XZ wobble
+
+Heavy diagonal XZ wobble with larger angle and more vibrations.
+
+Type: One-shot effect | Default duration: 0.6s
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Usage: transform.Tween().Preset("WobbleDiagonalXZHard").Play();
+
+────────────────────────────────────────
+
+[WobbleDiagonalXZSoft]
+Description: Soft diagonal XZ wobble
+
+Soft diagonal XZ wobble with smaller angle and fewer vibrations.
+
+Type: One-shot effect | Default duration: 0.4s
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Usage: transform.Tween().Preset("WobbleDiagonalXZSoft").Play();
+
+────────────────────────────────────────
+
+[WobbleDiagonalYZ]
+Description: Wobbles rotation diagonally across Y and Z
+
+Wobbles the target's rotation diagonally across both Y and Z axes simultaneously.
+
+Uses DOPunchRotation with punch vector (0, 12, 12) (12° amplitude per axis),
+vibrato 8, and elasticity 0.5.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: DOTween punch default
+
+Easing override: No ease override (punch tweens use internal oscillation).
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Use cases: Sideways wobble, wind-blown object, lateral disturbance, off-kilter reaction.
+
+Usage: transform.Tween().Preset("WobbleDiagonalYZ").Play();
+
+────────────────────────────────────────
+
+[WobbleDiagonalYZHard]
+Description: Heavy diagonal YZ wobble
+
+Heavy diagonal YZ wobble with larger angle and more vibrations.
+
+Type: One-shot effect | Default duration: 0.6s
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Usage: transform.Tween().Preset("WobbleDiagonalYZHard").Play();
+
+────────────────────────────────────────
+
+[WobbleDiagonalYZSoft]
+Description: Soft diagonal YZ wobble
+
+Soft diagonal YZ wobble with smaller angle and fewer vibrations.
+
+Type: One-shot effect | Default duration: 0.4s
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Usage: transform.Tween().Preset("WobbleDiagonalYZSoft").Play();
+
+────────────────────────────────────────
+
+[WobbleX]
+Description: Wobbles rotation back and forth on X
+
+Wobbles the target's rotation back and forth on the X axis using DOTween's punch rotation.
+
+Uses DOPunchRotation with punch vector (15, 0, 0) (15° amplitude), vibrato 8,
+and elasticity 0.5. Creates a nodding/tipping oscillation on the pitch axis.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: DOTween punch default
+
+Easing override: No ease override (punch tweens use internal oscillation).
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Use cases: Nodding motion, forward/back wobble, rocking chair, impact tilt.
+
+Usage: transform.Tween().Preset("WobbleX").Play();
+
+────────────────────────────────────────
+
+[WobbleXHard]
+Description: Heavy X-axis wobble
+
+Heavy X-axis wobble with large angle and more vibrations.
+
+Uses DOPunchRotation with punch vector (25, 0, 0), vibrato 12, elasticity 0.5.
+
+Type: One-shot effect | Default duration: 0.6s
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Usage: transform.Tween().Preset("WobbleXHard").Play();
+
+────────────────────────────────────────
+
+[WobbleXSoft]
+Description: Soft X-axis wobble
+
+Soft X-axis wobble with small angle and fewer vibrations.
+
+Uses DOPunchRotation with punch vector (8, 0, 0), vibrato 5, elasticity 0.5.
+
+Type: One-shot effect | Default duration: 0.4s
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Usage: transform.Tween().Preset("WobbleXSoft").Play();
+
+────────────────────────────────────────
+
+[WobbleY]
+Description: Wobbles rotation back and forth on Y
+
+Wobbles the target's rotation back and forth on the Y axis using DOTween's punch rotation.
+
+Uses DOPunchRotation with punch vector (0, 15, 0) (15° amplitude), vibrato 8,
+and elasticity 0.5. Creates a shaking/head-shake oscillation on the yaw axis.
+
+Type: One-shot effect | Default duration: 0.5s | Default ease: DOTween punch default
+
+Easing override: No ease override (punch tweens use internal oscillation).
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Use cases: "No" gesture, shake-to-settle, spin wobble, rotational impact.
+
+Usage: transform.Tween().Preset("WobbleY").Play();
+
+────────────────────────────────────────
+
+[WobbleYHard]
+Description: Heavy Y-axis wobble
+
+Heavy Y-axis wobble with large angle and more vibrations.
+
+Uses DOPunchRotation with punch vector (0, 25, 0), vibrato 12, elasticity 0.5.
+
+Type: One-shot effect | Default duration: 0.6s
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Usage: transform.Tween().Preset("WobbleYHard").Play();
+
+────────────────────────────────────────
+
+[WobbleYSoft]
+Description: Soft Y-axis wobble
+
+Soft Y-axis wobble with small angle and fewer vibrations.
+
+Uses DOPunchRotation with punch vector (0, 8, 0), vibrato 5, elasticity 0.5.
+
+Type: One-shot effect | Default duration: 0.4s
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Usage: transform.Tween().Preset("WobbleYSoft").Play();
+
+────────────────────────────────────────
+
+[WobbleZ]
+Description: Wobbles rotation back and forth on Z
+
+Wobbles the target's rotation back and forth on the Z axis using DOTween's punch rotation.
+
+Uses DOPunchRotation with punch vector (0, 0, 11) (11° amplitude), vibrato 7,
+and elasticity 0.5. Creates a side-to-side tilt oscillation on the roll axis.
+
+Type: One-shot effect | Default duration: 0.45s | Default ease: DOTween punch default
+
+Easing override: No ease override (punch tweens use internal oscillation).
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Use cases: 2D wobble, pendulum swing, teeter-totter, balance recovery.
+
+Usage: transform.Tween().Preset("WobbleZ").Play();
+
+────────────────────────────────────────
+
+[WobbleZHard]
+Description: Heavy Z-axis wobble
+
+Heavy Z-axis wobble with large angle and more vibrations.
+
+Uses DOPunchRotation with punch vector (0, 0, 25), vibrato 10, elasticity 0.5.
+
+Type: One-shot effect | Default duration: 0.6s
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Usage: transform.Tween().Preset("WobbleZHard").Play();
+
+────────────────────────────────────────
+
+[WobbleZSoft]
+Description: Soft Z-axis wobble
+
+Soft Z-axis wobble with small angle and fewer vibrations.
+
+Uses DOPunchRotation with punch vector (0, 0, 8), vibrato 6, elasticity 0.5.
+
+Type: One-shot effect | Default duration: 0.4s
+
+Strength override: Multiplies rotation angle (default 1.0).
+
+Usage: transform.Tween().Preset("WobbleZSoft").Play();
+
+────────────────────────────────────────
+
+[ZigZag]
+Description: Alternating diagonal zig-zag movement
+
+Moves the target in an alternating diagonal zig-zag pattern: right-up, left-up, right-up.
+
+Builds a 3-step relative sequence, each step taking 1/3 of the total duration:
+(1) move (+0.5, +0.5, 0), (2) move (-1.0, +0.5, 0), (3) move (+0.5, +0.5, 0).
+All steps use SetRelative(true) with Ease.InOutSine. The net displacement is (0, +1.5, 0).
+
+Type: One-shot effect (non-returning) | Default duration: 1.0s | Default ease: InOutSine
+
+Easing override: Primary ease replaces InOutSine on all steps.
+
+Strength override: Multiplies zigzag distance (default 1.0).
+
+Use cases: Evasive movement, playful path, snake-like motion, decorative trail.
+
+Usage: transform.Tween().Preset("ZigZag").Play();
+
+────────────────────────────────────────
+
+[ZigZagHard]
+Description: Hard alternating diagonal movement
+
+Hard zig-zag with larger steps and faster speed.
+
+Type: One-shot effect | Default duration: 0.8s | Default ease: InOutSine
+
+Strength override: Multiplies zigzag distance (default 1.0).
+
+Usage: transform.Tween().Preset("ZigZagHard").Play();
+
+────────────────────────────────────────
+
+[ZigZagSoft]
+Description: Soft alternating diagonal movement
+
+Soft zig-zag with smaller steps and slower speed.
+
+Type: One-shot effect | Default duration: 1.2s | Default ease: InOutSine
+
+Strength override: Multiplies zigzag distance (default 1.0).
+
+Usage: transform.Tween().Preset("ZigZagSoft").Play();
+
+────────────────────────────────────────
+

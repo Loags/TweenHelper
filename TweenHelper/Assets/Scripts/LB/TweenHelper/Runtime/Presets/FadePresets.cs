@@ -4,6 +4,86 @@ using UnityEngine;
 namespace LB.TweenHelper
 {
     /// <summary>
+    /// Internal factory for one-shot fade in/out presets.
+    /// </summary>
+    internal static class FadeOneShotFactory
+    {
+        public static Tween CreateFadeIn(GameObject target, float duration, TweenOptions options, Ease defaultEase)
+        {
+            CodePreset.SetAlphaStatic(target, CodePreset.ResolveStartAlphaStatic(options, 0f));
+            var tween = CodePreset.CreateFadeTweenStatic(target, CodePreset.ResolveTargetAlphaStatic(options, 1f), duration);
+            if (tween == null) return null;
+
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(defaultEase);
+            var ease = presetOptions.Ease ?? defaultEase;
+            return tween.SetEase(ease).WithDefaults(presetOptions, target);
+        }
+
+        public static Tween CreateFadeOut(GameObject target, float duration, TweenOptions options, Ease? defaultEase = null)
+        {
+            var tween = CodePreset.CreateFadeTweenStatic(target, CodePreset.ResolveTargetAlphaStatic(options, 0f), duration);
+            if (tween == null) return null;
+
+            if (defaultEase.HasValue)
+            {
+                var presetOptions = options.Ease.HasValue ? options : options.SetEase(defaultEase.Value);
+                var ease = presetOptions.Ease ?? defaultEase.Value;
+                return tween.SetEase(ease).WithDefaults(presetOptions, target);
+            }
+
+            return tween.WithDefaults(options, target);
+        }
+    }
+
+    /// <summary>
+    /// Internal factory for callback-chain alternating fade loop presets.
+    /// </summary>
+    internal static class LoopingFadeCycleFactory
+    {
+        public static Tween Create(GameObject target, float duration, TweenOptions options, float lowAlphaDefault, Ease defaultEase)
+        {
+            var halfDur = duration * 0.5f;
+            var fadeOutEase = options.Ease ?? defaultEase;
+            var fadeInEase = options.SecondaryEase ?? options.Ease ?? defaultEase;
+
+            var outOptions = options.SetEase(fadeOutEase);
+            var inOptions = options.SetEase(fadeInEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void FadeDown()
+            {
+                var fadeTween = CodePreset.CreateFadeTweenStatic(target, CodePreset.ResolveTargetAlphaStatic(options, lowAlphaDefault), halfDur);
+                if (fadeTween == null) return;
+
+                tween = fadeTween
+                    .SetEase(fadeOutEase)
+                    .WithLoopDefaults(outOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(FadeUp);
+            }
+
+            void FadeUp()
+            {
+                var fadeTween = CodePreset.CreateFadeTweenStatic(target, 1f, halfDur);
+                if (fadeTween == null) return;
+
+                tween = fadeTween
+                    .SetEase(fadeInEase)
+                    .WithLoopDefaults(inOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(FadeDown);
+            }
+
+            FadeDown();
+            return tween;
+        }
+    }
+
+    /// <summary>
     /// Fades the target in from fully transparent (alpha 0) to fully opaque (alpha 1).
     /// <para>
     /// Initializes alpha to <c>0</c> at the start, then creates a fade tween to <c>1.0</c>.
@@ -31,12 +111,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            SetAlpha(target, ResolveStartAlpha(options, 0f));
-            var tween = CreateFadeTween(target, ResolveTargetAlpha(options, 1f), GetDuration(duration, options));
-            // Quick start getting visible, decelerating toward full opacity
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
-            var ease = ResolveEase(presetOptions, Ease.OutQuad);
-            return tween?.SetEase(ease).WithDefaults(presetOptions, target);
+            return FadeOneShotFactory.CreateFadeIn(target, GetDuration(duration, options), options, Ease.OutQuad);
         }
 
         public override bool CanApplyTo(GameObject target) => CanFade(target);
@@ -65,11 +140,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            SetAlpha(target, ResolveStartAlpha(options, 0f));
-            var tween = CreateFadeTween(target, ResolveTargetAlpha(options, 1f), GetDuration(duration, options));
-            var presetOptions = MergeWithDefaultEase(options, Ease.InQuad);
-            var ease = ResolveEase(presetOptions, Ease.InQuad);
-            return tween?.SetEase(ease).WithDefaults(presetOptions, target);
+            return FadeOneShotFactory.CreateFadeIn(target, GetDuration(duration, options), options, Ease.InQuad);
         }
 
         public override bool CanApplyTo(GameObject target) => CanFade(target);
@@ -98,11 +169,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            SetAlpha(target, ResolveStartAlpha(options, 0f));
-            var tween = CreateFadeTween(target, ResolveTargetAlpha(options, 1f), GetDuration(duration, options));
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
-            var ease = ResolveEase(presetOptions, Ease.OutQuad);
-            return tween?.SetEase(ease).WithDefaults(presetOptions, target);
+            return FadeOneShotFactory.CreateFadeIn(target, GetDuration(duration, options), options, Ease.OutQuad);
         }
 
         public override bool CanApplyTo(GameObject target) => CanFade(target);
@@ -136,8 +203,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var tween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), GetDuration(duration, options));
-            return tween?.WithDefaults(options, target);
+            return FadeOneShotFactory.CreateFadeOut(target, GetDuration(duration, options), options);
         }
 
         public override bool CanApplyTo(GameObject target) => CanFade(target);
@@ -166,10 +232,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var presetOptions = MergeWithDefaultEase(options, Ease.InQuad);
-            var ease = ResolveEase(presetOptions, Ease.InQuad);
-            var tween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), GetDuration(duration, options));
-            return tween?.SetEase(ease).WithDefaults(presetOptions, target);
+            return FadeOneShotFactory.CreateFadeOut(target, GetDuration(duration, options), options, Ease.InQuad);
         }
 
         public override bool CanApplyTo(GameObject target) => CanFade(target);
@@ -198,10 +261,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutQuad);
-            var ease = ResolveEase(presetOptions, Ease.OutQuad);
-            var tween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), GetDuration(duration, options));
-            return tween?.SetEase(ease).WithDefaults(presetOptions, target);
+            return FadeOneShotFactory.CreateFadeOut(target, GetDuration(duration, options), options, Ease.OutQuad);
         }
 
         public override bool CanApplyTo(GameObject target) => CanFade(target);
@@ -235,43 +295,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var halfDur = GetDuration(duration, options) * 0.5f;
-            var offEase = options.Ease ?? Ease.InOutQuad;
-            var onEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutQuad;
-
-            var offOptions = MergeWithDefaultEase(options.SetEase(offEase), offEase);
-            var onOptions = MergeWithDefaultEase(options.SetEase(onEase), onEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void FadeOff()
-            {
-                var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), halfDur);
-                if (fadeTween == null) return;
-                tween = fadeTween
-                    .SetEase(offEase)
-                    .WithLoopDefaults(offOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(FadeOn);
-            }
-
-            void FadeOn()
-            {
-                var fadeTween = CreateFadeTween(target, 1f, halfDur);
-                if (fadeTween == null) return;
-                tween = fadeTween
-                    .SetEase(onEase)
-                    .WithLoopDefaults(onOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(FadeOff);
-            }
-
-            FadeOff();
-
-            return tween;
+            return LoopingFadeCycleFactory.Create(target, GetDuration(duration, options), options, 0f, Ease.InOutQuad);
         }
 
         public override bool CanApplyTo(GameObject target) => CanFade(target);
@@ -300,43 +324,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var halfDur = GetDuration(duration, options) * 0.5f;
-            var offEase = options.Ease ?? Ease.InOutQuad;
-            var onEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutQuad;
-
-            var offOptions = MergeWithDefaultEase(options.SetEase(offEase), offEase);
-            var onOptions = MergeWithDefaultEase(options.SetEase(onEase), onEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void FadeOff()
-            {
-                var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), halfDur);
-                if (fadeTween == null) return;
-                tween = fadeTween
-                    .SetEase(offEase)
-                    .WithLoopDefaults(offOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(FadeOn);
-            }
-
-            void FadeOn()
-            {
-                var fadeTween = CreateFadeTween(target, 1f, halfDur);
-                if (fadeTween == null) return;
-                tween = fadeTween
-                    .SetEase(onEase)
-                    .WithLoopDefaults(onOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(FadeOff);
-            }
-
-            FadeOff();
-
-            return tween;
+            return LoopingFadeCycleFactory.Create(target, GetDuration(duration, options), options, 0f, Ease.InOutQuad);
         }
 
         public override bool CanApplyTo(GameObject target) => CanFade(target);
@@ -365,43 +353,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var halfDur = GetDuration(duration, options) * 0.5f;
-            var offEase = options.Ease ?? Ease.InOutQuad;
-            var onEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutQuad;
-
-            var offOptions = MergeWithDefaultEase(options.SetEase(offEase), offEase);
-            var onOptions = MergeWithDefaultEase(options.SetEase(onEase), onEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void FadeOff()
-            {
-                var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0f), halfDur);
-                if (fadeTween == null) return;
-                tween = fadeTween
-                    .SetEase(offEase)
-                    .WithLoopDefaults(offOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(FadeOn);
-            }
-
-            void FadeOn()
-            {
-                var fadeTween = CreateFadeTween(target, 1f, halfDur);
-                if (fadeTween == null) return;
-                tween = fadeTween
-                    .SetEase(onEase)
-                    .WithLoopDefaults(onOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(FadeOff);
-            }
-
-            FadeOff();
-
-            return tween;
+            return LoopingFadeCycleFactory.Create(target, GetDuration(duration, options), options, 0f, Ease.InOutQuad);
         }
 
         public override bool CanApplyTo(GameObject target) => CanFade(target);
@@ -435,43 +387,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var halfDur = GetDuration(duration, options) * 0.5f;
-            var fadeOutEase = options.Ease ?? Ease.InOutSine;
-            var fadeInEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
-
-            var outOptions = MergeWithDefaultEase(options.SetEase(fadeOutEase), fadeOutEase);
-            var inOptions = MergeWithDefaultEase(options.SetEase(fadeInEase), fadeInEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void FadeDown()
-            {
-                var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0.3f), halfDur);
-                if (fadeTween == null) return;
-                tween = fadeTween
-                    .SetEase(fadeOutEase)
-                    .WithLoopDefaults(outOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(FadeUp);
-            }
-
-            void FadeUp()
-            {
-                var fadeTween = CreateFadeTween(target, 1f, halfDur);
-                if (fadeTween == null) return;
-                tween = fadeTween
-                    .SetEase(fadeInEase)
-                    .WithLoopDefaults(inOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(FadeDown);
-            }
-
-            FadeDown();
-
-            return tween;
+            return LoopingFadeCycleFactory.Create(target, GetDuration(duration, options), options, 0.3f, Ease.InOutSine);
         }
 
         public override bool CanApplyTo(GameObject target) => CanFade(target);
@@ -501,43 +417,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var halfDur = GetDuration(duration, options) * 0.5f;
-            var fadeOutEase = options.Ease ?? Ease.InOutSine;
-            var fadeInEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
-
-            var outOptions = MergeWithDefaultEase(options.SetEase(fadeOutEase), fadeOutEase);
-            var inOptions = MergeWithDefaultEase(options.SetEase(fadeInEase), fadeInEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void FadeDown()
-            {
-                var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0.5f), halfDur);
-                if (fadeTween == null) return;
-                tween = fadeTween
-                    .SetEase(fadeOutEase)
-                    .WithLoopDefaults(outOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(FadeUp);
-            }
-
-            void FadeUp()
-            {
-                var fadeTween = CreateFadeTween(target, 1f, halfDur);
-                if (fadeTween == null) return;
-                tween = fadeTween
-                    .SetEase(fadeInEase)
-                    .WithLoopDefaults(inOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(FadeDown);
-            }
-
-            FadeDown();
-
-            return tween;
+            return LoopingFadeCycleFactory.Create(target, GetDuration(duration, options), options, 0.5f, Ease.InOutSine);
         }
 
         public override bool CanApplyTo(GameObject target) => CanFade(target);
@@ -567,43 +447,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var halfDur = GetDuration(duration, options) * 0.5f;
-            var fadeOutEase = options.Ease ?? Ease.InOutSine;
-            var fadeInEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
-
-            var outOptions = MergeWithDefaultEase(options.SetEase(fadeOutEase), fadeOutEase);
-            var inOptions = MergeWithDefaultEase(options.SetEase(fadeInEase), fadeInEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void FadeDown()
-            {
-                var fadeTween = CreateFadeTween(target, ResolveTargetAlpha(options, 0.1f), halfDur);
-                if (fadeTween == null) return;
-                tween = fadeTween
-                    .SetEase(fadeOutEase)
-                    .WithLoopDefaults(outOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(FadeUp);
-            }
-
-            void FadeUp()
-            {
-                var fadeTween = CreateFadeTween(target, 1f, halfDur);
-                if (fadeTween == null) return;
-                tween = fadeTween
-                    .SetEase(fadeInEase)
-                    .WithLoopDefaults(inOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(FadeDown);
-            }
-
-            FadeDown();
-
-            return tween;
+            return LoopingFadeCycleFactory.Create(target, GetDuration(duration, options), options, 0.1f, Ease.InOutSine);
         }
 
         public override bool CanApplyTo(GameObject target) => CanFade(target);

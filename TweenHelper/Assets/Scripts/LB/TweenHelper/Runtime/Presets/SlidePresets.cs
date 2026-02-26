@@ -923,4 +923,273 @@ namespace LB.TweenHelper
 
         public override bool CanApplyTo(GameObject target) => target != null;
     }
+
+    // --- SlideOutFade presets (durations mirror SlideInFade) ---
+
+    /// <summary>
+    /// Internal factory for SlideOutFade variants sharing the same slide + fade exit structure.
+    /// </summary>
+    internal static class SlideOutFadeFactory
+    {
+        public static Tween Create(GameObject target, Vector3 direction, float distance, float duration, TweenOptions options)
+        {
+            // Keep SlideOutFade subtle even when callers use a high global/preset strength.
+            var strength = Mathf.Clamp(CodePreset.ResolveStrengthStatic(options), 0f, 1f);
+            var t = target.transform;
+            var endPos = t.localPosition + direction * (distance * strength);
+
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.InCubic);
+            var ease = presetOptions.Ease ?? Ease.InCubic;
+
+            var seq = DOTween.Sequence();
+            seq.Append(t.DOLocalMove(endPos, duration).SetEase(ease));
+
+            var fadeTween = CodePreset.CreateFadeTweenStatic(target, CodePreset.ResolveTargetAlphaStatic(options, 0f), duration * 0.7f);
+            if (fadeTween != null)
+            {
+                CodePreset.SetAlphaStatic(target, CodePreset.ResolveStartAlphaStatic(options, 1f));
+                seq.Join(fadeTween.SetEase(Ease.Linear));
+            }
+
+            return seq.WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Slides the target upward while fading out (fade completes at 70% duration).
+    /// <para>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 2.0s | <b>Default ease:</b> InCubic (move), Linear (fade)<br/>
+    /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
+    /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SlideOutFadeUp").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutFadeUpPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutFadeUp";
+        public override string Description => "Slides up while fading out";
+        public override float DefaultDuration => 2.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFadeFactory.Create(target, Vector3.up, 5f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Slides the target downward while fading out (fade completes at 70% duration).
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutFadeDownPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutFadeDown";
+        public override string Description => "Slides down while fading out";
+        public override float DefaultDuration => 2.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFadeFactory.Create(target, Vector3.down, 5f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Slides the target to the left while fading out (fade completes at 70% duration).
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutFadeLeftPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutFadeLeft";
+        public override string Description => "Slides left while fading out";
+        public override float DefaultDuration => 2.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFadeFactory.Create(target, Vector3.left, 5f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Slides the target to the right while fading out (fade completes at 70% duration).
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutFadeRightPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutFadeRight";
+        public override string Description => "Slides right while fading out";
+        public override float DefaultDuration => 2.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFadeFactory.Create(target, Vector3.right, 5f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    // --- SlideOutFade Soft variants ---
+
+    /// <summary>
+    /// Soft slide-out-fade upward. Slower, gentler exit.
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutFadeUpSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutFadeUpSoft";
+        public override string Description => "Slowly slides up while fading out";
+        public override float DefaultDuration => 3.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFadeFactory.Create(target, Vector3.up, 5f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Soft slide-out-fade downward. Slower, gentler exit.
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutFadeDownSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutFadeDownSoft";
+        public override string Description => "Slowly slides down while fading out";
+        public override float DefaultDuration => 3.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFadeFactory.Create(target, Vector3.down, 5f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Soft slide-out-fade to the left. Slower, gentler exit.
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutFadeLeftSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutFadeLeftSoft";
+        public override string Description => "Slowly slides left while fading out";
+        public override float DefaultDuration => 3.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFadeFactory.Create(target, Vector3.left, 5f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Soft slide-out-fade to the right. Slower, gentler exit.
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutFadeRightSoftPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutFadeRightSoft";
+        public override string Description => "Slowly slides right while fading out";
+        public override float DefaultDuration => 3.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFadeFactory.Create(target, Vector3.right, 5f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    // --- SlideOutFade Hard variants ---
+
+    /// <summary>
+    /// Hard slide-out-fade upward. Fast, snappy exit.
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutFadeUpHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutFadeUpHard";
+        public override string Description => "Quickly slides up while fading out";
+        public override float DefaultDuration => 1.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFadeFactory.Create(target, Vector3.up, 5f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Hard slide-out-fade downward. Fast, snappy exit.
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutFadeDownHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutFadeDownHard";
+        public override string Description => "Quickly slides down while fading out";
+        public override float DefaultDuration => 1.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFadeFactory.Create(target, Vector3.down, 5f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Hard slide-out-fade to the left. Fast, snappy exit.
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutFadeLeftHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutFadeLeftHard";
+        public override string Description => "Quickly slides left while fading out";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFadeFactory.Create(target, Vector3.left, 5f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
+
+    /// <summary>
+    /// Hard slide-out-fade to the right. Fast, snappy exit.
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SlideOutFadeRightHardPreset : CodePreset
+    {
+        public override string PresetName => "SlideOutFadeRightHard";
+        public override string Description => "Quickly slides right while fading out";
+        public override float DefaultDuration => 1.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SlideOutFadeFactory.Create(target, Vector3.right, 5f, GetDuration(duration, options), options);
+        }
+
+        public override bool CanApplyTo(GameObject target) => target != null;
+    }
 }

@@ -4,6 +4,198 @@ using UnityEngine;
 namespace LB.TweenHelper
 {
     /// <summary>
+    /// Internal factory for breathing scale loop presets.
+    /// </summary>
+    internal static class BreatheFactory
+    {
+        public static Tween Create(GameObject target, float duration, TweenOptions options, float scaleAmount, Ease defaultEase)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            var halfDur = duration * 0.5f;
+            var expandEase = options.Ease ?? defaultEase;
+            var contractEase = options.SecondaryEase ?? options.Ease ?? defaultEase;
+            var upOptions = options.SetEase(expandEase);
+            var downOptions = options.SetEase(contractEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void Expand()
+            {
+                tween = t.DOScale(originalScale * (1f + scaleAmount * strength), halfDur)
+                    .SetEase(expandEase)
+                    .WithLoopDefaults(upOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(Contract);
+            }
+
+            void Contract()
+            {
+                tween = t.DOScale(originalScale, halfDur)
+                    .SetEase(contractEase)
+                    .WithLoopDefaults(downOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(Expand);
+            }
+
+            Expand();
+            return tween;
+        }
+    }
+
+    /// <summary>
+    /// Internal factory for heartbeat double-pulse loop presets.
+    /// </summary>
+    internal static class HeartbeatFactory
+    {
+        public static Tween Create(GameObject target, float duration, TweenOptions options, float beat1Amount, float beat2Amount, Ease defaultBeatEase, Ease defaultReturnEase)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            var beatEase = options.Ease ?? defaultBeatEase;
+            var returnEase = options.SecondaryEase ?? options.Ease ?? defaultReturnEase;
+            var loopOptions = options.Ease.HasValue ? options : options.SetEase(beatEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void Beat()
+            {
+                var seq = DOTween.Sequence()
+                    .Append(t.DOScale(originalScale * (1f + beat1Amount * strength), duration * 0.12f).SetEase(beatEase))
+                    .Append(t.DOScale(originalScale, duration * 0.12f).SetEase(returnEase))
+                    .Append(t.DOScale(originalScale * (1f + beat2Amount * strength), duration * 0.12f).SetEase(beatEase))
+                    .Append(t.DOScale(originalScale, duration * 0.14f).SetEase(returnEase))
+                    .AppendInterval(duration * 0.5f)
+                    .WithLoopDefaults(loopOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween = seq;
+                seq.OnComplete(Beat);
+            }
+
+            Beat();
+            return tween;
+        }
+    }
+
+    /// <summary>
+    /// Internal factory for hovering float loop presets.
+    /// </summary>
+    internal static class FloatFactory
+    {
+        public static Tween Create(GameObject target, float duration, TweenOptions options, float height, Ease defaultEase)
+        {
+            var t = target.transform;
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            var halfDur = duration * 0.5f;
+            var moveUpEase = options.Ease ?? defaultEase;
+            var moveDownEase = options.SecondaryEase ?? options.Ease ?? defaultEase;
+            var upOptions = options.SetEase(moveUpEase);
+            var downOptions = options.SetEase(moveDownEase);
+            bool applyDelay = true;
+
+            Tween tween = null;
+
+            void MoveUp()
+            {
+                tween = t.DOLocalMoveY(height * strength, halfDur)
+                    .SetRelative(true)
+                    .SetEase(moveUpEase)
+                    .WithLoopDefaults(upOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(MoveDown);
+            }
+
+            void MoveDown()
+            {
+                tween = t.DOLocalMoveY(-height * strength, halfDur)
+                    .SetRelative(true)
+                    .SetEase(moveDownEase)
+                    .WithLoopDefaults(downOptions, target, applyDelay);
+
+                applyDelay = false;
+                tween.OnComplete(MoveUp);
+            }
+
+            MoveUp();
+            return tween;
+        }
+    }
+
+    /// <summary>
+    /// Internal factory for zig-zag movement presets.
+    /// </summary>
+    internal static class ZigZagFactory
+    {
+        public static Tween Create(GameObject target, float duration, TweenOptions options, float stepX, float stepY, Ease defaultEase)
+        {
+            var t = target.transform;
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(defaultEase);
+            var ease = presetOptions.Ease ?? defaultEase;
+            var stepDur = duration / 3f;
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalMove(new Vector3(stepX * strength, stepY * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(-2f * stepX * strength, stepY * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .Append(t.DOLocalMove(new Vector3(stepX * strength, stepY * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Internal factory for attention pulse presets.
+    /// </summary>
+    internal static class AttentionFactory
+    {
+        public static Tween Create(GameObject target, float duration, TweenOptions options, float up1Amount, float downAmount, float up2Amount, Ease defaultEase, Ease defaultSecondaryEase)
+        {
+            var t = target.transform;
+            var originalScale = t.localScale;
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(defaultEase);
+            var ease = presetOptions.Ease ?? defaultEase;
+            var secondaryEase = options.SecondaryEase ?? options.Ease ?? defaultSecondaryEase;
+
+            return DOTween.Sequence()
+                .Append(t.DOScale(originalScale * (1f + up1Amount * strength), duration * 0.15f).SetEase(ease))
+                .Append(t.DOScale(originalScale * (1f - downAmount * strength), duration * 0.15f).SetEase(secondaryEase))
+                .Append(t.DOScale(originalScale * (1f + up2Amount * strength), duration * 0.15f).SetEase(ease))
+                .Append(t.DOScale(originalScale, duration * 0.15f).SetEase(ease))
+                .SetLoops(2)
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
+    /// Internal factory for tilt presets.
+    /// </summary>
+    internal static class TiltFactory
+    {
+        public static Tween Create(GameObject target, float duration, TweenOptions options, float zAngle, Ease defaultLeanEase, Ease defaultReturnEase)
+        {
+            var t = target.transform;
+            var originalRot = t.localEulerAngles;
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            var leanEase = options.Ease ?? defaultLeanEase;
+            var returnEase = options.SecondaryEase ?? options.Ease ?? defaultReturnEase;
+            var presetOptions = options.Ease.HasValue ? options : options.SetEase(leanEase);
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, zAngle * strength), duration * 0.4f).SetEase(leanEase))
+                .Append(t.DOLocalRotate(originalRot, duration * 0.6f).SetEase(returnEase))
+                .WithDefaults(presetOptions, target);
+        }
+    }
+
+    /// <summary>
     /// Continuously pulses scale between original and 1.08x in a smooth breathing rhythm using callback-chain looping.
     /// <para>
     /// Alternates between expanding to <c>originalScale * 1.08</c> and contracting back to original scale,
@@ -30,42 +222,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var strength = ResolveStrength(options);
-            var halfDur = GetDuration(duration, options) * 0.5f;
-            var expandEase = options.Ease ?? Ease.InOutSine;
-            var contractEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
-
-            var upOptions = MergeWithDefaultEase(options.SetEase(expandEase), expandEase);
-            var downOptions = MergeWithDefaultEase(options.SetEase(contractEase), contractEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void Expand()
-            {
-                tween = t.DOScale(originalScale * (1f + 0.08f * strength), halfDur)
-                    .SetEase(expandEase)
-                    .WithLoopDefaults(upOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(Contract);
-            }
-
-            void Contract()
-            {
-                tween = t.DOScale(originalScale, halfDur)
-                    .SetEase(contractEase)
-                    .WithLoopDefaults(downOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(Expand);
-            }
-
-            Expand();
-
-            return tween;
+            return BreatheFactory.Create(target, GetDuration(duration, options), options, 0.08f, Ease.InOutSine);
         }
     }
 
@@ -96,38 +253,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var strength = ResolveStrength(options);
-            var dur = GetDuration(duration, options);
-            var beatEase = options.Ease ?? Ease.OutQuad;
-            var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
-            var loopOptions = MergeWithDefaultEase(options, beatEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void Beat()
-            {
-                var seq = DOTween.Sequence()
-                    // First beat (smaller)
-                    .Append(t.DOScale(originalScale * (1f + 0.15f * strength), dur * 0.12f).SetEase(beatEase))
-                    .Append(t.DOScale(originalScale, dur * 0.12f).SetEase(returnEase))
-                    // Second beat (larger)
-                    .Append(t.DOScale(originalScale * (1f + 0.25f * strength), dur * 0.12f).SetEase(beatEase))
-                    .Append(t.DOScale(originalScale, dur * 0.14f).SetEase(returnEase))
-                    // Pause before next cycle
-                    .AppendInterval(dur * 0.5f)
-                    .WithLoopDefaults(loopOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween = seq;
-                seq.OnComplete(Beat);
-            }
-
-            Beat();
-
-            return tween;
+            return HeartbeatFactory.Create(target, GetDuration(duration, options), options, 0.15f, 0.25f, Ease.OutQuad, Ease.InQuad);
         }
     }
 
@@ -158,44 +284,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var strength = ResolveStrength(options);
-            var halfDur = GetDuration(duration, options) * 0.5f;
-            var moveUpEase = options.Ease ?? Ease.InOutCubic;
-            var moveDownEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutCubic;
-
-            // Ensure each leg uses its own ease without being overwritten by global defaults.
-            var upOptions = MergeWithDefaultEase(options.SetEase(moveUpEase), moveUpEase);
-            var downOptions = MergeWithDefaultEase(options.SetEase(moveDownEase), moveDownEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void MoveUp()
-            {
-                tween = t.DOLocalMoveY(0.5f * strength, halfDur)
-                    .SetRelative(true)
-                    .SetEase(moveUpEase)
-                    .WithLoopDefaults(upOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(MoveDown);
-            }
-
-            void MoveDown()
-            {
-                tween = t.DOLocalMoveY(-0.5f * strength, halfDur)
-                    .SetRelative(true)
-                    .SetEase(moveDownEase)
-                    .WithLoopDefaults(downOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(MoveUp);
-            }
-
-            MoveUp();
-
-            return tween;
+            return FloatFactory.Create(target, GetDuration(duration, options), options, 0.5f, Ease.InOutCubic);
         }
     }
 
@@ -226,18 +315,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var strength = ResolveStrength(options);
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
-            var ease = ResolveEase(presetOptions, Ease.InOutSine);
-            var stepDur = dur / 3f;
-
-            return DOTween.Sequence()
-                .Append(t.DOLocalMove(new Vector3(0.5f * strength, 0.5f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .Append(t.DOLocalMove(new Vector3(-1f * strength, 0.5f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .Append(t.DOLocalMove(new Vector3(0.5f * strength, 0.5f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .WithDefaults(presetOptions, target);
+            return ZigZagFactory.Create(target, GetDuration(duration, options), options, 0.5f, 0.5f, Ease.InOutSine);
         }
     }
 
@@ -269,21 +347,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var strength = ResolveStrength(options);
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
-            var ease = ResolveEase(presetOptions, Ease.OutCubic);
-            var secondaryEase = ResolveSecondaryEase(presetOptions, Ease.InCubic);
-
-            return DOTween.Sequence()
-                .Append(t.DOScale(originalScale * (1f + 0.1f * strength), dur * 0.15f).SetEase(ease))
-                .Append(t.DOScale(originalScale * (1f - 0.05f * strength), dur * 0.15f).SetEase(secondaryEase))
-                .Append(t.DOScale(originalScale * (1f + 0.05f * strength), dur * 0.15f).SetEase(ease))
-                .Append(t.DOScale(originalScale, dur * 0.15f).SetEase(ease))
-                .SetLoops(2)
-                .WithDefaults(presetOptions, target);
+            return AttentionFactory.Create(target, GetDuration(duration, options), options, 0.1f, 0.05f, 0.05f, Ease.OutCubic, Ease.InCubic);
         }
     }
 
@@ -314,18 +378,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalRot = t.localEulerAngles;
-            var strength = ResolveStrength(options);
-            var dur = GetDuration(duration, options);
-            var leanEase = ResolveEase(options, Ease.OutQuad);
-            var returnEase = ResolveSecondaryEase(options, Ease.OutBack);
-            var presetOptions = MergeWithDefaultEase(options, leanEase);
-
-            return DOTween.Sequence()
-                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 12f * strength), dur * 0.4f).SetEase(leanEase))
-                .Append(t.DOLocalRotate(originalRot, dur * 0.6f).SetEase(returnEase))
-                .WithDefaults(presetOptions, target);
+            return TiltFactory.Create(target, GetDuration(duration, options), options, 12f, Ease.OutQuad, Ease.OutBack);
         }
     }
 
@@ -347,42 +400,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var strength = ResolveStrength(options);
-            var halfDur = GetDuration(duration, options) * 0.5f;
-            var expandEase = options.Ease ?? Ease.InOutSine;
-            var contractEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
-
-            var upOptions = MergeWithDefaultEase(options.SetEase(expandEase), expandEase);
-            var downOptions = MergeWithDefaultEase(options.SetEase(contractEase), contractEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void Expand()
-            {
-                tween = t.DOScale(originalScale * (1f + 0.04f * strength), halfDur)
-                    .SetEase(expandEase)
-                    .WithLoopDefaults(upOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(Contract);
-            }
-
-            void Contract()
-            {
-                tween = t.DOScale(originalScale, halfDur)
-                    .SetEase(contractEase)
-                    .WithLoopDefaults(downOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(Expand);
-            }
-
-            Expand();
-
-            return tween;
+            return BreatheFactory.Create(target, GetDuration(duration, options), options, 0.04f, Ease.InOutSine);
         }
     }
 
@@ -404,42 +422,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var strength = ResolveStrength(options);
-            var halfDur = GetDuration(duration, options) * 0.5f;
-            var expandEase = options.Ease ?? Ease.InOutSine;
-            var contractEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
-
-            var upOptions = MergeWithDefaultEase(options.SetEase(expandEase), expandEase);
-            var downOptions = MergeWithDefaultEase(options.SetEase(contractEase), contractEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void Expand()
-            {
-                tween = t.DOScale(originalScale * (1f + 0.15f * strength), halfDur)
-                    .SetEase(expandEase)
-                    .WithLoopDefaults(upOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(Contract);
-            }
-
-            void Contract()
-            {
-                tween = t.DOScale(originalScale, halfDur)
-                    .SetEase(contractEase)
-                    .WithLoopDefaults(downOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(Expand);
-            }
-
-            Expand();
-
-            return tween;
+            return BreatheFactory.Create(target, GetDuration(duration, options), options, 0.15f, Ease.InOutSine);
         }
     }
 
@@ -461,35 +444,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var strength = ResolveStrength(options);
-            var dur = GetDuration(duration, options);
-            var beatEase = options.Ease ?? Ease.OutQuad;
-            var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
-            var loopOptions = MergeWithDefaultEase(options, beatEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void Beat()
-            {
-                var seq = DOTween.Sequence()
-                    .Append(t.DOScale(originalScale * (1f + 0.08f * strength), dur * 0.12f).SetEase(beatEase))
-                    .Append(t.DOScale(originalScale, dur * 0.12f).SetEase(returnEase))
-                    .Append(t.DOScale(originalScale * (1f + 0.15f * strength), dur * 0.12f).SetEase(beatEase))
-                    .Append(t.DOScale(originalScale, dur * 0.14f).SetEase(returnEase))
-                    .AppendInterval(dur * 0.5f)
-                    .WithLoopDefaults(loopOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween = seq;
-                seq.OnComplete(Beat);
-            }
-
-            Beat();
-
-            return tween;
+            return HeartbeatFactory.Create(target, GetDuration(duration, options), options, 0.08f, 0.15f, Ease.OutQuad, Ease.InQuad);
         }
     }
 
@@ -511,35 +466,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var strength = ResolveStrength(options);
-            var dur = GetDuration(duration, options);
-            var beatEase = options.Ease ?? Ease.OutQuad;
-            var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
-            var loopOptions = MergeWithDefaultEase(options, beatEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void Beat()
-            {
-                var seq = DOTween.Sequence()
-                    .Append(t.DOScale(originalScale * (1f + 0.25f * strength), dur * 0.12f).SetEase(beatEase))
-                    .Append(t.DOScale(originalScale, dur * 0.12f).SetEase(returnEase))
-                    .Append(t.DOScale(originalScale * (1f + 0.4f * strength), dur * 0.12f).SetEase(beatEase))
-                    .Append(t.DOScale(originalScale, dur * 0.14f).SetEase(returnEase))
-                    .AppendInterval(dur * 0.5f)
-                    .WithLoopDefaults(loopOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween = seq;
-                seq.OnComplete(Beat);
-            }
-
-            Beat();
-
-            return tween;
+            return HeartbeatFactory.Create(target, GetDuration(duration, options), options, 0.25f, 0.4f, Ease.OutQuad, Ease.InQuad);
         }
     }
 
@@ -561,43 +488,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var strength = ResolveStrength(options);
-            var halfDur = GetDuration(duration, options) * 0.5f;
-            var moveUpEase = options.Ease ?? Ease.InOutCubic;
-            var moveDownEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutCubic;
-
-            var upOptions = MergeWithDefaultEase(options.SetEase(moveUpEase), moveUpEase);
-            var downOptions = MergeWithDefaultEase(options.SetEase(moveDownEase), moveDownEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void MoveUp()
-            {
-                tween = t.DOLocalMoveY(0.25f * strength, halfDur)
-                    .SetRelative(true)
-                    .SetEase(moveUpEase)
-                    .WithLoopDefaults(upOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(MoveDown);
-            }
-
-            void MoveDown()
-            {
-                tween = t.DOLocalMoveY(-0.25f * strength, halfDur)
-                    .SetRelative(true)
-                    .SetEase(moveDownEase)
-                    .WithLoopDefaults(downOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(MoveUp);
-            }
-
-            MoveUp();
-
-            return tween;
+            return FloatFactory.Create(target, GetDuration(duration, options), options, 0.25f, Ease.InOutCubic);
         }
     }
 
@@ -619,43 +510,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var strength = ResolveStrength(options);
-            var halfDur = GetDuration(duration, options) * 0.5f;
-            var moveUpEase = options.Ease ?? Ease.InOutCubic;
-            var moveDownEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutCubic;
-
-            var upOptions = MergeWithDefaultEase(options.SetEase(moveUpEase), moveUpEase);
-            var downOptions = MergeWithDefaultEase(options.SetEase(moveDownEase), moveDownEase);
-            bool applyDelay = true;
-
-            Tween tween = null;
-
-            void MoveUp()
-            {
-                tween = t.DOLocalMoveY(0.8f * strength, halfDur)
-                    .SetRelative(true)
-                    .SetEase(moveUpEase)
-                    .WithLoopDefaults(upOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(MoveDown);
-            }
-
-            void MoveDown()
-            {
-                tween = t.DOLocalMoveY(-0.8f * strength, halfDur)
-                    .SetRelative(true)
-                    .SetEase(moveDownEase)
-                    .WithLoopDefaults(downOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(MoveUp);
-            }
-
-            MoveUp();
-
-            return tween;
+            return FloatFactory.Create(target, GetDuration(duration, options), options, 0.8f, Ease.InOutCubic);
         }
     }
 
@@ -677,18 +532,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var strength = ResolveStrength(options);
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
-            var ease = ResolveEase(presetOptions, Ease.InOutSine);
-            var stepDur = dur / 3f;
-
-            return DOTween.Sequence()
-                .Append(t.DOLocalMove(new Vector3(0.25f * strength, 0.25f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .Append(t.DOLocalMove(new Vector3(-0.5f * strength, 0.25f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .Append(t.DOLocalMove(new Vector3(0.25f * strength, 0.25f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .WithDefaults(presetOptions, target);
+            return ZigZagFactory.Create(target, GetDuration(duration, options), options, 0.25f, 0.25f, Ease.InOutSine);
         }
     }
 
@@ -710,18 +554,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var strength = ResolveStrength(options);
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.InOutSine);
-            var ease = ResolveEase(presetOptions, Ease.InOutSine);
-            var stepDur = dur / 3f;
-
-            return DOTween.Sequence()
-                .Append(t.DOLocalMove(new Vector3(0.8f * strength, 0.8f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .Append(t.DOLocalMove(new Vector3(-1.6f * strength, 0.8f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .Append(t.DOLocalMove(new Vector3(0.8f * strength, 0.8f * strength, 0f), stepDur).SetRelative(true).SetEase(ease))
-                .WithDefaults(presetOptions, target);
+            return ZigZagFactory.Create(target, GetDuration(duration, options), options, 0.8f, 0.8f, Ease.InOutSine);
         }
     }
 
@@ -743,21 +576,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var strength = ResolveStrength(options);
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
-            var ease = ResolveEase(presetOptions, Ease.OutCubic);
-            var secondaryEase = ResolveSecondaryEase(presetOptions, Ease.InCubic);
-
-            return DOTween.Sequence()
-                .Append(t.DOScale(originalScale * (1f + 0.05f * strength), dur * 0.15f).SetEase(ease))
-                .Append(t.DOScale(originalScale * (1f - 0.03f * strength), dur * 0.15f).SetEase(secondaryEase))
-                .Append(t.DOScale(originalScale * (1f + 0.03f * strength), dur * 0.15f).SetEase(ease))
-                .Append(t.DOScale(originalScale, dur * 0.15f).SetEase(ease))
-                .SetLoops(2)
-                .WithDefaults(presetOptions, target);
+            return AttentionFactory.Create(target, GetDuration(duration, options), options, 0.05f, 0.03f, 0.03f, Ease.OutCubic, Ease.InCubic);
         }
     }
 
@@ -779,21 +598,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var strength = ResolveStrength(options);
-            var dur = GetDuration(duration, options);
-            var presetOptions = MergeWithDefaultEase(options, Ease.OutCubic);
-            var ease = ResolveEase(presetOptions, Ease.OutCubic);
-            var secondaryEase = ResolveSecondaryEase(presetOptions, Ease.InCubic);
-
-            return DOTween.Sequence()
-                .Append(t.DOScale(originalScale * (1f + 0.2f * strength), dur * 0.15f).SetEase(ease))
-                .Append(t.DOScale(originalScale * (1f - 0.1f * strength), dur * 0.15f).SetEase(secondaryEase))
-                .Append(t.DOScale(originalScale * (1f + 0.1f * strength), dur * 0.15f).SetEase(ease))
-                .Append(t.DOScale(originalScale, dur * 0.15f).SetEase(ease))
-                .SetLoops(2)
-                .WithDefaults(presetOptions, target);
+            return AttentionFactory.Create(target, GetDuration(duration, options), options, 0.2f, 0.1f, 0.1f, Ease.OutCubic, Ease.InCubic);
         }
     }
 
@@ -815,18 +620,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalRot = t.localEulerAngles;
-            var strength = ResolveStrength(options);
-            var dur = GetDuration(duration, options);
-            var leanEase = ResolveEase(options, Ease.OutQuad);
-            var returnEase = ResolveSecondaryEase(options, Ease.OutBack);
-            var presetOptions = MergeWithDefaultEase(options, leanEase);
-
-            return DOTween.Sequence()
-                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 6f * strength), dur * 0.4f).SetEase(leanEase))
-                .Append(t.DOLocalRotate(originalRot, dur * 0.6f).SetEase(returnEase))
-                .WithDefaults(presetOptions, target);
+            return TiltFactory.Create(target, GetDuration(duration, options), options, 6f, Ease.OutQuad, Ease.OutBack);
         }
     }
 
@@ -848,18 +642,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var t = target.transform;
-            var originalRot = t.localEulerAngles;
-            var strength = ResolveStrength(options);
-            var dur = GetDuration(duration, options);
-            var leanEase = ResolveEase(options, Ease.OutQuad);
-            var returnEase = ResolveSecondaryEase(options, Ease.OutBack);
-            var presetOptions = MergeWithDefaultEase(options, leanEase);
-
-            return DOTween.Sequence()
-                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 20f * strength), dur * 0.4f).SetEase(leanEase))
-                .Append(t.DOLocalRotate(originalRot, dur * 0.6f).SetEase(returnEase))
-                .WithDefaults(presetOptions, target);
+            return TiltFactory.Create(target, GetDuration(duration, options), options, 20f, Ease.OutQuad, Ease.OutBack);
         }
     }
 
