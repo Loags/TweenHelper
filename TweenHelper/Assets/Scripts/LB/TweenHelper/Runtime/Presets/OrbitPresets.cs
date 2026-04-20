@@ -36,7 +36,8 @@ namespace LB.TweenHelper
             endRadius = Mathf.Max(0.01f, endRadius) * strength;
 
             float dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
-            var initialCenter = t.position;
+            var initialPosition = t.position;
+            var initialCenter = initialPosition - new Vector3(startRadius, 0f, 0f);
             float direction = clockwise ? -1f : 1f;
             const float fullCycle = Mathf.PI * 2f;
             var loopOptions = options;
@@ -47,44 +48,46 @@ namespace LB.TweenHelper
             }
             loopOptions = loopOptions.SetUpdateType(UpdateType.Fixed);
 
-            bool applyDelay = true;
-            Tween tween = null;
-
-            Tween CreateCycle()
+            void ApplyAngle(float angle, bool immediate = false)
             {
-                tween = DOVirtual.Float(0f, fullCycle, dur, angle =>
+                var normalized = Mathf.Repeat(angle / fullCycle, 1f);
+                float radius = Mathf.Lerp(startRadius, endRadius, normalized);
+                float directedAngle = angle * direction;
+
+                Vector3 offset = new Vector3(
+                    Mathf.Cos(directedAngle) * radius,
+                    0f,
+                    Mathf.Sin(directedAngle) * radius
+                );
+
+                Vector3 targetPos = initialCenter + offset;
+
+                if (rb && rb.isKinematic == false)
+                {
+                    if (immediate)
                     {
-                        var normalized = Mathf.Repeat(angle / fullCycle, 1f);
-                        float radius = Mathf.Lerp(startRadius, endRadius, normalized);
-                        float directedAngle = angle * direction;
-
-                        Vector3 offset = new Vector3(
-                            Mathf.Cos(directedAngle) * radius,
-                            0f,
-                            Mathf.Sin(directedAngle) * radius
-                        );
-
-                        Vector3 targetPos = initialCenter + offset;
-
-                        if (rb && rb.isKinematic == false)
-                        {
-                            rb.MovePosition(targetPos);
-                        }
-                        else
-                        {
-                            t.position = targetPos;
-                        }
-                    })
-                    .SetEase(orbitEase)
-                    .SetUpdate(UpdateType.Fixed)
-                    .WithLoopDefaults(loopOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(() => CreateCycle());
-                return tween;
+                        rb.position = targetPos;
+                    }
+                    else
+                    {
+                        rb.MovePosition(targetPos);
+                    }
+                }
+                else
+                {
+                    t.position = targetPos;
+                }
             }
 
-            return CreateCycle();
+            ApplyAngle(0f, true);
+
+            Tween tween = DOVirtual.Float(0f, fullCycle, dur, angle => ApplyAngle(angle))
+                .SetEase(orbitEase)
+                .SetUpdate(UpdateType.Fixed)
+                .SetLoops(-1, LoopType.Restart)
+                .WithLoopDefaults(loopOptions, target, applyDelayThisCycle: true);
+
+            return tween;
         }
     }
 
@@ -99,7 +102,8 @@ namespace LB.TweenHelper
             var strength = CodePreset.ResolveStrengthStatic(options);
             float scaledRadius = radius * strength;
             float dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
-            var initialCenter = t.position;
+            var initialPosition = t.position;
+            var initialCenter = initialPosition - new Vector3(scaledRadius, 0f, 0f);
             float direction = clockwise ? -1f : 1f;
             const float fullCycle = Mathf.PI * 2f;
             var orbitEase = options.Ease ?? Ease.Linear;
@@ -109,30 +113,26 @@ namespace LB.TweenHelper
                 loopOptions = loopOptions.SetEase(orbitEase);
             }
 
-            bool applyDelay = true;
-            Tween tween = null;
-
-            Tween CreateCycle()
+            void ApplyAngle(float angle, bool immediate = false)
             {
-                tween = DOVirtual.Float(0f, fullCycle, dur, angle =>
-                    {
-                        float directedAngle = angle * direction;
-                        Vector3 offset = new Vector3(
-                            Mathf.Cos(directedAngle) * scaledRadius,
-                            Mathf.Sin(directedAngle) * scaledRadius,
-                            0f
-                        );
-                        t.position = initialCenter + offset;
-                    })
-                    .SetEase(orbitEase)
-                    .WithLoopDefaults(loopOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(() => CreateCycle());
-                return tween;
+                float directedAngle = angle * direction;
+                Vector3 offset = new Vector3(
+                    Mathf.Cos(directedAngle) * scaledRadius,
+                    Mathf.Sin(directedAngle) * scaledRadius,
+                    0f
+                );
+                Vector3 targetPos = initialCenter + offset;
+                t.position = targetPos;
             }
 
-            return CreateCycle();
+            ApplyAngle(0f, true);
+
+            Tween tween = DOVirtual.Float(0f, fullCycle, dur, angle => ApplyAngle(angle))
+                .SetEase(orbitEase)
+                .SetLoops(-1, LoopType.Restart)
+                .WithLoopDefaults(loopOptions, target, applyDelayThisCycle: true);
+
+            return tween;
         }
     }
 
@@ -580,7 +580,8 @@ namespace LB.TweenHelper
             var strength = CodePreset.ResolveStrengthStatic(options);
             float scaledRadius = radius * strength;
             float dur = duration ?? TweenHelperSettings.Instance.DefaultDuration;
-            var initialCenter = t.position;
+            var initialPosition = t.position;
+            var initialCenter = initialPosition - new Vector3(0f, scaledRadius, 0f);
             float direction = clockwise ? -1f : 1f;
             const float fullCycle = Mathf.PI * 2f;
             var orbitEase = options.Ease ?? Ease.Linear;
@@ -590,30 +591,26 @@ namespace LB.TweenHelper
                 loopOptions = loopOptions.SetEase(orbitEase);
             }
 
-            bool applyDelay = true;
-            Tween tween = null;
-
-            Tween CreateCycle()
+            void ApplyAngle(float angle, bool immediate = false)
             {
-                tween = DOVirtual.Float(0f, fullCycle, dur, angle =>
-                    {
-                        float directedAngle = angle * direction;
-                        Vector3 offset = new Vector3(
-                            0f,
-                            Mathf.Cos(directedAngle) * scaledRadius,
-                            Mathf.Sin(directedAngle) * scaledRadius
-                        );
-                        t.position = initialCenter + offset;
-                    })
-                    .SetEase(orbitEase)
-                    .WithLoopDefaults(loopOptions, target, applyDelay);
-
-                applyDelay = false;
-                tween.OnComplete(() => CreateCycle());
-                return tween;
+                float directedAngle = angle * direction;
+                Vector3 offset = new Vector3(
+                    0f,
+                    Mathf.Cos(directedAngle) * scaledRadius,
+                    Mathf.Sin(directedAngle) * scaledRadius
+                );
+                Vector3 targetPos = initialCenter + offset;
+                t.position = targetPos;
             }
 
-            return CreateCycle();
+            ApplyAngle(0f, true);
+
+            Tween tween = DOVirtual.Float(0f, fullCycle, dur, angle => ApplyAngle(angle))
+                .SetEase(orbitEase)
+                .SetLoops(-1, LoopType.Restart)
+                .WithLoopDefaults(loopOptions, target, applyDelayThisCycle: true);
+
+            return tween;
         }
     }
 

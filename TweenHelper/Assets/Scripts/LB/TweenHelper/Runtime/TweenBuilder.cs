@@ -537,7 +537,7 @@ namespace LB.TweenHelper
                     return null;
                 }
                 return preset.CreateTween(_gameObject, duration, _currentOptions);
-            });
+            }, applyBuilderOptions: false);
             return this;
         }
 
@@ -595,7 +595,7 @@ namespace LB.TweenHelper
         /// <summary>Circles around a point on XZ plane with custom radius.</summary>
         public TweenBuilder OrbitXZ(float startRadius, float? endRadius = null, float? duration = null)
         {
-            AddStep(() => OrbitTweenFactory.Create(_gameObject, duration, _currentOptions, false, startRadius, endRadius ?? startRadius));
+            AddStep(() => OrbitTweenFactory.Create(_gameObject, duration, _currentOptions, false, startRadius, endRadius ?? startRadius), applyBuilderOptions: false);
             return this;
         }
         /// <summary>Circles clockwise around a point on XZ plane.</summary>
@@ -603,7 +603,7 @@ namespace LB.TweenHelper
         /// <summary>Circles clockwise around a point on XZ plane with custom radius.</summary>
         public TweenBuilder OrbitXZClockwise(float startRadius, float? endRadius = null, float? duration = null)
         {
-            AddStep(() => OrbitTweenFactory.Create(_gameObject, duration, _currentOptions, true, startRadius, endRadius ?? startRadius));
+            AddStep(() => OrbitTweenFactory.Create(_gameObject, duration, _currentOptions, true, startRadius, endRadius ?? startRadius), applyBuilderOptions: false);
             return this;
         }
         /// <summary>Circles counter-clockwise around a point on XZ plane.</summary>
@@ -611,7 +611,7 @@ namespace LB.TweenHelper
         /// <summary>Circles counter-clockwise around a point on XZ plane with custom radius.</summary>
         public TweenBuilder OrbitXZCounterClockwise(float startRadius, float? endRadius = null, float? duration = null)
         {
-            AddStep(() => OrbitTweenFactory.Create(_gameObject, duration, _currentOptions, false, startRadius, endRadius ?? startRadius));
+            AddStep(() => OrbitTweenFactory.Create(_gameObject, duration, _currentOptions, false, startRadius, endRadius ?? startRadius), applyBuilderOptions: false);
             return this;
         }
         /// <summary>Spirals upward combining rotation and height.</summary>
@@ -948,7 +948,10 @@ namespace LB.TweenHelper
                 return null;
             }
 
-            ApplyOptions(tween, step.Options);
+            if (step.ApplyBuilderOptions)
+            {
+                ApplyOptions(tween, step.Options);
+            }
             tween.SetLink(_gameObject);
 
             return tween;
@@ -987,7 +990,10 @@ namespace LB.TweenHelper
                 var tween = step.TweenFactory?.Invoke();
                 if (tween == null) continue;
 
-                ApplyOptions(tween, step.Options);
+                if (step.ApplyBuilderOptions)
+                {
+                    ApplyOptions(tween, step.Options);
+                }
 
                 if (step.IsParallel)
                 {
@@ -1048,12 +1054,13 @@ namespace LB.TweenHelper
             tween.SetTarget(_gameObject);
         }
 
-        private void AddStep(Func<Tween> tweenFactory, Action callback = null, bool isInterval = false)
+        private void AddStep(Func<Tween> tweenFactory, Action callback = null, bool isInterval = false, bool applyBuilderOptions = true)
         {
             _steps.Add(new TweenStep
             {
                 TweenFactory = tweenFactory,
                 Options = _currentOptions,
+                ApplyBuilderOptions = applyBuilderOptions,
                 IsParallel = _nextIsParallel,
                 Callback = callback,
                 IsInterval = isInterval
@@ -1072,6 +1079,7 @@ namespace LB.TweenHelper
         {
             public Func<Tween> TweenFactory;
             public TweenOptions Options;
+            public bool ApplyBuilderOptions;
             public bool IsParallel;
             public Action Callback;
             public bool IsInterval;

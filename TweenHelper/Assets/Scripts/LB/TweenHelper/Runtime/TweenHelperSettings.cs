@@ -30,7 +30,7 @@ namespace LB.TweenHelper
         [SerializeField, Min(0)] private int maxSequenceCapacity = 50;
         [SerializeField, Min(0)] private int maxTweenersCapacity = 200;
         [SerializeField, Min(0)] private int maxSequencesCapacity = 50;
-        
+
         private static TweenHelperSettings _instance;
         
         /// <summary>
@@ -134,7 +134,7 @@ namespace LB.TweenHelper
         /// Maximum capacity for sequences to avoid internal array resizes.
         /// </summary>
         public int MaxSequencesCapacity => maxSequencesCapacity;
-        
+
         #endregion
         
         /// <summary>
