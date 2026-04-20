@@ -13,12 +13,21 @@ namespace LB.TweenHelper
             var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
             var targetPos = t.localPosition;
-            t.localPosition = targetPos + offsetDirection * (distance * strength);
+            var startPos = targetPos + offsetDirection * (distance * strength);
+
+            if (TweenTargetUtility.TryGetRectTransform(target, out var rectTransform))
+            {
+                rectTransform.anchoredPosition = new Vector2(startPos.x, startPos.y);
+            }
+            else
+            {
+                t.localPosition = startPos;
+            }
 
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.OutCubic);
             var ease = presetOptions.Ease ?? Ease.OutCubic;
 
-            return t.DOLocalMove(targetPos, duration)
+            return TweenTargetUtility.CreateLocalMoveTween(target, targetPos, duration)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -311,7 +320,7 @@ namespace LB.TweenHelper
             var ease = presetOptions.Ease ?? Ease.InCubic;
             var endPos = t.localPosition + direction * (distance * strength);
 
-            return t.DOLocalMove(endPos, duration)
+            return TweenTargetUtility.CreateLocalMoveTween(target, endPos, duration)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -601,13 +610,22 @@ namespace LB.TweenHelper
             var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
             var targetPos = t.localPosition;
-            t.localPosition = targetPos + offsetDirection * (distance * strength);
+            var startPos = targetPos + offsetDirection * (distance * strength);
+
+            if (TweenTargetUtility.TryGetRectTransform(target, out var rectTransform))
+            {
+                rectTransform.anchoredPosition = new Vector2(startPos.x, startPos.y);
+            }
+            else
+            {
+                t.localPosition = startPos;
+            }
 
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.OutCubic);
             var ease = presetOptions.Ease ?? Ease.OutCubic;
 
             var seq = DOTween.Sequence();
-            seq.Append(t.DOLocalMove(targetPos, duration).SetEase(ease));
+            seq.Append(TweenTargetUtility.CreateLocalMoveTween(target, targetPos, duration).SetEase(ease));
 
             var fadeTween = CodePreset.CreateFadeTweenStatic(target, CodePreset.ResolveTargetAlphaStatic(options, 1f), duration * 0.7f);
             if (fadeTween != null)
@@ -942,7 +960,7 @@ namespace LB.TweenHelper
             var ease = presetOptions.Ease ?? Ease.InCubic;
 
             var seq = DOTween.Sequence();
-            seq.Append(t.DOLocalMove(endPos, duration).SetEase(ease));
+            seq.Append(TweenTargetUtility.CreateLocalMoveTween(target, endPos, duration).SetEase(ease));
 
             var fadeTween = CodePreset.CreateFadeTweenStatic(target, CodePreset.ResolveTargetAlphaStatic(options, 0f), duration * 0.7f);
             if (fadeTween != null)

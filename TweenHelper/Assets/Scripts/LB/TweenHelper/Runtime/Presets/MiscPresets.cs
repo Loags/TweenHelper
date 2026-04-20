@@ -91,7 +91,6 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, float duration, TweenOptions options, float height, Ease defaultEase)
         {
-            var t = target.transform;
             var strength = CodePreset.ResolveStrengthStatic(options);
             var halfDur = duration * 0.5f;
             var moveUpEase = options.Ease ?? defaultEase;
@@ -104,8 +103,7 @@ namespace LB.TweenHelper
 
             void MoveUp()
             {
-                tween = t.DOLocalMoveY(height * strength, halfDur)
-                    .SetRelative(true)
+                tween = TweenTargetUtility.CreateRelativeLocalMoveTween(target, new Vector3(0f, height * strength, 0f), halfDur)
                     .SetEase(moveUpEase)
                     .WithLoopDefaults(upOptions, target, applyDelay);
 
@@ -115,8 +113,7 @@ namespace LB.TweenHelper
 
             void MoveDown()
             {
-                tween = t.DOLocalMoveY(-height * strength, halfDur)
-                    .SetRelative(true)
+                tween = TweenTargetUtility.CreateRelativeLocalMoveTween(target, new Vector3(0f, -height * strength, 0f), halfDur)
                     .SetEase(moveDownEase)
                     .WithLoopDefaults(downOptions, target, applyDelay);
 

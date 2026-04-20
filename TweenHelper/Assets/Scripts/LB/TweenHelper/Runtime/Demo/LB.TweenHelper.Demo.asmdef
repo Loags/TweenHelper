@@ -3,6 +3,7 @@
     "rootNamespace": "LB.TweenHelper.Demo",
     "references": [
         "LB.TweenHelper.Runtime",
+        "Unity.InputSystem",
         "Unity.TextMeshPro",
         "Unity.ugui",
         "DOTween.Modules"

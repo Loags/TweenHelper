@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace LB.TweenHelper
 {
@@ -63,7 +62,7 @@ namespace LB.TweenHelper
         public TweenBuilder MoveLocal(Vector3 target, float? duration = null)
         {
             var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
-            AddStep(() => _transform.DOLocalMove(target, dur));
+            AddStep(() => TweenTargetUtility.CreateLocalMoveTween(_gameObject, target, dur));
             return this;
         }
 
@@ -73,7 +72,7 @@ namespace LB.TweenHelper
         public TweenBuilder MoveBy(Vector3 offset, float? duration = null)
         {
             var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
-            AddStep(() => _transform.DOMove(_transform.position + offset, dur));
+            AddStep(() => TweenTargetUtility.CreateRelativeMoveTween(_gameObject, offset, dur));
             return this;
         }
 
@@ -83,7 +82,7 @@ namespace LB.TweenHelper
         public TweenBuilder MoveX(float target, float? duration = null)
         {
             var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
-            AddStep(() => _transform.DOMoveX(target, dur));
+            AddStep(() => TweenTargetUtility.CreateMoveXTween(_gameObject, target, dur));
             return this;
         }
 
@@ -93,7 +92,7 @@ namespace LB.TweenHelper
         public TweenBuilder MoveY(float target, float? duration = null)
         {
             var dur = duration ?? _currentOptions.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
-            AddStep(() => _transform.DOMoveY(target, dur));
+            AddStep(() => TweenTargetUtility.CreateMoveYTween(_gameObject, target, dur));
             return this;
         }
 
@@ -297,36 +296,14 @@ namespace LB.TweenHelper
 
         private Tween CreateFadeTween(float alpha, float duration)
         {
-            // Try CanvasGroup first
-            var canvasGroup = _gameObject.GetComponent<CanvasGroup>();
-            if (canvasGroup != null)
+            var tween = TweenTargetUtility.CreateFadeTween(_gameObject, alpha, duration);
+            if (tween != null)
             {
-                return canvasGroup.DOFade(alpha, duration);
-            }
-
-            // Try SpriteRenderer
-            var spriteRenderer = _gameObject.GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null)
-            {
-                return spriteRenderer.DOFade(alpha, duration);
-            }
-
-            // Try Image
-            var image = _gameObject.GetComponent<Image>();
-            if (image != null)
-            {
-                return image.DOFade(alpha, duration);
-            }
-
-            // Try Text
-            var text = _gameObject.GetComponent<Text>();
-            if (text != null)
-            {
-                return text.DOFade(alpha, duration);
+                return tween;
             }
 
             Debug.LogWarning($"TweenBuilder: No fadeable component found on {_gameObject.name}. " +
-                           "Supported: CanvasGroup, SpriteRenderer, Image, Text.");
+                           "Supported: CanvasGroup, SpriteRenderer, Graphic, TMP_Text, Renderer.");
             return null;
         }
 
@@ -346,26 +323,14 @@ namespace LB.TweenHelper
 
         private Tween CreateColorTween(Color target, float duration)
         {
-            var spriteRenderer = _gameObject.GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null)
+            var tween = TweenTargetUtility.CreateColorTween(_gameObject, target, duration);
+            if (tween != null)
             {
-                return spriteRenderer.DOColor(target, duration);
-            }
-
-            var image = _gameObject.GetComponent<Image>();
-            if (image != null)
-            {
-                return image.DOColor(target, duration);
-            }
-
-            var text = _gameObject.GetComponent<Text>();
-            if (text != null)
-            {
-                return text.DOColor(target, duration);
+                return tween;
             }
 
             Debug.LogWarning($"TweenBuilder: No colorable component found on {_gameObject.name}. " +
-                           "Supported: SpriteRenderer, Image, Text.");
+                           "Supported: SpriteRenderer, Graphic, TMP_Text.");
             return null;
         }
 
@@ -537,6 +502,8 @@ namespace LB.TweenHelper
                     return null;
                 }
                 return preset.CreateTween(_gameObject, duration, _currentOptions);
+            // Presets already resolve and apply their own defaults. Reapplying builder options here
+            // breaks multi-phase/looping presets by changing only the first tween in the chain.
             }, applyBuilderOptions: false);
             return this;
         }

@@ -38,8 +38,8 @@ namespace LB.TweenHelper
             var presetOptions = MergeWithDefaultEase(options, pushEase);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalMoveX(0.3f * strength, dur * 0.3f).SetRelative(true).SetEase(pushEase))
-                .Append(t.DOLocalMoveX(-0.3f * strength, dur * 0.7f).SetRelative(true).SetEase(returnEase))
+                .Append(TweenTargetUtility.CreateRelativeLocalMoveTween(target, new Vector3(0.3f * strength, 0f, 0f), dur * 0.3f).SetEase(pushEase))
+                .Append(TweenTargetUtility.CreateRelativeLocalMoveTween(target, new Vector3(-0.3f * strength, 0f, 0f), dur * 0.7f).SetEase(returnEase))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -52,15 +52,14 @@ namespace LB.TweenHelper
         public static Tween Create(GameObject target, Vector3 direction, float distance, float duration, TweenOptions options)
         {
             var strength = CodePreset.ResolveStrengthStatic(options);
-            var t = target.transform;
             var offset = direction * (distance * strength);
             var pushEase = options.Ease ?? Ease.OutQuad;
             var returnEase = options.SecondaryEase ?? options.Ease ?? Ease.OutBack;
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(pushEase);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalMove(offset, duration * 0.3f).SetRelative(true).SetEase(pushEase))
-                .Append(t.DOLocalMove(-offset, duration * 0.7f).SetRelative(true).SetEase(returnEase))
+                .Append(TweenTargetUtility.CreateRelativeLocalMoveTween(target, offset, duration * 0.3f).SetEase(pushEase))
+                .Append(TweenTargetUtility.CreateRelativeLocalMoveTween(target, -offset, duration * 0.7f).SetEase(returnEase))
                 .WithDefaults(presetOptions, target);
         }
     }
