@@ -13,9 +13,11 @@ namespace LB.TweenHelper
     /// </summary>
     public static class TweenPresetRegistry
     {
-        private static readonly Dictionary<string, ITweenPreset> _presetsByName = new Dictionary<string, ITweenPreset>();
-        private static readonly Dictionary<Type, ITweenPreset> _presetsByType = new Dictionary<Type, ITweenPreset>();
+        private const int BuiltInPresetCapacity = 320;
+        private static readonly Dictionary<string, ITweenPreset> _presetsByName = new Dictionary<string, ITweenPreset>(BuiltInPresetCapacity, StringComparer.Ordinal);
+        private static readonly Dictionary<Type, ITweenPreset> _presetsByType = new Dictionary<Type, ITweenPreset>(BuiltInPresetCapacity);
         private static bool _hasScannedCodePresets = false;
+        private static int _registryVersion;
 
         /// <summary>
         /// Gets all registered preset names.
@@ -67,6 +69,7 @@ namespace LB.TweenHelper
 
             _presetsByName[preset.PresetName] = preset;
             _presetsByType[presetType] = preset;
+            _registryVersion++;
         }
 
         /// <summary>
@@ -85,6 +88,7 @@ namespace LB.TweenHelper
 
             _presetsByName.Remove(presetName);
             _presetsByType.Remove(preset.GetType());
+            _registryVersion++;
             return true;
         }
 
@@ -133,8 +137,12 @@ namespace LB.TweenHelper
         public static TPreset GetPreset<TPreset>() where TPreset : class, ITweenPreset
         {
             EnsureInitialized();
+            if (TypedPresetCache<TPreset>.Version == _registryVersion) return TypedPresetCache<TPreset>.Preset;
+
             _presetsByType.TryGetValue(typeof(TPreset), out ITweenPreset preset);
-            return preset as TPreset;
+            TypedPresetCache<TPreset>.Preset = preset as TPreset;
+            TypedPresetCache<TPreset>.Version = _registryVersion;
+            return TypedPresetCache<TPreset>.Preset;
         }
 
         /// <summary>
@@ -240,6 +248,20 @@ namespace LB.TweenHelper
             }
         }
 
+        internal static Tween PlayUnchecked<TPreset>(GameObject target, float? duration = null, TweenOptions options = default) where TPreset : class, ITweenPreset
+        {
+            var preset = GetPreset<TPreset>();
+            if (preset == null)
+            {
+                Debug.LogError($"TweenPresetRegistry: Preset type '{typeof(TPreset).Name}' is not registered.");
+                return null;
+            }
+
+            var tween = preset.CreateTween(target, duration, options);
+            tween?.Play();
+            return tween;
+        }
+
         /// <summary>
         /// Plays a preset by name. Prefer <see cref="Play{TPreset}"/> for statically known presets.
         /// </summary>
@@ -263,51 +285,39 @@ namespace LB.TweenHelper
 
             try
             {
-                // Get all loaded assemblies
-                var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-
-                foreach (var assembly in assemblies)
+                var runtimeAssembly = typeof(TweenPresetRegistry).Assembly;
+                foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
                 {
-                    // Skip system assemblies for performance
-                    var assemblyName = assembly.GetName().Name;
-                    if (assemblyName.StartsWith("System") ||
-                        assemblyName.StartsWith("Unity") ||
-                        assemblyName.StartsWith("mscorlib") ||
-                        assemblyName.StartsWith("netstandard"))
-                    {
-                        continue;
-                    }
+                    if (assembly != runtimeAssembly && !ReferencesTweenHelper(assembly, runtimeAssembly)) continue;
 
                     try
                     {
                         foreach (var type in assembly.GetTypes())
                         {
-                            // Check if type has AutoRegisterPreset attribute
-                            if (type.GetCustomAttribute<AutoRegisterPresetAttribute>() != null)
+                            if (type.GetCustomAttribute<AutoRegisterPresetAttribute>() == null ||
+                                type.IsAbstract ||
+                                !typeof(ITweenPreset).IsAssignableFrom(type))
                             {
-                                // Must be a concrete class implementing ITweenPreset
-                                if (!type.IsAbstract && typeof(ITweenPreset).IsAssignableFrom(type))
-                                {
-                                    try
-                                    {
-                                        var instance = Activator.CreateInstance(type) as ITweenPreset;
-                                        if (instance != null)
-                                        {
-                                            RegisterPreset(instance);
-                                            count++;
-                                        }
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        Debug.LogWarning($"TweenPresetRegistry: Failed to instantiate code preset '{type.Name}'. {ex.Message}");
-                                    }
-                                }
+                                continue;
+                            }
+
+                            try
+                            {
+                                var instance = Activator.CreateInstance(type) as ITweenPreset;
+                                if (instance == null) continue;
+
+                                RegisterPreset(instance);
+                                count++;
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.LogWarning($"TweenPresetRegistry: Failed to instantiate code preset '{type.Name}'. {ex.Message}");
                             }
                         }
                     }
-                    catch (ReflectionTypeLoadException)
+                    catch (ReflectionTypeLoadException ex)
                     {
-                        // Skip assemblies that can't be reflected
+                        Debug.LogWarning($"TweenPresetRegistry: Failed to enumerate preset types in '{assembly.GetName().Name}'. {ex.Message}");
                     }
                 }
             }
@@ -330,6 +340,7 @@ namespace LB.TweenHelper
             _presetsByName.Clear();
             _presetsByType.Clear();
             _hasScannedCodePresets = false;
+            _registryVersion++;
             ScanForCodePresets();
         }
 
@@ -346,9 +357,9 @@ namespace LB.TweenHelper
         }
 
         /// <summary>
-        /// Initializes the registry after scene load.
+        /// Initializes the registry before the first scene loads.
         /// </summary>
-        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         private static void Initialize()
         {
             ScanForCodePresets();
@@ -363,6 +374,24 @@ namespace LB.TweenHelper
             _presetsByName.Clear();
             _presetsByType.Clear();
             _hasScannedCodePresets = false;
+            _registryVersion++;
+        }
+
+        private static bool ReferencesTweenHelper(Assembly assembly, Assembly runtimeAssembly)
+        {
+            string runtimeAssemblyName = runtimeAssembly.GetName().Name;
+            foreach (var reference in assembly.GetReferencedAssemblies())
+            {
+                if (reference.Name == runtimeAssemblyName) return true;
+            }
+
+            return false;
+        }
+
+        private static class TypedPresetCache<TPreset> where TPreset : class, ITweenPreset
+        {
+            public static int Version = -1;
+            public static TPreset Preset;
         }
 
         #endregion

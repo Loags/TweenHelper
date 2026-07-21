@@ -163,7 +163,7 @@ namespace LB.TweenHelper
         /// <returns>This TweenHandle for chaining.</returns>
         public TweenHandle OnComplete(Action callback)
         {
-            if (Tween != null) Tween.onComplete += () => callback?.Invoke();
+            if (Tween != null && callback != null) Tween.onComplete += callback.Invoke;
             return this;
         }
 
@@ -174,7 +174,7 @@ namespace LB.TweenHelper
         /// <returns>This TweenHandle for chaining.</returns>
         public TweenHandle OnKill(Action callback)
         {
-            if (Tween != null) Tween.onKill += () => callback?.Invoke();
+            if (Tween != null && callback != null) Tween.onKill += callback.Invoke;
             return this;
         }
 
@@ -185,7 +185,7 @@ namespace LB.TweenHelper
         /// <returns>This TweenHandle for chaining.</returns>
         public TweenHandle OnPause(Action callback)
         {
-            if (Tween != null) Tween.onPause += () => callback?.Invoke();
+            if (Tween != null && callback != null) Tween.onPause += callback.Invoke;
             return this;
         }
 
@@ -196,7 +196,7 @@ namespace LB.TweenHelper
         /// <returns>This TweenHandle for chaining.</returns>
         public TweenHandle OnPlay(Action callback)
         {
-            if (Tween != null) Tween.onPlay += () => callback?.Invoke();
+            if (Tween != null && callback != null) Tween.onPlay += callback.Invoke;
             return this;
         }
 
@@ -207,7 +207,7 @@ namespace LB.TweenHelper
         /// <returns>This TweenHandle for chaining.</returns>
         public TweenHandle OnUpdate(Action callback)
         {
-            if (Tween != null) Tween.onUpdate += () => callback?.Invoke();
+            if (Tween != null && callback != null) Tween.onUpdate += callback.Invoke;
             return this;
         }
 

@@ -462,6 +462,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            if (!TweenTargetUtility.TryGetAlphaBinding(target, out var alphaBinding)) return null;
+
             var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.Linear);
             float seed = Random.Range(0f, 100f);
@@ -469,10 +471,10 @@ namespace LB.TweenHelper
             return DOVirtual.Float(0f, 1f, dur, t =>
                 {
                     float noise = Mathf.PerlinNoise(seed + t * 12f, 0f);
-                    SetAlpha(target, noise);
+                    alphaBinding.SetAlpha(noise);
                 })
                 .SetEase(Ease.Linear)
-                .OnComplete(() => SetAlpha(target, 1f))
+                .OnComplete(() => alphaBinding.SetAlpha(1f))
                 .WithDefaults(presetOptions, target);
         }
 
@@ -497,6 +499,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            if (!TweenTargetUtility.TryGetAlphaBinding(target, out var alphaBinding)) return null;
+
             var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.Linear);
             float seed = Random.Range(0f, 100f);
@@ -504,10 +508,10 @@ namespace LB.TweenHelper
             return DOVirtual.Float(0f, 1f, dur, t =>
                 {
                     float noise = Mathf.PerlinNoise(seed + t * 6f, 0f);
-                    SetAlpha(target, noise);
+                    alphaBinding.SetAlpha(noise);
                 })
                 .SetEase(Ease.Linear)
-                .OnComplete(() => SetAlpha(target, 1f))
+                .OnComplete(() => alphaBinding.SetAlpha(1f))
                 .WithDefaults(presetOptions, target);
         }
 
@@ -532,6 +536,8 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
+            if (!TweenTargetUtility.TryGetAlphaBinding(target, out var alphaBinding)) return null;
+
             var dur = GetDuration(duration, options);
             var presetOptions = MergeWithDefaultEase(options, Ease.Linear);
             float seed = Random.Range(0f, 100f);
@@ -539,10 +545,10 @@ namespace LB.TweenHelper
             return DOVirtual.Float(0f, 1f, dur, t =>
                 {
                     float noise = Mathf.PerlinNoise(seed + t * 24f, 0f);
-                    SetAlpha(target, noise);
+                    alphaBinding.SetAlpha(noise);
                 })
                 .SetEase(Ease.Linear)
-                .OnComplete(() => SetAlpha(target, 1f))
+                .OnComplete(() => alphaBinding.SetAlpha(1f))
                 .WithDefaults(presetOptions, target);
         }
 

@@ -15,7 +15,9 @@ namespace LB.TweenHelper
     {
         private readonly Transform _transform;
         private readonly GameObject _gameObject;
-        private readonly List<TweenStep> _steps = new List<TweenStep>();
+        private TweenStep _firstStep;
+        private List<TweenStep> _additionalSteps;
+        private int _stepCount;
         private TweenOptions _currentOptions = default;
         private bool _isSequenceMode = false;
         private bool _nextIsParallel = false;
@@ -52,7 +54,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder Move(Vector3 target, float? duration = null)
         {
-            AddStep(options => _transform.DOMove(target, ResolveDuration(duration, options)));
+            AddStep(options => _transform.DOMove(target, ResolveDuration(duration, options), ResolveSnapping(options)));
             return this;
         }
 
@@ -61,7 +63,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder MoveLocal(Vector3 target, float? duration = null)
         {
-            AddStep(options => TweenTargetUtility.CreateLocalMoveTween(_gameObject, target, ResolveDuration(duration, options)));
+            AddStep(options => TweenTargetUtility.CreateLocalMoveTween(_gameObject, target, ResolveDuration(duration, options), ResolveSnapping(options)));
             return this;
         }
 
@@ -70,7 +72,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder MoveBy(Vector3 offset, float? duration = null)
         {
-            AddStep(options => TweenTargetUtility.CreateRelativeMoveTween(_gameObject, offset, ResolveDuration(duration, options)));
+            AddStep(options => TweenTargetUtility.CreateRelativeMoveTween(_gameObject, offset, ResolveDuration(duration, options), ResolveSnapping(options)));
             return this;
         }
 
@@ -79,7 +81,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder MoveX(float target, float? duration = null)
         {
-            AddStep(options => TweenTargetUtility.CreateMoveXTween(_gameObject, target, ResolveDuration(duration, options)));
+            AddStep(options => TweenTargetUtility.CreateMoveXTween(_gameObject, target, ResolveDuration(duration, options), ResolveSnapping(options)));
             return this;
         }
 
@@ -88,7 +90,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder MoveY(float target, float? duration = null)
         {
-            AddStep(options => TweenTargetUtility.CreateMoveYTween(_gameObject, target, ResolveDuration(duration, options)));
+            AddStep(options => TweenTargetUtility.CreateMoveYTween(_gameObject, target, ResolveDuration(duration, options), ResolveSnapping(options)));
             return this;
         }
 
@@ -97,7 +99,7 @@ namespace LB.TweenHelper
         /// </summary>
         public TweenBuilder MoveZ(float target, float? duration = null)
         {
-            AddStep(options => _transform.DOMoveZ(target, ResolveDuration(duration, options)));
+            AddStep(options => _transform.DOMoveZ(target, ResolveDuration(duration, options), ResolveSnapping(options)));
             return this;
         }
 
@@ -420,11 +422,7 @@ namespace LB.TweenHelper
         public TweenBuilder Delay(float seconds)
         {
             _isSequenceMode = true;
-            AddStep(_ =>
-            {
-                // Return a dummy tween that acts as an interval marker
-                return DOTween.To(() => 0f, x => { }, 1f, seconds);
-            }, isInterval: true);
+            AddStep(null, intervalDuration: seconds);
             return this;
         }
 
@@ -866,13 +864,13 @@ namespace LB.TweenHelper
         {
             Tween result;
 
-            if (_steps.Count == 0)
+            if (_stepCount == 0)
             {
                 Debug.LogWarning("TweenBuilder: No animation steps defined.");
                 return new TweenHandle(null);
             }
 
-            if (_isSequenceMode || _steps.Count > 1)
+            if (_isSequenceMode || _stepCount > 1)
             {
                 result = BuildSequence();
             }
@@ -884,11 +882,11 @@ namespace LB.TweenHelper
             // Apply callbacks
             if (result != null && _onComplete != null)
             {
-                result.onComplete += () => _onComplete();
+                result.onComplete += _onComplete.Invoke;
             }
             if (result != null && _onKill != null)
             {
-                result.onKill += () => _onKill();
+                result.onKill += _onKill.Invoke;
             }
 
             return new TweenHandle(result);
@@ -906,7 +904,7 @@ namespace LB.TweenHelper
 
         private Tween BuildSingleTween()
         {
-            var step = _steps[0];
+            var step = _firstStep;
             var tween = step.TweenFactory?.Invoke(step.Options);
 
             if (tween == null)
@@ -927,29 +925,25 @@ namespace LB.TweenHelper
         {
             var sequence = DOTween.Sequence();
 
-            foreach (var step in _steps)
+            for (int i = 0; i < _stepCount; i++)
             {
+                var step = GetStep(i);
                 if (step.Callback != null)
                 {
                     if (step.IsParallel)
                     {
-                        sequence.JoinCallback(() => step.Callback());
+                        sequence.JoinCallback(step.Callback.Invoke);
                     }
                     else
                     {
-                        sequence.AppendCallback(() => step.Callback());
+                        sequence.AppendCallback(step.Callback.Invoke);
                     }
                     continue;
                 }
 
-                if (step.IsInterval)
+                if (step.IntervalDuration.HasValue)
                 {
-                    var intervalTween = step.TweenFactory?.Invoke(step.Options);
-                    if (intervalTween != null)
-                    {
-                        sequence.AppendInterval(intervalTween.Duration());
-                        intervalTween.Kill();
-                    }
+                    sequence.AppendInterval(step.IntervalDuration.Value);
                     continue;
                 }
 
@@ -1024,14 +1018,16 @@ namespace LB.TweenHelper
             return explicitDuration ?? options.Duration ?? TweenHelperSettings.Instance.DefaultDuration;
         }
 
+        private bool ResolveSnapping(TweenOptions options) => options.Snapping ?? TweenHelperSettings.Instance.DefaultSnapping;
+
         private void UpdateStepOptions(Func<TweenOptions, TweenOptions> update)
         {
-            if (_steps.Count > 0 && !_isConfiguringNextStep)
+            if (_stepCount > 0 && !_isConfiguringNextStep)
             {
-                int index = _steps.Count - 1;
-                var step = _steps[index];
+                int index = _stepCount - 1;
+                var step = GetStep(index);
                 step.Options = update(step.Options);
-                _steps[index] = step;
+                SetStep(index, step);
                 return;
             }
 
@@ -1040,34 +1036,58 @@ namespace LB.TweenHelper
 
         private void SetStepOptions(TweenOptions options)
         {
-            if (_steps.Count > 0 && !_isConfiguringNextStep)
+            if (_stepCount > 0 && !_isConfiguringNextStep)
             {
-                int index = _steps.Count - 1;
-                var step = _steps[index];
+                int index = _stepCount - 1;
+                var step = GetStep(index);
                 step.Options = options;
-                _steps[index] = step;
+                SetStep(index, step);
                 return;
             }
 
             _currentOptions = options;
         }
 
-        private void AddStep(Func<TweenOptions, Tween> tweenFactory, Action callback = null, bool isInterval = false, bool applyBuilderOptions = true)
+        private void AddStep(Func<TweenOptions, Tween> tweenFactory, Action callback = null, float? intervalDuration = null, bool applyBuilderOptions = true)
         {
-            _steps.Add(new TweenStep
+            var step = new TweenStep
             {
                 TweenFactory = tweenFactory,
                 Options = _currentOptions,
                 ApplyBuilderOptions = applyBuilderOptions,
                 IsParallel = _nextIsParallel,
                 Callback = callback,
-                IsInterval = isInterval
-            });
+                IntervalDuration = intervalDuration
+            };
+
+            if (_stepCount == 0)
+            {
+                _firstStep = step;
+            }
+            else
+            {
+                _additionalSteps ??= new List<TweenStep>(3);
+                _additionalSteps.Add(step);
+            }
+            _stepCount++;
 
             // Reset for next step
             _nextIsParallel = false;
             _currentOptions = default;
             _isConfiguringNextStep = false;
+        }
+
+        private TweenStep GetStep(int index) => index == 0 ? _firstStep : _additionalSteps[index - 1];
+
+        private void SetStep(int index, TweenStep step)
+        {
+            if (index == 0)
+            {
+                _firstStep = step;
+                return;
+            }
+
+            _additionalSteps[index - 1] = step;
         }
 
         #endregion
@@ -1081,7 +1101,7 @@ namespace LB.TweenHelper
             public bool ApplyBuilderOptions;
             public bool IsParallel;
             public Action Callback;
-            public bool IsInterval;
+            public float? IntervalDuration;
         }
 
         #endregion

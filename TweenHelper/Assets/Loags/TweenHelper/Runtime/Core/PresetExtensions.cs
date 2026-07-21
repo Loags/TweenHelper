@@ -15,61 +15,61 @@ namespace LB.TweenHelper
         /// Scales from 0 to original scale with overshoot.
         /// </summary>
         public static TweenHandle PopIn(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<PopInPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<PopInPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Scales from 0 to original scale with overshoot.
         /// </summary>
         public static TweenHandle PopIn(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<PopInPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<PopInPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Scales to 0 with anticipation.
         /// </summary>
         public static TweenHandle PopOut(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<PopOutPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<PopOutPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Scales to 0 with anticipation.
         /// </summary>
         public static TweenHandle PopOut(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<PopOutPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<PopOutPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Quick scale punch for feedback.
         /// </summary>
         public static TweenHandle Punch(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<PunchPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<PunchPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Quick scale punch for feedback.
         /// </summary>
         public static TweenHandle Punch(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<PunchPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<PunchPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Squash and stretch effect (was Bounce).
         /// </summary>
         public static TweenHandle Bounce(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<BouncePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<BouncePreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Squash and stretch effect (was Bounce).
         /// </summary>
         public static TweenHandle Bounce(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<BouncePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<BouncePreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Squash and stretch effect.
         /// </summary>
         public static TweenHandle Squash(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<BouncePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<BouncePreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Squash and stretch effect.
         /// </summary>
         public static TweenHandle Squash(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<BouncePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<BouncePreset>(go, duration, ApplyEases(options, ease));
 
         #endregion
 
@@ -79,79 +79,79 @@ namespace LB.TweenHelper
         /// Random position shake.
         /// </summary>
         public static TweenHandle Shake(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<ShakePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<ShakePreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Random position shake.
         /// </summary>
         public static TweenHandle Shake(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<ShakePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<ShakePreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Slides in from above.
         /// </summary>
         public static TweenHandle SlideInDown(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<SlideInDownPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SlideInDownPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Slides in from above.
         /// </summary>
         public static TweenHandle SlideInDown(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<SlideInDownPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SlideInDownPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Slides up from below.
         /// </summary>
         public static TweenHandle SlideInUp(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<SlideInUpPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SlideInUpPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Slides up from below.
         /// </summary>
         public static TweenHandle SlideInUp(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<SlideInUpPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SlideInUpPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Slides in from the left side.
         /// </summary>
         public static TweenHandle SlideInLeft(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<SlideInLeftPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SlideInLeftPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Slides in from the left side.
         /// </summary>
         public static TweenHandle SlideInLeft(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<SlideInLeftPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SlideInLeftPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Slides in from the right side.
         /// </summary>
         public static TweenHandle SlideInRight(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<SlideInRightPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SlideInRightPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Slides in from the right side.
         /// </summary>
         public static TweenHandle SlideInRight(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<SlideInRightPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SlideInRightPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Gentle up/down hovering loop.
         /// </summary>
         public static TweenHandle Float(this Transform t, float? duration = null, TweenOptions options = default, Ease? moveUpEase = null, Ease? moveDownEase = null)
-            => new TweenBuilder(t).Preset<FloatPreset>(duration).WithOptions(ApplyEases(options, moveUpEase, moveDownEase)).Play();
+            => PlayPreset<FloatPreset>(t, duration, ApplyEases(options, moveUpEase, moveDownEase));
 
         /// <summary>
         /// Gentle up/down hovering loop.
         /// </summary>
         public static TweenHandle Float(this GameObject go, float? duration = null, TweenOptions options = default, Ease? moveUpEase = null, Ease? moveDownEase = null)
-            => new TweenBuilder(go).Preset<FloatPreset>(duration).WithOptions(ApplyEases(options, moveUpEase, moveDownEase)).Play();
+            => PlayPreset<FloatPreset>(go, duration, ApplyEases(options, moveUpEase, moveDownEase));
 
         /// <summary>
         /// Circles around a point on XZ plane.
         /// </summary>
         public static TweenHandle OrbitXZ(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<OrbitXZPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<OrbitXZPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Circles with a custom radius on XZ plane.
@@ -169,7 +169,7 @@ namespace LB.TweenHelper
         /// Circles around a point on XZ plane.
         /// </summary>
         public static TweenHandle OrbitXZ(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<OrbitXZPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<OrbitXZPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Circles with a custom radius on XZ plane.
@@ -187,7 +187,7 @@ namespace LB.TweenHelper
         /// Circles clockwise on XZ plane.
         /// </summary>
         public static TweenHandle OrbitXZClockwise(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<OrbitXZClockwisePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<OrbitXZClockwisePreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Circles clockwise with a custom radius on XZ plane.
@@ -205,7 +205,7 @@ namespace LB.TweenHelper
         /// Circles clockwise on XZ plane.
         /// </summary>
         public static TweenHandle OrbitXZClockwise(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<OrbitXZClockwisePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<OrbitXZClockwisePreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Circles clockwise with a custom radius on XZ plane.
@@ -223,7 +223,7 @@ namespace LB.TweenHelper
         /// Circles counter-clockwise on XZ plane.
         /// </summary>
         public static TweenHandle OrbitXZCounterClockwise(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<OrbitXZCounterClockwisePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<OrbitXZCounterClockwisePreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Circles counter-clockwise with a custom radius on XZ plane.
@@ -241,7 +241,7 @@ namespace LB.TweenHelper
         /// Circles counter-clockwise on XZ plane.
         /// </summary>
         public static TweenHandle OrbitXZCounterClockwise(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<OrbitXZCounterClockwisePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<OrbitXZCounterClockwisePreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Circles counter-clockwise with a custom radius on XZ plane.
@@ -259,13 +259,13 @@ namespace LB.TweenHelper
         /// Spirals upward combining rotation and height.
         /// </summary>
         public static TweenHandle Spiral(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<SpiralPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SpiralPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Spirals upward combining rotation and height.
         /// </summary>
         public static TweenHandle Spiral(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<SpiralPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SpiralPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Moves toward camera with scale increase.
@@ -273,25 +273,25 @@ namespace LB.TweenHelper
         /// Falls from above with bounce on landing.
         /// </summary>
         public static TweenHandle DropIn(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<DropInPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<DropInPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Falls from above with bounce on landing.
         /// </summary>
         public static TweenHandle DropIn(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<DropInPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<DropInPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Quick upward motion with ease-out.
         /// </summary>
         public static TweenHandle LaunchUp(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<LaunchUpPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<LaunchUpPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Quick upward motion with ease-out.
         /// </summary>
         public static TweenHandle LaunchUp(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<LaunchUpPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<LaunchUpPreset>(go, duration, ApplyEases(options, ease));
 
         #endregion
 
@@ -301,25 +301,25 @@ namespace LB.TweenHelper
         /// Fades in from transparent.
         /// </summary>
         public static TweenHandle FadeIn(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<FadeInPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<FadeInPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Fades in from transparent.
         /// </summary>
         public static TweenHandle FadeIn(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<FadeInPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<FadeInPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Fades out to transparent.
         /// </summary>
         public static TweenHandle FadeOut(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<FadeOutPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<FadeOutPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Fades out to transparent.
         /// </summary>
         public static TweenHandle FadeOut(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<FadeOutPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<FadeOutPreset>(go, duration, ApplyEases(options, ease));
 
         #endregion
 
@@ -329,145 +329,145 @@ namespace LB.TweenHelper
         /// Spins 360 degrees on Y axis.
         /// </summary>
         public static TweenHandle SpinY(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<SpinPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SpinPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Spins 360 degrees on Y axis.
         /// </summary>
         public static TweenHandle SpinY(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<SpinPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SpinPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Spins 360 degrees on X axis.
         /// </summary>
         public static TweenHandle SpinX(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<SpinXPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SpinXPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Spins 360 degrees on X axis.
         /// </summary>
         public static TweenHandle SpinX(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<SpinXPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SpinXPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Spins 360 degrees on Z axis.
         /// </summary>
         public static TweenHandle SpinZ(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<SpinZPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SpinZPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Spins 360 degrees on Z axis.
         /// </summary>
         public static TweenHandle SpinZ(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<SpinZPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SpinZPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Spins diagonally across X and Y.
         /// </summary>
         public static TweenHandle SpinDiagonalXY(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<SpinDiagonalXYPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SpinDiagonalXYPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Spins diagonally across X and Y.
         /// </summary>
         public static TweenHandle SpinDiagonalXY(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<SpinDiagonalXYPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SpinDiagonalXYPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Spins diagonally across X and Z.
         /// </summary>
         public static TweenHandle SpinDiagonalXZ(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<SpinDiagonalXZPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SpinDiagonalXZPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Spins diagonally across X and Z.
         /// </summary>
         public static TweenHandle SpinDiagonalXZ(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<SpinDiagonalXZPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SpinDiagonalXZPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Spins diagonally across Y and Z.
         /// </summary>
         public static TweenHandle SpinDiagonalYZ(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<SpinDiagonalYZPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SpinDiagonalYZPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Spins diagonally across Y and Z.
         /// </summary>
         public static TweenHandle SpinDiagonalYZ(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<SpinDiagonalYZPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<SpinDiagonalYZPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Wobbles rotation back and forth on Y.
         /// </summary>
         public static TweenHandle WobbleY(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<WobblePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<WobblePreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Wobbles rotation back and forth on Y.
         /// </summary>
         public static TweenHandle WobbleY(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<WobblePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<WobblePreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Wobbles rotation back and forth on X.
         /// </summary>
         public static TweenHandle WobbleX(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<WobbleXPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<WobbleXPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Wobbles rotation back and forth on X.
         /// </summary>
         public static TweenHandle WobbleX(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<WobbleXPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<WobbleXPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Wobbles rotation back and forth on Z.
         /// </summary>
         public static TweenHandle WobbleZ(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<WobbleZPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<WobbleZPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Wobbles rotation back and forth on Z.
         /// </summary>
         public static TweenHandle WobbleZ(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<WobbleZPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<WobbleZPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Wobbles rotation diagonally across X and Y.
         /// </summary>
         public static TweenHandle WobbleDiagonalXY(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<WobbleDiagonalXYPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<WobbleDiagonalXYPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Wobbles rotation diagonally across X and Y.
         /// </summary>
         public static TweenHandle WobbleDiagonalXY(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<WobbleDiagonalXYPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<WobbleDiagonalXYPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Wobbles rotation diagonally across X and Z.
         /// </summary>
         public static TweenHandle WobbleDiagonalXZ(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<WobbleDiagonalXZPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<WobbleDiagonalXZPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Wobbles rotation diagonally across X and Z.
         /// </summary>
         public static TweenHandle WobbleDiagonalXZ(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<WobbleDiagonalXZPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<WobbleDiagonalXZPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Wobbles rotation diagonally across Y and Z.
         /// </summary>
         public static TweenHandle WobbleDiagonalYZ(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<WobbleDiagonalYZPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<WobbleDiagonalYZPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Wobbles rotation diagonally across Y and Z.
         /// </summary>
         public static TweenHandle WobbleDiagonalYZ(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<WobbleDiagonalYZPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<WobbleDiagonalYZPreset>(go, duration, ApplyEases(options, ease));
 
         #endregion
 
@@ -477,37 +477,37 @@ namespace LB.TweenHelper
         /// Scales and fades in together.
         /// </summary>
         public static TweenHandle PopInFade(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<PopInFadePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<PopInFadePreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Scales and fades in together.
         /// </summary>
         public static TweenHandle PopInFade(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<PopInFadePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<PopInFadePreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Attention-grabbing pulse.
         /// </summary>
         public static TweenHandle Attention(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<AttentionPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<AttentionPreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Attention-grabbing pulse.
         /// </summary>
         public static TweenHandle Attention(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<AttentionPreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<AttentionPreset>(go, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Scales down and fades out together.
         /// </summary>
         public static TweenHandle PopOutFade(this Transform t, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(t).Preset<PopOutFadePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<PopOutFadePreset>(t, duration, ApplyEases(options, ease));
 
         /// <summary>
         /// Scales down and fades out together.
         /// </summary>
         public static TweenHandle PopOutFade(this GameObject go, float? duration = null, TweenOptions options = default, Ease? ease = null)
-            => new TweenBuilder(go).Preset<PopOutFadePreset>(duration).WithOptions(ApplyEases(options, ease)).Play();
+            => PlayPreset<PopOutFadePreset>(go, duration, ApplyEases(options, ease));
 
         #endregion
 
@@ -528,6 +528,12 @@ namespace LB.TweenHelper
         #endregion
 
         #region Internal helpers
+
+        private static TweenHandle PlayPreset<TPreset>(Transform target, float? duration, TweenOptions options) where TPreset : class, ITweenPreset
+            => PlayPreset<TPreset>(target.gameObject, duration, options);
+
+        private static TweenHandle PlayPreset<TPreset>(GameObject target, float? duration, TweenOptions options) where TPreset : class, ITweenPreset
+            => new TweenHandle(TweenPresetRegistry.PlayUnchecked<TPreset>(target, duration, options));
 
         private static TweenOptions ApplyEases(TweenOptions options, Ease? ease, Ease? secondaryEase = null, Ease? tertiaryEase = null)
         {

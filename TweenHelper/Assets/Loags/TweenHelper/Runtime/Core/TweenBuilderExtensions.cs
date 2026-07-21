@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 
 namespace LB.TweenHelper
@@ -7,6 +8,18 @@ namespace LB.TweenHelper
     /// </summary>
     public static class TweenBuilderExtensions
     {
+        /// <summary>
+        /// Creates and plays a typed preset without allocating a builder or handle wrapper.
+        /// </summary>
+        public static Tween PlayPreset<TPreset>(this Transform transform, float? duration = null, TweenOptions options = default) where TPreset : class, ITweenPreset
+            => TweenPresetRegistry.PlayUnchecked<TPreset>(transform.gameObject, duration, options);
+
+        /// <summary>
+        /// Creates and plays a typed preset without allocating a builder or handle wrapper.
+        /// </summary>
+        public static Tween PlayPreset<TPreset>(this GameObject gameObject, float? duration = null, TweenOptions options = default) where TPreset : class, ITweenPreset
+            => TweenPresetRegistry.PlayUnchecked<TPreset>(gameObject, duration, options);
+
         /// <summary>
         /// Creates a new TweenBuilder for the specified Transform.
         /// </summary>

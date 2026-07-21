@@ -36,6 +36,14 @@ TweenHandle handle = gameObject.Tween()
 
 The generic API is compile-time checked and should be used whenever the preset type is known. Dynamic names remain available through the explicitly named fallback:
 
+For allocation-sensitive call sites that do not need `TweenHandle`, play the typed preset directly and retain DOTween's raw `Tween`:
+
+```csharp
+Tween tween = transform.PlayPreset<SlideInLeftPreset>(0.4f);
+```
+
+This path does not allocate a `TweenBuilder`, builder step storage, or a handle wrapper.
+
 ```csharp
 TweenHandle handle = gameObject.Tween()
     .PresetByName(presetNameFromSaveData)
@@ -141,6 +149,15 @@ Cancelling the token kills an active tween and throws `OperationCanceledExceptio
 
 ```csharp
 bool completedNormally = await TweenAsync.AwaitCompletionWithTimeout(handle.Tween, 2f, cancellationToken);
+```
+
+When a tween-owned cancellation token must outlive a local scope, retain and dispose its registration:
+
+```csharp
+using TweenAsync.TweenCancellationRegistration registration =
+    TweenAsync.CreateTweenLinkedCancellation(handle.Tween, cancellationToken);
+
+await RunDependentWork(registration.Token);
 ```
 
 ## Direct registry access

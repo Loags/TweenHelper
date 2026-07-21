@@ -12,6 +12,8 @@ namespace LB.TweenHelper
     /// </summary>
     public static class TweenAsync
     {
+        private static readonly TweenCallback EmptyTweenCallback = () => { };
+
         /// <summary>
         /// Awaits the completion of a tween.
         /// </summary>
@@ -212,9 +214,7 @@ namespace LB.TweenHelper
                 return;
             }
             
-            // Create a dummy tween for the delay
-            var delayTween = DOTween.To(() => 0f, x => { }, 1f, delaySeconds);
-            _ = delayTween.SetUpdate(unscaledTime);
+            var delayTween = DOVirtual.DelayedCall(delaySeconds, EmptyTweenCallback, unscaledTime);
             
             await AwaitCompletion(delayTween, cancellationToken);
         }
@@ -238,13 +238,25 @@ namespace LB.TweenHelper
             
             public TweenAwaiter(Tween tween)
             {
-                _tcs = new TaskCompletionSource<bool>();
-                
+                _tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
                 if (tween != null && tween.IsActive())
                 {
-                    var tcs = _tcs; // Capture for lambda
-                    tween.onComplete += () => tcs.TrySetResult(true);
-                    tween.onKill += () => tcs.TrySetResult(false);
+                    var tcs = _tcs;
+                    TweenCallback onComplete = null;
+                    TweenCallback onKill = null;
+
+                    void Complete(bool completed)
+                    {
+                        tween.onComplete -= onComplete;
+                        tween.onKill -= onKill;
+                        tcs.TrySetResult(completed);
+                    }
+
+                    onComplete = () => Complete(true);
+                    onKill = () => Complete(false);
+                    tween.onComplete += onComplete;
+                    tween.onKill += onKill;
                 }
                 else
                 {
@@ -277,7 +289,7 @@ namespace LB.TweenHelper
             Transform progressIndicator = null,
             CancellationToken cancellationToken = default)
         {
-            Tween progressTween = null;
+            Tweener progressTween = null;
             
             try
             {
@@ -286,9 +298,16 @@ namespace LB.TweenHelper
                     if (progressIndicator != null)
                     {
                         // Animate the progress indicator scale based on progress
-                        progressTween?.Kill();
                         var targetScale = Vector3.one * Mathf.Lerp(0.1f, 1f, value);
-                        progressTween = progressIndicator.DOScale(targetScale, 0.1f);
+                        if (progressTween == null || !progressTween.IsActive())
+                        {
+                            progressTween = progressIndicator.DOScale(targetScale, 0.1f);
+                        }
+                        else
+                        {
+                            progressTween.ChangeEndValue(targetScale, 0.1f, true);
+                            progressTween.Restart();
+                        }
                     }
                 });
                 
@@ -314,24 +333,65 @@ namespace LB.TweenHelper
         /// <returns>A cancellation token that cancels when the tween is killed.</returns>
         public static CancellationToken CreateTweenLinkedToken(Tween tween, CancellationToken parentToken = default)
         {
-            if (tween == null || !tween.IsActive())
+            if (tween == null || !tween.IsActive()) return new CancellationToken(true);
+            return new TweenCancellationRegistration(tween, parentToken).Token;
+        }
+
+        /// <summary>
+        /// Creates a disposable cancellation registration linked to a tween's lifetime.
+        /// </summary>
+        public static TweenCancellationRegistration CreateTweenLinkedCancellation(Tween tween, CancellationToken parentToken = default)
+        {
+            return new TweenCancellationRegistration(tween, parentToken);
+        }
+
+        public sealed class TweenCancellationRegistration : IDisposable
+        {
+            private readonly Tween _tween;
+            private readonly CancellationTokenSource _source;
+            private CancellationTokenRegistration _parentRegistration;
+            private TweenCallback _onKill;
+            private bool _isDisposed;
+
+            internal TweenCancellationRegistration(Tween tween, CancellationToken parentToken)
             {
-                return new CancellationToken(true); // Already cancelled
-            }
-            
-            var cts = parentToken.CanBeCanceled
-                ? CancellationTokenSource.CreateLinkedTokenSource(parentToken)
-                : new CancellationTokenSource();
-            
-            tween.onKill += () =>
-            {
-                if (!cts.Token.IsCancellationRequested)
+                _tween = tween;
+                _source = new CancellationTokenSource();
+
+                if (tween == null || !tween.IsActive())
                 {
-                    cts.Cancel();
+                    _source.Cancel();
+                    return;
                 }
-            };
-            
-            return cts.Token;
+
+                _onKill = OnTweenKilled;
+                tween.onKill += _onKill;
+                if (parentToken.CanBeCanceled) _parentRegistration = parentToken.Register(OnParentCancelled);
+            }
+
+            public CancellationToken Token => _source.Token;
+
+            public void Dispose()
+            {
+                if (_isDisposed) return;
+
+                _isDisposed = true;
+                if (_tween != null && _onKill != null) _tween.onKill -= _onKill;
+                _parentRegistration.Dispose();
+                _source.Dispose();
+                _onKill = null;
+            }
+
+            private void OnTweenKilled()
+            {
+                if (!_source.IsCancellationRequested) _source.Cancel();
+                Dispose();
+            }
+
+            private void OnParentCancelled()
+            {
+                if (!_source.IsCancellationRequested) _source.Cancel();
+            }
         }
     }
 }

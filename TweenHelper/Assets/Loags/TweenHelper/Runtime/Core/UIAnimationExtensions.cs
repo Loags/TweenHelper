@@ -35,43 +35,43 @@ namespace LB.TweenHelper
             => UIAppear(component.gameObject, duration, options);
 
         public static TweenHandle UIAppear(this GameObject target, float? duration = null, TweenOptions options = default)
-            => new TweenBuilder(target).WithOptions(options).PopInFade(duration ?? 0.32f).Play();
+            => new TweenHandle(TweenPresetRegistry.PlayUnchecked<PopInFadePreset>(target, duration ?? 0.32f, options));
 
         public static TweenHandle UIAppearSoft(this Component component, float? duration = null, TweenOptions options = default)
             => UIAppearSoft(component.gameObject, duration, options);
 
         public static TweenHandle UIAppearSoft(this GameObject target, float? duration = null, TweenOptions options = default)
-            => new TweenBuilder(target).WithOptions(options).PopInFadeSoft(duration ?? 0.4f).Play();
+            => new TweenHandle(TweenPresetRegistry.PlayUnchecked<PopInFadeSoftPreset>(target, duration ?? 0.4f, options));
 
         public static TweenHandle UIDisappear(this Component component, float? duration = null, TweenOptions options = default)
             => UIDisappear(component.gameObject, duration, options);
 
         public static TweenHandle UIDisappear(this GameObject target, float? duration = null, TweenOptions options = default)
-            => new TweenBuilder(target).WithOptions(options).PopOutFade(duration ?? 0.26f).Play();
+            => new TweenHandle(TweenPresetRegistry.PlayUnchecked<PopOutFadePreset>(target, duration ?? 0.26f, options));
 
         public static TweenHandle UIDisappearSoft(this Component component, float? duration = null, TweenOptions options = default)
             => UIDisappearSoft(component.gameObject, duration, options);
 
         public static TweenHandle UIDisappearSoft(this GameObject target, float? duration = null, TweenOptions options = default)
-            => new TweenBuilder(target).WithOptions(options).PopOutFadeSoft(duration ?? 0.32f).Play();
+            => new TweenHandle(TweenPresetRegistry.PlayUnchecked<PopOutFadeSoftPreset>(target, duration ?? 0.32f, options));
 
         public static TweenHandle UIAttention(this Component component, float? duration = null, TweenOptions options = default)
             => UIAttention(component.gameObject, duration, options);
 
         public static TweenHandle UIAttention(this GameObject target, float? duration = null, TweenOptions options = default)
-            => new TweenBuilder(target).WithOptions(options).Attention(duration ?? 0.42f).Play();
+            => new TweenHandle(TweenPresetRegistry.PlayUnchecked<AttentionPreset>(target, duration ?? 0.42f, options));
 
         public static TweenHandle UIAttentionSoft(this Component component, float? duration = null, TweenOptions options = default)
             => UIAttentionSoft(component.gameObject, duration, options);
 
         public static TweenHandle UIAttentionSoft(this GameObject target, float? duration = null, TweenOptions options = default)
-            => new TweenBuilder(target).WithOptions(options).AttentionSoft(duration ?? 0.5f).Play();
+            => new TweenHandle(TweenPresetRegistry.PlayUnchecked<AttentionSoftPreset>(target, duration ?? 0.5f, options));
 
         public static TweenHandle UIAttentionHard(this Component component, float? duration = null, TweenOptions options = default)
             => UIAttentionHard(component.gameObject, duration, options);
 
         public static TweenHandle UIAttentionHard(this GameObject target, float? duration = null, TweenOptions options = default)
-            => new TweenBuilder(target).WithOptions(options).AttentionHard(duration ?? 0.36f).Play();
+            => new TweenHandle(TweenPresetRegistry.PlayUnchecked<AttentionHardPreset>(target, duration ?? 0.36f, options));
 
         public static TweenHandle UIDisabled(this Component component, float? duration = null, Color? disabledColor = null, TweenOptions options = default)
             => UIDisabled(component.gameObject, duration, disabledColor, options);
