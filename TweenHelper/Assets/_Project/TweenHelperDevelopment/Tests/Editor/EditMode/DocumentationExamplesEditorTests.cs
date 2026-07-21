@@ -35,7 +35,7 @@ namespace LB.TweenHelper.Tests.Editor
                     .Call(() => { })
                     .Then()
                     .WithOptions(options)
-                    .Preset("PopIn")
+                    .Preset<PopInPreset>()
                     .Build();
 
                 Assert.That(handle.Tween, Is.Not.Null);

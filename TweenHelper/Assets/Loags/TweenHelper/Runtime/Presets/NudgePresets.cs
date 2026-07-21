@@ -18,7 +18,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Notification nudge, attention tap, gentle directional hint, interactive prompt.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Nudge").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgePreset : CodePreset
@@ -69,7 +69,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (push), OutBack (return)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NudgeLeft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgeLeftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgeLeftPreset : CodePreset
@@ -90,7 +90,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (push), OutBack (return)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NudgeRight").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgeRightPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgeRightPreset : CodePreset
@@ -111,7 +111,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (push), OutBack (return)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NudgeUp").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgeUpPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgeUpPreset : CodePreset
@@ -132,7 +132,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (push), OutBack (return)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NudgeDown").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgeDownPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgeDownPreset : CodePreset
@@ -156,7 +156,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad (push), OutBack (return)<br/>
     /// <b>Strength override:</b> Multiplies nudge distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NudgeSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgeSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgeSoftPreset : CodePreset
@@ -177,7 +177,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad (push), OutBack (return)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NudgeLeftSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgeLeftSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgeLeftSoftPreset : CodePreset
@@ -198,7 +198,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad (push), OutBack (return)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NudgeRightSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgeRightSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgeRightSoftPreset : CodePreset
@@ -219,7 +219,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad (push), OutBack (return)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NudgeUpSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgeUpSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgeUpSoftPreset : CodePreset
@@ -240,7 +240,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad (push), OutBack (return)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NudgeDownSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgeDownSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgeDownSoftPreset : CodePreset
@@ -264,7 +264,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.35s | <b>Default ease:</b> OutQuad (push), OutBack (return)<br/>
     /// <b>Strength override:</b> Multiplies nudge distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NudgeHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgeHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgeHardPreset : CodePreset
@@ -285,7 +285,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.35s | <b>Default ease:</b> OutQuad (push), OutBack (return)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NudgeLeftHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgeLeftHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgeLeftHardPreset : CodePreset
@@ -306,7 +306,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.35s | <b>Default ease:</b> OutQuad (push), OutBack (return)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NudgeRightHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgeRightHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgeRightHardPreset : CodePreset
@@ -327,7 +327,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.35s | <b>Default ease:</b> OutQuad (push), OutBack (return)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NudgeUpHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgeUpHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgeUpHardPreset : CodePreset
@@ -348,7 +348,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.35s | <b>Default ease:</b> OutQuad (push), OutBack (return)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NudgeDownHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NudgeDownHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NudgeDownHardPreset : CodePreset

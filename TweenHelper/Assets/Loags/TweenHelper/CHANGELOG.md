@@ -6,6 +6,7 @@ All notable changes to TweenHelper are documented in this file.
 
 ### Added
 
+- Type-safe preset builder and registry APIs with explicit dynamic-name fallbacks.
 - Single-root Asset Store `.unitypackage` distribution layout and offline documentation.
 - Reset auditing for both 2D and 3D samples across four audit modes.
 - EditMode coverage for registry, builder, handle, await, cancellation, and cleanup behavior.
@@ -16,6 +17,7 @@ All notable changes to TweenHelper are documented in this file.
 
 ### Changed
 
+- Built-in fluent methods, documentation, samples, and preset-browser examples now use concrete preset types instead of string literals.
 - Raised the supported DOTween baseline to `1.3.030` and aligned the minimum Unity version with its Asset Store package at `2022.3.0f1`.
 - Moved Editor commands under **Tools > TweenHelper** to comply with Asset Store menu guidelines.
 - Added the MIT release license and expanded the external DOTween licensing and dependency notices.
@@ -29,6 +31,7 @@ All notable changes to TweenHelper are documented in this file.
 
 ### Fixed
 
+- Removed six builder shortcuts that referenced preset names which were never registered.
 - Unity 6.5 obsolete API and serialization warnings in the demo tooling.
 - 2D reset audit discovery and state verification.
 - Audit report overwrites and incomplete-discovery false positives.

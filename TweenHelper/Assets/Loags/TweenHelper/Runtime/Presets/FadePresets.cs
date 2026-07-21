@@ -80,7 +80,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Scene transition reveal, gradual element appearance, cinematic fade-in.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FadeIn").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FadeInPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FadeInPreset : CodePreset
@@ -109,7 +109,7 @@ namespace LB.TweenHelper
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FadeInSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FadeInSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FadeInSoftPreset : CodePreset
@@ -138,7 +138,7 @@ namespace LB.TweenHelper
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FadeInHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FadeInHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FadeInHardPreset : CodePreset
@@ -172,7 +172,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Scene transition fade-out, element dismissal, death effect, gradual disappearance.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FadeOut").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FadeOutPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FadeOutPreset : CodePreset
@@ -201,7 +201,7 @@ namespace LB.TweenHelper
     /// <b>Alpha override:</b> TargetAlpha replaces 0.<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FadeOutSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FadeOutSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FadeOutSoftPreset : CodePreset
@@ -230,7 +230,7 @@ namespace LB.TweenHelper
     /// <b>Alpha override:</b> TargetAlpha replaces 0.<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FadeOutHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FadeOutHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FadeOutHardPreset : CodePreset
@@ -264,7 +264,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Invincibility blink, warning indicator, cursor blink, selection flash.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Blink").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BlinkPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BlinkPreset : CodePreset
@@ -293,7 +293,7 @@ namespace LB.TweenHelper
     /// <b>Alpha override:</b> TargetAlpha replaces 0 (off alpha).<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("BlinkSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BlinkSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BlinkSoftPreset : CodePreset
@@ -322,7 +322,7 @@ namespace LB.TweenHelper
     /// <b>Alpha override:</b> TargetAlpha replaces 0 (off alpha).<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("BlinkHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BlinkHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BlinkHardPreset : CodePreset
@@ -356,7 +356,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Breathing glow, selection highlight pulse, ambient object shimmer, status indicator.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PulseFade").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PulseFadePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PulseFadePreset : CodePreset
@@ -386,7 +386,7 @@ namespace LB.TweenHelper
     /// <b>Alpha override:</b> TargetAlpha replaces low-point alpha.<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PulseFadeSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PulseFadeSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PulseFadeSoftPreset : CodePreset
@@ -416,7 +416,7 @@ namespace LB.TweenHelper
     /// <b>Alpha override:</b> TargetAlpha replaces low-point alpha.<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PulseFadeHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PulseFadeHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PulseFadeHardPreset : CodePreset
@@ -450,7 +450,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Torch/campfire flicker, electrical malfunction, glitch effect, dying light.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Flicker").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlickerPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlickerPreset : CodePreset
@@ -485,7 +485,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> Linear (progress)<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlickerSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlickerSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlickerSoftPreset : CodePreset
@@ -520,7 +520,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> Linear (progress)<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlickerHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlickerHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlickerHardPreset : CodePreset
@@ -564,7 +564,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Temporary reveal, ghost appearance, flash highlight, transient notification.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FadeInOut").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FadeInOutPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FadeInOutPreset : CodePreset
@@ -636,7 +636,7 @@ namespace LB.TweenHelper
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1 (peak).<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FadeInOutSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FadeInOutSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FadeInOutSoftPreset : CodePreset
@@ -666,7 +666,7 @@ namespace LB.TweenHelper
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1 (peak).<br/>
     /// <b>Requires:</b> A fadeable component.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FadeInOutHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FadeInOutHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FadeInOutHardPreset : CodePreset

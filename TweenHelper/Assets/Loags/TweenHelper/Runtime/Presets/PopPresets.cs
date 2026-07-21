@@ -89,7 +89,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> UI element entrance, item spawn, notification pop-up, dialog appearance.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopIn").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopInPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopInPreset : CodePreset
@@ -119,7 +119,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Bouncy UI entrance, item spawn with pop, playful notification.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopInOvershoot").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopInOvershootPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopInOvershootPreset : CodePreset
@@ -149,7 +149,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> UI element dismissal, item collection, dialog close, notification dismiss.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopOut").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopOutPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopOutPreset : CodePreset
@@ -171,7 +171,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.6s | <b>Default ease:</b> InSine<br/>
     /// <b>Scale override:</b> TargetScale replaces zero.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopOutSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopOutSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopOutSoftPreset : CodePreset
@@ -193,7 +193,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.25s | <b>Default ease:</b> InQuart<br/>
     /// <b>Scale override:</b> TargetScale replaces zero.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopOutHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopOutHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopOutHardPreset : CodePreset
@@ -222,7 +222,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> UI element dismissal with anticipation, item collection, dialog close with overshoot.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopOutOvershoot").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopOutOvershootPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopOutOvershootPreset : CodePreset
@@ -252,7 +252,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Gentle UI dismissal with subtle anticipation, soft dialog close, understated exit.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopOutOvershootSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopOutOvershootSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopOutOvershootSoftPreset : CodePreset
@@ -282,7 +282,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Emphatic UI dismissal, punchy item collection, dramatic dialog close with strong wind-up.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopOutOvershootHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopOutOvershootHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopOutOvershootHardPreset : CodePreset
@@ -305,7 +305,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.8s | <b>Default ease:</b> OutSine<br/>
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopInSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopInSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopInSoftPreset : CodePreset
@@ -335,7 +335,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Gentle bouncy UI entrance, subtle item spawn, soft notification pop.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopInOvershootSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopInOvershootSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopInOvershootSoftPreset : CodePreset
@@ -358,7 +358,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuart<br/>
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopInHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopInHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopInHardPreset : CodePreset
@@ -388,7 +388,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Punchy UI entrance, dramatic item spawn, emphatic notification pop.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopInOvershootHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopInOvershootHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopInOvershootHardPreset : CodePreset

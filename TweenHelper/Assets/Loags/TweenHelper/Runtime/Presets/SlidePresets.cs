@@ -40,7 +40,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces OutCubic.<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInDown").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInDownPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInDownPreset : CodePreset
@@ -63,7 +63,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces OutCubic.<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInUp").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInUpPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInUpPreset : CodePreset
@@ -86,7 +86,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces OutCubic.<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInLeft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInLeftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInLeftPreset : CodePreset
@@ -109,7 +109,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces OutCubic.<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInRight").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInRightPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInRightPreset : CodePreset
@@ -133,7 +133,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInDownSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInDownSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInDownSoftPreset : CodePreset
@@ -155,7 +155,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInUpSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInUpSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInUpSoftPreset : CodePreset
@@ -177,7 +177,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInLeftSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInLeftSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInLeftSoftPreset : CodePreset
@@ -199,7 +199,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> OutCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInRightSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInRightSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInRightSoftPreset : CodePreset
@@ -223,7 +223,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInDownHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInDownHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInDownHardPreset : CodePreset
@@ -245,7 +245,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInUpHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInUpHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInUpHardPreset : CodePreset
@@ -267,7 +267,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInLeftHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInLeftHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInLeftHardPreset : CodePreset
@@ -289,7 +289,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInRightHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInRightHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInRightHardPreset : CodePreset
@@ -333,7 +333,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces InCubic.<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideOutUp").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideOutUpPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideOutUpPreset : CodePreset
@@ -356,7 +356,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces InCubic.<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideOutDown").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideOutDownPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideOutDownPreset : CodePreset
@@ -379,7 +379,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces InCubic.<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideOutLeft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideOutLeftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideOutLeftPreset : CodePreset
@@ -402,7 +402,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces InCubic.<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideOutRight").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideOutRightPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideOutRightPreset : CodePreset
@@ -426,7 +426,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideOutUpSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideOutUpSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideOutUpSoftPreset : CodePreset
@@ -448,7 +448,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideOutDownSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideOutDownSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideOutDownSoftPreset : CodePreset
@@ -470,7 +470,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideOutLeftSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideOutLeftSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideOutLeftSoftPreset : CodePreset
@@ -492,7 +492,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideOutRightSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideOutRightSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideOutRightSoftPreset : CodePreset
@@ -516,7 +516,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideOutUpHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideOutUpHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideOutUpHardPreset : CodePreset
@@ -538,7 +538,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideOutDownHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideOutDownHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideOutDownHardPreset : CodePreset
@@ -560,7 +560,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideOutLeftHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideOutLeftHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideOutLeftHardPreset : CodePreset
@@ -582,7 +582,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InCubic<br/>
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideOutRightHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideOutRightHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideOutRightHardPreset : CodePreset
@@ -645,7 +645,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInFadeUp").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInFadeUpPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInFadeUpPreset : CodePreset
@@ -670,7 +670,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInFadeDown").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInFadeDownPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInFadeDownPreset : CodePreset
@@ -695,7 +695,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInFadeLeft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInFadeLeftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInFadeLeftPreset : CodePreset
@@ -720,7 +720,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInFadeRight").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInFadeRightPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInFadeRightPreset : CodePreset
@@ -747,7 +747,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInFadeUpSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInFadeUpSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInFadeUpSoftPreset : CodePreset
@@ -772,7 +772,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInFadeDownSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInFadeDownSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInFadeDownSoftPreset : CodePreset
@@ -797,7 +797,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInFadeLeftSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInFadeLeftSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInFadeLeftSoftPreset : CodePreset
@@ -822,7 +822,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInFadeRightSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInFadeRightSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInFadeRightSoftPreset : CodePreset
@@ -849,7 +849,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInFadeUpHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInFadeUpHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInFadeUpHardPreset : CodePreset
@@ -874,7 +874,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInFadeDownHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInFadeDownHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInFadeDownHardPreset : CodePreset
@@ -899,7 +899,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInFadeLeftHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInFadeLeftHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInFadeLeftHardPreset : CodePreset
@@ -924,7 +924,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideInFadeRightHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideInFadeRightHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideInFadeRightHardPreset : CodePreset
@@ -980,7 +980,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies slide distance (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SlideOutFadeUp").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SlideOutFadeUpPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SlideOutFadeUpPreset : CodePreset

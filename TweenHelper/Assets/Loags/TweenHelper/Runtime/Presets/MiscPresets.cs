@@ -150,7 +150,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Idle animation, living object indicator, ambient pulsing, selectable item highlight.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Breathe").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BreathePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BreathePreset : CodePreset
@@ -181,7 +181,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Health indicator, living entity, emotional feedback, interactive object highlight.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Heartbeat").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<HeartbeatPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class HeartbeatPreset : CodePreset
@@ -212,7 +212,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Floating collectible, hover indicator, ambient object bob, idle character float.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Float").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FloatPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FloatPreset : CodePreset
@@ -243,7 +243,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Evasive movement, playful path, snake-like motion, decorative trail.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("ZigZag").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<ZigZagPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class ZigZagPreset : CodePreset
@@ -275,7 +275,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Call-to-action highlight, notification emphasis, important element pulse, "look here" effect.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Attention").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<AttentionPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class AttentionPreset : CodePreset
@@ -306,7 +306,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Curiosity peek, notification tilt, playful head tilt, attention gesture.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Tilt").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<TiltPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class TiltPreset : CodePreset
@@ -328,7 +328,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("BreatheSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BreatheSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BreatheSoftPreset : CodePreset
@@ -350,7 +350,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 3.0s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("BreatheHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BreatheHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BreatheHardPreset : CodePreset
@@ -372,7 +372,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 1.0s per cycle | <b>Default ease:</b> OutQuad (beat), InQuad (return)<br/>
     /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("HeartbeatSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<HeartbeatSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class HeartbeatSoftPreset : CodePreset
@@ -394,7 +394,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 0.6s per cycle | <b>Default ease:</b> OutQuad (beat), InQuad (return)<br/>
     /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("HeartbeatHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<HeartbeatHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class HeartbeatHardPreset : CodePreset
@@ -416,7 +416,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 7.0s | <b>Default ease:</b> InOutCubic<br/>
     /// <b>Strength override:</b> Multiplies float height (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FloatSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FloatSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FloatSoftPreset : CodePreset
@@ -438,7 +438,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InOutCubic<br/>
     /// <b>Strength override:</b> Multiplies float height (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FloatHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FloatHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FloatHardPreset : CodePreset
@@ -460,7 +460,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.2s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies zigzag distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("ZigZagSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<ZigZagSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class ZigZagSoftPreset : CodePreset
@@ -482,7 +482,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies zigzag distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("ZigZagHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<ZigZagHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class ZigZagHardPreset : CodePreset
@@ -504,7 +504,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutCubic, InCubic<br/>
     /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("AttentionSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<AttentionSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class AttentionSoftPreset : CodePreset
@@ -526,7 +526,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s | <b>Default ease:</b> OutCubic, InCubic<br/>
     /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("AttentionHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<AttentionHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class AttentionHardPreset : CodePreset
@@ -548,7 +548,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (lean), OutBack (return)<br/>
     /// <b>Strength override:</b> Multiplies tilt angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("TiltSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<TiltSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class TiltSoftPreset : CodePreset
@@ -570,7 +570,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (lean), OutBack (return)<br/>
     /// <b>Strength override:</b> Multiplies tilt angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("TiltHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<TiltHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class TiltHardPreset : CodePreset

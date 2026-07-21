@@ -17,7 +17,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Pendulum motion, hanging object sway, idle animation, ambient horizontal drift.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Sway").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SwayPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SwayPreset : CodePreset
@@ -72,7 +72,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 3.0s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies sway amplitude (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SwaySoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SwaySoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SwaySoftPreset : CodePreset
@@ -94,7 +94,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies sway amplitude (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SwayHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SwayHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SwayHardPreset : CodePreset

@@ -72,7 +72,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Character land impact, rubber-ball effect, playful UI feedback, cartoon-style emphasis.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Squash").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BouncePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BouncePreset : CodePreset
@@ -94,7 +94,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutElastic (final step only)<br/>
     /// <b>Strength override:</b> Multiplies bounce height and squash intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SquashSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SquashSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SquashSoftPreset : CodePreset
@@ -116,7 +116,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.7s | <b>Default ease:</b> OutElastic (final step only)<br/>
     /// <b>Strength override:</b> Multiplies bounce height and squash intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SquashHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SquashHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SquashHardPreset : CodePreset
@@ -146,7 +146,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Ball bounce, character hop, playful feedback, item arrival.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Bounce").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PositionalBouncePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PositionalBouncePreset : CodePreset
@@ -168,7 +168,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.9s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
     /// <b>Strength override:</b> Multiplies bounce height and squash intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("BounceSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BounceSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BounceSoftPreset : CodePreset
@@ -190,7 +190,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.3s | <b>Default ease:</b> OutQuad (up), InQuad (down)<br/>
     /// <b>Strength override:</b> Multiplies bounce height and squash intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("BounceHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BounceHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BounceHardPreset : CodePreset

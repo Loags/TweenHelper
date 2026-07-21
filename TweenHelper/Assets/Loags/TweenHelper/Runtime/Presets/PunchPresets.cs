@@ -17,7 +17,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Button press feedback, hit confirmation, score increment, interaction acknowledgment.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Punch").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PunchPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PunchPreset : CodePreset
@@ -44,7 +44,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.15s<br/>
     /// <b>Strength override:</b> Multiplies punch magnitude (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PunchSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PunchSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PunchSoftPreset : CodePreset
@@ -71,7 +71,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot feedback | <b>Default duration:</b> 0.25s<br/>
     /// <b>Strength override:</b> Multiplies punch magnitude (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PunchHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PunchHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PunchHardPreset : CodePreset

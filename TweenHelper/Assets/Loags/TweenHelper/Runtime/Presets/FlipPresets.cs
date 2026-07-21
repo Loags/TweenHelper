@@ -35,7 +35,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Card flip, page turn, reveal animation, object inspection.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipX").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipXPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipXPreset : CodePreset
@@ -60,7 +60,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipXSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipXSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipXSoftPreset : CodePreset
@@ -85,7 +85,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad<br/>
     /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipXHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipXHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipXHardPreset : CodePreset
@@ -116,7 +116,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Horizontal card flip, character turn-around, mirror reveal, about-face.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipY").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipYPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipYPreset : CodePreset
@@ -141,7 +141,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipYSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipYSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipYSoftPreset : CodePreset
@@ -166,7 +166,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad<br/>
     /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipYHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipYHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipYHardPreset : CodePreset
@@ -197,7 +197,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Barrel roll, coin spin, stylized rotation transition.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipZ").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipZPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipZPreset : CodePreset
@@ -222,7 +222,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipZSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipZSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipZSoftPreset : CodePreset
@@ -247,7 +247,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.25s | <b>Default ease:</b> OutQuad<br/>
     /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipZHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipZHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipZHardPreset : CodePreset
@@ -299,7 +299,7 @@ namespace LB.TweenHelper
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.<br/>
     /// If no fadeable component exists, only the flip is played.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipFadeX").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipFadeXPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipFadeXPreset : CodePreset
@@ -324,7 +324,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipFadeXSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipFadeXSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipFadeXSoftPreset : CodePreset
@@ -349,7 +349,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipFadeXHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipFadeXHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipFadeXHardPreset : CodePreset
@@ -374,7 +374,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipFadeY").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipFadeYPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipFadeYPreset : CodePreset
@@ -399,7 +399,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipFadeYSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipFadeYSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipFadeYSoftPreset : CodePreset
@@ -424,7 +424,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipFadeYHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipFadeYHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipFadeYHardPreset : CodePreset
@@ -449,7 +449,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipFadeZ").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipFadeZPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipFadeZPreset : CodePreset
@@ -474,7 +474,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipFadeZSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipFadeZSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipFadeZSoftPreset : CodePreset
@@ -499,7 +499,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies flip degrees (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("FlipFadeZHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<FlipFadeZHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class FlipFadeZHardPreset : CodePreset

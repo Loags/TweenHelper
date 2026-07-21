@@ -32,7 +32,7 @@ public sealed class CardEntrance : MonoBehaviour
     private void OnEnable()
     {
         _animation = gameObject.Tween()
-            .Preset("PopIn", 0.35f)
+            .Preset<PopInPreset>(0.35f)
             .WithEase(DG.Tweening.Ease.OutBack)
             .Play();
     }
@@ -43,6 +43,8 @@ public sealed class CardEntrance : MonoBehaviour
     }
 }
 ```
+
+Use `Preset<TPreset>()` whenever the preset type is known at compile time. For names loaded from save data, an Inspector field, or another runtime source, use the explicit `PresetByName(string)` fallback.
 
 Build a sequence with `Then()` and `With()`:
 

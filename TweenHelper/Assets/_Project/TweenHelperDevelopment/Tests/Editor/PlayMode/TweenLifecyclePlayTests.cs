@@ -75,7 +75,7 @@ namespace LB.TweenHelper.Tests.PlayMode
         {
             var target = new GameObject("TweenHelperOneShotTarget");
             Vector3 originalScale = target.transform.localScale;
-            ITweenPreset preset = TweenPresetRegistry.GetPreset("PopIn");
+            ITweenPreset preset = TweenPresetRegistry.GetPreset<PopInPreset>();
 
             Assert.That(preset, Is.Not.Null);
             Tween tween = preset.CreateTween(target, 0.03f);
@@ -117,7 +117,7 @@ namespace LB.TweenHelper.Tests.PlayMode
             {
                 var target = new GameObject($"TweenHelper{presetName}Target");
                 CanvasGroup canvasGroup = presetName == "Blink" ? target.AddComponent<CanvasGroup>() : null;
-                ITweenPreset preset = TweenPresetRegistry.GetPreset(presetName);
+                ITweenPreset preset = TweenPresetRegistry.GetPresetByName(presetName);
 
                 Assert.That(preset, Is.Not.Null, presetName);
                 Tween tween = preset.CreateTween(target, 0.04f);

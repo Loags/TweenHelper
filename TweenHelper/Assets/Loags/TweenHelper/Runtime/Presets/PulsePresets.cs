@@ -17,7 +17,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Button tap feedback, toggle state change, counter increment, selection highlight.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PulseScale").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PulseScalePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PulseScalePreset : CodePreset
@@ -72,7 +72,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.<br/>
     /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PulseScaleSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PulseScaleSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PulseScaleSoftPreset : CodePreset
@@ -95,7 +95,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease controls scale-up; secondary ease controls scale-down.<br/>
     /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PulseScaleHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PulseScaleHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PulseScaleHardPreset : CodePreset
@@ -158,7 +158,7 @@ namespace LB.TweenHelper
     /// <b>Alpha override:</b> StartAlpha replaces start/end alpha (default 1); TargetAlpha replaces dip alpha (default 0.6).<br/>
     /// If no fadeable component exists, only the scale pulse is played.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PulseScaleFade").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PulseScaleFadePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PulseScaleFadePreset : CodePreset
@@ -183,7 +183,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces start/end alpha; TargetAlpha replaces dip alpha (default 0.75).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PulseScaleFadeSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PulseScaleFadeSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PulseScaleFadeSoftPreset : CodePreset
@@ -208,7 +208,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies scale pulse intensity (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces start/end alpha; TargetAlpha replaces dip alpha (default 0.4).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PulseScaleFadeHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PulseScaleFadeHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PulseScaleFadeHardPreset : CodePreset

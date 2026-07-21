@@ -345,7 +345,7 @@ namespace LB.TweenHelper.Demo
             }
 
             var display = obj.AddComponent<AnimationPresetDisplay>();
-            display.Setup(preset.PresetName, preset.Description);
+            display.Setup(preset);
 
             return obj;
         }

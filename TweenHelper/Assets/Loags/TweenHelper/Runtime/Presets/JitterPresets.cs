@@ -17,7 +17,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Nervous tremor, electrical buzz, cold shiver, error micro-shake.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Jitter").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<JitterPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class JitterPreset : CodePreset
@@ -44,7 +44,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.2s<br/>
     /// <b>Strength override:</b> Multiplies jitter range (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("JitterSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<JitterSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class JitterSoftPreset : CodePreset
@@ -71,7 +71,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
     /// <b>Strength override:</b> Multiplies jitter range (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("JitterHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<JitterHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class JitterHardPreset : CodePreset

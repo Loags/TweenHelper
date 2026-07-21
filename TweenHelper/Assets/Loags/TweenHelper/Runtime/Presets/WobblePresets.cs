@@ -30,7 +30,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> "No" gesture, shake-to-settle, spin wobble, rotational impact.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleY").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobblePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobblePreset : CodePreset
@@ -55,7 +55,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
     /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleYSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleYSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleYSoftPreset : CodePreset
@@ -80,7 +80,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s<br/>
     /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleYHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleYHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleYHardPreset : CodePreset
@@ -110,7 +110,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Nodding motion, forward/back wobble, rocking chair, impact tilt.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleX").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleXPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleXPreset : CodePreset
@@ -135,7 +135,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
     /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleXSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleXSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleXSoftPreset : CodePreset
@@ -160,7 +160,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s<br/>
     /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleXHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleXHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleXHardPreset : CodePreset
@@ -190,7 +190,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> 2D wobble, pendulum swing, teeter-totter, balance recovery.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleZ").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleZPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleZPreset : CodePreset
@@ -215,7 +215,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
     /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleZSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleZSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleZSoftPreset : CodePreset
@@ -240,7 +240,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s<br/>
     /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleZHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleZHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleZHardPreset : CodePreset
@@ -270,7 +270,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Complex wobble, impact reaction, organic jiggle, multi-axis disturbance.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXY").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleDiagonalXYPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleDiagonalXYPreset : CodePreset
@@ -292,7 +292,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
     /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXYSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleDiagonalXYSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleDiagonalXYSoftPreset : CodePreset
@@ -314,7 +314,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s<br/>
     /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXYHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleDiagonalXYHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleDiagonalXYHardPreset : CodePreset
@@ -344,7 +344,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Tumble wobble, unsteady object, physical disturbance, off-balance reaction.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXZ").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleDiagonalXZPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleDiagonalXZPreset : CodePreset
@@ -366,7 +366,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
     /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXZSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleDiagonalXZSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleDiagonalXZSoftPreset : CodePreset
@@ -388,7 +388,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s<br/>
     /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalXZHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleDiagonalXZHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleDiagonalXZHardPreset : CodePreset
@@ -418,7 +418,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Sideways wobble, wind-blown object, lateral disturbance, off-kilter reaction.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalYZ").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleDiagonalYZPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleDiagonalYZPreset : CodePreset
@@ -440,7 +440,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
     /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalYZSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleDiagonalYZSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleDiagonalYZSoftPreset : CodePreset
@@ -462,7 +462,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s<br/>
     /// <b>Strength override:</b> Multiplies rotation angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleDiagonalYZHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleDiagonalYZHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleDiagonalYZHardPreset : CodePreset
@@ -512,7 +512,7 @@ namespace LB.TweenHelper
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.<br/>
     /// If no fadeable component exists, only the wobble is played.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleFadeX").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleFadeXPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleFadeXPreset : CodePreset
@@ -537,7 +537,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleFadeXSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleFadeXSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleFadeXSoftPreset : CodePreset
@@ -562,7 +562,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleFadeXHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleFadeXHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleFadeXHardPreset : CodePreset
@@ -587,7 +587,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleFadeY").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleFadeYPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleFadeYPreset : CodePreset
@@ -612,7 +612,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleFadeYSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleFadeYSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleFadeYSoftPreset : CodePreset
@@ -637,7 +637,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleFadeYHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleFadeYHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleFadeYHardPreset : CodePreset
@@ -662,7 +662,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleFadeZ").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleFadeZPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleFadeZPreset : CodePreset
@@ -687,7 +687,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleFadeZSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleFadeZSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleFadeZSoftPreset : CodePreset
@@ -712,7 +712,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies wobble angle (default 1.0).<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 1; TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("WobbleFadeZHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<WobbleFadeZHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class WobbleFadeZHardPreset : CodePreset

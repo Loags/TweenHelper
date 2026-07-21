@@ -30,7 +30,15 @@ TweenHandle handle = gameObject.Tween()
 
 ```csharp
 TweenHandle handle = gameObject.Tween()
-    .Preset("SlideInLeft", 0.4f)
+    .Preset<SlideInLeftPreset>(0.4f)
+    .Play();
+```
+
+The generic API is compile-time checked and should be used whenever the preset type is known. Dynamic names remain available through the explicitly named fallback:
+
+```csharp
+TweenHandle handle = gameObject.Tween()
+    .PresetByName(presetNameFromSaveData)
     .Play();
 ```
 
@@ -90,7 +98,7 @@ TweenOptions options = TweenOptions.WithDuration(0.5f)
 
 TweenHandle handle = transform.Tween()
     .WithOptions(options)
-    .Preset("PopIn")
+    .Preset<PopInPreset>()
     .Play();
 ```
 
@@ -100,7 +108,7 @@ Precedence is: explicit method duration, then `TweenOptions.Duration`, then `Twe
 
 ```csharp
 TweenHandle handle = transform.Tween()
-    .Preset("PopIn")
+    .Preset<PopInPreset>()
     .OnComplete(ShowContent)
     .OnKill(ReleaseAnimationState)
     .Play();
@@ -122,7 +130,7 @@ using System.Threading.Tasks;
 private async Task AnimateAsync(CancellationToken cancellationToken)
 {
     TweenHandle handle = transform.Tween()
-        .Preset("FadeIn")
+        .Preset<FadeInPreset>()
         .Play();
 
     await TweenAsync.AwaitCompletion(handle.Tween, cancellationToken);
@@ -138,13 +146,15 @@ bool completedNormally = await TweenAsync.AwaitCompletionWithTimeout(handle.Twee
 ## Direct registry access
 
 ```csharp
-ITweenPreset preset = TweenPresetRegistry.GetPreset("Pulse");
+PulseScalePreset preset = TweenPresetRegistry.GetPreset<PulseScalePreset>();
 if (preset != null && preset.CanApplyTo(gameObject))
 {
     Tween tween = preset.CreateTween(gameObject, 0.5f);
     tween.Play();
 }
 ```
+
+For a dynamic name, use `TweenPresetRegistry.GetPresetByName(name)` or `TweenPresetRegistry.PlayByName(name, target)`.
 
 ## Settings and initialization
 

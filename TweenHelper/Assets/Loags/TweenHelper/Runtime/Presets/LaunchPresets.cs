@@ -17,7 +17,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Projectile launch, item toss, upward exit, jump start.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("LaunchUp").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<LaunchUpPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class LaunchUpPreset : CodePreset
@@ -63,7 +63,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutCubic
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("LaunchDown").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<LaunchDownPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class LaunchDownPreset : CodePreset
@@ -84,7 +84,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutCubic
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("LaunchLeft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<LaunchLeftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class LaunchLeftPreset : CodePreset
@@ -105,7 +105,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutCubic
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("LaunchRight").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<LaunchRightPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class LaunchRightPreset : CodePreset
@@ -127,7 +127,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutCubic<br/>
     /// <b>Strength override:</b> Multiplies launch distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("LaunchUpSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<LaunchUpSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class LaunchUpSoftPreset : CodePreset
@@ -149,7 +149,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic<br/>
     /// <b>Strength override:</b> Multiplies launch distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("LaunchUpHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<LaunchUpHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class LaunchUpHardPreset : CodePreset
@@ -170,7 +170,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutCubic
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("LaunchDownSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<LaunchDownSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class LaunchDownSoftPreset : CodePreset
@@ -191,7 +191,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("LaunchDownHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<LaunchDownHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class LaunchDownHardPreset : CodePreset
@@ -212,7 +212,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutCubic
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("LaunchLeftSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<LaunchLeftSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class LaunchLeftSoftPreset : CodePreset
@@ -233,7 +233,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("LaunchLeftHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<LaunchLeftHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class LaunchLeftHardPreset : CodePreset
@@ -254,7 +254,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutCubic
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("LaunchRightSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<LaunchRightSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class LaunchRightSoftPreset : CodePreset
@@ -275,7 +275,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect (non-returning) | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutCubic
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("LaunchRightHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<LaunchRightHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class LaunchRightHardPreset : CodePreset

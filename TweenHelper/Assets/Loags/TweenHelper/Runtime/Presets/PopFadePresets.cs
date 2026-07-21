@@ -118,7 +118,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> UI element entrance, dialog appearance, smooth combined reveal, material-design entrance.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopInFade").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopInFadePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopInFadePreset : CodePreset
@@ -146,7 +146,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopInFadeSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopInFadeSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopInFadeSoftPreset : CodePreset
@@ -174,7 +174,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
     /// <b>Alpha override:</b> StartAlpha replaces 0; TargetAlpha replaces 1.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopInFadeHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopInFadeHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopInFadeHardPreset : CodePreset
@@ -210,7 +210,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> UI element dismissal, dialog close, combined exit, material-design exit.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopOutFade").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopOutFadePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopOutFadePreset : CodePreset
@@ -238,7 +238,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> TargetScale replaces zero.<br/>
     /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopOutFadeSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopOutFadeSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopOutFadeSoftPreset : CodePreset
@@ -266,7 +266,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> TargetScale replaces zero.<br/>
     /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopOutFadeHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopOutFadeHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopOutFadeHardPreset : CodePreset
@@ -302,7 +302,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> UI element dismissal with anticipation, dialog close with overshoot, combined exit.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopOutFadeOvershoot").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopOutFadeOvershootPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopOutFadeOvershootPreset : CodePreset
@@ -330,7 +330,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> TargetScale replaces zero.<br/>
     /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopOutFadeOvershootSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopOutFadeOvershootSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopOutFadeOvershootSoftPreset : CodePreset
@@ -358,7 +358,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> TargetScale replaces zero.<br/>
     /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PopOutFadeOvershootHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PopOutFadeOvershootHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PopOutFadeOvershootHardPreset : CodePreset
@@ -395,7 +395,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Explosion effect, particle burst, destruction animation, energy release.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Explode").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<ExplodePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class ExplodePreset : CodePreset
@@ -420,7 +420,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> TargetScale replaces the expanded scale (originalScale × 1.3).<br/>
     /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("ExplodeSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<ExplodeSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class ExplodeSoftPreset : CodePreset
@@ -445,7 +445,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> TargetScale replaces the expanded scale (originalScale × 2.0).<br/>
     /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("ExplodeHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<ExplodeHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class ExplodeHardPreset : CodePreset

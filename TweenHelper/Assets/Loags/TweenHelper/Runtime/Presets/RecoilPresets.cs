@@ -18,7 +18,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Weapon recoil, spring release, knockback response, firing animation.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Recoil").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<RecoilPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class RecoilPreset : CodePreset
@@ -69,7 +69,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("RecoilForward").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<RecoilForwardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class RecoilForwardPreset : CodePreset
@@ -90,7 +90,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("RecoilForwardSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<RecoilForwardSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class RecoilForwardSoftPreset : CodePreset
@@ -111,7 +111,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("RecoilForwardHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<RecoilForwardHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class RecoilForwardHardPreset : CodePreset
@@ -132,7 +132,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("RecoilBack").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<RecoilBackPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class RecoilBackPreset : CodePreset
@@ -153,7 +153,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("RecoilBackSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<RecoilBackSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class RecoilBackSoftPreset : CodePreset
@@ -174,7 +174,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("RecoilBackHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<RecoilBackHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class RecoilBackHardPreset : CodePreset
@@ -196,7 +196,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)<br/>
     /// <b>Strength override:</b> Multiplies recoil distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("RecoilSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<RecoilSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class RecoilSoftPreset : CodePreset
@@ -218,7 +218,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (pull), OutCubic (snap)<br/>
     /// <b>Strength override:</b> Multiplies recoil distance (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("RecoilHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<RecoilHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class RecoilHardPreset : CodePreset

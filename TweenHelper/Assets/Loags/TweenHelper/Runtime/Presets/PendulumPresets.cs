@@ -13,7 +13,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Pendulum swing, cradle rock, hanging sign, idle sway, metronome.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PendulumZ").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PendulumZPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PendulumZPreset : CodePreset
@@ -78,7 +78,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 2.5s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies swing angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PendulumZSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PendulumZSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PendulumZSoftPreset : CodePreset
@@ -100,7 +100,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 3.5s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies swing angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PendulumZHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PendulumZHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PendulumZHardPreset : CodePreset
@@ -123,7 +123,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease controls first swing; secondary ease controls return swing.<br/>
     /// <b>Strength override:</b> Multiplies swing angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PendulumX").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PendulumXPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PendulumXPreset : CodePreset
@@ -145,7 +145,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 2.5s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies swing angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PendulumXSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PendulumXSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PendulumXSoftPreset : CodePreset
@@ -167,7 +167,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 3.5s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies swing angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PendulumXHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PendulumXHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PendulumXHardPreset : CodePreset
@@ -190,7 +190,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease controls first swing; secondary ease controls return swing.<br/>
     /// <b>Strength override:</b> Multiplies swing angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PendulumY").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PendulumYPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PendulumYPreset : CodePreset
@@ -212,7 +212,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 2.5s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies swing angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PendulumYSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PendulumYSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PendulumYSoftPreset : CodePreset
@@ -234,7 +234,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 3.5s | <b>Default ease:</b> InOutSine<br/>
     /// <b>Strength override:</b> Multiplies swing angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("PendulumYHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<PendulumYHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class PendulumYHardPreset : CodePreset

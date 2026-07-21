@@ -77,6 +77,7 @@ namespace LB.TweenHelper.Demo
         private Image _image;
         private Text _text;
         private Renderer _renderer;
+        private ITweenPreset _preset;
         private Color _originalColor;
         private TweenHandle _currentHandle;
         private OriginalVisualStateSnapshot _originalState;
@@ -88,6 +89,7 @@ namespace LB.TweenHelper.Demo
             set
             {
                 presetName = value;
+                _preset = string.IsNullOrEmpty(value) ? null : TweenPresetRegistry.GetPresetByName(value);
                 UpdateLabel();
             }
         }
@@ -112,6 +114,11 @@ namespace LB.TweenHelper.Demo
             if (_renderer != null)
             {
                 _originalColor = _renderer.material.color;
+            }
+
+            if (!string.IsNullOrEmpty(presetName))
+            {
+                _preset = TweenPresetRegistry.GetPresetByName(presetName);
             }
 
             SaveOriginalState();
@@ -441,9 +448,9 @@ namespace LB.TweenHelper.Demo
             ResetToOriginal();
 
             // Play the preset
-            if (!string.IsNullOrEmpty(presetName))
+            if (_preset != null)
             {
-                _currentHandle = transform.Tween().Preset(presetName).Play();
+                _currentHandle = transform.Tween().Preset(_preset).Play();
                 Debug.Log($"Playing preset: {presetName}");
 
                 // Register with reset manager
@@ -478,6 +485,18 @@ namespace LB.TweenHelper.Demo
         {
             presetName = name;
             presetDescription = description;
+            _preset = string.IsNullOrEmpty(name) ? null : TweenPresetRegistry.GetPresetByName(name);
+            UpdateLabel();
+        }
+
+        /// <summary>
+        /// Sets up this display with an already resolved preset.
+        /// </summary>
+        public void Setup(ITweenPreset preset)
+        {
+            _preset = preset;
+            presetName = preset.PresetName;
+            presetDescription = preset.Description;
             UpdateLabel();
         }
 

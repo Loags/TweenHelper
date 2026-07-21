@@ -151,7 +151,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Orbiting satellite, patrol path, circular particle motion, planetary display.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXZ").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXZPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXZPreset : OrbitBasePreset
@@ -181,7 +181,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Clockwise patrol, reversed orbital motion, mirrored satellite.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXZClockwise").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXZClockwisePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXZClockwisePreset : OrbitBasePreset
@@ -211,7 +211,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Counter-clockwise patrol, explicit direction pairing with OrbitXZClockwise.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXZCounterClockwise").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXZCounterClockwisePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXZCounterClockwisePreset : OrbitBasePreset
@@ -233,7 +233,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (DOTween-managed) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXZClockwiseSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXZClockwiseSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXZClockwiseSoftPreset : OrbitBasePreset
@@ -255,7 +255,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (DOTween-managed) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXZClockwiseHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXZClockwiseHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXZClockwiseHardPreset : OrbitBasePreset
@@ -277,7 +277,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (DOTween-managed) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXZCounterClockwiseSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXZCounterClockwiseSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXZCounterClockwiseSoftPreset : OrbitBasePreset
@@ -299,7 +299,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (DOTween-managed) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXZCounterClockwiseHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXZCounterClockwiseHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXZCounterClockwiseHardPreset : OrbitBasePreset
@@ -321,7 +321,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (DOTween-managed) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXZSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXZSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXZSoftPreset : OrbitBasePreset
@@ -343,7 +343,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (DOTween-managed) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXZHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXZHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXZHardPreset : OrbitBasePreset
@@ -375,7 +375,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> 2D orbiting object, circular indicator, shield rotation, radial menu animation.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXY").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXYPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXYPreset : CodePreset
@@ -398,7 +398,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease controls angular progression.<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXYClockwise").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXYClockwisePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXYClockwisePreset : CodePreset
@@ -421,7 +421,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease controls angular progression.<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXYCounterClockwise").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXYCounterClockwisePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXYCounterClockwisePreset : CodePreset
@@ -443,7 +443,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (DOTween-managed) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXYClockwiseSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXYClockwiseSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXYClockwiseSoftPreset : CodePreset
@@ -465,7 +465,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (DOTween-managed) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXYClockwiseHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXYClockwiseHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXYClockwiseHardPreset : CodePreset
@@ -487,7 +487,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (DOTween-managed) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXYCounterClockwiseSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXYCounterClockwiseSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXYCounterClockwiseSoftPreset : CodePreset
@@ -509,7 +509,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (DOTween-managed) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXYCounterClockwiseHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXYCounterClockwiseHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXYCounterClockwiseHardPreset : CodePreset
@@ -531,7 +531,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (DOTween-managed) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXYSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXYSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXYSoftPreset : CodePreset
@@ -553,7 +553,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (DOTween-managed) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitXYHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitXYHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitXYHardPreset : CodePreset
@@ -621,7 +621,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease controls angular progression.<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitYZ").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitYZPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitYZPreset : CodePreset
@@ -643,7 +643,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (DOTween-managed) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitYZClockwise").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitYZClockwisePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitYZClockwisePreset : CodePreset
@@ -665,7 +665,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> Looping (DOTween-managed) | <b>Default duration:</b> 2.0s per revolution | <b>Default ease:</b> Linear<br/>
     /// <b>Strength override:</b> Multiplies orbit radius (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("OrbitYZCounterClockwise").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<OrbitYZCounterClockwisePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class OrbitYZCounterClockwisePreset : CodePreset

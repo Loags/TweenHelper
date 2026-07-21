@@ -54,7 +54,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Impact feedback, earthquake, error shake, camera shake, damage indication.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Shake").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<ShakePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class ShakePreset : CodePreset
@@ -79,7 +79,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.4s<br/>
     /// <b>Strength override:</b> Multiplies shake intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("ShakeSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<ShakeSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class ShakeSoftPreset : CodePreset
@@ -104,7 +104,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.6s<br/>
     /// <b>Strength override:</b> Multiplies shake intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("ShakeHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<ShakeHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class ShakeHardPreset : CodePreset
@@ -135,7 +135,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Enemy death, damage feedback, destruction effect, error dismiss with shake.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("ShakeFade").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<ShakeFadePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class ShakeFadePreset : CodePreset
@@ -163,7 +163,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies shake intensity (default 1.0).<br/>
     /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("ShakeFadeSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<ShakeFadeSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class ShakeFadeSoftPreset : CodePreset
@@ -191,7 +191,7 @@ namespace LB.TweenHelper
     /// <b>Strength override:</b> Multiplies shake intensity (default 1.0).<br/>
     /// <b>Alpha override:</b> TargetAlpha replaces 0.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("ShakeFadeHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<ShakeFadeHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class ShakeFadeHardPreset : CodePreset

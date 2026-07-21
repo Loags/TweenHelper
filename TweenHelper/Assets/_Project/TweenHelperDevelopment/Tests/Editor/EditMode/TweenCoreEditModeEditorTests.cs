@@ -24,7 +24,7 @@ namespace LB.TweenHelper.Tests.Editor
         [TearDown]
         public void TearDown()
         {
-            TweenPresetRegistry.UnregisterPreset(CapturePresetName);
+            TweenPresetRegistry.UnregisterPresetByName(CapturePresetName);
             DOTween.KillAll();
             if (_target != null) UnityEngine.Object.DestroyImmediate(_target);
         }
@@ -81,9 +81,9 @@ namespace LB.TweenHelper.Tests.Editor
         public void Registry_HandlesUnknownPresetAndIncompatibleFadeTarget()
         {
             TweenPresetRegistry.Refresh();
-            Assert.That(TweenPresetRegistry.GetPreset("__UnknownTweenHelperPreset"), Is.Null);
+            Assert.That(TweenPresetRegistry.GetPresetByName("__UnknownTweenHelperPreset"), Is.Null);
 
-            ITweenPreset fadeIn = TweenPresetRegistry.GetPreset("FadeIn");
+            ITweenPreset fadeIn = TweenPresetRegistry.GetPreset<FadeInPreset>();
             Assert.That(fadeIn, Is.Not.Null);
             Assert.That(fadeIn.CanApplyTo(_target), Is.False);
         }
@@ -154,7 +154,7 @@ namespace LB.TweenHelper.Tests.Editor
             TweenPresetRegistry.RegisterPreset(preset);
 
             var handle = _target.Tween()
-                .Preset(CapturePresetName)
+                .PresetByName(CapturePresetName)
                 .WithOptions(TweenOptions.WithDuration(0.45f))
                 .Build();
 

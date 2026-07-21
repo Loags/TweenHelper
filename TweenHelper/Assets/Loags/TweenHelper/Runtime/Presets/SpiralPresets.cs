@@ -19,7 +19,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Item ascension, magical effect, tornado-style rise, collectible pickup trail.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Spiral").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpiralPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpiralPreset : CodePreset
@@ -93,7 +93,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.2s | <b>Default ease:</b> OutQuad<br/>
     /// <b>Strength override:</b> Multiplies spiral radius and height (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpiralSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpiralSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpiralSoftPreset : CodePreset
@@ -115,7 +115,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 2.0s | <b>Default ease:</b> OutQuad<br/>
     /// <b>Strength override:</b> Multiplies spiral radius and height (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpiralHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpiralHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpiralHardPreset : CodePreset
@@ -148,7 +148,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Magical entrance, vortex appearance, power-up spawn, dramatic reveal.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SwirlIn").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SwirlInPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SwirlInPreset : CodePreset
@@ -209,7 +209,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
     /// <b>Strength override:</b> Multiplies spin degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SwirlInSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SwirlInSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SwirlInSoftPreset : CodePreset
@@ -232,7 +232,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
     /// <b>Strength override:</b> Multiplies spin degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SwirlInHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SwirlInHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SwirlInHardPreset : CodePreset

@@ -13,23 +13,24 @@ namespace LB.TweenHelper
     /// </summary>
     public static class TweenPresetRegistry
     {
-        private static readonly Dictionary<string, ITweenPreset> _presets = new Dictionary<string, ITweenPreset>();
+        private static readonly Dictionary<string, ITweenPreset> _presetsByName = new Dictionary<string, ITweenPreset>();
+        private static readonly Dictionary<Type, ITweenPreset> _presetsByType = new Dictionary<Type, ITweenPreset>();
         private static bool _hasScannedCodePresets = false;
 
         /// <summary>
         /// Gets all registered preset names.
         /// </summary>
-        public static IEnumerable<string> PresetNames => _presets.Keys;
+        public static IEnumerable<string> PresetNames => _presetsByName.Keys;
 
         /// <summary>
         /// Gets all registered presets.
         /// </summary>
-        public static IEnumerable<ITweenPreset> Presets => _presets.Values;
+        public static IEnumerable<ITweenPreset> Presets => _presetsByName.Values;
 
         /// <summary>
         /// Gets the number of registered presets.
         /// </summary>
-        public static int Count => _presets.Count;
+        public static int Count => _presetsByName.Count;
 
         #region Registration
 
@@ -51,12 +52,21 @@ namespace LB.TweenHelper
                 return;
             }
 
-            if (_presets.ContainsKey(preset.PresetName))
+            Type presetType = preset.GetType();
+
+            if (_presetsByName.TryGetValue(preset.PresetName, out ITweenPreset existingByName))
             {
                 Debug.LogWarning($"TweenPresetRegistry: Preset '{preset.PresetName}' is already registered. Overwriting.");
+                _presetsByType.Remove(existingByName.GetType());
             }
 
-            _presets[preset.PresetName] = preset;
+            if (_presetsByType.TryGetValue(presetType, out ITweenPreset existingByType))
+            {
+                _presetsByName.Remove(existingByType.PresetName);
+            }
+
+            _presetsByName[preset.PresetName] = preset;
+            _presetsByType[presetType] = preset;
         }
 
         /// <summary>
@@ -64,15 +74,35 @@ namespace LB.TweenHelper
         /// </summary>
         /// <param name="presetName">The name of the preset to unregister.</param>
         /// <returns>True if the preset was found and removed.</returns>
-        public static bool UnregisterPreset(string presetName)
+        public static bool UnregisterPresetByName(string presetName)
         {
             if (string.IsNullOrEmpty(presetName))
             {
                 return false;
             }
 
-            return _presets.Remove(presetName);
+            if (!_presetsByName.TryGetValue(presetName, out ITweenPreset preset)) return false;
+
+            _presetsByName.Remove(presetName);
+            _presetsByType.Remove(preset.GetType());
+            return true;
         }
+
+        /// <summary>
+        /// Unregisters a preset by its concrete type.
+        /// </summary>
+        public static bool UnregisterPreset<TPreset>() where TPreset : class, ITweenPreset
+        {
+            EnsureInitialized();
+            if (!_presetsByType.TryGetValue(typeof(TPreset), out ITweenPreset preset)) return false;
+            return UnregisterPresetByName(preset.PresetName);
+        }
+
+        /// <summary>
+        /// Unregisters a preset by name. Prefer <see cref="UnregisterPreset{TPreset}"/> for statically known presets.
+        /// </summary>
+        [Obsolete("Use UnregisterPreset<TPreset>() for statically known presets or UnregisterPresetByName() for dynamic names.")]
+        public static bool UnregisterPreset(string presetName) => UnregisterPresetByName(presetName);
 
         #endregion
 
@@ -83,7 +113,7 @@ namespace LB.TweenHelper
         /// </summary>
         /// <param name="presetName">The name of the preset to get.</param>
         /// <returns>The preset if found, null otherwise.</returns>
-        public static ITweenPreset GetPreset(string presetName)
+        public static ITweenPreset GetPresetByName(string presetName)
         {
             if (string.IsNullOrEmpty(presetName))
             {
@@ -93,19 +123,43 @@ namespace LB.TweenHelper
             // Ensure scanning has been done
             EnsureInitialized();
 
-            _presets.TryGetValue(presetName, out ITweenPreset preset);
+            _presetsByName.TryGetValue(presetName, out ITweenPreset preset);
             return preset;
         }
+
+        /// <summary>
+        /// Gets a registered preset by its concrete type.
+        /// </summary>
+        public static TPreset GetPreset<TPreset>() where TPreset : class, ITweenPreset
+        {
+            EnsureInitialized();
+            _presetsByType.TryGetValue(typeof(TPreset), out ITweenPreset preset);
+            return preset as TPreset;
+        }
+
+        /// <summary>
+        /// Gets a preset by name. Prefer <see cref="GetPreset{TPreset}"/> for statically known presets.
+        /// </summary>
+        [Obsolete("Use GetPreset<TPreset>() for statically known presets or GetPresetByName() for dynamic names.")]
+        public static ITweenPreset GetPreset(string presetName) => GetPresetByName(presetName);
 
         /// <summary>
         /// Checks if a preset with the specified name is registered.
         /// </summary>
         /// <param name="presetName">The name of the preset to check.</param>
         /// <returns>True if the preset exists.</returns>
-        public static bool HasPreset(string presetName)
-        {
-            return GetPreset(presetName) != null;
-        }
+        public static bool HasPresetByName(string presetName) => GetPresetByName(presetName) != null;
+
+        /// <summary>
+        /// Checks whether a preset type is registered.
+        /// </summary>
+        public static bool HasPreset<TPreset>() where TPreset : class, ITweenPreset => GetPreset<TPreset>() != null;
+
+        /// <summary>
+        /// Checks for a preset by name. Prefer <see cref="HasPreset{TPreset}"/> for statically known presets.
+        /// </summary>
+        [Obsolete("Use HasPreset<TPreset>() for statically known presets or HasPresetByName() for dynamic names.")]
+        public static bool HasPreset(string presetName) => HasPresetByName(presetName);
 
         /// <summary>
         /// Gets presets that can be applied to the specified target.
@@ -118,7 +172,7 @@ namespace LB.TweenHelper
 
             EnsureInitialized();
 
-            return _presets.Values.Where(preset => preset.CanApplyTo(target));
+            return _presetsByName.Values.Where(preset => preset.CanApplyTo(target));
         }
 
         #endregion
@@ -133,18 +187,43 @@ namespace LB.TweenHelper
         /// <param name="duration">Duration override (null uses preset default).</param>
         /// <param name="options">Additional options to apply.</param>
         /// <returns>The created tween, or null if the preset was not found.</returns>
-        public static Tween Play(string presetName, GameObject target, float? duration = null, TweenOptions options = default)
+        public static Tween Play<TPreset>(GameObject target, float? duration = null, TweenOptions options = default) where TPreset : class, ITweenPreset
         {
-            var preset = GetPreset(presetName);
+            var preset = GetPreset<TPreset>();
+            if (preset == null)
+            {
+                Debug.LogError($"TweenPresetRegistry: Preset type '{typeof(TPreset).Name}' is not registered.");
+                return null;
+            }
+
+            return Play(preset, target, duration, options);
+        }
+
+        /// <summary>
+        /// Plays a dynamically selected preset by name on the specified target.
+        /// </summary>
+        public static Tween PlayByName(string presetName, GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var preset = GetPresetByName(presetName);
             if (preset == null)
             {
                 Debug.LogError($"TweenPresetRegistry: Preset '{presetName}' not found. Available: {string.Join(", ", PresetNames)}");
                 return null;
             }
 
+            return Play(preset, target, duration, options);
+        }
+
+        /// <summary>
+        /// Plays an already resolved preset on the specified target.
+        /// </summary>
+        public static Tween Play(ITweenPreset preset, GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            if (preset == null) throw new ArgumentNullException(nameof(preset));
+
             if (!preset.CanApplyTo(target))
             {
-                Debug.LogError($"TweenPresetRegistry: Preset '{presetName}' cannot be applied to '{target?.name}'.");
+                Debug.LogError($"TweenPresetRegistry: Preset '{preset.PresetName}' cannot be applied to '{target?.name}'.");
                 return null;
             }
 
@@ -156,10 +235,17 @@ namespace LB.TweenHelper
             }
             catch (Exception ex)
             {
-                Debug.LogError($"TweenPresetRegistry: Failed to play preset '{presetName}' on '{target?.name}'. {ex.Message}");
+                Debug.LogError($"TweenPresetRegistry: Failed to play preset '{preset.PresetName}' on '{target?.name}'. {ex.Message}");
                 return null;
             }
         }
+
+        /// <summary>
+        /// Plays a preset by name. Prefer <see cref="Play{TPreset}"/> for statically known presets.
+        /// </summary>
+        [Obsolete("Use Play<TPreset>() for statically known presets or PlayByName() for dynamic names.")]
+        public static Tween Play(string presetName, GameObject target, float? duration = null, TweenOptions options = default)
+            => PlayByName(presetName, target, duration, options);
 
         #endregion
 
@@ -241,7 +327,8 @@ namespace LB.TweenHelper
         /// </summary>
         public static void Refresh()
         {
-            _presets.Clear();
+            _presetsByName.Clear();
+            _presetsByType.Clear();
             _hasScannedCodePresets = false;
             ScanForCodePresets();
         }
@@ -273,7 +360,8 @@ namespace LB.TweenHelper
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void OnDomainReload()
         {
-            _presets.Clear();
+            _presetsByName.Clear();
+            _presetsByType.Clear();
             _hasScannedCodePresets = false;
         }
 

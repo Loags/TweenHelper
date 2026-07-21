@@ -140,7 +140,7 @@ namespace LB.TweenHelper.Editor
                 foreach (var preset in family)
                 {
                     string duration = preset.DefaultDuration.ToString("0.###", CultureInfo.InvariantCulture);
-                    builder.AppendLine($"| `{Escape(preset.PresetName)}` | {duration}s | {GetLoopBehavior(preset)} | {GetTargetCategory(preset)} | {Escape(preset.Description)} | `target.Tween().Preset(\"{Escape(preset.PresetName)}\").Play();` |");
+                    builder.AppendLine($"| `{Escape(preset.PresetName)}` | {duration}s | {GetLoopBehavior(preset)} | {GetTargetCategory(preset)} | {Escape(preset.Description)} | `target.Tween().Preset<{preset.GetType().Name}>().Play();` |");
                 }
             }
 

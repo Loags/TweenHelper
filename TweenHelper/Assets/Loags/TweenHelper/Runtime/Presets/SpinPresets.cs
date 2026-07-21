@@ -26,7 +26,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinY").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinPreset : CodePreset
@@ -48,7 +48,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinYSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinYSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinYSoftPreset : CodePreset
@@ -70,7 +70,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinYHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinYHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinYHardPreset : CodePreset
@@ -93,7 +93,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinX").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinXPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinXPreset : CodePreset
@@ -115,7 +115,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinXSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinXSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinXSoftPreset : CodePreset
@@ -137,7 +137,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinXHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinXHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinXHardPreset : CodePreset
@@ -160,7 +160,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinZ").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinZPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinZPreset : CodePreset
@@ -182,7 +182,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinZSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinZSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinZSoftPreset : CodePreset
@@ -204,7 +204,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinZHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinZHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinZHardPreset : CodePreset
@@ -243,7 +243,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinDiagonalXY").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinDiagonalXYPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinDiagonalXYPreset : CodePreset
@@ -265,7 +265,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinDiagonalXYSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinDiagonalXYSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinDiagonalXYSoftPreset : CodePreset
@@ -287,7 +287,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinDiagonalXYHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinDiagonalXYHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinDiagonalXYHardPreset : CodePreset
@@ -310,7 +310,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinDiagonalXZ").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinDiagonalXZPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinDiagonalXZPreset : CodePreset
@@ -332,7 +332,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinDiagonalXZSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinDiagonalXZSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinDiagonalXZSoftPreset : CodePreset
@@ -354,7 +354,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinDiagonalXZHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinDiagonalXZHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinDiagonalXZHardPreset : CodePreset
@@ -377,7 +377,7 @@ namespace LB.TweenHelper
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinDiagonalYZ").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinDiagonalYZPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinDiagonalYZPreset : CodePreset
@@ -399,7 +399,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinDiagonalYZSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinDiagonalYZSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinDiagonalYZSoftPreset : CodePreset
@@ -421,7 +421,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinDiagonalYZHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinDiagonalYZHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinDiagonalYZHardPreset : CodePreset
@@ -453,7 +453,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Collectible pickup, item absorption, vortex exit, magical disappearance.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinScaleOut").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinScaleOutPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinScaleOutPreset : CodePreset
@@ -484,7 +484,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Collectible pickup, item absorption, vortex exit, magical disappearance.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinScaleOutOvershoot").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinScaleOutOvershootPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinScaleOutOvershootPreset : CodePreset
@@ -508,7 +508,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> TargetScale replaces zero.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinScaleOutSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinScaleOutSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinScaleOutSoftPreset : CodePreset
@@ -531,7 +531,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> TargetScale replaces zero.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinScaleOutHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinScaleOutHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinScaleOutHardPreset : CodePreset
@@ -554,7 +554,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> TargetScale replaces zero.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinScaleOutOvershootSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinScaleOutOvershootSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinScaleOutOvershootSoftPreset : CodePreset
@@ -578,7 +578,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> TargetScale replaces zero.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinScaleOutOvershootHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinScaleOutOvershootHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinScaleOutOvershootHardPreset : CodePreset
@@ -660,7 +660,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinScaleIn").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinScaleInPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinScaleInPreset : CodePreset
@@ -683,7 +683,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinScaleInOvershoot").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinScaleInOvershootPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinScaleInOvershootPreset : CodePreset
@@ -707,7 +707,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinScaleInSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinScaleInSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinScaleInSoftPreset : CodePreset
@@ -730,7 +730,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinScaleInHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinScaleInHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinScaleInHardPreset : CodePreset
@@ -753,7 +753,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinScaleInOvershootSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinScaleInOvershootSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinScaleInOvershootSoftPreset : CodePreset
@@ -777,7 +777,7 @@ namespace LB.TweenHelper
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("SpinScaleInOvershootHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<SpinScaleInOvershootHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class SpinScaleInOvershootHardPreset : CodePreset

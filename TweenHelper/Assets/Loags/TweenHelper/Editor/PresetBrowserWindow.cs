@@ -128,7 +128,7 @@ namespace LB.TweenHelper.Editor
 
                 EditorGUILayout.Space(10f);
                 EditorGUILayout.LabelField("Fluent API", EditorStyles.boldLabel);
-                string example = BuildExample(_selectedPreset.PresetName);
+                string example = BuildExample(_selectedPreset);
                 EditorGUILayout.SelectableLabel(example, EditorStyles.textArea, GUILayout.Height(42f));
                 if (GUILayout.Button("Copy Example"))
                 {
@@ -244,7 +244,7 @@ namespace LB.TweenHelper.Editor
             return target != null && !EditorUtility.IsPersistent(target) ? target : null;
         }
 
-        private static string BuildExample(string presetName) => $"target.Tween().Preset(\"{presetName}\").Play();";
+        private static string BuildExample(ITweenPreset preset) => $"target.Tween().Preset<{preset.GetType().Name}>().Play();";
 
         private static void DrawValue(string label, string value)
         {

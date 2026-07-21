@@ -166,7 +166,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Object drop entrance, physics-style landing, dramatic item reveal, game piece placement.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("DropIn").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<DropInPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class DropInPreset : CodePreset
@@ -202,7 +202,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.5s | <b>Default ease:</b> InSine (fall), OutSine (bounce)<br/>
     /// <b>Strength override:</b> Multiplies drop height and squash intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("DropInSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<DropInSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class DropInSoftPreset : CodePreset
@@ -238,7 +238,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.9s | <b>Default ease:</b> InCubic (fall), OutQuad (bounce)<br/>
     /// <b>Strength override:</b> Multiplies drop height and squash intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("DropInHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<DropInHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class DropInHardPreset : CodePreset
@@ -282,7 +282,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Heavy object landing, character ground pound, cartoon drop, dramatic arrival.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("BounceLand").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BounceLandPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BounceLandPreset : CodePreset
@@ -308,7 +308,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.4s | <b>Default ease:</b> InQuad (fall), OutQuad (hop)<br/>
     /// <b>Strength override:</b> Multiplies drop height and squash intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("BounceCartoon").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BounceCartoonPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BounceCartoonPreset : CodePreset
@@ -334,7 +334,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.4s | <b>Default ease:</b> InSine (fall), OutSine (bounce)<br/>
     /// <b>Strength override:</b> Multiplies drop height and squash intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("BounceLandSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BounceLandSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BounceLandSoftPreset : CodePreset
@@ -360,7 +360,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.6s | <b>Default ease:</b> InCubic (fall), OutQuad (bounce)<br/>
     /// <b>Strength override:</b> Multiplies drop height and squash intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("BounceLandHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BounceLandHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BounceLandHardPreset : CodePreset
@@ -386,7 +386,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.8s | <b>Default ease:</b> InSine (fall), OutSine (hop)<br/>
     /// <b>Strength override:</b> Multiplies drop height and squash intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("BounceCartoonSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BounceCartoonSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BounceCartoonSoftPreset : CodePreset
@@ -412,7 +412,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.1s | <b>Default ease:</b> InCubic (fall), OutQuad (hop)<br/>
     /// <b>Strength override:</b> Multiplies drop height and squash intensity (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("BounceCartoonHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<BounceCartoonHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class BounceCartoonHardPreset : CodePreset

@@ -17,7 +17,7 @@ namespace LB.TweenHelper
     /// <para>
     /// <b>Use cases:</b> Agreeing nod, acknowledgment gesture, bow, forward peek.
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("Nod").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NodPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NodPreset : CodePreset
@@ -71,7 +71,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.3s | <b>Default ease:</b> OutQuad (lean), OutBack (return)<br/>
     /// <b>Strength override:</b> Multiplies tilt angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NodSoft").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NodSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NodSoftPreset : CodePreset
@@ -93,7 +93,7 @@ namespace LB.TweenHelper
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 0.5s | <b>Default ease:</b> OutQuad (lean), OutBack (return)<br/>
     /// <b>Strength override:</b> Multiplies tilt angle (default 1.0).
     /// </para>
-    /// Usage: <c>transform.Tween().Preset("NodHard").Play();</c>
+    /// Usage: <c>transform.Tween().Preset<NodHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
     public class NodHardPreset : CodePreset
