@@ -48,6 +48,11 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private bool spawnOnStart = true;
         [SerializeField] private bool clearExistingOnSpawn = true;
 
+        [Header("Authored Prefabs")]
+        [SerializeField] private AnimationResetManager resetManagerPrefab;
+        [SerializeField] private PresetConsole presetConsolePrefab;
+        [SerializeField] private PresetWorldLabelView worldLabelPrefab;
+
         private readonly List<GameObject> _spawnedObjects = new List<GameObject>();
         private readonly Dictionary<string, GameObject> _presetObjects = new Dictionary<string, GameObject>();
         private readonly Dictionary<string, string> _presetFamilies = new Dictionary<string, string>();
@@ -135,16 +140,14 @@ namespace LB.TweenHelper.Demo
         {
             if (AnimationResetManager.Instance == null)
             {
-                var managerGO = new GameObject("AnimationResetManager");
-                managerGO.AddComponent<AnimationResetManager>();
+                Instantiate(resetManagerPrefab, transform);
             }
         }
 
         private void SetupConsole()
         {
-            var consoleGO = new GameObject("PresetConsole");
-            consoleGO.transform.SetParent(transform);
-            consoleGO.AddComponent<PresetConsole>();
+            var presetConsole = Instantiate(presetConsolePrefab, transform);
+            presetConsole.Initialize(Camera.main != null ? Camera.main.GetComponent<FlyCamera>() : null);
         }
 
         [ContextMenu("Spawn All Preset Objects")]
@@ -345,7 +348,7 @@ namespace LB.TweenHelper.Demo
             }
 
             var display = obj.AddComponent<AnimationPresetDisplay>();
-            display.Setup(preset);
+            display.Setup(preset, worldLabelPrefab);
 
             return obj;
         }
@@ -577,17 +580,18 @@ namespace LB.TweenHelper.Demo
             _presetFamilies.Clear();
             _groundObject = null;
 
-            var container = transform.Find("PresetShowcase");
-            if (container != null)
+            if (_container != null)
             {
                 if (Application.isPlaying)
                 {
-                    Destroy(container.gameObject);
+                    Destroy(_container.gameObject);
                 }
                 else
                 {
-                    DestroyImmediate(container.gameObject);
+                    DestroyImmediate(_container.gameObject);
                 }
+
+                _container = null;
             }
         }
 

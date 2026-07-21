@@ -14,7 +14,6 @@ namespace LB.TweenHelper.Demo
     /// </summary>
     public class PresetConsole : MonoBehaviour
     {
-        private const float PanelHeight = 300f;
         private const string HelpText =
             "=== Preset Console ===\n" +
             "Commands:\n" +
@@ -31,14 +30,14 @@ namespace LB.TweenHelper.Demo
             "Tab: autocomplete | Up/Down: command history\n" +
             "Escape or Tab on empty input to close.";
 
-        private Canvas _canvas;
-        private GameObject _panelObj;
-        private TextMeshProUGUI _outputText;
-        private TMP_InputField _inputField;
-        private Button _toggleButton;
-        private TextMeshProUGUI _toggleButtonLabel;
-        private ScrollRect _scrollRect;
-        private FlyCamera _flyCamera;
+        [Header("Prefab References")]
+        [SerializeField] private GameObject _panelObj;
+        [SerializeField] private TextMeshProUGUI _outputText;
+        [SerializeField] private TMP_InputField _inputField;
+        [SerializeField] private Button _toggleButton;
+        [SerializeField] private TextMeshProUGUI _toggleButtonLabel;
+        [SerializeField] private ScrollRect _scrollRect;
+        [SerializeField] private FlyCamera _flyCamera;
 
         private static readonly string[] Commands = { "show", "hide", "filter", "list", "count", "status", "reset", "clear", "help" };
 
@@ -54,10 +53,14 @@ namespace LB.TweenHelper.Demo
         private int _completionIndex = -1;
         private string _completionPrefix;
 
+        public void Initialize(FlyCamera flyCamera) => _flyCamera = flyCamera;
+
         private void Start()
         {
-            CreateUI();
-            _flyCamera = FindAnyObjectByType<FlyCamera>();
+            _toggleButton.onClick.AddListener(() => SetPanelOpen(!_isOpen));
+            _inputField.onSubmit.AddListener(OnSubmit);
+            _inputField.onValueChanged.AddListener(OnInputChanged);
+            _outputText.text = HelpText;
             SetPanelOpen(false);
         }
 
@@ -516,256 +519,6 @@ namespace LB.TweenHelper.Demo
             LayoutRebuilder.ForceRebuildLayoutImmediate(_scrollRect.content);
             _scrollRect.verticalNormalizedPosition = 0f;
             _scrollCoroutine = null;
-        }
-
-        private void CreateUI()
-        {
-            // Canvas
-            var canvasObj = new GameObject("PresetConsoleCanvas");
-            canvasObj.transform.SetParent(transform);
-            _canvas = canvasObj.AddComponent<Canvas>();
-            _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            _canvas.sortingOrder = 100;
-            canvasObj.AddComponent<CanvasScaler>();
-            canvasObj.AddComponent<GraphicRaycaster>();
-
-            // Toggle button
-            CreateToggleButton(canvasObj.transform);
-
-            // Panel
-            CreatePanel(canvasObj.transform);
-        }
-
-        private void CreateToggleButton(Transform parent)
-        {
-            var btnObj = new GameObject("ToggleButton");
-            btnObj.transform.SetParent(parent, false);
-
-            var btnRect = btnObj.AddComponent<RectTransform>();
-            btnRect.anchorMin = new Vector2(0.5f, 0f);
-            btnRect.anchorMax = new Vector2(0.5f, 0f);
-            btnRect.pivot = new Vector2(0.5f, 0f);
-            btnRect.anchoredPosition = new Vector2(0f, 5f);
-            btnRect.sizeDelta = new Vector2(180f, 30f);
-
-            var btnImage = btnObj.AddComponent<Image>();
-            btnImage.color = new Color(0.15f, 0.15f, 0.15f, 0.85f);
-
-            _toggleButton = btnObj.AddComponent<Button>();
-            _toggleButton.onClick.AddListener(() => SetPanelOpen(!_isOpen));
-
-            var labelObj = new GameObject("Label");
-            labelObj.transform.SetParent(btnObj.transform, false);
-            var labelRect = labelObj.AddComponent<RectTransform>();
-            labelRect.anchorMin = Vector2.zero;
-            labelRect.anchorMax = Vector2.one;
-            labelRect.offsetMin = Vector2.zero;
-            labelRect.offsetMax = Vector2.zero;
-
-            _toggleButtonLabel = labelObj.AddComponent<TextMeshProUGUI>();
-            _toggleButtonLabel.text = "Console (Tab)";
-            _toggleButtonLabel.fontSize = 14f;
-            _toggleButtonLabel.alignment = TextAlignmentOptions.Center;
-            _toggleButtonLabel.color = Color.white;
-        }
-
-        private void CreatePanel(Transform parent)
-        {
-            _panelObj = new GameObject("ConsolePanel");
-            _panelObj.transform.SetParent(parent, false);
-
-            var panelRect = _panelObj.AddComponent<RectTransform>();
-            panelRect.anchorMin = new Vector2(0f, 0f);
-            panelRect.anchorMax = new Vector2(1f, 0f);
-            panelRect.pivot = new Vector2(0.5f, 0f);
-            panelRect.anchoredPosition = new Vector2(0f, 40f);
-            panelRect.sizeDelta = new Vector2(0f, PanelHeight);
-
-            var panelImage = _panelObj.AddComponent<Image>();
-            panelImage.color = new Color(0.1f, 0.1f, 0.1f, 0.9f);
-
-            var panelLayout = _panelObj.AddComponent<VerticalLayoutGroup>();
-            panelLayout.padding = new RectOffset(10, 10, 10, 10);
-            panelLayout.spacing = 5f;
-            panelLayout.childForceExpandWidth = true;
-            panelLayout.childForceExpandHeight = false;
-            panelLayout.childControlHeight = true;
-            panelLayout.childControlWidth = true;
-
-            // Scroll view for output
-            CreateScrollView(_panelObj.transform);
-
-            // Input field
-            CreateInputField(_panelObj.transform);
-        }
-
-        private void CreateScrollView(Transform parent)
-        {
-            var scrollObj = new GameObject("ScrollView");
-            scrollObj.transform.SetParent(parent, false);
-
-            var scrollRect = scrollObj.AddComponent<RectTransform>();
-            var scrollLayout = scrollObj.AddComponent<LayoutElement>();
-            scrollLayout.flexibleHeight = 1f;
-
-            var scrollImage = scrollObj.AddComponent<Image>();
-            scrollImage.color = new Color(0.05f, 0.05f, 0.05f, 0.8f);
-
-            _scrollRect = scrollObj.AddComponent<ScrollRect>();
-            _scrollRect.horizontal = false;
-            _scrollRect.vertical = true;
-            _scrollRect.movementType = ScrollRect.MovementType.Clamped;
-            _scrollRect.scrollSensitivity = 30f;
-
-            var mask = scrollObj.AddComponent<Mask>();
-            mask.showMaskGraphic = true;
-
-            // Viewport
-            var viewportObj = new GameObject("Viewport");
-            viewportObj.transform.SetParent(scrollObj.transform, false);
-            var viewportRect = viewportObj.AddComponent<RectTransform>();
-            viewportRect.anchorMin = Vector2.zero;
-            viewportRect.anchorMax = Vector2.one;
-            viewportRect.offsetMin = Vector2.zero;
-            viewportRect.offsetMax = Vector2.zero;
-
-            // Content
-            var contentObj = new GameObject("Content");
-            contentObj.transform.SetParent(viewportObj.transform, false);
-            var contentRect = contentObj.AddComponent<RectTransform>();
-            contentRect.anchorMin = new Vector2(0f, 1f);
-            contentRect.anchorMax = new Vector2(1f, 1f);
-            contentRect.pivot = new Vector2(0.5f, 1f);
-            contentRect.sizeDelta = new Vector2(0f, 0f);
-
-            var contentFitter = contentObj.AddComponent<ContentSizeFitter>();
-            contentFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            contentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            var contentLayout = contentObj.AddComponent<VerticalLayoutGroup>();
-            contentLayout.padding = new RectOffset(10, 10, 5, 5);
-            contentLayout.childForceExpandWidth = true;
-            contentLayout.childForceExpandHeight = false;
-            contentLayout.childControlWidth = true;
-            contentLayout.childControlHeight = true;
-
-            // Output text
-            var textObj = new GameObject("OutputText");
-            textObj.transform.SetParent(contentObj.transform, false);
-
-            _outputText = textObj.AddComponent<TextMeshProUGUI>();
-            _outputText.fontSize = 13f;
-            _outputText.color = new Color(0.8f, 0.9f, 0.8f, 1f);
-            _outputText.alignment = TextAlignmentOptions.TopLeft;
-            _outputText.textWrappingMode = TextWrappingModes.Normal;
-            _outputText.text = HelpText;
-
-            var textFitter = textObj.AddComponent<ContentSizeFitter>();
-            textFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            _scrollRect.content = contentRect;
-            _scrollRect.viewport = viewportRect;
-
-            // Vertical scrollbar
-            var scrollbarObj = new GameObject("Scrollbar");
-            scrollbarObj.transform.SetParent(scrollObj.transform, false);
-            var scrollbarRect = scrollbarObj.AddComponent<RectTransform>();
-            scrollbarRect.anchorMin = new Vector2(1f, 0f);
-            scrollbarRect.anchorMax = new Vector2(1f, 1f);
-            scrollbarRect.pivot = new Vector2(1f, 0.5f);
-            scrollbarRect.sizeDelta = new Vector2(8f, 0f);
-            scrollbarRect.anchoredPosition = Vector2.zero;
-
-            var scrollbarImage = scrollbarObj.AddComponent<Image>();
-            scrollbarImage.color = new Color(0.15f, 0.15f, 0.15f, 0.5f);
-
-            var scrollbar = scrollbarObj.AddComponent<Scrollbar>();
-            scrollbar.direction = Scrollbar.Direction.BottomToTop;
-
-            var handleObj = new GameObject("Handle");
-            handleObj.transform.SetParent(scrollbarObj.transform, false);
-            var handleRect = handleObj.AddComponent<RectTransform>();
-            handleRect.anchorMin = Vector2.zero;
-            handleRect.anchorMax = Vector2.one;
-            handleRect.offsetMin = Vector2.zero;
-            handleRect.offsetMax = Vector2.zero;
-
-            var handleImage = handleObj.AddComponent<Image>();
-            handleImage.color = new Color(0.5f, 0.5f, 0.5f, 0.6f);
-
-            scrollbar.handleRect = handleRect;
-            scrollbar.targetGraphic = handleImage;
-
-            _scrollRect.verticalScrollbar = scrollbar;
-            _scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport;
-
-            // Shrink viewport to leave room for scrollbar
-            viewportRect.offsetMax = new Vector2(-10f, 0f);
-        }
-
-        private void CreateInputField(Transform parent)
-        {
-            var inputObj = new GameObject("InputField");
-            inputObj.transform.SetParent(parent, false);
-
-            var inputLayout = inputObj.AddComponent<LayoutElement>();
-            inputLayout.minHeight = 30f;
-            inputLayout.preferredHeight = 30f;
-
-            var inputImage = inputObj.AddComponent<Image>();
-            inputImage.color = new Color(0.2f, 0.2f, 0.2f, 1f);
-
-            _inputField = inputObj.AddComponent<TMP_InputField>();
-            _inputField.lineType = TMP_InputField.LineType.SingleLine;
-
-            // Text area
-            var textAreaObj = new GameObject("TextArea");
-            textAreaObj.transform.SetParent(inputObj.transform, false);
-            var textAreaRect = textAreaObj.AddComponent<RectTransform>();
-            textAreaRect.anchorMin = Vector2.zero;
-            textAreaRect.anchorMax = Vector2.one;
-            textAreaRect.offsetMin = new Vector2(8f, 2f);
-            textAreaRect.offsetMax = new Vector2(-8f, -2f);
-
-            // The RectMask2D clips the text within the text area
-            textAreaObj.AddComponent<RectMask2D>();
-
-            // Input text
-            var inputTextObj = new GameObject("Text");
-            inputTextObj.transform.SetParent(textAreaObj.transform, false);
-            var inputTextRect = inputTextObj.AddComponent<RectTransform>();
-            inputTextRect.anchorMin = Vector2.zero;
-            inputTextRect.anchorMax = Vector2.one;
-            inputTextRect.offsetMin = Vector2.zero;
-            inputTextRect.offsetMax = Vector2.zero;
-
-            var inputTMP = inputTextObj.AddComponent<TextMeshProUGUI>();
-            inputTMP.fontSize = 14f;
-            inputTMP.color = Color.white;
-            inputTMP.alignment = TextAlignmentOptions.MidlineLeft;
-
-            // Placeholder
-            var placeholderObj = new GameObject("Placeholder");
-            placeholderObj.transform.SetParent(textAreaObj.transform, false);
-            var placeholderRect = placeholderObj.AddComponent<RectTransform>();
-            placeholderRect.anchorMin = Vector2.zero;
-            placeholderRect.anchorMax = Vector2.one;
-            placeholderRect.offsetMin = Vector2.zero;
-            placeholderRect.offsetMax = Vector2.zero;
-
-            var placeholderTMP = placeholderObj.AddComponent<TextMeshProUGUI>();
-            placeholderTMP.fontSize = 14f;
-            placeholderTMP.color = new Color(0.5f, 0.5f, 0.5f, 0.7f);
-            placeholderTMP.fontStyle = FontStyles.Italic;
-            placeholderTMP.alignment = TextAlignmentOptions.MidlineLeft;
-            placeholderTMP.text = "Type a command... (help for usage)";
-
-            _inputField.textViewport = textAreaRect;
-            _inputField.textComponent = inputTMP;
-            _inputField.placeholder = placeholderTMP;
-
-            _inputField.onSubmit.AddListener(OnSubmit);
-            _inputField.onValueChanged.AddListener(OnInputChanged);
         }
 
         private void OnInputChanged(string text)

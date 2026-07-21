@@ -7,7 +7,7 @@ namespace LB.TweenHelper.Demo
 {
     /// <summary>
     /// Displays animation preset info and plays the animation when clicked.
-    /// Creates a world space canvas showing the preset name and description.
+    /// Uses an authored world-space label prefab to show the preset name and description.
     /// </summary>
     [RequireComponent(typeof(Collider))]
     public class AnimationPresetDisplay : MonoBehaviour
@@ -61,17 +61,14 @@ namespace LB.TweenHelper.Demo
         [Header("Display Settings")]
         [SerializeField] private Vector3 labelOffset = new Vector3(0, 1.5f, 0);
         [SerializeField] private float canvasScale = 0.01f;
-        [SerializeField] private Color backgroundColor = new Color(0, 0, 0, 0.7f);
-        [SerializeField] private Color textColor = Color.white;
+        [SerializeField] private PresetWorldLabelView worldLabelPrefab;
 
         [Header("Visual Feedback")]
         [SerializeField] private Color hoverColor = new Color(0.3f, 0.7f, 1f);
         [SerializeField] private Color normalColor = Color.white;
         [SerializeField] private bool verboseResetLogging;
 
-        private Canvas _worldCanvas;
-        private TextMeshProUGUI _nameText;
-        private TextMeshProUGUI _descriptionText;
+        private PresetWorldLabelView _worldLabel;
         private CanvasGroup _canvasGroup;
         private SpriteRenderer _spriteRenderer;
         private Image _image;
@@ -126,7 +123,9 @@ namespace LB.TweenHelper.Demo
 
         private void Start()
         {
-            CreateWorldSpaceCanvas();
+            _worldLabel = Instantiate(worldLabelPrefab, transform);
+            _worldLabel.transform.localPosition = labelOffset;
+            _worldLabel.transform.localScale = Vector3.one * canvasScale;
             UpdateLabel();
         }
 
@@ -330,87 +329,9 @@ namespace LB.TweenHelper.Demo
             };
         }
 
-        private void CreateWorldSpaceCanvas()
-        {
-            // Create canvas GameObject
-            var canvasGO = new GameObject($"{presetName}_Label");
-            canvasGO.transform.SetParent(transform);
-            canvasGO.transform.localPosition = labelOffset;
-            canvasGO.transform.localScale = Vector3.one * canvasScale;
-
-            // Add Canvas component
-            _worldCanvas = canvasGO.AddComponent<Canvas>();
-            _worldCanvas.renderMode = RenderMode.WorldSpace;
-
-            // Add CanvasScaler
-            var scaler = canvasGO.AddComponent<CanvasScaler>();
-            scaler.dynamicPixelsPerUnit = 10f;
-
-            // Set canvas size
-            var rectTransform = canvasGO.GetComponent<RectTransform>();
-            rectTransform.sizeDelta = new Vector2(300, 100);
-
-            // Create background panel
-            var panelGO = new GameObject("Panel");
-            panelGO.transform.SetParent(canvasGO.transform, false);
-            var panelRect = panelGO.AddComponent<RectTransform>();
-            panelRect.anchorMin = Vector2.zero;
-            panelRect.anchorMax = Vector2.one;
-            panelRect.sizeDelta = Vector2.zero;
-            panelRect.anchoredPosition = Vector2.zero;
-
-            var panelImage = panelGO.AddComponent<Image>();
-            panelImage.color = backgroundColor;
-
-            // Create vertical layout
-            var layoutGroup = panelGO.AddComponent<VerticalLayoutGroup>();
-            layoutGroup.padding = new RectOffset(10, 10, 5, 5);
-            layoutGroup.spacing = 2;
-            layoutGroup.childAlignment = TextAnchor.MiddleCenter;
-            layoutGroup.childControlHeight = true;
-            layoutGroup.childControlWidth = true;
-            layoutGroup.childForceExpandHeight = false;
-            layoutGroup.childForceExpandWidth = true;
-
-            // Create name text
-            var nameGO = new GameObject("NameText");
-            nameGO.transform.SetParent(panelGO.transform, false);
-            _nameText = nameGO.AddComponent<TextMeshProUGUI>();
-            _nameText.fontSize = 24;
-            _nameText.fontStyle = FontStyles.Bold;
-            _nameText.color = textColor;
-            _nameText.alignment = TextAlignmentOptions.Center;
-            _nameText.textWrappingMode = TextWrappingModes.Normal;
-
-            var nameLayout = nameGO.AddComponent<LayoutElement>();
-            nameLayout.preferredHeight = 30;
-
-            // Create description text
-            var descGO = new GameObject("DescriptionText");
-            descGO.transform.SetParent(panelGO.transform, false);
-            _descriptionText = descGO.AddComponent<TextMeshProUGUI>();
-            _descriptionText.fontSize = 14;
-            _descriptionText.color = new Color(textColor.r, textColor.g, textColor.b, 0.8f);
-            _descriptionText.alignment = TextAlignmentOptions.Center;
-            _nameText.textWrappingMode = TextWrappingModes.Normal;
-
-            var descLayout = descGO.AddComponent<LayoutElement>();
-            descLayout.preferredHeight = 20;
-
-            // Add billboard behavior
-            canvasGO.AddComponent<BillboardCanvas>();
-        }
-
         private void UpdateLabel()
         {
-            if (_nameText != null)
-            {
-                _nameText.text = presetName;
-            }
-            if (_descriptionText != null)
-            {
-                _descriptionText.text = presetDescription;
-            }
+            if (_worldLabel != null) _worldLabel.SetContent(presetName, presetDescription);
         }
 
         private void OnMouseEnter()
@@ -500,35 +421,16 @@ namespace LB.TweenHelper.Demo
             UpdateLabel();
         }
 
+        public void Setup(ITweenPreset preset, PresetWorldLabelView labelPrefab)
+        {
+            worldLabelPrefab = labelPrefab;
+            Setup(preset);
+        }
+
         private void OnDestroy()
         {
             KillTweensForReset();
         }
     }
 
-    /// <summary>
-    /// Makes the canvas always face the camera.
-    /// </summary>
-    public class BillboardCanvas : MonoBehaviour
-    {
-        private Camera _mainCamera;
-
-        private void Start()
-        {
-            _mainCamera = Camera.main;
-        }
-
-        private void LateUpdate()
-        {
-            if (_mainCamera == null)
-            {
-                _mainCamera = Camera.main;
-                if (_mainCamera == null) return;
-            }
-
-            // Face the camera
-            transform.LookAt(transform.position + _mainCamera.transform.rotation * Vector3.forward,
-                _mainCamera.transform.rotation * Vector3.up);
-        }
-    }
 }

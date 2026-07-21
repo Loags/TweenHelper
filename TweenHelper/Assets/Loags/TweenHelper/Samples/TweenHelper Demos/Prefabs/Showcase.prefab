@@ -64,3 +64,6 @@ MonoBehaviour:
   cameraRotation: {x: 25, y: 0, z: 0}
   spawnOnStart: 1
   clearExistingOnSpawn: 1
+  resetManagerPrefab: {fileID: 9161950279093762439, guid: 71a6427d007e0ca4fb179d07ab398bff, type: 3}
+  presetConsolePrefab: {fileID: 4237880226491716143, guid: 7af1851f15aa81c4cb6fcdb1f0e84e5f, type: 3}
+  worldLabelPrefab: {fileID: 6816060822561629012, guid: 7ebc6ba7c62987b4b9d2b055545a2a97, type: 3}

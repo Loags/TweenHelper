@@ -1,4 +1,5 @@
-using System.Collections;
+using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -7,122 +8,322 @@ using UnityEngine.UI;
 namespace LB.TweenHelper.Demo
 {
     /// <summary>
-    /// Lets the user browse and replay semantic UI showcase animations via the new Input System.
+    /// Controls the prefab-authored two-tab UI showcase and its safe preview lifecycle.
     /// </summary>
     public class PresetShowcaseSpawner2D : MonoBehaviour
     {
-        [Header("Targets")]
-        [SerializeField] private TextMeshProUGUI _presetNameText;
-        [SerializeField] private Image _presetImage;
-        [SerializeField] private TextMeshProUGUI _animatedText;
+        [Header("Tabs")]
+        [SerializeField] private Button recipesTabButton;
+        [SerializeField] private Button presetsTabButton;
+        [SerializeField] private GameObject recipesPanel;
+        [SerializeField] private GameObject presetsPanel;
 
-        [Header("Replay")]
-        [SerializeField] private float _stepDelay = 0.2f;
+        [Header("Recipe Library")]
+        [SerializeField] private Transform recipeContent;
+        [SerializeField] private UIRecipeCard recipeCardPrefab;
+
+        [Header("Preset Library")]
+        [SerializeField] private Transform presetContent;
+        [SerializeField] private UIPresetListItem presetListItemPrefab;
+        [SerializeField] private TMP_InputField searchInput;
+        [SerializeField] private TMP_Dropdown familyDropdown;
+        [SerializeField] private TMP_Dropdown targetDropdown;
+        [SerializeField] private TMP_Text visibleCountText;
+
+        [Header("Preview")]
+        [SerializeField] private Image presetImage;
+        [SerializeField] private TextMeshProUGUI animatedText;
+        [SerializeField] private TMP_Text selectionNameText;
+        [SerializeField] private TMP_Text selectionDescriptionText;
+        [SerializeField] private TMP_Text codeExampleText;
+        [SerializeField] private Button replayButton;
+        [SerializeField] private Button resetButton;
+        [SerializeField] private Button copyButton;
+        [SerializeField] private DemoInstructionsPanel instructionsPanel;
 
         [Header("Colors")]
-        [SerializeField] private Color _imageHoverColor = new Color(1f, 0.9f, 0.6f, 1f);
-        [SerializeField] private Color _textHoverColor = new Color(0.7f, 0.9f, 1f, 1f);
-        [SerializeField] private Color _disabledTextColor = new Color(0.65f, 0.65f, 0.65f, 0.55f);
+        [SerializeField] private Color imageHoverColor = new Color(1f, 0.9f, 0.6f, 1f);
+        [SerializeField] private Color textHoverColor = new Color(0.7f, 0.9f, 1f, 1f);
+        [SerializeField] private Color disabledTextColor = new Color(0.65f, 0.65f, 0.65f, 0.55f);
 
-        private Coroutine _playRoutine;
+        private static readonly RecipeDefinition[] Recipes =
+        {
+            new RecipeDefinition(UIRecipeKind.UIAppear, "Pop and fade a UI element into view."),
+            new RecipeDefinition(UIRecipeKind.UIAppearSoft, "A gentler appear animation."),
+            new RecipeDefinition(UIRecipeKind.UIDisappear, "Pop and fade a UI element out."),
+            new RecipeDefinition(UIRecipeKind.UIDisappearSoft, "A gentler disappear animation."),
+            new RecipeDefinition(UIRecipeKind.UIHover, "Scale and tint for hover feedback."),
+            new RecipeDefinition(UIRecipeKind.UIHoverSoft, "Subtle hover feedback."),
+            new RecipeDefinition(UIRecipeKind.UIPress, "Press and release feedback."),
+            new RecipeDefinition(UIRecipeKind.UIPressHard, "Stronger press feedback."),
+            new RecipeDefinition(UIRecipeKind.UIAttention, "Draw attention to an element."),
+            new RecipeDefinition(UIRecipeKind.UIAttentionSoft, "Gentle attention motion."),
+            new RecipeDefinition(UIRecipeKind.UIAttentionHard, "Strong attention motion."),
+            new RecipeDefinition(UIRecipeKind.UIDisabled, "Animate into a disabled visual state."),
+            new RecipeDefinition(UIRecipeKind.UIEnabled, "Restore the enabled visual state.")
+        };
+
+        private readonly List<UIPresetListItem> _presetRows = new List<UIPresetListItem>();
         private UIStateSnapshot _imageState;
         private UIStateSnapshot _textState;
         private TweenHandle _activeTween;
-        private int _selectedStepIndex;
+        private ITweenPreset _selectedPreset;
+        private UIRecipeKind _selectedRecipe = UIRecipeKind.UIAppear;
+        private bool _showingRecipes = true;
+        private bool _initialized;
+
+        private GameObject PreviewTarget => targetDropdown.value == 1 ? animatedText.gameObject : presetImage.gameObject;
 
         private void Awake()
         {
-            if (_presetImage != null)
-            {
-                _imageState = UIStateSnapshot.Capture(_presetImage.gameObject);
-            }
-
-            if (_animatedText != null)
-            {
-                _textState = UIStateSnapshot.Capture(_animatedText.gameObject);
-            }
+            _imageState = UIStateSnapshot.Capture(presetImage.gameObject);
+            _textState = UIStateSnapshot.Capture(animatedText.gameObject);
+            WireControls();
+            BuildContent();
         }
 
         private void OnEnable()
         {
             ResetTargets();
-            UpdateSelectionLabel();
+            ShowRecipes();
+            instructionsPanel.SetContent("TweenHelper 2D Showcase", "Choose UI Recipes or the 2D Preset Library. Select an entry, choose Image or Text, then replay or reset the preview.");
         }
 
-        private void OnDisable()
-        {
-            StopPlayback();
-        }
+        private void OnDisable() => StopPlayback();
 
 #if ENABLE_LEGACY_INPUT_MANAGER
         private void Update()
         {
             if (Input.GetKeyDown(KeyCode.Space)) ReplaySelected();
-            if (Input.GetKeyDown(KeyCode.DownArrow)) SelectNext();
-            if (Input.GetKeyDown(KeyCode.UpArrow)) SelectPrevious();
         }
 #endif
 
-        [ContextMenu("Replay Selected")]
+        private void WireControls()
+        {
+            recipesTabButton.onClick.AddListener(ShowRecipes);
+            presetsTabButton.onClick.AddListener(ShowPresets);
+            replayButton.onClick.AddListener(ReplaySelected);
+            resetButton.onClick.AddListener(ResetPreview);
+            copyButton.onClick.AddListener(CopyCodeExample);
+            searchInput.onValueChanged.AddListener(_ => RefreshPresetRows());
+            familyDropdown.onValueChanged.AddListener(_ => RefreshPresetRows());
+            targetDropdown.onValueChanged.AddListener(_ => ChangeTarget());
+        }
+
+        private void BuildContent()
+        {
+            if (_initialized) return;
+            _initialized = true;
+
+            for (int i = 0; i < Recipes.Length; i++)
+            {
+                var definition = Recipes[i];
+                var card = Instantiate(recipeCardPrefab, recipeContent);
+                card.Configure(definition.Kind, definition.Description, SelectRecipe);
+            }
+
+            TweenPresetRegistry.ScanForCodePresets();
+            var presets = UIPresetCompatibility.GetSuitablePresets(TweenPresetRegistry.Presets);
+            for (int i = 0; i < presets.Count; i++)
+            {
+                var row = Instantiate(presetListItemPrefab, presetContent);
+                row.Configure(presets[i], SelectPreset);
+                _presetRows.Add(row);
+            }
+
+            BuildFamilyOptions(presets);
+            if (presets.Count > 0) SelectPreset(presets[0], false);
+            RefreshPresetRows();
+
+            if (presets.Count != UIPresetCompatibility.ExpectedPresetCount)
+            {
+                Debug.LogWarning($"TweenHelper 2D Showcase expected {UIPresetCompatibility.ExpectedPresetCount} UI-suitable presets but discovered {presets.Count}. Review UIPresetCompatibility after changing the registry.");
+            }
+        }
+
+        private void BuildFamilyOptions(List<ITweenPreset> presets)
+        {
+            var families = new SortedSet<string>(StringComparer.Ordinal) { "All families" };
+            for (int i = 0; i < presets.Count; i++) families.Add(PresetFamilyClassifier.GetFamilyName(presets[i].PresetName));
+            familyDropdown.ClearOptions();
+            familyDropdown.AddOptions(new List<string>(families));
+            familyDropdown.value = 0;
+        }
+
+        public void ShowRecipes()
+        {
+            StopPlayback();
+            ResetTargets();
+            _showingRecipes = true;
+            recipesPanel.SetActive(true);
+            presetsPanel.SetActive(false);
+            SelectRecipe(_selectedRecipe, false);
+        }
+
+        public void ShowPresets()
+        {
+            StopPlayback();
+            ResetTargets();
+            _showingRecipes = false;
+            recipesPanel.SetActive(false);
+            presetsPanel.SetActive(true);
+            RefreshPresetRows();
+            if (_selectedPreset != null) UpdatePresetDetails(_selectedPreset);
+        }
+
         public void ReplaySelected()
         {
-            StopPlayback();
-            ResetTargets();
-
-            _playRoutine = StartCoroutine(PlaySelectedStep());
+            if (_showingRecipes) PlayRecipe(_selectedRecipe);
+            else PlaySelectedPreset();
         }
 
-        [ContextMenu("Select Next")]
-        public void SelectNext()
+        public void ResetPreview()
         {
             StopPlayback();
             ResetTargets();
-            _selectedStepIndex = (_selectedStepIndex + 1) % ShowcaseStepCount;
-            UpdateSelectionLabel();
         }
 
-        [ContextMenu("Select Previous")]
-        public void SelectPrevious()
+        public void CopyCodeExample() => GUIUtility.systemCopyBuffer = codeExampleText.text;
+
+        private void ChangeTarget()
+        {
+            ResetPreview();
+            RefreshPresetRows();
+        }
+
+        private void SelectRecipe(UIRecipeKind recipe) => SelectRecipe(recipe, true);
+
+        private void SelectRecipe(UIRecipeKind recipe, bool play)
+        {
+            _selectedRecipe = recipe;
+            var definition = Recipes[(int)recipe];
+            selectionNameText.text = recipe.ToString();
+            selectionDescriptionText.text = definition.Description;
+            codeExampleText.text = $"target.{recipe}();";
+            if (play) PlayRecipe(recipe);
+        }
+
+        private void SelectPreset(ITweenPreset preset) => SelectPreset(preset, true);
+
+        private void SelectPreset(ITweenPreset preset, bool play)
+        {
+            _selectedPreset = preset;
+            UpdatePresetDetails(preset);
+            if (play) PlaySelectedPreset();
+        }
+
+        private void UpdatePresetDetails(ITweenPreset preset)
+        {
+            selectionNameText.text = preset.PresetName;
+            selectionDescriptionText.text = preset.Description;
+            codeExampleText.text = $"target.Tween().Preset<{preset.GetType().Name}>().Play();";
+        }
+
+        private void PlaySelectedPreset()
+        {
+            if (_selectedPreset == null || !_selectedPreset.CanApplyTo(PreviewTarget)) return;
+            StopPlayback();
+            ResetTarget(PreviewTarget);
+            _activeTween = PreviewTarget.Tween().Preset(_selectedPreset).Play();
+        }
+
+        private TweenHandle PlayRecipe(UIRecipeKind recipe)
         {
             StopPlayback();
-            ResetTargets();
-            _selectedStepIndex = (_selectedStepIndex - 1 + ShowcaseStepCount) % ShowcaseStepCount;
-            UpdateSelectionLabel();
+            var target = PreviewTarget;
+            ResetTarget(target);
+
+            switch (recipe)
+            {
+                case UIRecipeKind.UIAppear: return _activeTween = target.UIAppear();
+                case UIRecipeKind.UIAppearSoft: return _activeTween = target.UIAppearSoft();
+                case UIRecipeKind.UIDisappear: return _activeTween = target.UIDisappear();
+                case UIRecipeKind.UIDisappearSoft: return _activeTween = target.UIDisappearSoft();
+                case UIRecipeKind.UIHover: return _activeTween = target.UIHover(hoverColor: GetHoverColor(target));
+                case UIRecipeKind.UIHoverSoft: return _activeTween = target.UIHoverSoft(hoverColor: GetHoverColor(target));
+                case UIRecipeKind.UIPress: return _activeTween = target.UIPress();
+                case UIRecipeKind.UIPressHard: return _activeTween = target.UIPressHard();
+                case UIRecipeKind.UIAttention: return _activeTween = target.UIAttention();
+                case UIRecipeKind.UIAttentionSoft: return _activeTween = target.UIAttentionSoft();
+                case UIRecipeKind.UIAttentionHard: return _activeTween = target.UIAttentionHard();
+                case UIRecipeKind.UIDisabled: return _activeTween = target.UIDisabled(disabledColor: GetDisabledColor(target));
+                case UIRecipeKind.UIEnabled:
+                    target.UIDisabled(0.01f, GetDisabledColor(target)).Complete();
+                    return _activeTween = target.UIEnabled();
+                default: return null;
+            }
         }
 
-        internal int AuditStepCount => ShowcaseStepCount;
+        private Color GetHoverColor(GameObject target) => target == animatedText.gameObject ? textHoverColor : imageHoverColor;
 
-        internal string GetAuditStepLabel(int index) => GetStep(NormalizeStepIndex(index)).Label;
+        private Color GetDisabledColor(GameObject target) => target == animatedText.gameObject ? disabledTextColor : new Color(0.45f, 0.45f, 0.45f, 0.55f);
+
+        private void RefreshPresetRows()
+        {
+            string search = searchInput.text ?? string.Empty;
+            string family = familyDropdown.options.Count > 0 ? familyDropdown.options[familyDropdown.value].text : "All families";
+            int visible = 0;
+            ITweenPreset firstVisiblePreset = null;
+            bool selectedPresetIsVisible = false;
+
+            for (int i = 0; i < _presetRows.Count; i++)
+            {
+                var preset = _presetRows[i].Preset;
+                bool matchesSearch = preset.PresetName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0;
+                bool matchesFamily = family == "All families" || PresetFamilyClassifier.GetFamilyName(preset.PresetName) == family;
+                bool compatible = preset.CanApplyTo(PreviewTarget);
+                bool show = matchesSearch && matchesFamily && compatible;
+                _presetRows[i].gameObject.SetActive(show);
+                if (!show) continue;
+
+                firstVisiblePreset ??= preset;
+                selectedPresetIsVisible |= preset == _selectedPreset;
+                visible++;
+            }
+
+            visibleCountText.text = $"{visible} / {_presetRows.Count} presets";
+            if (!_showingRecipes && !selectedPresetIsVisible && firstVisiblePreset != null)
+            {
+                SelectPreset(firstVisiblePreset, false);
+            }
+        }
+
+        private void StopPlayback()
+        {
+            _activeTween?.Kill();
+            _activeTween = null;
+            KillTargetTweens(presetImage.gameObject);
+            KillTargetTweens(animatedText.gameObject);
+        }
+
+        private void ResetTargets()
+        {
+            _imageState.Apply(presetImage.gameObject);
+            _textState.Apply(animatedText.gameObject);
+        }
+
+        private void ResetTarget(GameObject target)
+        {
+            if (target == animatedText.gameObject) _textState.Apply(target);
+            else _imageState.Apply(target);
+        }
+
+        internal int AuditStepCount => Recipes.Length;
+
+        internal string GetAuditStepLabel(int index) => Recipes[NormalizeStepIndex(index)].Kind.ToString();
 
         internal TweenHandle PlayAuditStep(int index)
         {
-            StopPlayback();
-            ResetTargets();
-
-            _selectedStepIndex = NormalizeStepIndex(index);
-            var step = GetStep(_selectedStepIndex);
-            step.ResetBeforePlay?.Invoke();
-            _activeTween = step.Play?.Invoke();
-            return _activeTween;
+            targetDropdown.SetValueWithoutNotify(0);
+            return PlayRecipe(Recipes[NormalizeStepIndex(index)].Kind);
         }
 
-        internal void ResetAuditState()
-        {
-            StopPlayback();
-            ResetTargets();
-        }
+        internal void ResetAuditState() => ResetPreview();
 
-        internal AnimationPresetDisplay.ResetVerificationResult VerifyAuditResetState(
-            float positionTolerance = 0.001f,
-            float scaleTolerance = 0.001f,
-            float rotationAngleTolerance = 0.1f,
-            float colorTolerance = 0.01f)
+        internal AnimationPresetDisplay.ResetVerificationResult VerifyAuditResetState(float positionTolerance = 0.001f, float scaleTolerance = 0.001f, float rotationAngleTolerance = 0.1f, float colorTolerance = 0.01f)
         {
-            var imageResult = VerifyTargetState(_presetImage != null ? _presetImage.gameObject : null, _imageState,
-                "Image", positionTolerance, scaleTolerance, rotationAngleTolerance, colorTolerance);
-            var textResult = VerifyTargetState(_animatedText != null ? _animatedText.gameObject : null, _textState,
-                "Text", positionTolerance, scaleTolerance, rotationAngleTolerance, colorTolerance);
-
+            var imageResult = VerifyTargetState(presetImage.gameObject, _imageState, "Image", positionTolerance, scaleTolerance, rotationAngleTolerance, colorTolerance);
+            var textResult = VerifyTargetState(animatedText.gameObject, _textState, "Text", positionTolerance, scaleTolerance, rotationAngleTolerance, colorTolerance);
             return new AnimationPresetDisplay.ResetVerificationResult
             {
                 TransformMatches = imageResult.TransformMatches && textResult.TransformMatches,
@@ -135,186 +336,47 @@ namespace LB.TweenHelper.Demo
             };
         }
 
-        private IEnumerator PlaySelectedStep()
-        {
-            var step = GetStep(_selectedStepIndex);
-            SetLabel($"{step.Label}  |  Running");
-
-            step.ResetBeforePlay?.Invoke();
-            _activeTween = step.Play?.Invoke();
-
-            if (_activeTween?.Tween == null)
-            {
-                yield break;
-            }
-
-            while (_activeTween.IsActive && !_activeTween.IsComplete)
-            {
-                yield return null;
-            }
-
-            _activeTween = null;
-            SetLabel($"{step.Label}  |  Ready");
-            yield return new WaitForSeconds(_stepDelay);
-            _playRoutine = null;
-        }
-
-        private void SetLabel(string value)
-        {
-            if (_presetNameText != null)
-            {
-                _presetNameText.text = value;
-            }
-        }
-
-        private void UpdateSelectionLabel()
-        {
-            var step = GetStep(_selectedStepIndex);
-#if ENABLE_LEGACY_INPUT_MANAGER
-            SetLabel($"{step.Label}\nSpace: Replay | Up/Down: Browse presets");
-#else
-            SetLabel($"{step.Label}\nUse the ShowcaseManager2D context menu to replay or browse presets");
-#endif
-        }
-
-        private void ResetTargets()
-        {
-            if (_presetImage != null)
-            {
-                _imageState.Apply(_presetImage.gameObject);
-            }
-
-            if (_animatedText != null)
-            {
-                _textState.Apply(_animatedText.gameObject);
-            }
-        }
-
-        private void StopPlayback()
-        {
-            if (_playRoutine != null)
-            {
-                StopCoroutine(_playRoutine);
-                _playRoutine = null;
-            }
-
-            _activeTween?.Kill();
-            _activeTween = null;
-            KillTargetTweens(_presetImage != null ? _presetImage.gameObject : null);
-            KillTargetTweens(_animatedText != null ? _animatedText.gameObject : null);
-        }
-
         private static int NormalizeStepIndex(int index)
         {
-            int normalized = index % ShowcaseStepCount;
-            return normalized < 0 ? normalized + ShowcaseStepCount : normalized;
+            int normalized = index % Recipes.Length;
+            return normalized < 0 ? normalized + Recipes.Length : normalized;
         }
 
         private static void KillTargetTweens(GameObject target)
         {
-            if (target == null) return;
-
             DOTween.Kill(target, false);
             DOTween.Kill(target.transform, false);
-
             var graphic = target.GetComponent<Graphic>();
             if (graphic != null) DOTween.Kill(graphic, false);
-
-            var text = target.GetComponent<TMP_Text>();
-            if (text != null) DOTween.Kill(text, false);
-
             var canvasGroup = target.GetComponent<CanvasGroup>();
             if (canvasGroup != null) DOTween.Kill(canvasGroup, false);
         }
 
-        private static AnimationPresetDisplay.ResetVerificationResult VerifyTargetState(
-            GameObject target,
-            UIStateSnapshot expected,
-            string label,
-            float positionTolerance,
-            float scaleTolerance,
-            float rotationAngleTolerance,
-            float colorTolerance)
+        private static AnimationPresetDisplay.ResetVerificationResult VerifyTargetState(GameObject target, UIStateSnapshot expected, string label, float positionTolerance, float scaleTolerance, float rotationAngleTolerance, float colorTolerance)
         {
-            if (target == null)
-            {
-                return new AnimationPresetDisplay.ResetVerificationResult
-                {
-                    TransformMatches = true,
-                    AlphaMatches = true,
-                    NoActiveTweens = true
-                };
-            }
-
-            float positionError = target.transform is RectTransform rectTransform
-                ? Vector2.Distance(rectTransform.anchoredPosition, expected.AnchoredPosition)
-                : 0f;
+            float positionError = Vector2.Distance(((RectTransform)target.transform).anchoredPosition, expected.AnchoredPosition);
             float scaleError = Vector3.Distance(target.transform.localScale, expected.Scale);
-            float rotationError = Quaternion.Angle(target.transform.localRotation, Quaternion.Euler(expected.EulerAngles));
-            bool transformMatches = positionError <= positionTolerance &&
-                                    scaleError <= scaleTolerance &&
-                                    rotationError <= rotationAngleTolerance;
-
-            bool visualMatches = true;
-            string details = "";
-            if (expected.HasColor && UIStateSnapshot.TryGetColor(target, out var color))
-            {
-                float colorError = Mathf.Max(
-                    Mathf.Abs(color.r - expected.Color.r),
-                    Mathf.Abs(color.g - expected.Color.g),
-                    Mathf.Abs(color.b - expected.Color.b),
-                    Mathf.Abs(color.a - expected.Color.a));
-                if (colorError > colorTolerance)
-                {
-                    visualMatches = false;
-                    details += $"{label} color mismatch ({color} != {expected.Color}). ";
-                }
-            }
-
-            if (expected.HasCanvasGroup)
-            {
-                var canvasGroup = target.GetComponent<CanvasGroup>();
-                if (canvasGroup == null || Mathf.Abs(canvasGroup.alpha - expected.CanvasAlpha) > colorTolerance)
-                {
-                    visualMatches = false;
-                    details += $"{label} CanvasGroup alpha mismatch. ";
-                }
-            }
-
-            bool noActiveTweens = !HasActiveTargetTweens(target);
-            if (!transformMatches)
-            {
-                details += $"{label} transform mismatch (pos={positionError:F4}, scale={scaleError:F4}, rot={rotationError:F3}). ";
-            }
-            if (!noActiveTweens)
-            {
-                details += $"{label} still has active tweens. ";
-            }
-
+            float rotationError = Quaternion.Angle(target.transform.localRotation, expected.Rotation);
+            bool transformMatches = positionError <= positionTolerance && scaleError <= scaleTolerance && rotationError <= rotationAngleTolerance;
+            var graphic = target.GetComponent<Graphic>();
+            float colorError = graphic != null ? MaxColorDifference(graphic.color, expected.Color) : 0f;
+            bool colorMatches = colorError <= colorTolerance;
+            bool noActiveTweens = !DOTween.IsTweening(target) && !DOTween.IsTweening(target.transform) && (graphic == null || !DOTween.IsTweening(graphic));
             return new AnimationPresetDisplay.ResetVerificationResult
             {
                 TransformMatches = transformMatches,
-                AlphaMatches = visualMatches,
+                AlphaMatches = colorMatches,
                 NoActiveTweens = noActiveTweens,
                 PositionError = positionError,
                 ScaleError = scaleError,
                 RotationAngleError = rotationError,
-                Details = details.Trim()
+                Details = transformMatches && colorMatches && noActiveTweens ? string.Empty : $"{label} reset mismatch."
             };
         }
 
-        private static bool HasActiveTargetTweens(GameObject target)
+        private static float MaxColorDifference(Color current, Color expected)
         {
-            if (DOTween.IsTweening(target) || DOTween.IsTweening(target.transform)) return true;
-
-            var graphic = target.GetComponent<Graphic>();
-            if (graphic != null && DOTween.IsTweening(graphic)) return true;
-
-            var text = target.GetComponent<TMP_Text>();
-            if (text != null && DOTween.IsTweening(text)) return true;
-
-            var canvasGroup = target.GetComponent<CanvasGroup>();
-            return canvasGroup != null && DOTween.IsTweening(canvasGroup);
+            return Mathf.Max(Mathf.Abs(current.r - expected.r), Mathf.Abs(current.g - expected.g), Mathf.Abs(current.b - expected.b), Mathf.Abs(current.a - expected.a));
         }
 
         private static string JoinDetails(string first, string second)
@@ -324,167 +386,47 @@ namespace LB.TweenHelper.Demo
             return first + " | " + second;
         }
 
-        private ShowcaseStep GetStep(int index)
+        private readonly struct RecipeDefinition
         {
-            switch (index)
+            public readonly UIRecipeKind Kind;
+            public readonly string Description;
+
+            public RecipeDefinition(UIRecipeKind kind, string description)
             {
-                case 0:
-                    return new ShowcaseStep("Image.UIAppear", ResetImage, () => _presetImage != null ? _presetImage.UIAppear() : null);
-                case 1:
-                    return new ShowcaseStep("Image.UIHover", ResetImage, () => _presetImage != null ? _presetImage.UIHover(hoverColor: _imageHoverColor) : null);
-                case 2:
-                    return new ShowcaseStep("Image.UIPress", ResetImage, () => _presetImage != null ? _presetImage.UIPress() : null);
-                case 3:
-                    return new ShowcaseStep("Image.UIAttention", ResetImage, () => _presetImage != null ? _presetImage.UIAttention() : null);
-                case 4:
-                    return new ShowcaseStep("Image.UIDisappear", ResetImage, () => _presetImage != null ? _presetImage.UIDisappear() : null);
-                case 5:
-                    return new ShowcaseStep("Text.UIAppearSoft", ResetText, () => _animatedText != null ? _animatedText.UIAppearSoft() : null);
-                case 6:
-                    return new ShowcaseStep("Text.UIHoverSoft", ResetText, () => _animatedText != null ? _animatedText.UIHoverSoft(hoverColor: _textHoverColor) : null);
-                case 7:
-                    return new ShowcaseStep("Text.UIPress", ResetText, () => _animatedText != null ? _animatedText.UIPress() : null);
-                case 8:
-                    return new ShowcaseStep("Text.UIAttentionSoft", ResetText, () => _animatedText != null ? _animatedText.UIAttentionSoft() : null);
-                case 9:
-                    return new ShowcaseStep("Text.UIDisabled", ResetText, () => _animatedText != null ? _animatedText.UIDisabled(disabledColor: _disabledTextColor) : null);
-                case 10:
-                    return new ShowcaseStep("Text.UIEnabled", ResetText, () => _animatedText != null ? _animatedText.UIEnabled() : null);
-                default:
-                    return new ShowcaseStep("Image.UIAppear", ResetImage, () => _presetImage != null ? _presetImage.UIAppear() : null);
+                Kind = kind;
+                Description = description;
             }
         }
 
-        private void ResetImage()
+        private readonly struct UIStateSnapshot
         {
-            if (_presetImage != null)
+            public readonly Vector3 Scale;
+            public readonly Quaternion Rotation;
+            public readonly Vector2 AnchoredPosition;
+            public readonly Color Color;
+
+            private UIStateSnapshot(Vector3 scale, Quaternion rotation, Vector2 anchoredPosition, Color color)
             {
-                _imageState.Apply(_presetImage.gameObject);
+                Scale = scale;
+                Rotation = rotation;
+                AnchoredPosition = anchoredPosition;
+                Color = color;
             }
-        }
-
-        private void ResetText()
-        {
-            if (_animatedText != null)
-            {
-                _textState.Apply(_animatedText.gameObject);
-            }
-        }
-
-        private const int ShowcaseStepCount = 11;
-
-        private readonly struct ShowcaseStep
-        {
-            public readonly string Label;
-            public readonly System.Action ResetBeforePlay;
-            public readonly System.Func<TweenHandle> Play;
-
-            public ShowcaseStep(string label, System.Action resetBeforePlay, System.Func<TweenHandle> play)
-            {
-                Label = label;
-                ResetBeforePlay = resetBeforePlay;
-                Play = play;
-            }
-        }
-
-        private struct UIStateSnapshot
-        {
-            public Vector3 Scale;
-            public Vector3 EulerAngles;
-            public Vector2 AnchoredPosition;
-            public Color Color;
-            public bool HasColor;
-            public float CanvasAlpha;
-            public bool HasCanvasGroup;
 
             public static UIStateSnapshot Capture(GameObject target)
             {
-                var snapshot = new UIStateSnapshot
-                {
-                    Scale = target.transform.localScale,
-                    EulerAngles = target.transform.localEulerAngles
-                };
-
-                if (target.transform is RectTransform rectTransform)
-                {
-                    snapshot.AnchoredPosition = rectTransform.anchoredPosition;
-                }
-
-                if (TryGetColor(target, out var color))
-                {
-                    snapshot.HasColor = true;
-                    snapshot.Color = color;
-                }
-
-                var canvasGroup = target.GetComponent<CanvasGroup>();
-                if (canvasGroup != null)
-                {
-                    snapshot.HasCanvasGroup = true;
-                    snapshot.CanvasAlpha = canvasGroup.alpha;
-                }
-
-                return snapshot;
+                var graphic = target.GetComponent<Graphic>();
+                return new UIStateSnapshot(target.transform.localScale, target.transform.localRotation, ((RectTransform)target.transform).anchoredPosition, graphic.color);
             }
 
             public void Apply(GameObject target)
             {
                 target.transform.localScale = Scale;
-                target.transform.localEulerAngles = EulerAngles;
-
-                if (target.transform is RectTransform rectTransform)
-                {
-                    rectTransform.anchoredPosition = AnchoredPosition;
-                }
-
-                if (HasColor)
-                {
-                    TrySetColor(target, Color);
-                }
-
-                if (HasCanvasGroup)
-                {
-                    var canvasGroup = target.GetComponent<CanvasGroup>();
-                    if (canvasGroup != null)
-                    {
-                        canvasGroup.alpha = CanvasAlpha;
-                    }
-                }
-            }
-
-            internal static bool TryGetColor(GameObject target, out Color color)
-            {
-                var graphic = target.GetComponent<Graphic>();
-                if (graphic != null)
-                {
-                    color = graphic.color;
-                    return true;
-                }
-
-                var tmpText = target.GetComponent<TMP_Text>();
-                if (tmpText != null)
-                {
-                    color = tmpText.color;
-                    return true;
-                }
-
-                color = default;
-                return false;
-            }
-
-            private static void TrySetColor(GameObject target, Color color)
-            {
-                var graphic = target.GetComponent<Graphic>();
-                if (graphic != null)
-                {
-                    graphic.color = color;
-                    return;
-                }
-
-                var tmpText = target.GetComponent<TMP_Text>();
-                if (tmpText != null)
-                {
-                    tmpText.color = color;
-                }
+                target.transform.localRotation = Rotation;
+                ((RectTransform)target.transform).anchoredPosition = AnchoredPosition;
+                target.GetComponent<Graphic>().color = Color;
+                var canvasGroup = target.GetComponent<CanvasGroup>();
+                if (canvasGroup != null) canvasGroup.alpha = 1f;
             }
         }
     }
