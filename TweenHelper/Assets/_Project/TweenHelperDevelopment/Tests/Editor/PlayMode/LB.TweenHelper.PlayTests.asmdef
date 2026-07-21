@@ -1,0 +1,22 @@
+{
+    "name": "LB.TweenHelper.PlayTests",
+    "rootNamespace": "LB.TweenHelper.Tests.PlayMode",
+    "references": [
+        "LB.TweenHelper.Runtime",
+        "DOTween.Modules"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "DOTween.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

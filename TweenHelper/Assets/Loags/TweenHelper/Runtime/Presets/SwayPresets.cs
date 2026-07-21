@@ -1,0 +1,112 @@
+using DG.Tweening;
+using UnityEngine;
+
+namespace LB.TweenHelper
+{
+    /// <summary>
+    /// Gentle horizontal sway loop moving the target left and right.
+    /// <para>
+    /// Creates a sequence loop alternating between rightward (+0.35) and leftward (-0.35) relative X movements.
+    /// Each leg takes half the total duration; the cycle repeats indefinitely until stopped.
+    /// </para>
+    /// <para>
+    /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 3.5s | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Easing override:</b> Primary ease controls rightward leg; secondary ease controls leftward leg.<br/>
+    /// <b>Strength override:</b> Multiplies sway amplitude (default 1.0).
+    /// </para>
+    /// <para>
+    /// <b>Use cases:</b> Pendulum motion, hanging object sway, idle animation, ambient horizontal drift.
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("Sway").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SwayPreset : CodePreset
+    {
+        public override string PresetName => "Sway";
+        public override string Description => "Gentle horizontal sway loop";
+        public override float DefaultDuration => 3.5f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            var strength = ResolveStrength(options);
+            var t = target.transform;
+            var halfDur = GetDuration(duration, options) * 0.5f;
+            var moveRightEase = options.Ease ?? Ease.InOutSine;
+            var moveLeftEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalMoveX(0.35f * strength, halfDur).SetRelative(true).SetEase(moveRightEase))
+                .Append(t.DOLocalMoveX(-0.35f * strength, halfDur).SetRelative(true).SetEase(moveLeftEase))
+                .SetLoops(-1, LoopType.Restart)
+                .WithLoopDefaults(options, target, applyDelayThisCycle: true)
+                .SetEase(Ease.Linear);
+        }
+    }
+
+    /// <summary>
+    /// Internal factory for Sway variants sharing the same sequence loop structure.
+    /// </summary>
+    internal static class SwayFactory
+    {
+        public static Tween Create(GameObject target, float amplitude, float duration, TweenOptions options)
+        {
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            var t = target.transform;
+            var halfDur = duration * 0.5f;
+            var moveRightEase = options.Ease ?? Ease.InOutSine;
+            var moveLeftEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
+
+            return DOTween.Sequence()
+                .Append(t.DOLocalMoveX(amplitude * strength, halfDur).SetRelative(true).SetEase(moveRightEase))
+                .Append(t.DOLocalMoveX(-amplitude * strength, halfDur).SetRelative(true).SetEase(moveLeftEase))
+                .SetLoops(-1, LoopType.Restart)
+                .WithLoopDefaults(options, target, applyDelayThisCycle: true)
+                .SetEase(Ease.Linear);
+        }
+    }
+
+    /// <summary>
+    /// Soft horizontal sway loop with small amplitude.
+    /// <para>
+    /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 3.0s | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Strength override:</b> Multiplies sway amplitude (default 1.0).
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SwaySoft").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SwaySoftPreset : CodePreset
+    {
+        public override string PresetName => "SwaySoft";
+        public override string Description => "Soft horizontal sway loop";
+        public override float DefaultDuration => 3.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SwayFactory.Create(target, 0.25f, GetDuration(duration, options), options);
+        }
+    }
+
+    /// <summary>
+    /// Wide horizontal sway loop with large amplitude.
+    /// <para>
+    /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 5.0s | <b>Default ease:</b> InOutSine<br/>
+    /// <b>Strength override:</b> Multiplies sway amplitude (default 1.0).
+    /// </para>
+    /// Usage: <c>transform.Tween().Preset("SwayHard").Play();</c>
+    /// </summary>
+    [AutoRegisterPreset]
+    public class SwayHardPreset : CodePreset
+    {
+        public override string PresetName => "SwayHard";
+        public override string Description => "Wide horizontal sway loop";
+        public override float DefaultDuration => 5.0f;
+
+
+        public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+        {
+            return SwayFactory.Create(target, 0.8f, GetDuration(duration, options), options);
+        }
+    }
+}
