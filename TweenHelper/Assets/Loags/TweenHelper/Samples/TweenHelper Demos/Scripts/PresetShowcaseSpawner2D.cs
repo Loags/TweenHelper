@@ -214,9 +214,14 @@ namespace LB.TweenHelper.Demo
 
         private void UpdatePresetDetails(ITweenPreset preset)
         {
+            float? previewStrength = UIPresetCompatibility.GetCanvasPreviewStrength(preset);
             selectionNameText.text = preset.PresetName;
-            selectionDescriptionText.text = preset.Description;
-            codeExampleText.text = $"target.Tween().Preset<{preset.GetType().Name}>().Play();";
+            selectionDescriptionText.text = previewStrength.HasValue
+                ? $"{preset.Description} | Canvas preview uses {previewStrength.Value:0.#}x movement strength"
+                : preset.Description;
+            codeExampleText.text = previewStrength.HasValue
+                ? $"target.Tween().WithOptions(TweenOptions.WithStrength({previewStrength.Value:0.#}f)).Preset<{preset.GetType().Name}>().Play();"
+                : $"target.Tween().Preset<{preset.GetType().Name}>().Play();";
         }
 
         private void PlaySelectedPreset()
@@ -224,7 +229,10 @@ namespace LB.TweenHelper.Demo
             if (_selectedPreset == null || !_selectedPreset.CanApplyTo(PreviewTarget)) return;
             StopPlayback();
             ResetTarget(PreviewTarget);
-            _activeTween = PreviewTarget.Tween().Preset(_selectedPreset).Play();
+            var builder = PreviewTarget.Tween();
+            float? previewStrength = UIPresetCompatibility.GetCanvasPreviewStrength(_selectedPreset);
+            if (previewStrength.HasValue) builder.WithOptions(TweenOptions.WithStrength(previewStrength.Value));
+            _activeTween = builder.Preset(_selectedPreset).Play();
         }
 
         private TweenHandle PlayRecipe(UIRecipeKind recipe)
