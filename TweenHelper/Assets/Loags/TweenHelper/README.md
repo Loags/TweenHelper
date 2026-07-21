@@ -85,7 +85,6 @@ No settings asset is required. TweenHelper uses safe in-memory defaults when `Re
 - [Lifecycle and option semantics](Documentation/Lifecycle.md)
 - [Preset catalog](Documentation/PresetCatalog.md)
 - [Changelog](CHANGELOG.md)
-- [Asset Store submission notes](Documentation/AssetStoreSubmission.md)
 - [Third-party notices](Third-Party%20Notices.txt)
 
 ## License

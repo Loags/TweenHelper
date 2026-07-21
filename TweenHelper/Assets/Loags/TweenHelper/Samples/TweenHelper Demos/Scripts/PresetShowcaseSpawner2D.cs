@@ -170,7 +170,11 @@ namespace LB.TweenHelper.Demo
         private void UpdateSelectionLabel()
         {
             var step = GetStep(_selectedStepIndex);
-            SetLabel($"{step.Label}  |  Space: Replay  |  Up/Down: Browse");
+#if ENABLE_LEGACY_INPUT_MANAGER
+            SetLabel($"{step.Label}\nSpace: Replay | Up/Down: Browse presets");
+#else
+            SetLabel($"{step.Label}\nUse the ShowcaseManager2D context menu to replay or browse presets");
+#endif
         }
 
         private void ResetTargets()

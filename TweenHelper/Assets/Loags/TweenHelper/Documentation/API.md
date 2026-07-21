@@ -152,4 +152,4 @@ TweenHelper initializes automatically. Without `Assets/Resources/TweenHelperSett
 
 ## Sample controls
 
-Open **TweenHelper Demos** from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. When the legacy Input Manager is enabled, the 2D showcase uses Space and the arrow keys and the 3D showcase enables its fly-camera shortcuts. The public context-menu controls and `AnimationResetAuditRunner` remain available without an Input System package.
+Open **TweenHelper Demos** from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. When the legacy Input Manager is enabled, the 2D showcase uses Space and the arrow keys and the 3D showcase enables its fly-camera shortcuts. The demos do not require the Input System package.

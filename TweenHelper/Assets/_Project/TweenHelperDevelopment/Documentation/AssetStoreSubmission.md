@@ -2,7 +2,7 @@
 
 TweenHelper uses the standard Asset Store `.unitypackage` workflow. All distributable content is nested beneath the single root `Assets/Loags/TweenHelper`. The publisher name is **Loags**.
 
-The development project contains DOTween and Asset Store Publishing Tools outside that root. They are validation or external dependency content and must not be selected for the TweenHelper upload.
+The development project contains DOTween, Asset Store Publishing Tools, automated tests, and the reset-audit harness outside that root. They are validation or external dependency content and must not be selected for the TweenHelper upload.
 
 TweenHelper also uses the standard Unity UI (uGUI) and TextMesh Pro packages. The 3D demonstration materials use URP, but TweenHelper runtime code is render-pipeline independent. Preserve the appropriate Unity package dependency information during export and disclose the URP demo requirement in the listing.
 
@@ -23,12 +23,13 @@ TweenHelper requires **DOTween (HOTween v2)** version `1.3.030` or newer. DOTwee
 
 ### Static-variable Validator warning
 
-The Validator's static-variable check is intentionally conservative and reports types without proving whether their state is unsafe. TweenHelper resets all mutable runtime static state with `RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)`, including its settings cache, registry state, bootstrap state, and demo singleton references. This makes the runtime code compatible with Fast Enter Play Mode when domain reload is disabled. The demo's static family-order array is immutable, and the test-menu references are Editor-only and released when a test run finishes.
+The Validator's static-variable check is intentionally conservative and reports types without proving whether their state is unsafe. TweenHelper resets all mutable runtime static state with `RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)`, including its settings cache, registry state, bootstrap state, and demo singleton references. This makes the runtime code compatible with Fast Enter Play Mode when domain reload is disabled. The demo's static family-order array is immutable.
 
 ## Release checklist
 
 - The upload has one root folder: `Assets/Loags/TweenHelper`.
-- Runtime, Editor, Tests, Samples, and Documentation are separated beneath that root.
+- Runtime, Editor, Samples, and customer documentation are separated beneath that root.
+- Repository-only tests, reset auditing, and submission notes remain under `Assets/_Project/TweenHelperDevelopment` and are absent from the upload.
 - Every asset and folder has exactly one `.meta` file and no GUID is duplicated.
 - All custom Editor menu commands are under **Tools > TweenHelper**.
 - All public code is contained in `LB.TweenHelper` namespaces.

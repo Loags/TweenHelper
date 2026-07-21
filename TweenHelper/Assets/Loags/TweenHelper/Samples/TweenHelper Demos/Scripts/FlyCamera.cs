@@ -104,18 +104,18 @@ namespace LB.TweenHelper.Demo
 
         private void OnGUI()
         {
-            // Show controls in corner
-            GUI.Label(new Rect(10, 10, 200, 25), $"Speed: {currentSpeed:F1}");
+            GUI.Label(new Rect(10, 10, 300, 25), "TweenHelper 3D Preset Showcase");
 #if ENABLE_LEGACY_INPUT_MANAGER
-            GUI.Label(new Rect(10, 35, 400, 25), "WASD: Move | Right-Click+Mouse: Look | Q/E: Up/Down | Shift: Fast");
-#else
-            GUI.Label(new Rect(10, 35, 400, 25), "Enable the legacy Input Manager to use fly-camera controls.");
-#endif
-            GUI.Label(new Rect(10, 60, 300, 25), "Click on objects to play animations");
+            GUI.Label(new Rect(10, 35, 200, 25), $"Camera speed: {currentSpeed:F1}");
+            GUI.Label(new Rect(10, 60, 520, 25), "WASD: Move | Right-click + mouse: Look | Q/E: Down/Up | Shift: Move faster");
+            GUI.Label(new Rect(10, 85, 350, 25), "Click an object to play its animation");
 
-            // Reset controls
             var historyCount = AnimationResetManager.Instance?.HistoryCount ?? 0;
-            GUI.Label(new Rect(10, 85, 400, 25), $"R: Reset last | Shift+R: Reset all ({historyCount} in history)");
+            GUI.Label(new Rect(10, 110, 420, 25), $"R: Reset last | Shift+R: Reset all ({historyCount} in history)");
+#else
+            GUI.Label(new Rect(10, 35, 520, 25), "Enable the legacy Input Manager to use the 3D fly-camera controls.");
+            GUI.Label(new Rect(10, 60, 480, 25), "Use component context menus to play or reset demo animations.");
+#endif
         }
 
         private void OnApplicationFocus(bool hasFocus)

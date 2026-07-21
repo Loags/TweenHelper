@@ -399,7 +399,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 693583200908304723, guid: 3b6009b344bed7143b05af9da79f110a, type: 3}
       propertyPath: m_text
-      value: lorem ipsum
+      value: Animated UI Text
       objectReference: {fileID: 0}
     - target: {fileID: 693583200908304723, guid: 3b6009b344bed7143b05af9da79f110a, type: 3}
       propertyPath: m_HorizontalAlignment
@@ -522,7 +522,6 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
-  - component: {fileID: 963194230}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -648,25 +647,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!114 &963194230
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 22db535ff84a2554c9ee9386e0766a05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  baseSpeed: 8
-  minSpeed: 1
-  maxSpeed: 50
-  speedScrollSensitivity: 2
-  shiftMultiplier: 2
-  mouseSensitivity: 2
-  invertY: 0
 --- !u!1001 &1514736905
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -677,7 +657,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 693583200908304723, guid: 3b6009b344bed7143b05af9da79f110a, type: 3}
       propertyPath: m_text
-      value: lorem ipsum
+      value: 'TweenHelper 2D UI Showcase | Space: Replay | Up/Down: Browse presets'
       objectReference: {fileID: 0}
     - target: {fileID: 693583200908304723, guid: 3b6009b344bed7143b05af9da79f110a, type: 3}
       propertyPath: m_fontSize
@@ -924,14 +904,6 @@ PrefabInstance:
     - target: {fileID: 1982508382147254494, guid: bdc61b7f3c951e04e91f5efb1cad1cf5, type: 3}
       propertyPath: m_Name
       value: ShowcaseManager2D
-      objectReference: {fileID: 0}
-    - target: {fileID: 8326740192837465012, guid: bdc61b7f3c951e04e91f5efb1cad1cf5, type: 3}
-      propertyPath: mode
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8326740192837465012, guid: bdc61b7f3c951e04e91f5efb1cad1cf5, type: 3}
-      propertyPath: autoRunOnStart
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9014975369648063255, guid: bdc61b7f3c951e04e91f5efb1cad1cf5, type: 3}
       propertyPath: m_LocalPosition.x

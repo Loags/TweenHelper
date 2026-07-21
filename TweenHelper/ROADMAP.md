@@ -40,10 +40,6 @@ Assets/Loags/TweenHelper/
 |   |-- PresetBrowserWindow.cs
 |   |-- DOTweenSetupValidator.cs
 |   `-- validation and documentation tools
-|-- Tests/
-|   `-- Editor/
-|       |-- EditMode/
-|       `-- PlayMode/
 |-- Samples/
 |   `-- TweenHelper Demos/
 |       |-- Scripts/
@@ -54,11 +50,12 @@ Assets/Loags/TweenHelper/
     |-- Installation.md
     |-- API.md
     |-- Lifecycle.md
-    |-- PresetCatalog.md
-    `-- AssetStoreSubmission.md
+    `-- PresetCatalog.md
 ```
 
 Only this root is selected in Asset Store Publishing Tools. DOTween remains under `Assets/Plugins/Demigiant`, and Asset Store Publishing Tools remains under `Packages`; neither is included in the upload.
+
+Repository-only tests, reset-audit tooling, and submission notes live under `Assets/_Project/TweenHelperDevelopment`. They compile against the distributable assemblies but are excluded from the `.unitypackage`.
 
 ## M1 - Stabilize animations
 
@@ -71,7 +68,7 @@ Implemented:
 - Defined cancellation, external kill, timeout, and normal completion behavior.
 - Replaced callback-created infinite loops with killable DOTween sequences.
 - Fixed fade-target compatibility and Unity object null handling.
-- Added reusable reset auditing to both demo scenes.
+- Added repository-only reset auditing that targets both shipped demo scenes without being included in the export.
 - Fixed 2D discovery, reset state capture, report naming, and expected counts.
 
 Existing evidence from the previous DOTween baseline:
@@ -94,7 +91,8 @@ Implemented:
 - Moved all TweenHelper-owned content under `Assets/Loags/TweenHelper`.
 - Removed `package.json`, `Samples~`, `Documentation~`, and Package Manager sample-import tooling.
 - Preserved existing script, assembly, scene, prefab, and material GUIDs.
-- Kept Runtime, Editor, Tests, Samples, and Documentation separated.
+- Kept Runtime, Editor, Samples, and customer documentation separated inside the distribution root.
+- Moved automated tests, reset-audit tooling, and submission notes to `Assets/_Project/TweenHelperDevelopment`.
 - Kept DOTween, Asset Store Publishing Tools, project settings, generated files, and unrelated project content outside the distribution root.
 - Removed the demo assembly's Input System package reference.
 - Guarded optional legacy-input shortcuts so demos do not throw when the legacy Input Manager is disabled.
@@ -103,13 +101,15 @@ Implemented:
 Exit gate:
 
 - [ ] Confirm Unity imports the new root without missing scripts or references.
-- [ ] Confirm all assets and folders have one `.meta` file and no duplicate GUIDs.
+- [x] Confirm all assets and folders have one `.meta` file and no duplicate GUIDs.
 - [ ] Export the exact `.unitypackage` from only `Assets/Loags/TweenHelper`.
 - [ ] Inspect the exported content list for files outside the root.
 
 ## M3 - Critical tests
 
 Status: implemented on the previous DOTween baseline; upgraded-DOTween run remains.
+
+The suites live under `Assets/_Project/TweenHelperDevelopment/Tests` so they compile against the distributable assemblies without being included in the Asset Store upload.
 
 EditMode coverage:
 
