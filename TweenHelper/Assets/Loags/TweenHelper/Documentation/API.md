@@ -173,6 +173,14 @@ if (preset != null && preset.CanApplyTo(gameObject))
 
 For a dynamic name, use `TweenPresetRegistry.GetPresetByName(name)` or `TweenPresetRegistry.PlayByName(name, target)`.
 
+## Tween lifecycle
+
+A finite tween completes when DOTween invokes its completion callback. Killing a tween is a distinct terminal event and does not imply normal completion. Infinite loops never complete normally, so retain their `TweenHandle` and kill or cancel them during owner teardown.
+
+Built tweens are linked to their target GameObject. Destroying the target kills the tween through DOTween's link behavior. Owners should still explicitly kill long-running or looping handles from their normal teardown path.
+
+`TweenAsync.AwaitCompletionWithTimeout` returns `true` for normal completion and `false` for an external kill or timeout. A timeout kills the active tween. Cancellation from the caller's token kills the tween and propagates `OperationCanceledException`.
+
 ## Settings and initialization
 
 TweenHelper initializes automatically. Without `Assets/Resources/TweenHelperSettings.asset`, it uses in-memory defaults. Use **Tools > TweenHelper > Create Settings Asset** only when the project needs custom defaults, and use **Tools > TweenHelper > Reinitialize System** after changing initialization-sensitive settings.

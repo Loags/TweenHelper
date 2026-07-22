@@ -29,7 +29,7 @@ The Validator's static-variable check is intentionally conservative and reports 
 
 - The upload has one root folder: `Assets/Loags/TweenHelper`.
 - Runtime, Editor, Samples, and customer documentation are separated beneath that root.
-- Repository-only tests, reset auditing, and submission notes remain under `Assets/_Project/TweenHelperDevelopment` and are absent from the upload.
+- Repository-only tests, reset auditing, preset integrity tools, and submission notes remain under `Assets/_Project/TweenHelperDevelopment` and are absent from the upload.
 - Every asset and folder has exactly one `.meta` file and no GUID is duplicated.
 - All custom Editor menu commands are under **Tools > TweenHelper**.
 - All public code is contained in `LB.TweenHelper` namespaces.
@@ -37,8 +37,12 @@ The Validator's static-variable check is intentionally conservative and reports 
 - Asset Store Publishing Tools is absent from the upload.
 - The package contains no executables, archives, generated libraries, project settings, temporary files, or unrelated dependencies.
 - Paths are below 150 characters and the artifact is below the Asset Store size limit.
-- Offline installation, API, lifecycle, and preset documentation is included.
+- Offline installation, API/lifecycle, and preset documentation is included.
 - Both demo scenes open, and all four reset-audit modes pass with DOTween `1.3.030` or newer.
 - EditMode and PlayMode suites pass against the exact exported content.
 - A clean project imports the exact `.unitypackage` without leaving files outside `Assets/Loags/TweenHelper`.
 - The Publisher Portal listing discloses the required DOTween version and separate license.
+- The listing's technical details disclose the URP-authored 3D demo and render-pipeline-independent runtime and 2D demo.
+- The Animation-category marketing media includes a video showing the animations in motion.
+- The Publisher Portal AI description accurately discloses any functional code or assets created or modified with AI assistance.
+- The Loags publisher profile has an active support email and maintained website.

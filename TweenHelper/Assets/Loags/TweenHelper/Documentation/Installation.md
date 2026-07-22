@@ -4,7 +4,7 @@
 
 Install DOTween `1.3.030` or newer. TweenHelper does not vendor, redistribute, or automatically download DOTween.
 
-The package minimum is Unity `2022.3.0f1`, matching the minimum of DOTween `1.3.030` from the Unity Asset Store. DOTween downloaded directly from Demigiant supports Unity `2020.3`, but Asset Store Submission Guideline 1.3.a requires new Asset Store submissions to use Unity `2022.3` or newer, so TweenHelper does not declare the lower direct-download minimum.
+The package minimum is Unity `2022.3.0f1`, matching the supported Asset Store baseline for DOTween `1.3.030`.
 
 Open **Tools > Demigiant > DOTween Utility Panel** and run **Setup DOTween**. Ensure the UI module is enabled when using TweenHelper with uGUI or TextMesh Pro.
 
@@ -14,7 +14,7 @@ TweenHelper also uses Unity UI (uGUI) and TextMesh Pro. Import TextMesh Pro Esse
 
 Install the Asset Store release from **Window > Package Management > My Assets**, or import a downloaded artifact with **Assets > Import Package > Custom Package**.
 
-The import should create only the `Assets/Loags/TweenHelper` root. For repository development, use that same folder directly; TweenHelper is not distributed as a UPM package.
+The import creates the `Assets/Loags/TweenHelper` root. TweenHelper is distributed as a standard Asset Store `.unitypackage`, not as a UPM package.
 
 ## 3. Validate
 

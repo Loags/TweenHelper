@@ -2,7 +2,7 @@
 
 TweenHelper is a fluent animation builder and a catalog of reusable presets built on DOTween. It supports transform, UI, SpriteRenderer, and renderer targets while keeping preset playback, sequencing, cancellation, and reset behavior consistent.
 
-This repository currently contains the `1.0.0-pre.1` Asset Store candidate. Unity `2022.3.0f1` or newer and DOTween `1.3.030` or newer are the declared baseline. DOTween is installed and licensed separately; it is not part of TweenHelper.
+TweenHelper requires Unity `2022.3.0f1` or newer and DOTween `1.3.030` or newer. DOTween is installed and licensed separately; it is not included with TweenHelper.
 
 ## Requirements
 
@@ -84,7 +84,6 @@ No settings asset is required. TweenHelper uses safe in-memory defaults when `Re
 
 - [Installation](Documentation/Installation.md)
 - [API examples](Documentation/API.md)
-- [Lifecycle and option semantics](Documentation/Lifecycle.md)
 - [Preset catalog](Documentation/PresetCatalog.md)
 - [Changelog](CHANGELOG.md)
 - [Third-party notices](Third-Party%20Notices.txt)

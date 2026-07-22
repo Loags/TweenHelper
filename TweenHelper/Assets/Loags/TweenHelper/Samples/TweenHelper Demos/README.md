@@ -11,6 +11,8 @@ The 2D scene has two runtime tabs:
 
 Select a recipe or preset to preview it, switch the preview target between Image and Text, replay or reset it, and copy its typed fluent API example. The showcase controller only configures and instantiates authored UI prefabs from `Prefabs/UI`; it does not construct UI hierarchies at runtime.
 
+World-scale movement presets use an explicit strength override in the 2D canvas preview so their motion remains visible in pixel space. The displayed and copied API example includes that override.
+
 The demos do not require the Input System package. When the legacy Input Manager is enabled:
 
 - In the 2D scene, use **Space** to replay the current selection. All browsing and filtering is available through the authored runtime UI.
