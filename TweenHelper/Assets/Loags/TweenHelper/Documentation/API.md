@@ -183,7 +183,7 @@ Built tweens are linked to their target GameObject. Destroying the target kills 
 
 ## Settings and initialization
 
-TweenHelper initializes automatically. Without `Assets/Resources/TweenHelperSettings.asset`, it uses in-memory defaults. Use **Tools > TweenHelper > Create Settings Asset** only when the project needs custom defaults, and use **Tools > TweenHelper > Reinitialize System** after changing initialization-sensitive settings.
+TweenHelper initializes automatically. Without `Assets/Resources/TweenHelperSettings.asset`, it uses in-memory defaults. Use **Tools > Tween Helper > Settings > Create Settings Asset** only when the project needs custom defaults, and use **Tools > Tween Helper > Settings > Reinitialize System** after changing initialization-sensitive settings.
 
 ## Sample controls
 

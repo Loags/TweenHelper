@@ -8,9 +8,9 @@ TweenHelper also uses the standard Unity UI (uGUI) and TextMesh Pro packages. Th
 
 ## Required external dependency
 
-TweenHelper requires **DOTween (HOTween v2)** version `1.3.030` or newer. DOTween is not redistributed with TweenHelper. Register DOTween as a required Asset Store dependency in the Publisher Portal and place this notice prominently in the listing:
+TweenHelper requires **DOTween (HOTween v2)** version `1.2.025` or newer. DOTween is not redistributed with TweenHelper. Register DOTween as a required Asset Store dependency in the Publisher Portal and place this notice prominently in the listing:
 
-> Requires DOTween (HOTween v2) 1.3.030 or newer, available separately from Demigiant on the Unity Asset Store. DOTween is not included. See Third-Party Notices.txt in the package for license details.
+> Requires DOTween (HOTween v2) 1.2.025 or newer, available separately from Demigiant on the Unity Asset Store. DOTween is not included. See Third-Party Notices.txt in the package for license details.
 
 ## Validation and upload
 
@@ -31,14 +31,14 @@ The Validator's static-variable check is intentionally conservative and reports 
 - Runtime, Editor, Samples, and customer documentation are separated beneath that root.
 - Repository-only tests, reset auditing, preset integrity tools, and submission notes remain under `Assets/_Project/TweenHelperDevelopment` and are absent from the upload.
 - Every asset and folder has exactly one `.meta` file and no GUID is duplicated.
-- All custom Editor menu commands are under **Tools > TweenHelper**.
+- Customer-facing commands are under **Tools > Tween Helper**. Internal tests, catalog generation, and release validation are under **Tools > Tween Helper Dev** and remain outside the exported package folder.
 - All public code is contained in `LB.TweenHelper` namespaces.
 - DOTween binaries, modules, settings, documentation, and license files are absent from the upload.
 - Asset Store Publishing Tools is absent from the upload.
 - The package contains no executables, archives, generated libraries, project settings, temporary files, or unrelated dependencies.
 - Paths are below 150 characters and the artifact is below the Asset Store size limit.
 - Offline installation, API/lifecycle, and preset documentation is included.
-- Both demo scenes open, and all four reset-audit modes pass with DOTween `1.3.030` or newer.
+- Both demo scenes open, and all four reset-audit modes pass with DOTween `1.2.025` or newer.
 - EditMode and PlayMode suites pass against the exact exported content.
 - A clean project imports the exact `.unitypackage` without leaving files outside `Assets/Loags/TweenHelper`.
 - The Publisher Portal listing discloses the required DOTween version and separate license.

@@ -14,7 +14,7 @@ namespace LB.TweenHelper.Editor
         /// <summary>
         /// Creates a default TweenHelperSettings asset in the Resources folder if one doesn't exist.
         /// </summary>
-        [MenuItem("Tools/TweenHelper/Create Settings Asset", false, 1)]
+        [MenuItem("Tools/Tween Helper/Settings/Create Settings Asset", false, 10)]
         public static void CreateSettingsAsset()
         {
             if (File.Exists(SettingsPath))
@@ -48,7 +48,7 @@ namespace LB.TweenHelper.Editor
         /// <summary>
         /// Validates that a TweenHelperSettings asset exists in Resources.
         /// </summary>
-        [MenuItem("Tools/TweenHelper/Validate Settings", false, 2)]
+        [MenuItem("Tools/Tween Helper/Settings/Validate Settings", false, 11)]
         public static void ValidateSettings()
         {
             var settings = Resources.Load<TweenHelperSettings>("TweenHelperSettings");
@@ -79,7 +79,7 @@ namespace LB.TweenHelper.Editor
         /// Reinitializes the TweenHelper system with current settings.
         /// Useful for testing settings changes in the editor.
         /// </summary>
-        [MenuItem("Tools/TweenHelper/Reinitialize System", false, 3)]
+        [MenuItem("Tools/Tween Helper/Settings/Reinitialize System", false, 12)]
         public static void ReinitializeSystem()
         {
             if (Application.isPlaying)

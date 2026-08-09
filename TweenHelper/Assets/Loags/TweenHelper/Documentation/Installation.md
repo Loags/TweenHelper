@@ -2,9 +2,9 @@
 
 ## 1. Install DOTween
 
-Install DOTween `1.3.030` or newer. TweenHelper does not vendor, redistribute, or automatically download DOTween.
+Install DOTween `1.2.025` or newer. TweenHelper does not vendor, redistribute, or automatically download DOTween.
 
-The package minimum is Unity `2022.3.0f1`, matching the supported Asset Store baseline for DOTween `1.3.030`.
+The package minimum is Unity `2022.3.0f1`. TweenHelper was developed and validated with DOTween `1.2.025` as its minimum supported version.
 
 Open **Tools > Demigiant > DOTween Utility Panel** and run **Setup DOTween**. Ensure the UI module is enabled when using TweenHelper with uGUI or TextMesh Pro.
 
@@ -18,9 +18,17 @@ The import creates the `Assets/Loags/TweenHelper` root. TweenHelper is distribut
 
 ## 3. Validate
 
-Run **Tools > TweenHelper > Validate > DOTween Setup**. A valid installation reports the loaded DOTween version and confirms its module assembly.
+Tween Helper opens **Tools > Tween Helper > Setup & Support** once for each imported version. Use its installation cards to check DOTween, URP, Unity UI, and TextMesh Pro, and follow the linked setup steps when an item needs attention. The window reports status only and never installs or changes packages automatically.
 
-No `TweenHelperSettings` asset is required. Choose **Tools > TweenHelper > Create Settings Asset** only to override the built-in defaults.
+You can also run **Tools > Tween Helper > Validate > DOTween Setup**. A valid installation reports the loaded DOTween version and confirms its module assembly.
+
+No `TweenHelperSettings` asset is required. Choose **Tools > Tween Helper > Settings > Create Settings Asset** only to override the built-in defaults.
+
+## Support
+
+Reopen **Tools > Tween Helper > Setup & Support** whenever you need assistance. The support form suggests an editable message template based on the selected tags and prepares the tagged email to `Info@Loags.de` in your default email client. You review and send the message yourself.
+
+Environment details are optional and unchecked by default. Only the selected Tween Helper version, Unity version, operating system, and active render pipeline can be included. The form does not collect project names, scenes, assets, logs, files, or machine identifiers.
 
 ## 4. Open the samples
 

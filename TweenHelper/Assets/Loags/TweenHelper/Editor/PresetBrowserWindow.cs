@@ -24,7 +24,7 @@ namespace LB.TweenHelper.Editor
         private PreviewSnapshot _previewSnapshot;
         private double _lastPreviewTime;
 
-        [MenuItem("Tools/TweenHelper/Preset Browser", false, 0)]
+        [MenuItem("Tools/Tween Helper/Preset Browser", false, 1)]
         public static void Open()
         {
             var window = GetWindow<PresetBrowserWindow>();

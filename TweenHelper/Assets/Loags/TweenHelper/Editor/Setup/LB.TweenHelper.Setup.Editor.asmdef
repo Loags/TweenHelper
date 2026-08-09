@@ -1,10 +1,7 @@
 {
-    "name": "LB.TweenHelper.Validation.Editor",
-    "rootNamespace": "LB.TweenHelper.Editor",
-    "references": [
-        "LB.TweenHelper.Runtime",
-        "LB.TweenHelper.Editor"
-    ],
+    "name": "LB.TweenHelper.Setup.Editor",
+    "rootNamespace": "LB.TweenHelper.Setup.Editor",
+    "references": [],
     "includePlatforms": [
         "Editor"
     ],

@@ -28,9 +28,10 @@ Tween Helper 1.0.0 - Initial release
 - Added 13 semantic UI animation helpers and a searchable library of 198 UI-compatible presets.
 - Included prefab-authored 2D and 3D demonstration scenes.
 - Added optional global settings and a DOTween setup validator.
+- Added a modern Setup & Support window with dependency checks, installation links, tag-aware editable support templates, email preparation, and user-selected environment information.
 - Added offline installation instructions, API examples, lifecycle guidance, and a generated preset catalog.
 
-Requires DOTween 1.3.030 or newer, installed separately.
+Requires DOTween 1.2.025 or newer, installed separately.
 ```
 
 ### Summary (124 characters)
@@ -42,7 +43,7 @@ Create polished 2D, 3D, and UI animations faster with a fluent workflow, 300 rea
 ### Description
 
 ```text
-Important: Tween Helper requires DOTween 1.3.030 or newer, installed separately. DOTween is not included.
+Important: Tween Helper requires DOTween 1.2.025 or newer, installed separately. DOTween is not included.
 
 Bring your UI, sprites, and 3D objects to life without rebuilding the same animation sequences for every project.
 
@@ -57,6 +58,7 @@ Highlights:
 - Customize duration, easing, delay, loops, strength, scale, and other per-animation options.
 - Use 13 semantic UI helpers for common interactions such as appear, disappear, hover, press, attention, enabled, and disabled states.
 - Learn quickly with included 2D and 3D demos, copyable examples, and offline documentation.
+- Validate installation requirements and prepare tagged support requests from the Setup & Support window.
 - Use optional global settings, or start immediately with the built-in defaults.
 
 Tween Helper is suitable for menus, HUDs, notifications, cards, buttons, pickups, props, scene transitions, and general game-feel polish in both 2D and 3D projects.
@@ -67,7 +69,7 @@ Tween Helper is suitable for menus, HUDs, notifications, cards, buttons, pickups
 ```text
 Version: 1.0.0
 Validated Unity version: 6000.5.2f1
-Required dependency: DOTween 1.3.030 or newer, installed separately
+Required dependency: DOTween 1.2.025 or newer, installed separately
 Unity packages used: Unity UI (uGUI) and TextMesh Pro
 
 Included presets: 300
@@ -90,10 +92,17 @@ Animation workflow:
 - Optional global settings with built-in defaults when no settings asset is present
 
 Editor tools:
+- Setup & Support window with dependency status and guided installation
 - Searchable Preset Browser with family filters
 - Compatible-target previews with state restoration
 - Copyable code examples
 - DOTween setup validator
+
+Support:
+- Predefined report tags with up to five selections
+- User-reviewed mailto workflow to Info@Loags.de
+- Optional Tween Helper version, Unity version, operating system, and render-pipeline details
+- No automatic transmission, logs, project names, scenes, assets, files, or machine identifiers
 
 Render-pipeline compatibility:
 - Runtime code and 2D demo are compatible with Built-in and URP
@@ -107,6 +116,17 @@ Input:
 Included samples: TweenHelperDemo2D and TweenHelperDemo3D
 Documentation: Offline installation guide, API examples, lifecycle guidance, and generated preset catalog
 Runtime AI or online services: None
+```
+
+### Branding assets
+
+Internal Publisher Portal artwork is stored outside the customer package at:
+
+```text
+Assets/_Project/TweenHelperDevelopment/PublisherPortal/Branding/TweenHelperLogo.png
+Assets/_Project/TweenHelperDevelopment/PublisherPortal/Branding/TweenHelperKeyVisual.png
+Assets/_Project/TweenHelperDevelopment/PublisherPortal/Branding/TweenHelperFeatureOverview.png
+Assets/_Project/TweenHelperDevelopment/PublisherPortal/Branding/TweenHelperSetupAndSupport.png
 ```
 
 ### Package upload

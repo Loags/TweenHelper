@@ -8,9 +8,11 @@ namespace LB.TweenHelper.Editor
 {
     public static class DOTweenSetupValidator
     {
-        private static readonly Version MinimumSupportedVersion = new Version(1, 3, 30);
+        private const string MinimumPackageVersion = "1.2.025";
 
-        [MenuItem("Tools/TweenHelper/Validate/DOTween Setup", false, 19)]
+        private static readonly Version MinimumRuntimeVersion = new Version(1, 3, 30);
+
+        [MenuItem("Tools/Tween Helper/Validate/DOTween Setup", false, 20)]
         public static void Validate()
         {
             bool isValid = TryValidate(out string message);
@@ -18,7 +20,6 @@ namespace LB.TweenHelper.Editor
             EditorUtility.DisplayDialog(isValid ? "DOTween Setup Valid" : "DOTween Setup Required", message, "OK");
         }
 
-        [MenuItem("Tools/TweenHelper/Validate/DOTween Setup (Non-Interactive)", false, 119)]
         public static void ValidateNonInteractive()
         {
             bool isValid = TryValidate(out string message);
@@ -32,7 +33,7 @@ namespace LB.TweenHelper.Editor
 
             if (Type.GetType("DG.Tweening.DOTween, DOTween") == null)
             {
-                errors.Add("DOTween.dll is not loaded. Install DOTween 1.3.030 or newer before using TweenHelper.");
+                errors.Add("DOTween.dll is not loaded. Install DOTween 1.2.025 or newer before using TweenHelper.");
             }
 
             if (Type.GetType("DG.Tweening.DOTweenModuleUI, DOTween.Modules") == null)
@@ -48,16 +49,16 @@ namespace LB.TweenHelper.Editor
             string version = DOTween.Version;
             if (!Version.TryParse(version, out Version parsedVersion))
             {
-                errors.Add($"DOTween version '{version}' could not be parsed. Install DOTween {MinimumSupportedVersion} or newer.");
+                errors.Add($"DOTween runtime version '{version}' could not be parsed. Install DOTween package {MinimumPackageVersion} or newer.");
             }
-            else if (parsedVersion < MinimumSupportedVersion)
+            else if (parsedVersion < MinimumRuntimeVersion)
             {
-                errors.Add($"DOTween {version} is older than the supported minimum {MinimumSupportedVersion}.");
+                errors.Add($"DOTween runtime {version} is older than the runtime included with supported package version {MinimumPackageVersion}.");
             }
 
             if (errors.Count == 0)
             {
-                message = $"DOTween {version} is loaded and the required modules are available.";
+                message = $"DOTween runtime {version} is loaded and the required modules are available (package {MinimumPackageVersion}+).";
                 if (notes.Count > 0) message += $"\n\n{string.Join("\n", notes)}";
                 return true;
             }

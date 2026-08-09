@@ -4,6 +4,7 @@
     "references": [
         "LB.TweenHelper.Runtime",
         "LB.TweenHelper.Editor",
+        "LB.TweenHelper.Validation.Editor",
         "DOTween.Modules"
     ],
     "includePlatforms": [

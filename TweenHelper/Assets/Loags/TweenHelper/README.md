@@ -2,22 +2,24 @@
 
 TweenHelper is a fluent animation builder and a catalog of reusable presets built on DOTween. It supports transform, UI, SpriteRenderer, and renderer targets while keeping preset playback, sequencing, cancellation, and reset behavior consistent.
 
-TweenHelper requires Unity `2022.3.0f1` or newer and DOTween `1.3.030` or newer. DOTween is installed and licensed separately; it is not included with TweenHelper.
+TweenHelper requires Unity `2022.3.0f1` or newer and DOTween `1.2.025` or newer. DOTween is installed and licensed separately; it is not included with TweenHelper.
 
 ## Requirements
 
 - Unity `2022.3.0f1` or newer.
-- DOTween `1.3.030` or newer, installed separately from the [Unity Asset Store](https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676) or [Demigiant](https://dotween.demigiant.com/download.php).
+- DOTween `1.2.025` or newer, installed separately from the [Unity Asset Store](https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676) or [Demigiant](https://dotween.demigiant.com/download.php).
 - DOTween modules generated through **Tools > Demigiant > DOTween Utility Panel > Setup DOTween**.
 - Unity UI (uGUI) and TextMesh Pro. Import TextMesh Pro Essential Resources before opening the demos.
 
-DOTween is an external Asset Store dependency and is not redistributed with this package. Register the dependency in the Asset Store Publisher Portal when publishing TweenHelper. Use **Tools > TweenHelper > Validate > DOTween Setup** after installation for an actionable setup check.
+DOTween is an external Asset Store dependency and is not redistributed with this package. Register the dependency in the Asset Store Publisher Portal when publishing TweenHelper. Use **Tools > Tween Helper > Validate > DOTween Setup** after installation for an actionable setup check.
 
 ## Installation
 
 Install and set up DOTween first. Then import the TweenHelper `.unitypackage` from **Window > Package Management > My Assets**, or import a local release artifact with **Assets > Import Package > Custom Package**.
 
 All distributable files are installed beneath `Assets/Loags/TweenHelper`. The included demos are in `Samples/TweenHelper Demos`. Runtime does not depend on the Input System or a scriptable render pipeline. The 3D demo materials are authored for URP, while the runtime API and 2D demo are render-pipeline independent.
+
+Tween Helper opens **Tools > Tween Helper > Setup & Support** once for each imported package version. The window checks DOTween, URP, Unity UI, and TextMesh Pro without changing the project automatically. It also links to the required installation locations and remains available from the Tools menu after dismissal.
 
 ## Quick start
 
@@ -65,11 +67,17 @@ Options written immediately after a step apply to that step. Options written aft
 
 ## Preset browser
 
-Open **Tools > TweenHelper > Preset Browser** to search and filter all registered presets. Select a scene GameObject to preview a compatible preset. **Stop and Restore** kills the preview and restores the selected object's transform and supported visual state. The browser also copies a valid fluent API example.
+Open **Tools > Tween Helper > Preset Browser** to search and filter all registered presets. Select a scene GameObject to preview a compatible preset. **Stop and Restore** kills the preview and restores the selected object's transform and supported visual state. The browser also copies a valid fluent API example.
+
+## Support
+
+Open **Tools > Tween Helper > Setup & Support** to prepare a bug report, feature request, documentation question, or other support email. Users choose up to five predefined tags, receive a matching message template they can insert and edit, and may optionally include the Tween Helper version, Unity version, operating system, and active render pipeline.
+
+Only the selected Tween Helper-related environment information is added. Tween Helper does not collect project names, scenes, assets, logs, files, or machine identifiers. The report is copied to the clipboard and opened in the user's default email client for review; it is never sent automatically.
 
 ## Settings
 
-No settings asset is required. TweenHelper uses safe in-memory defaults when `Resources/TweenHelperSettings` is absent. Choose **Tools > TweenHelper > Create Settings Asset** only when the project needs customized defaults.
+No settings asset is required. TweenHelper uses safe in-memory defaults when `Resources/TweenHelperSettings` is absent. Choose **Tools > Tween Helper > Settings > Create Settings Asset** only when the project needs customized defaults.
 
 ## Async and cancellation contract
 
@@ -90,5 +98,4 @@ No settings asset is required. TweenHelper uses safe in-memory defaults when `Re
 
 Tween Helper is distributed under the Standard Unity Asset Store EULA.
 
-Tween Helper requires DOTween 1.3.030 or newer. DOTween is installed separately, is not included with Tween Helper, and is governed by its own license.
-
+Tween Helper requires DOTween 1.2.025 or newer. DOTween is installed separately, is not included with Tween Helper, and is governed by its own license.

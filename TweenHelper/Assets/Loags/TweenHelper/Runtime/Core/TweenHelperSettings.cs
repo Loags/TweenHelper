@@ -46,7 +46,7 @@ namespace LB.TweenHelper
                     _instance = Resources.Load<TweenHelperSettings>("TweenHelperSettings");
                     if (_instance == null)
                     {
-                        Debug.Log("TweenHelper: No Resources/TweenHelperSettings asset was found. Using built-in defaults. Create one from Tools/TweenHelper/Create Settings Asset to customize them.");
+                        Debug.Log("TweenHelper: No Resources/TweenHelperSettings asset was found. Using built-in defaults. Create one from Tools/Tween Helper/Settings/Create Settings Asset to customize them.");
                         _instance = CreateInstance<TweenHelperSettings>();
                     }
                 }

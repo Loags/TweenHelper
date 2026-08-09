@@ -2,6 +2,7 @@
   <Project Path="asset-store-tools-editor.csproj" />
   <Project Path="LB.TweenHelper.Runtime.csproj" />
   <Project Path="DOTween.Modules.csproj" />
+  <Project Path="LB.TweenHelper.Setup.Editor.csproj" />
   <Project Path="LB.TweenHelper.Demo.csproj" />
   <Project Path="LB.TweenHelper.EditorTests.csproj" />
   <Project Path="LB.TweenHelper.Editor.csproj" />

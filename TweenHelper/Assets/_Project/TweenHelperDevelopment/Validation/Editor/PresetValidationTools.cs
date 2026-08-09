@@ -12,10 +12,13 @@ namespace LB.TweenHelper.Editor
     /// </summary>
     public static class PresetValidationTools
     {
-        [MenuItem("Tools/TweenHelper/Validate/Registry Integrity", false, 20)]
+        [MenuItem("Tools/Tween Helper Dev/Validation/DOTween Setup (Non-Interactive)", false, 10)]
+        public static void ValidateDotweenSetupNonInteractive() => DOTweenSetupValidator.ValidateNonInteractive();
+
+        [MenuItem("Tools/Tween Helper Dev/Validation/Registry Integrity", false, 20)]
         public static void ValidateRegistryIntegrity() => ValidateRegistryIntegrity(true);
 
-        [MenuItem("Tools/TweenHelper/Validate/Registry Integrity (Non-Interactive)", false, 121)]
+        [MenuItem("Tools/Tween Helper Dev/Validation/Registry Integrity (Non-Interactive)", false, 120)]
         public static void ValidateRegistryIntegrityNonInteractive() => ValidateRegistryIntegrity(false);
 
         private static void ValidateRegistryIntegrity(bool showDialog)
@@ -75,7 +78,7 @@ namespace LB.TweenHelper.Editor
             LogValidationSummary("Registry Integrity", presets.Count, errors, warnings, familyCounts, showDialog);
         }
 
-        [MenuItem("Tools/TweenHelper/Validate/Catalog File Against Registry...", false, 21)]
+        [MenuItem("Tools/Tween Helper Dev/Validation/Catalog File Against Registry...", false, 21)]
         public static void ValidateCatalogFileAgainstRegistry()
         {
             TweenPresetRegistry.Refresh();
@@ -381,5 +384,3 @@ namespace LB.TweenHelper.Editor
         }
     }
 }
-
-

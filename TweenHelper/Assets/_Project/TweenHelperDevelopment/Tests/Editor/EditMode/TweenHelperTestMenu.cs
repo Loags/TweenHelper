@@ -11,7 +11,7 @@ namespace LB.TweenHelper.Tests.Editor
         private static TestRunnerApi _api;
         private static TestCallbacks _callbacks;
 
-        [MenuItem("Tools/TweenHelper/Tests/Run EditMode Tests")]
+        [MenuItem("Tools/Tween Helper Dev/Tests/Run EditMode Tests")]
         private static void RunEditModeTests()
         {
             RunTests(new Filter
@@ -21,7 +21,7 @@ namespace LB.TweenHelper.Tests.Editor
             });
         }
 
-        [MenuItem("Tools/TweenHelper/Tests/Run PlayMode Tests")]
+        [MenuItem("Tools/Tween Helper Dev/Tests/Run PlayMode Tests")]
         private static void RunPlayModeTests()
         {
             RunTests(new Filter

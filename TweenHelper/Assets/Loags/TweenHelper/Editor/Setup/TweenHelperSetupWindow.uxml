@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement class="window-root">
+        <ui:ScrollView class="window-scroll">
+            <ui:VisualElement class="hero-card">
+                <ui:Image name="brand-logo" class="brand-logo" />
+                <ui:VisualElement class="hero-copy">
+                    <ui:Label text="TWEEN HELPER" class="hero-title" />
+                    <ui:Label text="Setup, validate, and start creating polished motion." class="hero-subtitle" />
+                    <ui:Label name="version-label" class="version-pill" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="section-card">
+                <ui:VisualElement class="section-heading-row">
+                    <ui:VisualElement>
+                        <ui:Label text="Installation" class="section-title" />
+                        <ui:Label text="Tween Helper targets URP and requires DOTween. These checks never modify your project automatically." class="section-description" />
+                    </ui:VisualElement>
+                    <ui:Button name="refresh-button" text="Refresh status" class="secondary-button" />
+                </ui:VisualElement>
+
+                <ui:VisualElement class="status-grid">
+                    <ui:VisualElement class="status-card">
+                        <ui:Label text="DOTween Free" class="status-title" />
+                        <ui:Label name="dotween-status" class="status-label" />
+                        <ui:Button name="dotween-button" text="Open Asset Store" class="link-button" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="status-card">
+                        <ui:Label text="Universal Render Pipeline" class="status-title" />
+                        <ui:Label name="urp-status" class="status-label" />
+                        <ui:Button name="package-manager-button" text="Open Package Manager" class="link-button" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="status-card">
+                        <ui:Label text="Unity UI (uGUI)" class="status-title" />
+                        <ui:Label name="ugui-status" class="status-label" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="status-card">
+                        <ui:Label text="TextMesh Pro" class="status-title" />
+                        <ui:Label name="tmp-status" class="status-label" />
+                        <ui:Button name="tmp-button" text="Import essentials" class="link-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="steps-card">
+                    <ui:Label text="Recommended setup" class="status-title" />
+                    <ui:Label text="1. Install DOTween Free package 1.2.025 or newer.\n2. Open Tools > Demigiant > DOTween Utility Panel and run Setup DOTween.\n3. Confirm URP, Unity UI, and TextMesh Pro essentials above.\n4. Open the preset browser and start with an included demo." class="steps-text" />
+                    <ui:VisualElement class="button-row">
+                        <ui:Button name="documentation-button" text="Read installation guide" class="secondary-button" />
+                        <ui:Button name="preset-browser-button" text="Open preset browser" class="primary-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement class="section-card">
+                <ui:Label text="Support" class="section-title" />
+                <ui:Label text="Prepare a bug report, feature request, or question. Your email client will open with the report ready for review; Tween Helper never sends it automatically." class="section-description" />
+
+                <ui:TextField name="user-email" label="Your email" tooltip="Required so support can reply." />
+                <ui:VisualElement class="field-heading-row">
+                    <ui:Label text="Tags" class="field-title" />
+                    <ui:Label name="tag-count" class="field-counter" />
+                </ui:VisualElement>
+                <ui:VisualElement name="tag-container" class="tag-container" />
+
+                <ui:VisualElement class="field-heading-row">
+                    <ui:Label text="Message" class="field-title" />
+                </ui:VisualElement>
+                <ui:TextField name="message" multiline="true" class="message-field" />
+                <ui:VisualElement class="template-row">
+                    <ui:Label name="template-hint" text="Choose tags to create a relevant starting point." class="template-hint" />
+                    <ui:Button name="use-template-button" text="Insert template" class="secondary-button template-button" />
+                </ui:VisualElement>
+
+                <ui:Label text="Optional environment information" class="field-title" />
+                <ui:Label text="Only the Tween Helper-related items you select are added. No project names, scenes, assets, logs, files, or machine identifiers are collected." class="privacy-note" />
+                <ui:VisualElement class="metadata-grid">
+                    <ui:Toggle name="include-tweenhelper-version" label="Tween Helper version" />
+                    <ui:Toggle name="include-unity-version" label="Unity version" />
+                    <ui:Toggle name="include-operating-system" label="Operating system" />
+                    <ui:Toggle name="include-render-pipeline" label="Active render pipeline" />
+                </ui:VisualElement>
+
+                <ui:Label name="support-status" class="support-status" />
+                <ui:VisualElement class="button-row button-row-end">
+                    <ui:Button name="copy-report-button" text="Copy report" class="secondary-button" />
+                    <ui:Button name="prepare-email-button" text="Open in email client" class="primary-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:Toggle name="do-not-show-again" label="Don’t show this window again for Tween Helper 1.0.0" class="dismiss-toggle" />
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>
