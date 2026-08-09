@@ -85,9 +85,10 @@ No settings asset is required. TweenHelper uses safe in-memory defaults when `Re
 - [Installation](Documentation/Installation.md)
 - [API examples](Documentation/API.md)
 - [Preset catalog](Documentation/PresetCatalog.md)
-- [Changelog](CHANGELOG.md)
-- [Third-party notices](Third-Party%20Notices.txt)
 
-## License
+## Licensing
 
-TweenHelper is licensed under the [MIT License](LICENSE.md). DOTween is a separate dependency governed by its own license; see [Third-Party Notices.txt](Third-Party%20Notices.txt).
+Tween Helper is distributed under the Standard Unity Asset Store EULA.
+
+Tween Helper requires DOTween 1.3.030 or newer. DOTween is installed separately, is not included with Tween Helper, and is governed by its own license.
+
