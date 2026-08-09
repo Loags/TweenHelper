@@ -965,10 +965,29 @@ namespace LB.TweenHelper
                 }
             }
 
+            ApplySequenceUpdateOptions(sequence);
             sequence.SetTarget(_gameObject);
             sequence.SetLink(_gameObject);
 
             return sequence;
+        }
+
+        private void ApplySequenceUpdateOptions(Sequence sequence)
+        {
+            var settings = TweenHelperSettings.Instance;
+            var sequenceOptions = default(TweenOptions);
+
+            for (int i = 0; i < _stepCount; i++)
+            {
+                var step = GetStep(i);
+                if (step.TweenFactory == null) continue;
+                sequenceOptions = step.Options;
+                break;
+            }
+
+            var updateType = sequenceOptions.UpdateType ?? settings.DefaultUpdateType;
+            var unscaledTime = sequenceOptions.UnscaledTime ?? settings.DefaultUnscaledTime;
+            sequence.SetUpdate(updateType, unscaledTime);
         }
 
         private void ApplyOptions(Tween tween, TweenOptions options)

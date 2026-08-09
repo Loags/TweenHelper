@@ -16,13 +16,23 @@ public static class TweenHelperPublisherVideoCapture
     private const int Width = 1280;
     private const int Height = 720;
     private const int FrameRate = 30;
-    private const float ClipDuration = 2.5f;
+    private const float ClipDuration = 2f;
+    private const int ShowcaseCount = 12;
 
     private static Camera _camera;
     private static Canvas _canvas;
     private static TMP_Text _sectionLabel;
     private static TMP_Text _animationLabel;
+    private static TMP_Text _descriptionLabel;
     private static TMP_Text _footerLabel;
+    private static RectTransform _infoPanelRect;
+    private static CanvasGroup _infoGroup;
+    private static RectTransform _heroPanelRect;
+    private static CanvasGroup _heroGroup;
+    private static TMP_Text _heroEyebrow;
+    private static TMP_Text _heroTitle;
+    private static TMP_Text _heroSubtitle;
+    private static RectTransform _heroMark;
     private static Image _uiTarget;
     private static GameObject _worldTarget;
     private static GameObject _ground;
@@ -51,6 +61,8 @@ public static class TweenHelperPublisherVideoCapture
             _outputDirectory = GetOutputDirectory();
             Directory.CreateDirectory(_outputDirectory);
             foreach (string frame in Directory.GetFiles(_outputDirectory, "frame-*.png")) File.Delete(frame);
+            DeleteIfPresent(Path.Combine(_outputDirectory, "capture-complete.txt"));
+            DeleteIfPresent(Path.Combine(_outputDirectory, "capture-error.txt"));
             _frameIndex = 0;
 
             DOTween.Init(false, true, LogBehaviour.ErrorsOnly);
@@ -58,12 +70,17 @@ public static class TweenHelperPublisherVideoCapture
             BuildStage();
 
             CaptureIntro();
-            Capture2D("UI Appear", target => target.UIAppear(1.1f, TweenOptions.WithUpdateType(UpdateType.Manual)), 0);
-            Capture2D("UI Disappear", target => target.UIDisappear(1.1f, TweenOptions.WithUpdateType(UpdateType.Manual)), 0);
-            Capture2D("UI Attention Hard", target => target.UIAttentionHard(1.1f, TweenOptions.WithUpdateType(UpdateType.Manual)), 1);
-            Capture3D<PopInPreset>("Pop In", 0);
-            Capture3D<SpinPreset>("Spin", 1);
-            Capture3D<WobblePreset>("Wobble", 1);
+            CaptureAppearDisappear();
+            Capture2D("UI Hover", "Responsive scale and color feedback", "target.UIHover();", target => target.UIHover(0.32f, new Color(0.58f, 0.3f, 1f), TweenOptions.WithUpdateType(UpdateType.Manual)), 2, 0.64f, 3);
+            Capture2D("UI Press Hard", "Punchy interaction feedback", "target.UIPressHard();", target => target.UIPressHard(0.32f, new Color(0.04f, 0.28f, 0.76f), TweenOptions.WithUpdateType(UpdateType.Manual)), 3, 0.48f, 4);
+            Capture2D("UI Attention Hard", "Strong motion that draws the eye", "target.UIAttentionHard();", target => target.UIAttentionHard(0.52f, TweenOptions.WithUpdateType(UpdateType.Manual)), 2, 0.66f, 5);
+            Capture2DPreset<PulseScaleHardPreset>("Pulse Scale Hard", "A bold rhythmic emphasis loop", 1.65f, 2, 0.66f, 6);
+            Capture3D<PopInOvershootPreset>("Pop In Overshoot", "Energetic scale-in with a satisfying settle", 0, 7);
+            Capture3D<BounceCartoonPreset>("Bounce Cartoon", "Playful squash, stretch, and landing motion", 0, 8);
+            Capture3D<SlideInRightHardPreset>("Slide In Right Hard", "Fast directional entrance with impact", 0, 9);
+            Capture3D<SpinDiagonalXYPreset>("Spin Diagonal", "Multi-axis rotation for dynamic reveals", 1, 10);
+            Capture3D<WobblePreset>("Wobble", "Organic rotational follow-through", 1, 11);
+            Capture3D<ShakeHardPreset>("Shake Hard", "High-energy impact feedback", 1, 12);
             CaptureOutro();
 
             File.WriteAllText(Path.Combine(_outputDirectory, "capture-complete.txt"), $"{_frameIndex} frames at {FrameRate} fps, {Width}x{Height}");
@@ -138,17 +155,28 @@ public static class TweenHelperPublisherVideoCapture
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(Width, Height);
 
-        CreatePanel(canvasObject.transform, "Top Bar", new Color(0.035f, 0.055f, 0.12f, 0.96f), new Vector2(0f, 600f), new Vector2(1280f, 120f));
-        CreatePanel(canvasObject.transform, "Bottom Bar", new Color(0.035f, 0.055f, 0.12f, 0.96f), new Vector2(0f, 0f), new Vector2(1280f, 82f));
+        CreatePanel(canvasObject.transform, "Ambient Left", new Color(0.08f, 0.22f, 0.48f, 0.35f), new Vector2(-120f, 80f), new Vector2(390f, 560f));
+        CreatePanel(canvasObject.transform, "Ambient Right", new Color(0.32f, 0.12f, 0.56f, 0.28f), new Vector2(1050f, 140f), new Vector2(300f, 470f));
 
-        _sectionLabel = CreateText(canvasObject.transform, "Section", 27, FontStyles.Bold, TextAlignmentOptions.Left, new Vector2(64f, 628f), new Vector2(420f, 50f));
-        _animationLabel = CreateText(canvasObject.transform, "Animation", 50, FontStyles.Bold, TextAlignmentOptions.Center, new Vector2(290f, 620f), new Vector2(700f, 64f));
-        _footerLabel = CreateText(canvasObject.transform, "Footer", 25, FontStyles.Normal, TextAlignmentOptions.Center, new Vector2(140f, 14f), new Vector2(1000f, 48f));
+        var infoPanel = CreatePanel(canvasObject.transform, "Info Panel", new Color(0.045f, 0.07f, 0.145f, 0.98f), new Vector2(64f, 574f), new Vector2(1152f, 104f));
+        _infoPanelRect = (RectTransform)infoPanel.transform;
+        _infoGroup = infoPanel.AddComponent<CanvasGroup>();
+        CreatePanel(infoPanel.transform, "Info Accent", new Color(0.18f, 0.72f, 1f, 1f), Vector2.zero, new Vector2(8f, 104f));
+        var sectionChip = CreatePanel(infoPanel.transform, "Section Chip", new Color(0.10f, 0.32f, 0.62f, 1f), new Vector2(28f, 27f), new Vector2(170f, 50f));
+        _sectionLabel = CreateText(sectionChip.transform, "Section", 21, FontStyles.Bold, TextAlignmentOptions.Center, Vector2.zero, new Vector2(170f, 50f));
+        _animationLabel = CreateText(infoPanel.transform, "Animation", 34, FontStyles.Bold, TextAlignmentOptions.Left, new Vector2(224f, 45f), new Vector2(650f, 46f));
+        _descriptionLabel = CreateText(infoPanel.transform, "Description", 20, FontStyles.Normal, TextAlignmentOptions.Left, new Vector2(224f, 14f), new Vector2(710f, 32f));
+        _descriptionLabel.color = new Color(0.72f, 0.8f, 0.94f);
+        _footerLabel = CreateText(infoPanel.transform, "Footer", 18, FontStyles.Normal, TextAlignmentOptions.Right, new Vector2(810f, 32f), new Vector2(310f, 38f));
+        _footerLabel.color = new Color(0.38f, 0.78f, 1f);
 
-        var card = CreatePanel(canvasObject.transform, "Preview Card", new Color(0.075f, 0.11f, 0.22f, 0.96f), new Vector2(330f, 190f), new Vector2(620f, 330f));
-        var accent = CreatePanel(card.transform, "Accent", new Color(0.18f, 0.72f, 1f, 1f), new Vector2(55f, 82f), new Vector2(510f, 166f));
+        var card = CreatePanel(canvasObject.transform, "Preview Card", new Color(0.055f, 0.09f, 0.18f, 0.98f), new Vector2(300f, 130f), new Vector2(680f, 390f));
+        CreatePanel(card.transform, "Card Edge", new Color(0.18f, 0.72f, 1f, 0.75f), Vector2.zero, new Vector2(680f, 5f));
+        var accent = CreatePanel(card.transform, "Accent", new Color(0.18f, 0.72f, 1f, 1f), new Vector2(70f, 105f), new Vector2(540f, 180f));
         _uiTarget = accent.GetComponent<Image>();
-        CreateText(accent.transform, "Target Label", 42, FontStyles.Bold, TextAlignmentOptions.Center, Vector2.zero, new Vector2(510f, 166f)).text = "TWEEN HELPER";
+        CreateText(accent.transform, "Target Label", 42, FontStyles.Bold, TextAlignmentOptions.Center, Vector2.zero, new Vector2(540f, 180f)).text = "TWEEN HELPER";
+
+        BuildHero(canvasObject.transform);
     }
 
     private static void BuildWorldTarget()
@@ -168,38 +196,68 @@ public static class TweenHelperPublisherVideoCapture
         _ground.SetActive(false);
     }
 
+    private static void BuildHero(Transform parent)
+    {
+        var heroPanel = CreatePanel(parent, "Hero Panel", new Color(0.045f, 0.07f, 0.145f, 0.98f), new Vector2(150f, 145f), new Vector2(980f, 430f));
+        _heroPanelRect = (RectTransform)heroPanel.transform;
+        _heroGroup = heroPanel.AddComponent<CanvasGroup>();
+        CreatePanel(heroPanel.transform, "Hero Edge", new Color(0.18f, 0.72f, 1f, 1f), Vector2.zero, new Vector2(980f, 8f));
+        var mark = CreatePanel(heroPanel.transform, "Hero Mark", new Color(0.18f, 0.72f, 1f, 1f), new Vector2(70f, 128f), new Vector2(176f, 176f));
+        _heroMark = (RectTransform)mark.transform;
+        CreatePanel(mark.transform, "Mark Core", new Color(0.31f, 0.2f, 0.7f, 1f), new Vector2(38f, 38f), new Vector2(100f, 100f));
+        CreateText(mark.transform, "Mark Text", 54, FontStyles.Bold, TextAlignmentOptions.Center, Vector2.zero, new Vector2(176f, 176f)).text = "TH";
+
+        _heroEyebrow = CreateText(heroPanel.transform, "Hero Eyebrow", 22, FontStyles.Bold, TextAlignmentOptions.Left, new Vector2(302f, 305f), new Vector2(600f, 34f));
+        _heroEyebrow.color = new Color(0.38f, 0.78f, 1f);
+        _heroTitle = CreateText(heroPanel.transform, "Hero Title", 54, FontStyles.Bold, TextAlignmentOptions.Left, new Vector2(298f, 218f), new Vector2(620f, 80f));
+        _heroSubtitle = CreateText(heroPanel.transform, "Hero Subtitle", 25, FontStyles.Normal, TextAlignmentOptions.Left, new Vector2(302f, 154f), new Vector2(590f, 64f));
+        _heroSubtitle.color = new Color(0.75f, 0.82f, 0.94f);
+
+        CreateStatChip(heroPanel.transform, "300 PRESETS", new Vector2(302f, 82f), 170f);
+        CreateStatChip(heroPanel.transform, "2D + 3D", new Vector2(488f, 82f), 150f);
+        CreateStatChip(heroPanel.transform, "FLUENT API", new Vector2(654f, 82f), 180f);
+    }
+
+    private static void CreateStatChip(Transform parent, string text, Vector2 position, float width)
+    {
+        var chip = CreatePanel(parent, $"{text} Chip", new Color(0.09f, 0.16f, 0.3f, 1f), position, new Vector2(width, 48f));
+        CreateText(chip.transform, text, 18, FontStyles.Bold, TextAlignmentOptions.Center, Vector2.zero, new Vector2(width, 48f)).text = text;
+    }
+
     private static void CaptureIntro()
     {
         Set2DVisible(false);
         Set3DVisible(false);
-        _sectionLabel.text = "TWEEN HELPER";
-        _animationLabel.text = "Animation made simple";
-        _footerLabel.text = "300 presets | Fluent builder API | 2D and 3D";
-        RenderSeconds(1.5f, null);
+        SetInfoVisible(false);
+        SetHeroVisible(true);
+        _heroEyebrow.text = "TWEEN HELPER";
+        _heroTitle.text = "Animation made simple";
+        _heroSubtitle.text = "Production-ready presets for expressive UI and 3D motion.";
+        RenderSeconds(2.3f, frame => ApplyHeroMotion(frame, 2.3f, false));
     }
 
-    private static void Capture2D(string animationName, Func<GameObject, TweenHandle> play, int replayCount)
+    private static void CaptureAppearDisappear()
     {
+        SetHeroVisible(false);
         Set2DVisible(true);
         Set3DVisible(false);
-        _sectionLabel.text = "2D ANIMATION";
-        _animationLabel.text = animationName;
-        _footerLabel.text = $"target.{animationName.Replace(" ", string.Empty)}();";
+        SetClipInfo("2D UI", "UI Appear + Disappear", "A polished entrance and exit pair", "target.UIAppear();", 1, ShowcaseCount);
         ResetUiTarget();
-        TweenHandle handle = play(_uiTarget.gameObject);
-        int nextReplay = replayCount > 0 ? Mathf.RoundToInt(FrameRate * 0.85f) : int.MaxValue;
-        int replayed = 0;
+        var group = GetOrAddCanvasGroup(_uiTarget.gameObject);
+        group.alpha = 0f;
+        _uiTarget.transform.localScale = Vector3.one * 0.72f;
+        TweenHandle handle = _uiTarget.gameObject.UIAppear(1.05f, TweenOptions.WithUpdateType(UpdateType.Manual));
+        int disappearFrame = Mathf.RoundToInt(FrameRate * 1.45f);
 
-        RenderSeconds(ClipDuration, localFrame =>
+        RenderSeconds(3.15f, frame =>
         {
-            if (localFrame == nextReplay && replayed < replayCount)
-            {
-                handle?.Kill();
-                ResetUiTarget();
-                handle = play(_uiTarget.gameObject);
-                replayed++;
-                nextReplay += Mathf.RoundToInt(FrameRate * 0.85f);
-            }
+            ApplyInfoMotion(frame, 3.15f);
+            if (frame != disappearFrame) return;
+            handle?.Kill();
+            handle = _uiTarget.gameObject.UIDisappear(1.05f, TweenOptions.WithUpdateType(UpdateType.Manual));
+            _animationLabel.text = "UI Disappear";
+            _descriptionLabel.text = "A clean exit that completes the interaction";
+            _footerLabel.text = "02/12  target.UIDisappear();";
         });
 
         handle?.Kill();
@@ -207,13 +265,65 @@ public static class TweenHelperPublisherVideoCapture
         DOTween.Kill(_uiTarget.transform, false);
     }
 
-    private static void Capture3D<TPreset>(string animationName, int replayCount) where TPreset : class, ITweenPreset, new()
+    private static void Capture2D(string animationName, string description, string api, Func<GameObject, TweenHandle> play, int replayCount, float replayInterval, int showcaseIndex)
     {
+        SetHeroVisible(false);
+        Set2DVisible(true);
+        Set3DVisible(false);
+        SetClipInfo("2D UI", animationName, description, api, showcaseIndex, ShowcaseCount);
+        ResetUiTarget();
+        Vector3 baseScale = _uiTarget.transform.localScale;
+        Vector2 basePosition = ((RectTransform)_uiTarget.transform).anchoredPosition;
+        Quaternion baseRotation = _uiTarget.transform.localRotation;
+        Color baseColor = _uiTarget.color;
+        float baseAlpha = GetOrAddCanvasGroup(_uiTarget.gameObject).alpha;
+        float maxVisualDelta = 0f;
+        TweenHandle handle = play(_uiTarget.gameObject);
+        int nextReplay = replayCount > 0 ? Mathf.RoundToInt(FrameRate * replayInterval) : int.MaxValue;
+        int replayed = 0;
+
+        RenderSeconds(ClipDuration, localFrame =>
+        {
+            ApplyInfoMotion(localFrame, ClipDuration);
+            maxVisualDelta = Mathf.Max(maxVisualDelta, GetUiVisualDelta(baseScale, basePosition, baseRotation, baseColor, baseAlpha));
+            if (localFrame == nextReplay && replayed < replayCount)
+            {
+                handle?.Kill();
+                ResetUiTarget();
+                handle = play(_uiTarget.gameObject);
+                replayed++;
+                nextReplay += Mathf.RoundToInt(FrameRate * replayInterval);
+            }
+        });
+
+        if (maxVisualDelta < 0.045f) throw new InvalidOperationException($"The {animationName} capture did not produce enough visible UI motion ({maxVisualDelta:0.000}).");
+        handle?.Kill();
+        DOTween.Kill(_uiTarget.gameObject, false);
+        DOTween.Kill(_uiTarget.transform, false);
+    }
+
+    private static void Capture2DPreset<TPreset>(string animationName, string description, float strength, int replayCount, float replayInterval, int showcaseIndex) where TPreset : class, ITweenPreset, new()
+    {
+        var options = TweenOptions.WithStrength(strength).SetUpdateType(UpdateType.Manual);
+        Capture2D(animationName, description, "PRESET LIBRARY", target => target.transform.Tween().WithOptions(options).Preset<TPreset>().Play(), replayCount, replayInterval, showcaseIndex);
+    }
+
+    private static float GetUiVisualDelta(Vector3 baseScale, Vector2 basePosition, Quaternion baseRotation, Color baseColor, float baseAlpha)
+    {
+        float scaleDelta = Vector3.Distance(_uiTarget.transform.localScale, baseScale);
+        float positionDelta = Vector2.Distance(((RectTransform)_uiTarget.transform).anchoredPosition, basePosition) / 100f;
+        float rotationDelta = Quaternion.Angle(_uiTarget.transform.localRotation, baseRotation) / 45f;
+        float colorDelta = Vector4.Distance(_uiTarget.color, baseColor);
+        float alphaDelta = Mathf.Abs(GetOrAddCanvasGroup(_uiTarget.gameObject).alpha - baseAlpha);
+        return Mathf.Max(scaleDelta, positionDelta, rotationDelta, colorDelta, alphaDelta);
+    }
+
+    private static void Capture3D<TPreset>(string animationName, string description, int replayCount, int showcaseIndex) where TPreset : class, ITweenPreset, new()
+    {
+        SetHeroVisible(false);
         Set2DVisible(false);
         Set3DVisible(true);
-        _sectionLabel.text = "3D ANIMATION";
-        _animationLabel.text = animationName;
-        _footerLabel.text = $"target.Tween().Preset<{typeof(TPreset).Name}>().Play();";
+        SetClipInfo("3D PRESET", animationName, description, "PRESET LIBRARY", showcaseIndex, ShowcaseCount);
         ResetWorldTarget();
         TweenHandle handle = PlayWorldPreset<TPreset>();
         int nextReplay = replayCount > 0 ? Mathf.RoundToInt(FrameRate * 1.05f) : int.MaxValue;
@@ -221,6 +331,7 @@ public static class TweenHelperPublisherVideoCapture
 
         RenderSeconds(ClipDuration, localFrame =>
         {
+            ApplyInfoMotion(localFrame, ClipDuration);
             if (localFrame == nextReplay && replayed < replayCount)
             {
                 handle?.Kill();
@@ -242,10 +353,61 @@ public static class TweenHelperPublisherVideoCapture
     {
         Set2DVisible(false);
         Set3DVisible(false);
-        _sectionLabel.text = "TWEEN HELPER";
-        _animationLabel.text = "Build better game feel";
-        _footerLabel.text = "Reusable presets for UI, transforms, materials, and more";
-        RenderSeconds(1.5f, null);
+        SetInfoVisible(false);
+        SetHeroVisible(true);
+        _heroEyebrow.text = "TWEEN HELPER";
+        _heroTitle.text = "Build better game feel";
+        _heroSubtitle.text = "Reusable animation presets. Faster iteration. More expressive games.";
+        RenderSeconds(2.5f, frame => ApplyHeroMotion(frame, 2.5f, true));
+    }
+
+    private static void SetClipInfo(string section, string animationName, string description, string api, int index, int total)
+    {
+        SetInfoVisible(true);
+        _sectionLabel.text = section;
+        _animationLabel.text = animationName;
+        _descriptionLabel.text = description;
+        _footerLabel.text = $"{index:00}/{total:00}  {api}";
+    }
+
+    private static void ApplyInfoMotion(int frame, float duration)
+    {
+        float progress = frame / Mathf.Max(1f, duration * FrameRate - 1f);
+        float enter = SmoothStep01(progress / 0.14f);
+        float exit = SmoothStep01((1f - progress) / 0.12f);
+        float visibility = Mathf.Min(enter, exit);
+        _infoGroup.alpha = visibility;
+        _infoPanelRect.anchoredPosition = new Vector2(Mathf.Lerp(-90f, 64f, enter), 574f + Mathf.Lerp(10f, 0f, visibility));
+    }
+
+    private static void ApplyHeroMotion(int frame, float duration, bool fadeAtEnd)
+    {
+        float progress = frame / Mathf.Max(1f, duration * FrameRate - 1f);
+        float enter = SmoothStep01(progress / 0.28f);
+        float exit = fadeAtEnd ? SmoothStep01((1f - progress) / 0.22f) : 1f;
+        _heroGroup.alpha = Mathf.Min(enter, exit);
+        _heroPanelRect.anchoredPosition = new Vector2(150f, Mathf.Lerp(108f, 145f, enter));
+        float scale = Mathf.Lerp(0.86f, 1f, enter);
+        _heroPanelRect.localScale = Vector3.one * scale;
+        _heroMark.localRotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(-18f, 0f, enter) + Mathf.Sin(progress * Mathf.PI * 2f) * 1.5f);
+        _heroMark.localScale = Vector3.one * Mathf.Lerp(0.72f, 1f, enter);
+    }
+
+    private static float SmoothStep01(float value)
+    {
+        value = Mathf.Clamp01(value);
+        return value * value * (3f - 2f * value);
+    }
+
+    private static void DeleteIfPresent(string path)
+    {
+        if (File.Exists(path)) File.Delete(path);
+    }
+
+    private static CanvasGroup GetOrAddCanvasGroup(GameObject target)
+    {
+        var group = target.GetComponent<CanvasGroup>();
+        return group != null ? group : target.AddComponent<CanvasGroup>();
     }
 
     private static void RenderSeconds(float seconds, Action<int> beforeFrame)
@@ -319,7 +481,7 @@ public static class TweenHelperPublisherVideoCapture
     {
         _uiTarget.transform.localScale = Vector3.one;
         _uiTarget.transform.localRotation = Quaternion.identity;
-        ((RectTransform)_uiTarget.transform).anchoredPosition = new Vector2(55f, 82f);
+        ((RectTransform)_uiTarget.transform).anchoredPosition = new Vector2(70f, 105f);
         _uiTarget.color = new Color(0.18f, 0.72f, 1f, 1f);
         var canvasGroup = _uiTarget.GetComponent<CanvasGroup>();
         if (canvasGroup == null) canvasGroup = _uiTarget.gameObject.AddComponent<CanvasGroup>();
@@ -337,6 +499,16 @@ public static class TweenHelperPublisherVideoCapture
     {
         Transform card = _canvas.transform.Find("Preview Card");
         if (card != null) card.gameObject.SetActive(visible);
+    }
+
+    private static void SetInfoVisible(bool visible)
+    {
+        if (_infoGroup != null) _infoGroup.gameObject.SetActive(visible);
+    }
+
+    private static void SetHeroVisible(bool visible)
+    {
+        if (_heroGroup != null) _heroGroup.gameObject.SetActive(visible);
     }
 
     private static void Set3DVisible(bool visible)
