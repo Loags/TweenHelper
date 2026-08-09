@@ -6,8 +6,11 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes/TweenHelperDemo3D.unity
+    guid: 47d9eb312b0c49c44a4ee4753ee1f22d
+  - enabled: 1
+    path: Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes/TweenHelperDemo2D.unity
+    guid: e7f7edee1470e4c4589f8808b111dd10
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
