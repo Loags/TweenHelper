@@ -64,11 +64,9 @@ Tween Helper is suitable for menus, HUDs, notifications, cards, buttons, pickups
 
 ### Technical details
 
-Verify the Unity-version statement against the exact uploaded artifact before publishing.
-
 ```text
 Version: 1.0.0
-Unity version: 2022.3.0f1 or newer
+Validated Unity version: 6000.5.2f1
 Required dependency: DOTween 1.3.030 or newer, installed separately
 Unity packages used: Unity UI (uGUI) and TextMesh Pro
 
@@ -98,8 +96,9 @@ Editor tools:
 - DOTween setup validator
 
 Render-pipeline compatibility:
-- Runtime code and 2D demo are render-pipeline independent
-- Included 3D demo materials use the Universal Render Pipeline (URP)
+- Runtime code and 2D demo are compatible with Built-in and URP
+- Included 3D demo materials use URP
+- HDRP and custom render pipelines have not been validated
 
 Input:
 - Unity Input System package is not required
@@ -110,13 +109,27 @@ Documentation: Offline installation guide, API examples, lifecycle guidance, and
 Runtime AI or online services: None
 ```
 
+### Package upload
+
+Render pipelines: `Built-in` and `URP`.
+
+Asset Store package dependency: `DOTween (HOTween v2)` (free)
+
+```text
+https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676
+```
+
+Additional compatibility information:
+
+```text
+Tween Helper's runtime code and included 2D demo work with both the Built-in Render Pipeline and URP. The included 3D demo materials use URP; Built-in users can replace or convert those sample materials. HDRP and custom render pipelines have not been validated.
+```
+
 ### Category
 
 ```text
-Tools
+Tools > Animation
 ```
-
-If the portal requests a narrower subcategory, use `Tools > Animation` when available.
 
 ### Price
 
