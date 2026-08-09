@@ -55,7 +55,7 @@ Assets/Loags/TweenHelper/
 
 Only this root is selected in Asset Store Publishing Tools. DOTween remains under `Assets/Plugins/Demigiant`, and Asset Store Publishing Tools remains under `Packages`; neither is included in the upload.
 
-Repository-only tests, reset-audit tooling, and submission notes live under `Assets/_Project/TweenHelperDevelopment`. They compile against the distributable assemblies but are excluded from the `.unitypackage`.
+Repository-only tests, reset-audit tooling, submission notes, and Publisher Portal release history live under `Assets/_Project/TweenHelperDevelopment`. They compile against the distributable assemblies where applicable but are excluded from the `.unitypackage`.
 
 ## M1 - Stabilize animations
 
@@ -213,7 +213,7 @@ Release sequence:
 7. Confirm the clean import creates no files outside `Assets/Loags/TweenHelper`.
 8. Open both demo scenes, the preset browser, and the setup validator.
 9. Regenerate the catalog and confirm no diff.
-10. Set version `1.0.0`, update the changelog date, and tag only the tested artifact.
+10. Set version `1.0.0`, copy the matching entry from `Assets/_Project/TweenHelperDevelopment/Documentation/PublisherPortalReleaseNotes.md`, and tag only the tested artifact.
 
 ## Current environment blockers
 
