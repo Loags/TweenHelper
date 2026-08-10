@@ -1,4 +1,5 @@
 using LB.TweenHelper.Demo;
+using System.IO;
 using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -12,10 +13,27 @@ namespace LB.TweenHelper.Editor
     {
         private const string SceneFolder = "Assets/_Project/TweenHelperDevelopment/Validation/Scenes";
         private const string ScenePath = SceneFolder + "/TweenHelperPresetReview.unity";
+        private const string MaterialPath = SceneFolder + "/TweenHelperPresetReviewMaterial.mat";
         private static readonly Color BackgroundColor = new Color(0.025f, 0.04f, 0.08f);
         private static readonly Color PanelColor = new Color(0.055f, 0.08f, 0.14f, 0.94f);
         private static readonly Color BlueColor = new Color(0.1f, 0.58f, 0.95f);
         private static readonly Color MutedTextColor = new Color(0.68f, 0.74f, 0.84f);
+
+        [InitializeOnLoadMethod]
+        private static void RefreshOpenReviewSceneIfNeeded()
+        {
+            EditorApplication.delayCall += () =>
+            {
+                if (Application.isPlaying) return;
+                string fullScenePath = Path.GetFullPath(ScenePath);
+                if (!File.Exists(fullScenePath)) return;
+
+                bool sceneNeedsFilters = !File.ReadAllText(fullScenePath).Contains("allFilterToggle:");
+                bool sceneNeedsMaterial = !File.Exists(Path.GetFullPath(MaterialPath));
+                if (!sceneNeedsFilters && !sceneNeedsMaterial) return;
+                BuildScene();
+            };
+        }
 
         [MenuItem("Tools/Tween Helper Dev/Build Preset Review Scene")]
         public static void BuildScene()
@@ -37,8 +55,22 @@ namespace LB.TweenHelper.Editor
             totals.color = MutedTextColor;
             SetRect(totals.rectTransform, new Vector2(0.55f, 0f), new Vector2(1f, 1f), new Vector2(10f, 0f), new Vector2(-34f, 0f));
 
+            RectTransform filterPanel = CreatePanel("Review Filters", canvas.transform, PanelColor);
+            SetRect(filterPanel, new Vector2(0.27f, 0.86f), new Vector2(0.73f, 0.925f), Vector2.zero, Vector2.zero);
+            var filterGroup = filterPanel.gameObject.AddComponent<ToggleGroup>();
+            filterGroup.allowSwitchOff = false;
+            Toggle allFilter = CreateToggle("All Filter", filterPanel, "ALL", filterGroup);
+            SetRect((RectTransform)allFilter.transform, new Vector2(0.015f, 0.12f), new Vector2(0.325f, 0.88f), Vector2.zero, Vector2.zero);
+            Toggle unreviewedFilter = CreateToggle("Unreviewed Filter", filterPanel, "NOT REVIEWED", filterGroup);
+            SetRect((RectTransform)unreviewedFilter.transform, new Vector2(0.345f, 0.12f), new Vector2(0.655f, 0.88f), Vector2.zero, Vector2.zero);
+            Toggle failedFilter = CreateToggle("Failed Filter", filterPanel, "NEEDS WORK", filterGroup);
+            SetRect((RectTransform)failedFilter.transform, new Vector2(0.675f, 0.12f), new Vector2(0.985f, 0.88f), Vector2.zero, Vector2.zero);
+            allFilter.SetIsOnWithoutNotify(true);
+            unreviewedFilter.SetIsOnWithoutNotify(false);
+            failedFilter.SetIsOnWithoutNotify(false);
+
             RectTransform infoPanel = CreatePanel("Animation Information", canvas.transform, PanelColor);
-            SetRect(infoPanel, new Vector2(0.19f, 0.72f), new Vector2(0.81f, 0.93f), Vector2.zero, Vector2.zero);
+            SetRect(infoPanel, new Vector2(0.19f, 0.67f), new Vector2(0.81f, 0.85f), Vector2.zero, Vector2.zero);
             TMP_Text category = CreateText("Category", infoPanel, string.Empty, 17, FontStyles.Bold, TextAlignmentOptions.Center);
             category.color = BlueColor;
             SetRect(category.rectTransform, new Vector2(0f, 0.72f), new Vector2(1f, 1f), Vector2.zero, Vector2.zero);
@@ -49,7 +81,7 @@ namespace LB.TweenHelper.Editor
             SetRect(description.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0.4f), new Vector2(35f, 0f), new Vector2(-35f, 0f));
 
             RectTransform previewFrame = CreatePanel("Preview", canvas.transform, new Color(0.03f, 0.055f, 0.1f, 0.35f));
-            SetRect(previewFrame, new Vector2(0.2f, 0.24f), new Vector2(0.8f, 0.7f), Vector2.zero, Vector2.zero);
+            SetRect(previewFrame, new Vector2(0.2f, 0.24f), new Vector2(0.8f, 0.65f), Vector2.zero, Vector2.zero);
             GameObject uiTarget = CreateUiTarget(previewFrame);
 
             Button failed = CreateButton("Mark Wrong", canvas.transform, "[X]  WRONG / NEEDS WORK", new Color(0.42f, 0.16f, 0.2f));
@@ -88,6 +120,9 @@ namespace LB.TweenHelper.Editor
             Assign(serializedController, "nextButton", next);
             Assign(serializedController, "failedButton", failed);
             Assign(serializedController, "passedButton", passed);
+            Assign(serializedController, "allFilterToggle", allFilter);
+            Assign(serializedController, "unreviewedFilterToggle", unreviewedFilter);
+            Assign(serializedController, "failedFilterToggle", failedFilter);
             serializedController.ApplyModifiedPropertiesWithoutUndo();
 
             camera.transform.LookAt(worldTarget.transform);
@@ -125,8 +160,22 @@ namespace LB.TweenHelper.Editor
             target.transform.position = Vector3.zero;
             target.transform.localScale = Vector3.one * 2.25f;
             target.transform.rotation = Quaternion.Euler(18f, 28f, 0f);
-            target.GetComponent<Renderer>().material.color = new Color(0.12f, 0.63f, 1f);
+            target.GetComponent<Renderer>().sharedMaterial = GetOrCreatePreviewMaterial();
             return target;
+        }
+
+        private static Material GetOrCreatePreviewMaterial()
+        {
+            Material material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
+            if (material != null) return material;
+
+            Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+            material = new Material(shader)
+            {
+                color = new Color(0.12f, 0.63f, 1f)
+            };
+            AssetDatabase.CreateAsset(material, MaterialPath);
+            return material;
         }
 
         private static Canvas CreateCanvas()
@@ -179,7 +228,7 @@ namespace LB.TweenHelper.Editor
             text.fontStyle = style;
             text.alignment = alignment;
             text.color = Color.white;
-            text.enableWordWrapping = true;
+            text.textWrappingMode = TextWrappingModes.Normal;
             text.raycastTarget = false;
             return text;
         }
@@ -202,6 +251,29 @@ namespace LB.TweenHelper.Editor
             TMP_Text text = CreateText("Label", buttonObject.transform, label, 22, FontStyles.Bold, TextAlignmentOptions.Center);
             SetRect(text.rectTransform, Vector2.zero, Vector2.one, new Vector2(14f, 8f), new Vector2(-14f, -8f));
             return button;
+        }
+
+        private static Toggle CreateToggle(string name, Transform parent, string label, ToggleGroup group)
+        {
+            var toggleObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Toggle));
+            toggleObject.transform.SetParent(parent, false);
+            var background = toggleObject.GetComponent<Image>();
+            background.color = new Color(0.09f, 0.15f, 0.25f);
+            var toggle = toggleObject.GetComponent<Toggle>();
+            toggle.group = group;
+            toggle.targetGraphic = background;
+
+            var indicatorObject = new GameObject("Selected", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            indicatorObject.transform.SetParent(toggleObject.transform, false);
+            var indicator = indicatorObject.GetComponent<Image>();
+            indicator.color = BlueColor;
+            indicator.raycastTarget = false;
+            SetRect((RectTransform)indicatorObject.transform, new Vector2(0f, 0f), new Vector2(0f, 1f), Vector2.zero, new Vector2(7f, 0f));
+            toggle.graphic = indicator;
+
+            TMP_Text text = CreateText("Label", toggleObject.transform, label, 17, FontStyles.Bold, TextAlignmentOptions.Center);
+            SetRect(text.rectTransform, Vector2.zero, Vector2.one, new Vector2(10f, 5f), new Vector2(-10f, -5f));
+            return toggle;
         }
 
         private static void SetRect(RectTransform rect, Vector2 anchorMin, Vector2 anchorMax, Vector2 offsetMin, Vector2 offsetMax)

@@ -23,6 +23,13 @@ namespace LB.TweenHelper.Demo
             Preset
         }
 
+        private enum ReviewFilter
+        {
+            All,
+            Unreviewed,
+            Failed
+        }
+
         private sealed class ReviewItem
         {
             public string Id;
@@ -100,10 +107,17 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private Button failedButton;
         [SerializeField] private Button passedButton;
 
+        [Header("Filters")]
+        [SerializeField] private Toggle allFilterToggle;
+        [SerializeField] private Toggle unreviewedFilterToggle;
+        [SerializeField] private Toggle failedFilterToggle;
+
+        private readonly List<ReviewItem> _allItems = new List<ReviewItem>();
         private readonly List<ReviewItem> _items = new List<ReviewItem>();
         private TargetSnapshot _uiSnapshot;
         private TargetSnapshot _worldSnapshot;
         private TweenHandle _activeTween;
+        private ReviewFilter _activeFilter;
         private int _currentIndex;
 
         private ReviewItem CurrentItem => _items[_currentIndex];
@@ -137,6 +151,9 @@ namespace LB.TweenHelper.Demo
             nextButton.onClick.AddListener(ShowNext);
             failedButton.onClick.AddListener(MarkFailed);
             passedButton.onClick.AddListener(MarkPassed);
+            allFilterToggle.onValueChanged.AddListener(selected => SetFilter(ReviewFilter.All, selected));
+            unreviewedFilterToggle.onValueChanged.AddListener(selected => SetFilter(ReviewFilter.Unreviewed, selected));
+            failedFilterToggle.onValueChanged.AddListener(selected => SetFilter(ReviewFilter.Failed, selected));
         }
 
         private void BuildReviewItems()
@@ -158,7 +175,7 @@ namespace LB.TweenHelper.Demo
             TweenPresetRegistry.Refresh();
             foreach (ITweenPreset preset in TweenPresetRegistry.Presets.OrderBy(item => item.PresetName, StringComparer.Ordinal))
             {
-                _items.Add(new ReviewItem
+                _allItems.Add(new ReviewItem
                 {
                     Id = "Preset:" + preset.PresetName,
                     Name = preset.PresetName,
@@ -168,11 +185,13 @@ namespace LB.TweenHelper.Demo
                     UsesUiTarget = UIPresetCompatibility.IsSuitable(preset)
                 });
             }
+
+            RebuildFilteredItems();
         }
 
         private void AddRecipe(string name, string description)
         {
-            _items.Add(new ReviewItem
+            _allItems.Add(new ReviewItem
             {
                 Id = "Recipe:" + name,
                 Name = name,
@@ -184,6 +203,7 @@ namespace LB.TweenHelper.Demo
 
         public void ReplayCurrent()
         {
+            if (_items.Count == 0) return;
             StopPlayback();
             ResetTargets();
             GameObject target = CurrentItem.UsesUiTarget ? uiTarget : worldTarget;
@@ -204,28 +224,67 @@ namespace LB.TweenHelper.Demo
             ShowCurrentItem();
         }
 
-        public void MarkFailed() => SetCurrentStatus(ReviewStatus.Failed);
+        public void MarkFailed()
+        {
+            if (_items.Count > 0) SetCurrentStatus(ReviewStatus.Failed);
+        }
 
-        public void MarkPassed() => SetCurrentStatus(ReviewStatus.Passed);
+        public void MarkPassed()
+        {
+            if (_items.Count > 0) SetCurrentStatus(ReviewStatus.Passed);
+        }
 
         private void SetCurrentStatus(ReviewStatus status)
         {
-            PlayerPrefs.SetInt(StatusKeyPrefix + CurrentItem.Id, (int)status);
+            ReviewItem reviewedItem = CurrentItem;
+            PlayerPrefs.SetInt(StatusKeyPrefix + reviewedItem.Id, (int)status);
             PlayerPrefs.Save();
-            if (_currentIndex < _items.Count - 1)
-            {
-                _currentIndex++;
-                ShowCurrentItem();
-                return;
-            }
 
-            RefreshStatus();
+            int nextIndex = MatchesFilter(reviewedItem) ? _currentIndex + 1 : _currentIndex;
+            RebuildFilteredItems();
+            _currentIndex = Mathf.Clamp(nextIndex, 0, Mathf.Max(0, _items.Count - 1));
+            ShowCurrentItem();
+        }
+
+        private void SetFilter(ReviewFilter filter, bool selected)
+        {
+            if (!selected) return;
+
+            string selectedId = _items.Count > 0 ? CurrentItem.Id : null;
+            _activeFilter = filter;
+            RebuildFilteredItems();
+            _currentIndex = string.IsNullOrEmpty(selectedId) ? 0 : _items.FindIndex(item => item.Id == selectedId);
+            if (_currentIndex < 0) _currentIndex = 0;
+            ShowCurrentItem();
+        }
+
+        private void RebuildFilteredItems()
+        {
+            _items.Clear();
+            for (int i = 0; i < _allItems.Count; i++)
+            {
+                if (MatchesFilter(_allItems[i])) _items.Add(_allItems[i]);
+            }
+        }
+
+        private bool MatchesFilter(ReviewItem item)
+        {
+            ReviewStatus status = GetStatus(item);
+            if (_activeFilter == ReviewFilter.Unreviewed) return status == ReviewStatus.Unreviewed;
+            if (_activeFilter == ReviewFilter.Failed) return status == ReviewStatus.Failed;
+            return true;
         }
 
         private void ShowCurrentItem()
         {
             StopPlayback();
             ResetTargets();
+            if (_items.Count == 0)
+            {
+                ShowEmptyFilter();
+                return;
+            }
+
             uiTarget.SetActive(CurrentItem.UsesUiTarget);
             worldTarget.SetActive(!CurrentItem.UsesUiTarget);
             itemNameText.text = CurrentItem.Name;
@@ -237,8 +296,29 @@ namespace LB.TweenHelper.Demo
             RefreshStatus();
         }
 
+        private void ShowEmptyFilter()
+        {
+            uiTarget.SetActive(false);
+            worldTarget.SetActive(false);
+            itemNameText.text = "No animations";
+            descriptionText.text = "No animations currently match this review filter.";
+            categoryText.text = "FILTER EMPTY";
+            positionText.text = "0 / 0";
+            statusText.text = "SELECT ANOTHER FILTER";
+            statusText.color = UnreviewedColor;
+            previousButton.interactable = false;
+            replayButton.interactable = false;
+            nextButton.interactable = false;
+            failedButton.interactable = false;
+            passedButton.interactable = false;
+            RefreshTotals();
+        }
+
         private void RefreshStatus()
         {
+            replayButton.interactable = true;
+            failedButton.interactable = true;
+            passedButton.interactable = true;
             ReviewStatus status = GetStatus(CurrentItem);
             Color statusColor = GetStatusColor(status);
             statusText.text = status == ReviewStatus.Unreviewed ? "NOT REVIEWED" : status == ReviewStatus.Failed ? "NEEDS WORK" : "IMPLEMENTATION OK";
@@ -246,16 +326,21 @@ namespace LB.TweenHelper.Demo
             failedButton.image.color = status == ReviewStatus.Failed ? FailedColor : new Color(0.42f, 0.16f, 0.2f);
             passedButton.image.color = status == ReviewStatus.Passed ? PassedColor : new Color(0.12f, 0.35f, 0.25f);
 
+            RefreshTotals();
+        }
+
+        private void RefreshTotals()
+        {
             int passed = 0;
             int failed = 0;
-            for (int i = 0; i < _items.Count; i++)
+            for (int i = 0; i < _allItems.Count; i++)
             {
-                ReviewStatus itemStatus = GetStatus(_items[i]);
+                ReviewStatus itemStatus = GetStatus(_allItems[i]);
                 if (itemStatus == ReviewStatus.Passed) passed++;
                 if (itemStatus == ReviewStatus.Failed) failed++;
             }
 
-            totalsText.text = $"Reviewed {passed + failed}/{_items.Count}   |   Correct {passed}   |   Needs work {failed}";
+            totalsText.text = $"Reviewed {passed + failed}/{_allItems.Count}   |   Correct {passed}   |   Needs work {failed}";
         }
 
         private static ReviewStatus GetStatus(ReviewItem item) => (ReviewStatus)PlayerPrefs.GetInt(StatusKeyPrefix + item.Id, (int)ReviewStatus.Unreviewed);
@@ -318,6 +403,7 @@ namespace LB.TweenHelper.Demo
 
         private static void KillTargetTweens(GameObject target)
         {
+            if (target == null) return;
             DOTween.Kill(target, false);
             DOTween.Kill(target.transform, false);
 
