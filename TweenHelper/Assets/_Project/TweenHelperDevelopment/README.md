@@ -7,3 +7,5 @@ This folder contains repository-only validation assets and must not be included 
 - `Documentation` contains the internal Asset Store submission checklist.
 
 To run a reset audit, open either shipped demo scene, add `Validation/Prefabs/AnimationResetAuditRunner.prefab`, enter Play Mode, and use the runner component's context menu for each audit mode. Reports are written beneath the project `Temp` folder.
+
+For visual review, open `Validation/Scenes/TweenHelperPresetReview.unity` and enter Play Mode. The review now contains 326 entries: the existing 300 presets and 13 UI recipes plus 13 collection entries covering all five recipes, all five stagger orders, and every `GridWaveDirection`. Existing review status keys are unchanged, so the new collection entries appear under **NOT REVIEWED** without clearing the completed 313-entry review. Marking an entry still advances and automatically plays the next item.

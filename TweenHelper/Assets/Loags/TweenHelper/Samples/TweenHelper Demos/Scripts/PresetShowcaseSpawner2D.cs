@@ -8,13 +8,14 @@ using UnityEngine.UI;
 namespace LB.TweenHelper.Demo
 {
     /// <summary>
-    /// Controls the prefab-authored two-tab UI showcase and its safe preview lifecycle.
+    /// Controls the prefab-authored UI showcase and its safe preview lifecycle.
     /// </summary>
     public class PresetShowcaseSpawner2D : MonoBehaviour
     {
         [Header("Tabs")]
         [SerializeField] private Button recipesTabButton;
         [SerializeField] private Button presetsTabButton;
+        [SerializeField] private Button collectionsTabButton;
         [SerializeField] private GameObject recipesPanel;
         [SerializeField] private GameObject presetsPanel;
 
@@ -33,6 +34,8 @@ namespace LB.TweenHelper.Demo
         [Header("Preview")]
         [SerializeField] private Image presetImage;
         [SerializeField] private TextMeshProUGUI animatedText;
+        [SerializeField] private GameObject collectionPreviewRoot;
+        [SerializeField] private GameObject[] collectionTargets;
         [SerializeField] private TMP_Text selectionNameText;
         [SerializeField] private TMP_Text selectionDescriptionText;
         [SerializeField] private TMP_Text codeExampleText;
@@ -63,13 +66,41 @@ namespace LB.TweenHelper.Demo
             new RecipeDefinition(UIRecipeKind.UIEnabled, "Restore the enabled visual state.")
         };
 
+        private static readonly CollectionRecipeDefinition[] CollectionRecipes =
+        {
+            new CollectionRecipeDefinition(CollectionRecipeKind.ListStaggerIn, "Reveal a list with staggered pop-and-fade entrances."),
+            new CollectionRecipeDefinition(CollectionRecipeKind.ListStaggerOut, "Dismiss a list in a staggered sequence."),
+            new CollectionRecipeDefinition(CollectionRecipeKind.GridWave, "Reveal a grid one column at a time."),
+            new CollectionRecipeDefinition(CollectionRecipeKind.GridRipple, "Pulse outward from the center of a grid."),
+            new CollectionRecipeDefinition(CollectionRecipeKind.LoadingDots, "Loop a soft pulse across three loading dots.")
+        };
+
+        private static readonly string[] CollectionOrderNames =
+        {
+            "First to last",
+            "Last to first",
+            "From center",
+            "To center",
+            "Random (seeded)"
+        };
+
         private readonly List<UIPresetListItem> _presetRows = new List<UIPresetListItem>();
+        private readonly List<UIRecipeCard> _recipeCards = new List<UIRecipeCard>();
+        private readonly List<UIRecipeCard> _collectionCards = new List<UIRecipeCard>();
+        private readonly List<string> _targetOptionNames = new List<string>();
         private UIStateSnapshot _imageState;
         private UIStateSnapshot _textState;
+        private UIStateSnapshot[] _collectionStates;
+        private GameObject[] _listTargets;
+        private GameObject[] _gridTargets;
+        private GameObject[] _loadingDotTargets;
         private TweenHandle _activeTween;
         private ITweenPreset _selectedPreset;
         private UIRecipeKind _selectedRecipe = UIRecipeKind.UIAppear;
-        private bool _showingRecipes = true;
+        private CollectionRecipeKind _selectedCollectionRecipe = CollectionRecipeKind.ListStaggerIn;
+        private StaggerOrder _selectedCollectionOrder = StaggerOrder.FirstToLast;
+        private ShowcaseMode _mode = ShowcaseMode.Recipes;
+        private int _selectedTargetIndex;
         private bool _initialized;
 
         private GameObject PreviewTarget => targetDropdown.value == 1 ? animatedText.gameObject : presetImage.gameObject;
@@ -78,6 +109,11 @@ namespace LB.TweenHelper.Demo
         {
             _imageState = UIStateSnapshot.Capture(presetImage.gameObject);
             _textState = UIStateSnapshot.Capture(animatedText.gameObject);
+            _collectionStates = CaptureStates(collectionTargets);
+            _listTargets = CopyTargets(6);
+            _gridTargets = CopyTargets(9);
+            _loadingDotTargets = CopyTargets(3);
+            for (int i = 0; i < targetDropdown.options.Count; i++) _targetOptionNames.Add(targetDropdown.options[i].text);
             WireControls();
             BuildContent();
         }
@@ -86,7 +122,7 @@ namespace LB.TweenHelper.Demo
         {
             ResetTargets();
             ShowRecipes();
-            instructionsPanel.SetContent("TweenHelper 2D Showcase", "Choose UI Recipes or the 2D Preset Library. Select an entry, choose Image or Text, then replay or reset the preview.");
+            instructionsPanel.SetContent("TweenHelper 2D Showcase", "Choose UI Recipes, Collections, or the 2D Preset Library. Select an entry, then replay or reset the preview.");
         }
 
         private void OnDisable() => StopPlayback();
@@ -102,6 +138,7 @@ namespace LB.TweenHelper.Demo
         {
             recipesTabButton.onClick.AddListener(ShowRecipes);
             presetsTabButton.onClick.AddListener(ShowPresets);
+            collectionsTabButton.onClick.AddListener(ShowCollections);
             replayButton.onClick.AddListener(ReplaySelected);
             resetButton.onClick.AddListener(ResetPreview);
             copyButton.onClick.AddListener(CopyCodeExample);
@@ -120,6 +157,16 @@ namespace LB.TweenHelper.Demo
                 var definition = Recipes[i];
                 var card = Instantiate(recipeCardPrefab, recipeContent);
                 card.Configure(definition.Kind, definition.Description, SelectRecipe);
+                _recipeCards.Add(card);
+            }
+
+            for (int i = 0; i < CollectionRecipes.Length; i++)
+            {
+                var definition = CollectionRecipes[i];
+                var card = Instantiate(recipeCardPrefab, recipeContent);
+                CollectionRecipeKind kind = definition.Kind;
+                card.Configure(kind.ToString(), definition.Description, () => SelectCollectionRecipe(kind));
+                _collectionCards.Add(card);
             }
 
             TweenPresetRegistry.ScanForCodePresets();
@@ -154,9 +201,13 @@ namespace LB.TweenHelper.Demo
         {
             StopPlayback();
             ResetTargets();
-            _showingRecipes = true;
+            _mode = ShowcaseMode.Recipes;
             recipesPanel.SetActive(true);
             presetsPanel.SetActive(false);
+            SetCardVisibility(true);
+            ResetRecipeScrollPosition();
+            SetCollectionPreview(false);
+            RestoreTargetOptions();
             SelectRecipe(_selectedRecipe, false);
         }
 
@@ -164,17 +215,34 @@ namespace LB.TweenHelper.Demo
         {
             StopPlayback();
             ResetTargets();
-            _showingRecipes = false;
+            _mode = ShowcaseMode.Presets;
             recipesPanel.SetActive(false);
             presetsPanel.SetActive(true);
+            SetCollectionPreview(false);
+            RestoreTargetOptions();
             RefreshPresetRows();
             if (_selectedPreset != null) UpdatePresetDetails(_selectedPreset);
         }
 
+        public void ShowCollections()
+        {
+            StopPlayback();
+            ResetTargets();
+            _mode = ShowcaseMode.Collections;
+            recipesPanel.SetActive(true);
+            presetsPanel.SetActive(false);
+            SetCardVisibility(false);
+            ResetRecipeScrollPosition();
+            SetCollectionPreview(true);
+            ShowCollectionOrderOptions();
+            SelectCollectionRecipe(_selectedCollectionRecipe, false);
+        }
+
         public void ReplaySelected()
         {
-            if (_showingRecipes) PlayRecipe(_selectedRecipe);
-            else PlaySelectedPreset();
+            if (_mode == ShowcaseMode.Recipes) PlayRecipe(_selectedRecipe);
+            else if (_mode == ShowcaseMode.Presets) PlaySelectedPreset();
+            else PlayCollectionRecipe(_selectedCollectionRecipe);
         }
 
         public void ResetPreview()
@@ -187,6 +255,15 @@ namespace LB.TweenHelper.Demo
 
         private void ChangeTarget()
         {
+            if (_mode == ShowcaseMode.Collections)
+            {
+                _selectedCollectionOrder = (StaggerOrder)targetDropdown.value;
+                ResetPreview();
+                SelectCollectionRecipe(_selectedCollectionRecipe, false);
+                return;
+            }
+
+            _selectedTargetIndex = targetDropdown.value;
             ResetPreview();
             RefreshPresetRows();
         }
@@ -210,6 +287,25 @@ namespace LB.TweenHelper.Demo
             _selectedPreset = preset;
             UpdatePresetDetails(preset);
             if (play) PlaySelectedPreset();
+        }
+
+        private void SelectCollectionRecipe(CollectionRecipeKind recipe)
+        {
+            _selectedCollectionOrder = recipe == CollectionRecipeKind.ListStaggerOut ? StaggerOrder.LastToFirst : StaggerOrder.FirstToLast;
+            targetDropdown.SetValueWithoutNotify((int)_selectedCollectionOrder);
+            SelectCollectionRecipe(recipe, true);
+        }
+
+        private void SelectCollectionRecipe(CollectionRecipeKind recipe, bool play)
+        {
+            _selectedCollectionRecipe = recipe;
+            var definition = CollectionRecipes[(int)recipe];
+            selectionNameText.text = recipe.ToString();
+            selectionDescriptionText.text = definition.Description;
+            codeExampleText.text = GetCollectionCodeExample(recipe);
+            ConfigureCollectionLayout(recipe);
+            targetDropdown.interactable = recipe == CollectionRecipeKind.ListStaggerIn || recipe == CollectionRecipeKind.ListStaggerOut;
+            if (play) PlayCollectionRecipe(recipe);
         }
 
         private void UpdatePresetDetails(ITweenPreset preset)
@@ -262,6 +358,39 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private TweenHandle PlayCollectionRecipe(CollectionRecipeKind recipe)
+        {
+            StopPlayback();
+            ResetCollectionTargets();
+            ConfigureCollectionLayout(recipe);
+
+            switch (recipe)
+            {
+                case CollectionRecipeKind.ListStaggerIn:
+                    return _activeTween = _listTargets.TweenStagger(collectionPreviewRoot)
+                        .Preset<PopInFadePreset>(0.32f)
+                        .Order(_selectedCollectionOrder)
+                        .DelayBetween(0.06f)
+                        .Seed(1729)
+                        .Play();
+                case CollectionRecipeKind.ListStaggerOut:
+                    return _activeTween = _listTargets.TweenStagger(collectionPreviewRoot)
+                        .Preset<PopOutFadePreset>(0.26f)
+                        .Order(_selectedCollectionOrder)
+                        .DelayBetween(0.04f)
+                        .Seed(1729)
+                        .Play();
+                case CollectionRecipeKind.GridWave:
+                    return _activeTween = _gridTargets.GridWave(collectionPreviewRoot, 3);
+                case CollectionRecipeKind.GridRipple:
+                    return _activeTween = _gridTargets.GridRipple(collectionPreviewRoot, 3);
+                case CollectionRecipeKind.LoadingDots:
+                    return _activeTween = _loadingDotTargets.LoadingDots(collectionPreviewRoot);
+                default:
+                    return null;
+            }
+        }
+
         private Color GetHoverColor(GameObject target) => target == animatedText.gameObject ? textHoverColor : imageHoverColor;
 
         private Color GetDisabledColor(GameObject target) => target == animatedText.gameObject ? disabledTextColor : new Color(0.45f, 0.45f, 0.45f, 0.55f);
@@ -290,7 +419,7 @@ namespace LB.TweenHelper.Demo
             }
 
             visibleCountText.text = $"{visible} / {_presetRows.Count} presets";
-            if (!_showingRecipes && !selectedPresetIsVisible && firstVisiblePreset != null)
+            if (_mode == ShowcaseMode.Presets && !selectedPresetIsVisible && firstVisiblePreset != null)
             {
                 SelectPreset(firstVisiblePreset, false);
             }
@@ -302,12 +431,15 @@ namespace LB.TweenHelper.Demo
             _activeTween = null;
             KillTargetTweens(presetImage.gameObject);
             KillTargetTweens(animatedText.gameObject);
+            DOTween.Kill(collectionPreviewRoot, false);
+            for (int i = 0; i < collectionTargets.Length; i++) KillTargetTweens(collectionTargets[i]);
         }
 
         private void ResetTargets()
         {
             _imageState.Apply(presetImage.gameObject);
             _textState.Apply(animatedText.gameObject);
+            ResetCollectionTargets();
         }
 
         private void ResetTarget(GameObject target)
@@ -348,6 +480,120 @@ namespace LB.TweenHelper.Demo
         {
             int normalized = index % Recipes.Length;
             return normalized < 0 ? normalized + Recipes.Length : normalized;
+        }
+
+        private void SetCardVisibility(bool showUiRecipes)
+        {
+            for (int i = 0; i < _recipeCards.Count; i++) _recipeCards[i].gameObject.SetActive(showUiRecipes);
+            for (int i = 0; i < _collectionCards.Count; i++) _collectionCards[i].gameObject.SetActive(!showUiRecipes);
+        }
+
+        private void ResetRecipeScrollPosition()
+        {
+            var contentRect = (RectTransform)recipeContent;
+            Vector2 position = contentRect.anchoredPosition;
+            position.y = 0f;
+            contentRect.anchoredPosition = position;
+        }
+
+        private void SetCollectionPreview(bool show)
+        {
+            presetImage.gameObject.SetActive(!show);
+            animatedText.gameObject.SetActive(!show);
+            collectionPreviewRoot.SetActive(show);
+        }
+
+        private void RestoreTargetOptions()
+        {
+            if (targetDropdown.options.Count != _targetOptionNames.Count || targetDropdown.options[0].text != _targetOptionNames[0])
+            {
+                targetDropdown.ClearOptions();
+                targetDropdown.AddOptions(_targetOptionNames);
+            }
+
+            targetDropdown.SetValueWithoutNotify(_selectedTargetIndex);
+            targetDropdown.interactable = true;
+        }
+
+        private void ShowCollectionOrderOptions()
+        {
+            targetDropdown.ClearOptions();
+            targetDropdown.AddOptions(new List<string>(CollectionOrderNames));
+            targetDropdown.SetValueWithoutNotify((int)_selectedCollectionOrder);
+        }
+
+        private void ConfigureCollectionLayout(CollectionRecipeKind recipe)
+        {
+            bool isList = recipe == CollectionRecipeKind.ListStaggerIn || recipe == CollectionRecipeKind.ListStaggerOut;
+            int activeCount = isList ? _listTargets.Length : recipe == CollectionRecipeKind.LoadingDots ? _loadingDotTargets.Length : _gridTargets.Length;
+
+            for (int i = 0; i < collectionTargets.Length; i++)
+            {
+                bool active = i < activeCount;
+                collectionTargets[i].SetActive(active);
+                if (!active) continue;
+
+                var rect = (RectTransform)collectionTargets[i].transform;
+                TMP_Text label = collectionTargets[i].GetComponentInChildren<TMP_Text>();
+                if (isList)
+                {
+                    rect.sizeDelta = new Vector2(66f, 66f);
+                    rect.anchoredPosition = new Vector2((i - 2.5f) * 82f, 72f);
+                    label.gameObject.SetActive(true);
+                }
+                else if (recipe == CollectionRecipeKind.LoadingDots)
+                {
+                    rect.sizeDelta = new Vector2(36f, 36f);
+                    rect.anchoredPosition = new Vector2((i - 1) * 72f, 72f);
+                    label.gameObject.SetActive(false);
+                }
+                else
+                {
+                    int row = i / 3;
+                    int column = i % 3;
+                    rect.sizeDelta = new Vector2(62f, 62f);
+                    rect.anchoredPosition = new Vector2((column - 1) * 82f, (1 - row) * 82f + 72f);
+                    label.gameObject.SetActive(true);
+                }
+            }
+        }
+
+        private string GetCollectionCodeExample(CollectionRecipeKind recipe)
+        {
+            switch (recipe)
+            {
+                case CollectionRecipeKind.ListStaggerIn:
+                    return $"items.TweenStagger(owner).Preset<PopInFadePreset>(0.32f).Order(StaggerOrder.{_selectedCollectionOrder}).DelayBetween(0.06f).Play();";
+                case CollectionRecipeKind.ListStaggerOut:
+                    return $"items.TweenStagger(owner).Preset<PopOutFadePreset>(0.26f).Order(StaggerOrder.{_selectedCollectionOrder}).DelayBetween(0.04f).Play();";
+                case CollectionRecipeKind.GridWave:
+                    return "items.GridWave(owner, columns: 3);";
+                case CollectionRecipeKind.GridRipple:
+                    return "items.GridRipple(owner, columns: 3);";
+                case CollectionRecipeKind.LoadingDots:
+                    return "dots.LoadingDots(owner);";
+                default:
+                    return string.Empty;
+            }
+        }
+
+        private GameObject[] CopyTargets(int count)
+        {
+            var targets = new GameObject[count];
+            Array.Copy(collectionTargets, targets, count);
+            return targets;
+        }
+
+        private static UIStateSnapshot[] CaptureStates(GameObject[] targets)
+        {
+            var states = new UIStateSnapshot[targets.Length];
+            for (int i = 0; i < targets.Length; i++) states[i] = UIStateSnapshot.Capture(targets[i]);
+            return states;
+        }
+
+        private void ResetCollectionTargets()
+        {
+            for (int i = 0; i < collectionTargets.Length; i++) _collectionStates[i].Apply(collectionTargets[i]);
         }
 
         private static void KillTargetTweens(GameObject target)
@@ -404,6 +650,34 @@ namespace LB.TweenHelper.Demo
                 Kind = kind;
                 Description = description;
             }
+        }
+
+        private readonly struct CollectionRecipeDefinition
+        {
+            public readonly CollectionRecipeKind Kind;
+            public readonly string Description;
+
+            public CollectionRecipeDefinition(CollectionRecipeKind kind, string description)
+            {
+                Kind = kind;
+                Description = description;
+            }
+        }
+
+        private enum ShowcaseMode
+        {
+            Recipes,
+            Presets,
+            Collections
+        }
+
+        private enum CollectionRecipeKind
+        {
+            ListStaggerIn,
+            ListStaggerOut,
+            GridWave,
+            GridRipple,
+            LoadingDots
         }
 
         private readonly struct UIStateSnapshot

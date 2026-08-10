@@ -29,9 +29,11 @@ namespace LB.TweenHelper.Editor
                 string fullScenePath = Path.GetFullPath(ScenePath);
                 if (!File.Exists(fullScenePath)) return;
 
-                bool sceneNeedsFilters = !File.ReadAllText(fullScenePath).Contains("allFilterToggle:");
+                string sceneText = File.ReadAllText(fullScenePath);
+                bool sceneNeedsFilters = !sceneText.Contains("allFilterToggle:");
+                bool sceneNeedsCollectionPreview = !sceneText.Contains("collectionPreviewRoot:");
                 bool sceneNeedsMaterial = !File.Exists(Path.GetFullPath(MaterialPath));
-                if (!sceneNeedsFilters && !sceneNeedsMaterial)
+                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsMaterial)
                 {
                     Material material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
                     if (material == null || !NeedsTransparentConfiguration(material)) return;
@@ -93,6 +95,7 @@ namespace LB.TweenHelper.Editor
             RectTransform previewFrame = CreatePanel("Preview", canvas.transform, new Color(0.03f, 0.055f, 0.1f, 0.35f));
             SetRect(previewFrame, new Vector2(0.2f, 0.24f), new Vector2(0.8f, 0.65f), Vector2.zero, Vector2.zero);
             GameObject uiTarget = CreateUiTarget(previewFrame);
+            CollectionPreview collectionPreview = CreateCollectionPreview(previewFrame);
 
             Button failed = CreateButton("Mark Wrong", canvas.transform, "[X]  WRONG / NEEDS WORK", new Color(0.42f, 0.16f, 0.2f));
             SetRect((RectTransform)failed.transform, new Vector2(0.015f, 0.3f), new Vector2(0.18f, 0.63f), Vector2.zero, Vector2.zero);
@@ -119,6 +122,13 @@ namespace LB.TweenHelper.Editor
             var serializedController = new SerializedObject(controller);
             Assign(serializedController, "uiTarget", uiTarget);
             Assign(serializedController, "worldTarget", worldTarget);
+            Assign(serializedController, "collectionPreviewRoot", collectionPreview.Root);
+            Assign(serializedController, "listPreviewGroup", collectionPreview.ListGroup);
+            Assign(serializedController, "gridPreviewGroup", collectionPreview.GridGroup);
+            Assign(serializedController, "loadingDotsPreviewGroup", collectionPreview.LoadingDotsGroup);
+            AssignArray(serializedController, "listTargets", collectionPreview.ListTargets);
+            AssignArray(serializedController, "gridTargets", collectionPreview.GridTargets);
+            AssignArray(serializedController, "loadingDotTargets", collectionPreview.LoadingDotTargets);
             Assign(serializedController, "itemNameText", itemName);
             Assign(serializedController, "descriptionText", description);
             Assign(serializedController, "categoryText", category);
@@ -209,6 +219,7 @@ namespace LB.TweenHelper.Editor
             material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
             material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
             material.SetShaderPassEnabled("ShadowCaster", false);
+            material.SetShaderPassEnabled("DepthOnly", false);
             material.renderQueue = (int)RenderQueue.Transparent;
         }
 
@@ -242,6 +253,72 @@ namespace LB.TweenHelper.Editor
             TMP_Text label = CreateText("Target Label", rect, "TWEEN\nHELPER", 30, FontStyles.Bold, TextAlignmentOptions.Center);
             SetRect(label.rectTransform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             return target;
+        }
+
+        private static CollectionPreview CreateCollectionPreview(Transform parent)
+        {
+            var root = new GameObject("Collection Preview", typeof(RectTransform));
+            root.transform.SetParent(parent, false);
+            SetRect((RectTransform)root.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+
+            GameObject listGroup = CreatePreviewGroup("List Preview", root.transform);
+            var listTargets = new GameObject[6];
+            for (int i = 0; i < listTargets.Length; i++)
+            {
+                listTargets[i] = CreateCollectionItem($"List Item {i + 1}", listGroup.transform, (i + 1).ToString(), new Vector2((i - 2.5f) * 112f, 0f), new Vector2(88f, 88f));
+            }
+
+            GameObject gridGroup = CreatePreviewGroup("Grid Preview", root.transform);
+            var gridTargets = new GameObject[9];
+            for (int i = 0; i < gridTargets.Length; i++)
+            {
+                int row = i / 3;
+                int column = i % 3;
+                gridTargets[i] = CreateCollectionItem($"Grid Item {i + 1}", gridGroup.transform, (i + 1).ToString(), new Vector2((column - 1) * 112f, (1 - row) * 112f), new Vector2(86f, 86f));
+            }
+
+            GameObject loadingDotsGroup = CreatePreviewGroup("Loading Dots Preview", root.transform);
+            var loadingDotTargets = new GameObject[3];
+            for (int i = 0; i < loadingDotTargets.Length; i++)
+            {
+                TMP_Text dot = CreateText($"Loading Dot {i + 1}", loadingDotsGroup.transform, "●", 92f, FontStyles.Bold, TextAlignmentOptions.Center);
+                dot.color = BlueColor;
+                RectTransform dotRect = dot.rectTransform;
+                dotRect.anchorMin = dotRect.anchorMax = new Vector2(0.5f, 0.5f);
+                dotRect.sizeDelta = new Vector2(90f, 110f);
+                dotRect.anchoredPosition = new Vector2((i - 1) * 110f, 0f);
+                dot.gameObject.AddComponent<CanvasGroup>();
+                loadingDotTargets[i] = dot.gameObject;
+            }
+
+            listGroup.SetActive(false);
+            gridGroup.SetActive(false);
+            loadingDotsGroup.SetActive(false);
+            root.SetActive(false);
+            return new CollectionPreview(root, listGroup, gridGroup, loadingDotsGroup, listTargets, gridTargets, loadingDotTargets);
+        }
+
+        private static GameObject CreatePreviewGroup(string name, Transform parent)
+        {
+            var group = new GameObject(name, typeof(RectTransform));
+            group.transform.SetParent(parent, false);
+            SetRect((RectTransform)group.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            return group;
+        }
+
+        private static GameObject CreateCollectionItem(string name, Transform parent, string labelValue, Vector2 anchoredPosition, Vector2 size)
+        {
+            var item = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(CanvasGroup));
+            item.transform.SetParent(parent, false);
+            var rect = (RectTransform)item.transform;
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = size;
+            rect.anchoredPosition = anchoredPosition;
+            item.GetComponent<Image>().color = BlueColor;
+
+            TMP_Text label = CreateText("Label", item.transform, labelValue, 25f, FontStyles.Bold, TextAlignmentOptions.Center);
+            SetRect(label.rectTransform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            return item;
         }
 
         private static RectTransform CreatePanel(string name, Transform parent, Color color)
@@ -323,10 +400,39 @@ namespace LB.TweenHelper.Editor
             serializedObject.FindProperty(propertyName).objectReferenceValue = value;
         }
 
+        private static void AssignArray(SerializedObject serializedObject, string propertyName, GameObject[] values)
+        {
+            SerializedProperty property = serializedObject.FindProperty(propertyName);
+            property.arraySize = values.Length;
+            for (int i = 0; i < values.Length; i++) property.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
+        }
+
         private static void EnsureFolder(string parent, string child)
         {
             string path = parent + "/" + child;
             if (!AssetDatabase.IsValidFolder(path)) AssetDatabase.CreateFolder(parent, child);
+        }
+
+        private readonly struct CollectionPreview
+        {
+            public readonly GameObject Root;
+            public readonly GameObject ListGroup;
+            public readonly GameObject GridGroup;
+            public readonly GameObject LoadingDotsGroup;
+            public readonly GameObject[] ListTargets;
+            public readonly GameObject[] GridTargets;
+            public readonly GameObject[] LoadingDotTargets;
+
+            public CollectionPreview(GameObject root, GameObject listGroup, GameObject gridGroup, GameObject loadingDotsGroup, GameObject[] listTargets, GameObject[] gridTargets, GameObject[] loadingDotTargets)
+            {
+                Root = root;
+                ListGroup = listGroup;
+                GridGroup = gridGroup;
+                LoadingDotsGroup = loadingDotsGroup;
+                ListTargets = listTargets;
+                GridTargets = gridTargets;
+                LoadingDotTargets = loadingDotTargets;
+            }
         }
     }
 }

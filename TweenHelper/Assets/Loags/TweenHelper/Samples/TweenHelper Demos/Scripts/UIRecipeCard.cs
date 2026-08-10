@@ -11,20 +11,23 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private TMP_Text descriptionText;
         [SerializeField] private Button playButton;
 
-        private UIRecipeKind _recipe;
-        private Action<UIRecipeKind> _onSelected;
+        private Action _onSelected;
 
         public void Configure(UIRecipeKind recipe, string description, Action<UIRecipeKind> onSelected)
         {
-            _recipe = recipe;
+            Configure(recipe.ToString(), description, () => onSelected?.Invoke(recipe));
+        }
+
+        public void Configure(string recipeName, string description, Action onSelected)
+        {
             _onSelected = onSelected;
-            nameText.text = recipe.ToString();
+            nameText.text = recipeName;
             descriptionText.text = description;
             playButton.onClick.RemoveListener(Select);
             playButton.onClick.AddListener(Select);
         }
 
-        private void Select() => _onSelected?.Invoke(_recipe);
+        private void Select() => _onSelected?.Invoke();
     }
 
     public enum UIRecipeKind

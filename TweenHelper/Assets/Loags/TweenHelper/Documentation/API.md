@@ -173,6 +173,48 @@ if (preset != null && preset.CanApplyTo(gameObject))
 
 For a dynamic name, use `TweenPresetRegistry.GetPresetByName(name)` or `TweenPresetRegistry.PlayByName(name, target)`.
 
+## Staggered collections
+
+Use `TweenStagger(owner)` to combine one finite animation per item into a single sequence. The explicit owner controls the lifecycle of the complete group.
+
+```csharp
+TweenHandle handle = cards.TweenStagger(panel)
+    .Preset<PopInFadePreset>(0.32f, TweenOptions.WithStrength(1.1f))
+    .Order(StaggerOrder.FromCenter)
+    .DelayBetween(0.06f)
+    .OnComplete(EnableInput)
+    .Play();
+```
+
+Dynamic preset names and custom DOTween factories use the same scheduling layer:
+
+```csharp
+TweenHandle dynamicHandle = cards.TweenStagger(panel)
+    .PresetByName(savedPresetName, 0.3f)
+    .Order(StaggerOrder.Random)
+    .Seed(1729)
+    .Play();
+
+TweenHandle customHandle = cards.TweenStagger(panel)
+    .Animate((item, index) => item.transform.DORotate(Vector3.forward * 12f, 0.2f).SetLoops(2, LoopType.Yoyo))
+    .DelayBy((item, index) => index * index * 0.025f)
+    .Play();
+```
+
+Built-in orders are `FirstToLast`, `LastToFirst`, `FromCenter`, `ToCenter`, and deterministic `Random`. `DelayBy` supplies absolute per-item delays and replaces the configured order until a later `Order` or `DelayBetween` call.
+
+Ready-to-play recipes are available directly on `IEnumerable<GameObject>` and component collections:
+
+```csharp
+menuItems.ListStaggerIn(menuRoot);
+menuItems.ListStaggerOut(menuRoot);
+inventoryCells.GridWave(inventoryRoot, columns: 4, direction: GridWaveDirection.TopToBottom);
+inventoryCells.GridRipple(inventoryRoot, columns: 4);
+loadingDots.LoadingDots(loadingRoot);
+```
+
+DOTween cannot nest an infinite child tween inside a sequence. `TweenStaggerBuilder` rejects infinite children with an actionable exception; use a finite child and call `WithLoops(-1)` on the root group. See [Staggered collections](StaggeredCollections.md) for the full contract.
+
 ## Tween lifecycle
 
 A finite tween completes when DOTween invokes its completion callback. Killing a tween is a distinct terminal event and does not imply normal completion. Infinite loops never complete normally, so retain their `TweenHandle` and kill or cancel them during owner teardown.
@@ -187,4 +229,4 @@ TweenHelper initializes automatically. Without `Assets/Resources/TweenHelperSett
 
 ## Sample controls
 
-Open **TweenHelper Demos** from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The 2D scene provides a 13-entry semantic UI recipe tab and a searchable library of 198 UI-suitable presets, with Image/Text target selection and copyable typed examples. When the legacy Input Manager is enabled, Space replays the current 2D selection and the 3D showcase enables its fly-camera shortcuts. The demos do not require the Input System package.
+Open **TweenHelper Demos** from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The 2D scene provides 13 semantic UI recipes, five collection recipes with selectable stagger ordering, and a searchable library of 198 UI-suitable presets. When the legacy Input Manager is enabled, Space replays the current 2D selection and the 3D showcase enables its fly-camera shortcuts. The demos do not require the Input System package.

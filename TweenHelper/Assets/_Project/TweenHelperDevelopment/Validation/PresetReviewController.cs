@@ -20,8 +20,36 @@ namespace LB.TweenHelper.Demo
 
         private enum ReviewKind
         {
-            Recipe,
+            UiRecipe,
+            CollectionRecipe,
+            StaggerVariant,
             Preset
+        }
+
+        private enum PreviewKind
+        {
+            Ui,
+            World,
+            List,
+            Grid,
+            LoadingDots
+        }
+
+        private enum CollectionReviewKind
+        {
+            ListStaggerIn,
+            ListStaggerOut,
+            GridWave,
+            GridRipple,
+            LoadingDots,
+            OrderFirstToLast,
+            OrderLastToFirst,
+            OrderFromCenter,
+            OrderToCenter,
+            OrderRandom,
+            GridWaveRightToLeft,
+            GridWaveTopToBottom,
+            GridWaveBottomToTop
         }
 
         private enum ReviewFilter
@@ -38,7 +66,11 @@ namespace LB.TweenHelper.Demo
             public string Description;
             public ReviewKind Kind;
             public ITweenPreset Preset;
-            public bool UsesUiTarget;
+            public PreviewKind Preview;
+            public CollectionReviewKind CollectionKind;
+
+            public bool UsesUiTarget => Preview == PreviewKind.Ui;
+            public bool UsesCollectionPreview => Preview == PreviewKind.List || Preview == PreviewKind.Grid || Preview == PreviewKind.LoadingDots;
         }
 
         private readonly struct TargetSnapshot
@@ -98,6 +130,15 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private GameObject uiTarget;
         [SerializeField] private GameObject worldTarget;
 
+        [Header("Collection Preview")]
+        [SerializeField] private GameObject collectionPreviewRoot;
+        [SerializeField] private GameObject listPreviewGroup;
+        [SerializeField] private GameObject gridPreviewGroup;
+        [SerializeField] private GameObject loadingDotsPreviewGroup;
+        [SerializeField] private GameObject[] listTargets;
+        [SerializeField] private GameObject[] gridTargets;
+        [SerializeField] private GameObject[] loadingDotTargets;
+
         [Header("Information")]
         [SerializeField] private TMP_Text itemNameText;
         [SerializeField] private TMP_Text descriptionText;
@@ -122,6 +163,9 @@ namespace LB.TweenHelper.Demo
         private readonly List<ReviewItem> _items = new List<ReviewItem>();
         private TargetSnapshot _uiSnapshot;
         private TargetSnapshot _worldSnapshot;
+        private TargetSnapshot[] _listSnapshots;
+        private TargetSnapshot[] _gridSnapshots;
+        private TargetSnapshot[] _loadingDotSnapshots;
         private TweenHandle _activeTween;
         private Coroutine _delayedReplay;
         private ReviewFilter _activeFilter;
@@ -133,6 +177,9 @@ namespace LB.TweenHelper.Demo
         {
             _uiSnapshot = TargetSnapshot.Capture(uiTarget);
             _worldSnapshot = TargetSnapshot.Capture(worldTarget);
+            _listSnapshots = CaptureTargets(listTargets);
+            _gridSnapshots = CaptureTargets(gridTargets);
+            _loadingDotSnapshots = CaptureTargets(loadingDotTargets);
             WireControls();
             BuildReviewItems();
             ShowCurrentItem();
@@ -179,6 +226,20 @@ namespace LB.TweenHelper.Demo
             AddRecipe("UIDisabled", "Transition a UI element to its disabled state.");
             AddRecipe("UIEnabled", "Restore a disabled UI element to its enabled state.");
 
+            AddCollectionRecipe(CollectionReviewKind.ListStaggerIn, "Staggers a list into view from first item to last.", PreviewKind.List);
+            AddCollectionRecipe(CollectionReviewKind.ListStaggerOut, "Staggers a list out of view from last item to first.", PreviewKind.List);
+            AddCollectionRecipe(CollectionReviewKind.GridWave, "Reveals a grid in a left-to-right wave.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.GridRipple, "Pulses outward from the center of a grid.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.LoadingDots, "Loops a soft pulse across three loading dots.", PreviewKind.LoadingDots);
+            AddStaggerVariant(CollectionReviewKind.OrderFirstToLast, "Applies delays from the first collection item to the last.", PreviewKind.List);
+            AddStaggerVariant(CollectionReviewKind.OrderLastToFirst, "Applies delays from the last collection item to the first.", PreviewKind.List);
+            AddStaggerVariant(CollectionReviewKind.OrderFromCenter, "Starts at the center pair and moves toward both edges.", PreviewKind.List);
+            AddStaggerVariant(CollectionReviewKind.OrderToCenter, "Starts at both edges and moves toward the center pair.", PreviewKind.List);
+            AddStaggerVariant(CollectionReviewKind.OrderRandom, "Uses a deterministic shuffled order with review seed 1729.", PreviewKind.List);
+            AddStaggerVariant(CollectionReviewKind.GridWaveRightToLeft, "Reveals grid columns from right to left.", PreviewKind.Grid);
+            AddStaggerVariant(CollectionReviewKind.GridWaveTopToBottom, "Reveals grid rows from top to bottom.", PreviewKind.Grid);
+            AddStaggerVariant(CollectionReviewKind.GridWaveBottomToTop, "Reveals grid rows from bottom to top.", PreviewKind.Grid);
+
             TweenPresetRegistry.Refresh();
             foreach (ITweenPreset preset in TweenPresetRegistry.Presets.OrderBy(item => item.PresetName, StringComparer.Ordinal))
             {
@@ -189,7 +250,7 @@ namespace LB.TweenHelper.Demo
                     Description = preset.Description,
                     Kind = ReviewKind.Preset,
                     Preset = preset,
-                    UsesUiTarget = UIPresetCompatibility.IsSuitable(preset)
+                    Preview = UIPresetCompatibility.IsSuitable(preset) ? PreviewKind.Ui : PreviewKind.World
                 });
             }
 
@@ -203,8 +264,31 @@ namespace LB.TweenHelper.Demo
                 Id = "Recipe:" + name,
                 Name = name,
                 Description = description,
-                Kind = ReviewKind.Recipe,
-                UsesUiTarget = true
+                Kind = ReviewKind.UiRecipe,
+                Preview = PreviewKind.Ui
+            });
+        }
+
+        private void AddCollectionRecipe(CollectionReviewKind kind, string description, PreviewKind preview)
+        {
+            AddCollectionItem(kind, description, preview, ReviewKind.CollectionRecipe);
+        }
+
+        private void AddStaggerVariant(CollectionReviewKind kind, string description, PreviewKind preview)
+        {
+            AddCollectionItem(kind, description, preview, ReviewKind.StaggerVariant);
+        }
+
+        private void AddCollectionItem(CollectionReviewKind kind, string description, PreviewKind preview, ReviewKind reviewKind)
+        {
+            _allItems.Add(new ReviewItem
+            {
+                Id = "Collection:" + kind,
+                Name = kind.ToString(),
+                Description = description,
+                Kind = reviewKind,
+                Preview = preview,
+                CollectionKind = kind
             });
         }
 
@@ -213,8 +297,14 @@ namespace LB.TweenHelper.Demo
             if (_items.Count == 0) return;
             StopPlayback();
             ResetTargets();
+            if (CurrentItem.UsesCollectionPreview)
+            {
+                _activeTween = PlayCollection(CurrentItem.CollectionKind);
+                return;
+            }
+
             GameObject target = CurrentItem.UsesUiTarget ? uiTarget : worldTarget;
-            _activeTween = CurrentItem.Kind == ReviewKind.Recipe ? PlayRecipe(CurrentItem.Name) : PlayPreset(CurrentItem.Preset, target);
+            _activeTween = CurrentItem.Kind == ReviewKind.UiRecipe ? PlayRecipe(CurrentItem.Name) : PlayPreset(CurrentItem.Preset, target);
         }
 
         public void ShowPrevious()
@@ -293,11 +383,10 @@ namespace LB.TweenHelper.Demo
                 return;
             }
 
-            uiTarget.SetActive(CurrentItem.UsesUiTarget);
-            worldTarget.SetActive(!CurrentItem.UsesUiTarget);
+            ApplyPreviewVisibility(CurrentItem.Preview);
             itemNameText.text = CurrentItem.Name;
             descriptionText.text = string.IsNullOrWhiteSpace(CurrentItem.Description) ? "No description provided." : CurrentItem.Description;
-            categoryText.text = CurrentItem.Kind == ReviewKind.Recipe ? "UI RECIPE" : CurrentItem.UsesUiTarget ? "2D / UI PRESET" : "3D / WORLD PRESET";
+            categoryText.text = GetCategoryLabel(CurrentItem);
             positionText.text = $"{_currentIndex + 1} / {_items.Count}";
             previousButton.interactable = _currentIndex > 0;
             nextButton.interactable = _currentIndex < _items.Count - 1;
@@ -308,6 +397,7 @@ namespace LB.TweenHelper.Demo
         {
             uiTarget.SetActive(false);
             worldTarget.SetActive(false);
+            collectionPreviewRoot.SetActive(false);
             itemNameText.text = "No animations";
             descriptionText.text = "No animations currently match this review filter.";
             categoryText.text = "FILTER EMPTY";
@@ -395,6 +485,51 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private TweenHandle PlayCollection(CollectionReviewKind kind)
+        {
+            switch (kind)
+            {
+                case CollectionReviewKind.ListStaggerIn:
+                    return listTargets.ListStaggerIn(listPreviewGroup);
+                case CollectionReviewKind.ListStaggerOut:
+                    return listTargets.ListStaggerOut(listPreviewGroup);
+                case CollectionReviewKind.GridWave:
+                    return gridTargets.GridWave(gridPreviewGroup, 3);
+                case CollectionReviewKind.GridRipple:
+                    return gridTargets.GridRipple(gridPreviewGroup, 3);
+                case CollectionReviewKind.LoadingDots:
+                    return loadingDotTargets.LoadingDots(loadingDotsPreviewGroup);
+                case CollectionReviewKind.OrderFirstToLast:
+                    return PlayOrder(StaggerOrder.FirstToLast);
+                case CollectionReviewKind.OrderLastToFirst:
+                    return PlayOrder(StaggerOrder.LastToFirst);
+                case CollectionReviewKind.OrderFromCenter:
+                    return PlayOrder(StaggerOrder.FromCenter);
+                case CollectionReviewKind.OrderToCenter:
+                    return PlayOrder(StaggerOrder.ToCenter);
+                case CollectionReviewKind.OrderRandom:
+                    return PlayOrder(StaggerOrder.Random, 1729);
+                case CollectionReviewKind.GridWaveRightToLeft:
+                    return gridTargets.GridWave(gridPreviewGroup, 3, GridWaveDirection.RightToLeft);
+                case CollectionReviewKind.GridWaveTopToBottom:
+                    return gridTargets.GridWave(gridPreviewGroup, 3, GridWaveDirection.TopToBottom);
+                case CollectionReviewKind.GridWaveBottomToTop:
+                    return gridTargets.GridWave(gridPreviewGroup, 3, GridWaveDirection.BottomToTop);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown collection review item.");
+            }
+        }
+
+        private TweenHandle PlayOrder(StaggerOrder order, int seed = 0)
+        {
+            return listTargets.TweenStagger(listPreviewGroup)
+                .Preset<PulseScalePreset>(0.36f)
+                .Order(order)
+                .DelayBetween(0.14f)
+                .Seed(seed)
+                .Play();
+        }
+
         private void ScheduleDelayedReplay()
         {
             CancelDelayedReplay();
@@ -424,12 +559,55 @@ namespace LB.TweenHelper.Demo
             _activeTween = null;
             KillTargetTweens(uiTarget);
             KillTargetTweens(worldTarget);
+            KillTargetTweens(collectionPreviewRoot);
+            KillTargets(listTargets);
+            KillTargets(gridTargets);
+            KillTargets(loadingDotTargets);
         }
 
         private void ResetTargets()
         {
             _uiSnapshot.Apply(uiTarget);
             _worldSnapshot.Apply(worldTarget);
+            ApplySnapshots(listTargets, _listSnapshots);
+            ApplySnapshots(gridTargets, _gridSnapshots);
+            ApplySnapshots(loadingDotTargets, _loadingDotSnapshots);
+        }
+
+        private void ApplyPreviewVisibility(PreviewKind preview)
+        {
+            uiTarget.SetActive(preview == PreviewKind.Ui);
+            worldTarget.SetActive(preview == PreviewKind.World);
+            bool showCollection = preview == PreviewKind.List || preview == PreviewKind.Grid || preview == PreviewKind.LoadingDots;
+            collectionPreviewRoot.SetActive(showCollection);
+            listPreviewGroup.SetActive(preview == PreviewKind.List);
+            gridPreviewGroup.SetActive(preview == PreviewKind.Grid);
+            loadingDotsPreviewGroup.SetActive(preview == PreviewKind.LoadingDots);
+        }
+
+        private static string GetCategoryLabel(ReviewItem item)
+        {
+            if (item.Kind == ReviewKind.UiRecipe) return "UI RECIPE";
+            if (item.Kind == ReviewKind.CollectionRecipe) return "COLLECTION RECIPE";
+            if (item.Kind == ReviewKind.StaggerVariant) return "STAGGER VARIANT";
+            return item.UsesUiTarget ? "2D / UI PRESET" : "3D / WORLD PRESET";
+        }
+
+        private static TargetSnapshot[] CaptureTargets(GameObject[] targets)
+        {
+            var snapshots = new TargetSnapshot[targets.Length];
+            for (int i = 0; i < targets.Length; i++) snapshots[i] = TargetSnapshot.Capture(targets[i]);
+            return snapshots;
+        }
+
+        private static void ApplySnapshots(GameObject[] targets, TargetSnapshot[] snapshots)
+        {
+            for (int i = 0; i < targets.Length; i++) snapshots[i].Apply(targets[i]);
+        }
+
+        private static void KillTargets(GameObject[] targets)
+        {
+            for (int i = 0; i < targets.Length; i++) KillTargetTweens(targets[i]);
         }
 
         private static void KillTargetTweens(GameObject target)

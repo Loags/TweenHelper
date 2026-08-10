@@ -65,6 +65,18 @@ TweenHandle handle = transform.Tween()
 
 Options written immediately after a step apply to that step. Options written after `Then()` or `With()` apply to the next step. An explicit method duration wins over `TweenOptions.Duration`, which wins over the global default.
 
+Animate a collection through one owner-linked stagger sequence:
+
+```csharp
+TweenHandle handle = cards.TweenStagger(this)
+    .Preset<PopInFadePreset>(0.32f)
+    .Order(StaggerOrder.FromCenter)
+    .DelayBetween(0.06f)
+    .Play();
+```
+
+Five ready-to-play collection recipes cover list entrances, list exits, directional grid waves, grid ripples, and looping loading dots. Collection recipes orchestrate the existing finite presets and do not add entries to the 300-preset registry.
+
 ## Preset browser
 
 Open **Tools > Tween Helper > Preset Browser** to search and filter all registered presets. Select a scene GameObject to preview a compatible preset. **Stop and Restore** kills the preview and restores the selected object's transform and supported visual state. The browser also copies a valid fluent API example.
@@ -92,6 +104,7 @@ No settings asset is required. TweenHelper uses safe in-memory defaults when `Re
 
 - [Installation](Documentation/Installation.md)
 - [API examples](Documentation/API.md)
+- [Staggered collections](Documentation/StaggeredCollections.md)
 - [Preset catalog](Documentation/PresetCatalog.md)
 
 ## Licensing
