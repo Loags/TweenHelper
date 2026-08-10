@@ -77,9 +77,21 @@ TweenHandle handle = cards.TweenStagger(this)
 
 Five ready-to-play collection recipes cover list entrances, list exits, directional grid waves, grid ripples, and looping loading dots. Collection recipes orchestrate the existing finite presets and do not add entries to the 300-preset registry.
 
+Move to explicit destinations with reusable world, local, and anchored-position motions:
+
+```csharp
+TweenHandle handle = card.Tween()
+    .ArcLocalTo(destination, height: 140f, duration: 0.7f)
+    .Then()
+    .SpringLocalTo(restingPosition, duration: 0.35f, overshoot: 24f)
+    .Play();
+```
+
+Arc, Bezier, hop, spring, and magnetic-snap operations are parameterized builder motions rather than registered presets, so the preset registry remains at 300 entries.
+
 ## Preset browser
 
-Open **Tools > Tween Helper > Preset Browser** to search and filter all registered presets. Select a scene GameObject to preview a compatible preset. **Stop and Restore** kills the preview and restores the selected object's transform and supported visual state. The browser also copies a valid fluent API example.
+Open **Tools > Tween Helper > Preset Browser** to search and filter all registered presets and collection animations. Select an entry to inspect its metadata and fluent API example, then use **Preview** to play it on the isolated cube stage inside the browser. The preview never reads from or modifies the active scene.
 
 ## Support
 
@@ -105,6 +117,7 @@ No settings asset is required. TweenHelper uses safe in-memory defaults when `Re
 - [Installation](Documentation/Installation.md)
 - [API examples](Documentation/API.md)
 - [Staggered collections](Documentation/StaggeredCollections.md)
+- [Destination-aware motion](Documentation/DestinationMotion.md)
 - [Preset catalog](Documentation/PresetCatalog.md)
 
 ## Licensing

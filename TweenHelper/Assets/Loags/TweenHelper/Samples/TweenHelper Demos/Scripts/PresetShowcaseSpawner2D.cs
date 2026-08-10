@@ -16,6 +16,7 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private Button recipesTabButton;
         [SerializeField] private Button presetsTabButton;
         [SerializeField] private Button collectionsTabButton;
+        [SerializeField] private Button destinationsTabButton;
         [SerializeField] private GameObject recipesPanel;
         [SerializeField] private GameObject presetsPanel;
 
@@ -36,6 +37,11 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private TextMeshProUGUI animatedText;
         [SerializeField] private GameObject collectionPreviewRoot;
         [SerializeField] private GameObject[] collectionTargets;
+        [SerializeField] private GameObject destinationPreviewRoot;
+        [SerializeField] private GameObject destinationTarget;
+        [SerializeField] private RectTransform destinationStartMarker;
+        [SerializeField] private RectTransform destinationEndMarker;
+        [SerializeField] private GameObject destinationCurvedPath;
         [SerializeField] private TMP_Text selectionNameText;
         [SerializeField] private TMP_Text selectionDescriptionText;
         [SerializeField] private TMP_Text codeExampleText;
@@ -48,6 +54,10 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private Color imageHoverColor = new Color(1f, 0.9f, 0.6f, 1f);
         [SerializeField] private Color textHoverColor = new Color(0.7f, 0.9f, 1f, 1f);
         [SerializeField] private Color disabledTextColor = new Color(0.65f, 0.65f, 0.65f, 0.55f);
+
+        private const float DestinationArcHeight = 145f;
+        private const float DestinationBezierControlAHeight = 180f;
+        private const float DestinationBezierControlBHeight = 58f;
 
         private static readonly RecipeDefinition[] Recipes =
         {
@@ -75,6 +85,15 @@ namespace LB.TweenHelper.Demo
             new CollectionRecipeDefinition(CollectionRecipeKind.LoadingDots, "Loop a soft pulse across three loading dots.")
         };
 
+        private static readonly DestinationRecipeDefinition[] DestinationRecipes =
+        {
+            new DestinationRecipeDefinition(DestinationRecipeKind.Arc, "Move through a signed vertical arc to an anchored destination."),
+            new DestinationRecipeDefinition(DestinationRecipeKind.Bezier, "Follow a cubic anchored-position path with two explicit controls."),
+            new DestinationRecipeDefinition(DestinationRecipeKind.Hop, "Anticipate, hop, land with a squash, and restore scale."),
+            new DestinationRecipeDefinition(DestinationRecipeKind.Spring, "Pass the destination along the travel direction, then settle exactly."),
+            new DestinationRecipeDefinition(DestinationRecipeKind.MagneticSnap, "Pull away before accelerating past and settling on the destination.")
+        };
+
         private static readonly string[] CollectionOrderNames =
         {
             "First to last",
@@ -87,10 +106,12 @@ namespace LB.TweenHelper.Demo
         private readonly List<UIPresetListItem> _presetRows = new List<UIPresetListItem>();
         private readonly List<UIRecipeCard> _recipeCards = new List<UIRecipeCard>();
         private readonly List<UIRecipeCard> _collectionCards = new List<UIRecipeCard>();
+        private readonly List<UIRecipeCard> _destinationCards = new List<UIRecipeCard>();
         private readonly List<string> _targetOptionNames = new List<string>();
         private UIStateSnapshot _imageState;
         private UIStateSnapshot _textState;
         private UIStateSnapshot[] _collectionStates;
+        private UIStateSnapshot _destinationState;
         private GameObject[] _listTargets;
         private GameObject[] _gridTargets;
         private GameObject[] _loadingDotTargets;
@@ -98,6 +119,7 @@ namespace LB.TweenHelper.Demo
         private ITweenPreset _selectedPreset;
         private UIRecipeKind _selectedRecipe = UIRecipeKind.UIAppear;
         private CollectionRecipeKind _selectedCollectionRecipe = CollectionRecipeKind.ListStaggerIn;
+        private DestinationRecipeKind _selectedDestinationRecipe = DestinationRecipeKind.Arc;
         private StaggerOrder _selectedCollectionOrder = StaggerOrder.FirstToLast;
         private ShowcaseMode _mode = ShowcaseMode.Recipes;
         private int _selectedTargetIndex;
@@ -110,6 +132,7 @@ namespace LB.TweenHelper.Demo
             _imageState = UIStateSnapshot.Capture(presetImage.gameObject);
             _textState = UIStateSnapshot.Capture(animatedText.gameObject);
             _collectionStates = CaptureStates(collectionTargets);
+            _destinationState = UIStateSnapshot.Capture(destinationTarget);
             _listTargets = CopyTargets(6);
             _gridTargets = CopyTargets(9);
             _loadingDotTargets = CopyTargets(3);
@@ -122,7 +145,7 @@ namespace LB.TweenHelper.Demo
         {
             ResetTargets();
             ShowRecipes();
-            instructionsPanel.SetContent("TweenHelper 2D Showcase", "Choose UI Recipes, Collections, or the 2D Preset Library. Select an entry, then replay or reset the preview.");
+            instructionsPanel.SetContent("TweenHelper 2D Showcase", "Choose UI Recipes, Collections, Destinations, or the 2D Preset Library. Select an entry, then replay or reset the preview.");
         }
 
         private void OnDisable() => StopPlayback();
@@ -139,6 +162,7 @@ namespace LB.TweenHelper.Demo
             recipesTabButton.onClick.AddListener(ShowRecipes);
             presetsTabButton.onClick.AddListener(ShowPresets);
             collectionsTabButton.onClick.AddListener(ShowCollections);
+            destinationsTabButton.onClick.AddListener(ShowDestinations);
             replayButton.onClick.AddListener(ReplaySelected);
             resetButton.onClick.AddListener(ResetPreview);
             copyButton.onClick.AddListener(CopyCodeExample);
@@ -167,6 +191,15 @@ namespace LB.TweenHelper.Demo
                 CollectionRecipeKind kind = definition.Kind;
                 card.Configure(kind.ToString(), definition.Description, () => SelectCollectionRecipe(kind));
                 _collectionCards.Add(card);
+            }
+
+            for (int i = 0; i < DestinationRecipes.Length; i++)
+            {
+                var definition = DestinationRecipes[i];
+                var card = Instantiate(recipeCardPrefab, recipeContent);
+                DestinationRecipeKind kind = definition.Kind;
+                card.Configure(kind.ToString(), definition.Description, () => SelectDestinationRecipe(kind));
+                _destinationCards.Add(card);
             }
 
             TweenPresetRegistry.ScanForCodePresets();
@@ -204,9 +237,9 @@ namespace LB.TweenHelper.Demo
             _mode = ShowcaseMode.Recipes;
             recipesPanel.SetActive(true);
             presetsPanel.SetActive(false);
-            SetCardVisibility(true);
+            SetCardVisibility(ShowcaseMode.Recipes);
             ResetRecipeScrollPosition();
-            SetCollectionPreview(false);
+            SetPreviewMode(false, false);
             RestoreTargetOptions();
             SelectRecipe(_selectedRecipe, false);
         }
@@ -218,7 +251,7 @@ namespace LB.TweenHelper.Demo
             _mode = ShowcaseMode.Presets;
             recipesPanel.SetActive(false);
             presetsPanel.SetActive(true);
-            SetCollectionPreview(false);
+            SetPreviewMode(false, false);
             RestoreTargetOptions();
             RefreshPresetRows();
             if (_selectedPreset != null) UpdatePresetDetails(_selectedPreset);
@@ -231,18 +264,33 @@ namespace LB.TweenHelper.Demo
             _mode = ShowcaseMode.Collections;
             recipesPanel.SetActive(true);
             presetsPanel.SetActive(false);
-            SetCardVisibility(false);
+            SetCardVisibility(ShowcaseMode.Collections);
             ResetRecipeScrollPosition();
-            SetCollectionPreview(true);
+            SetPreviewMode(true, false);
             ShowCollectionOrderOptions();
             SelectCollectionRecipe(_selectedCollectionRecipe, false);
+        }
+
+        public void ShowDestinations()
+        {
+            StopPlayback();
+            ResetTargets();
+            _mode = ShowcaseMode.Destinations;
+            recipesPanel.SetActive(true);
+            presetsPanel.SetActive(false);
+            SetCardVisibility(ShowcaseMode.Destinations);
+            ResetRecipeScrollPosition();
+            SetPreviewMode(false, true);
+            ShowDestinationTargetOption();
+            SelectDestinationRecipe(_selectedDestinationRecipe, false);
         }
 
         public void ReplaySelected()
         {
             if (_mode == ShowcaseMode.Recipes) PlayRecipe(_selectedRecipe);
             else if (_mode == ShowcaseMode.Presets) PlaySelectedPreset();
-            else PlayCollectionRecipe(_selectedCollectionRecipe);
+            else if (_mode == ShowcaseMode.Collections) PlayCollectionRecipe(_selectedCollectionRecipe);
+            else PlayDestinationRecipe(_selectedDestinationRecipe);
         }
 
         public void ResetPreview()
@@ -262,6 +310,8 @@ namespace LB.TweenHelper.Demo
                 SelectCollectionRecipe(_selectedCollectionRecipe, false);
                 return;
             }
+
+            if (_mode == ShowcaseMode.Destinations) return;
 
             _selectedTargetIndex = targetDropdown.value;
             ResetPreview();
@@ -306,6 +356,20 @@ namespace LB.TweenHelper.Demo
             ConfigureCollectionLayout(recipe);
             targetDropdown.interactable = recipe == CollectionRecipeKind.ListStaggerIn || recipe == CollectionRecipeKind.ListStaggerOut;
             if (play) PlayCollectionRecipe(recipe);
+        }
+
+        private void SelectDestinationRecipe(DestinationRecipeKind recipe) => SelectDestinationRecipe(recipe, true);
+
+        private void SelectDestinationRecipe(DestinationRecipeKind recipe, bool play)
+        {
+            _selectedDestinationRecipe = recipe;
+            var definition = DestinationRecipes[(int)recipe];
+            selectionNameText.text = recipe == DestinationRecipeKind.MagneticSnap ? "Magnetic Snap" : recipe.ToString();
+            selectionDescriptionText.text = definition.Description;
+            codeExampleText.text = GetDestinationCodeExample(recipe);
+            if (UsesCurvedPath(recipe)) UpdateDestinationPath(recipe);
+            destinationCurvedPath.SetActive(UsesCurvedPath(recipe));
+            if (play) PlayDestinationRecipe(recipe);
         }
 
         private void UpdatePresetDetails(ITweenPreset preset)
@@ -391,6 +455,35 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private TweenHandle PlayDestinationRecipe(DestinationRecipeKind recipe)
+        {
+            StopPlayback();
+            _destinationState.Apply(destinationTarget);
+            var targetRect = (RectTransform)destinationTarget.transform;
+            Vector3 start = destinationStartMarker.anchoredPosition3D;
+            Vector3 destination = destinationEndMarker.anchoredPosition3D;
+            targetRect.anchoredPosition3D = start;
+
+            switch (recipe)
+            {
+                case DestinationRecipeKind.Arc:
+                    return _activeTween = destinationTarget.Tween().ArcLocalTo(destination, DestinationArcHeight, 1.2f).Play();
+                case DestinationRecipeKind.Bezier:
+                {
+                    GetBezierControls(start, destination, out Vector3 controlA, out Vector3 controlB);
+                    return _activeTween = destinationTarget.Tween().BezierLocalTo(destination, controlA, controlB, 1.35f).Play();
+                }
+                case DestinationRecipeKind.Hop:
+                    return _activeTween = destinationTarget.Tween().HopLocalTo(destination, DestinationArcHeight, 1.35f).Play();
+                case DestinationRecipeKind.Spring:
+                    return _activeTween = destinationTarget.Tween().SpringLocalTo(destination, 1f, 38f).Play();
+                case DestinationRecipeKind.MagneticSnap:
+                    return _activeTween = destinationTarget.Tween().MagneticSnapLocalTo(destination, 1.1f, 32f, 26f).Play();
+                default:
+                    return null;
+            }
+        }
+
         private Color GetHoverColor(GameObject target) => target == animatedText.gameObject ? textHoverColor : imageHoverColor;
 
         private Color GetDisabledColor(GameObject target) => target == animatedText.gameObject ? disabledTextColor : new Color(0.45f, 0.45f, 0.45f, 0.55f);
@@ -433,6 +526,7 @@ namespace LB.TweenHelper.Demo
             KillTargetTweens(animatedText.gameObject);
             DOTween.Kill(collectionPreviewRoot, false);
             for (int i = 0; i < collectionTargets.Length; i++) KillTargetTweens(collectionTargets[i]);
+            KillTargetTweens(destinationTarget);
         }
 
         private void ResetTargets()
@@ -440,6 +534,7 @@ namespace LB.TweenHelper.Demo
             _imageState.Apply(presetImage.gameObject);
             _textState.Apply(animatedText.gameObject);
             ResetCollectionTargets();
+            _destinationState.Apply(destinationTarget);
         }
 
         private void ResetTarget(GameObject target)
@@ -482,10 +577,11 @@ namespace LB.TweenHelper.Demo
             return normalized < 0 ? normalized + Recipes.Length : normalized;
         }
 
-        private void SetCardVisibility(bool showUiRecipes)
+        private void SetCardVisibility(ShowcaseMode mode)
         {
-            for (int i = 0; i < _recipeCards.Count; i++) _recipeCards[i].gameObject.SetActive(showUiRecipes);
-            for (int i = 0; i < _collectionCards.Count; i++) _collectionCards[i].gameObject.SetActive(!showUiRecipes);
+            for (int i = 0; i < _recipeCards.Count; i++) _recipeCards[i].gameObject.SetActive(mode == ShowcaseMode.Recipes);
+            for (int i = 0; i < _collectionCards.Count; i++) _collectionCards[i].gameObject.SetActive(mode == ShowcaseMode.Collections);
+            for (int i = 0; i < _destinationCards.Count; i++) _destinationCards[i].gameObject.SetActive(mode == ShowcaseMode.Destinations);
         }
 
         private void ResetRecipeScrollPosition()
@@ -496,11 +592,12 @@ namespace LB.TweenHelper.Demo
             contentRect.anchoredPosition = position;
         }
 
-        private void SetCollectionPreview(bool show)
+        private void SetPreviewMode(bool showCollection, bool showDestination)
         {
-            presetImage.gameObject.SetActive(!show);
-            animatedText.gameObject.SetActive(!show);
-            collectionPreviewRoot.SetActive(show);
+            presetImage.gameObject.SetActive(!showCollection && !showDestination);
+            animatedText.gameObject.SetActive(!showCollection && !showDestination);
+            collectionPreviewRoot.SetActive(showCollection);
+            destinationPreviewRoot.SetActive(showDestination);
         }
 
         private void RestoreTargetOptions()
@@ -520,6 +617,14 @@ namespace LB.TweenHelper.Demo
             targetDropdown.ClearOptions();
             targetDropdown.AddOptions(new List<string>(CollectionOrderNames));
             targetDropdown.SetValueWithoutNotify((int)_selectedCollectionOrder);
+        }
+
+        private void ShowDestinationTargetOption()
+        {
+            targetDropdown.ClearOptions();
+            targetDropdown.AddOptions(new List<string> { "Anchored UI" });
+            targetDropdown.SetValueWithoutNotify(0);
+            targetDropdown.interactable = false;
         }
 
         private void ConfigureCollectionLayout(CollectionRecipeKind recipe)
@@ -575,6 +680,64 @@ namespace LB.TweenHelper.Demo
                 default:
                     return string.Empty;
             }
+        }
+
+        private static string GetDestinationCodeExample(DestinationRecipeKind recipe)
+        {
+            switch (recipe)
+            {
+                case DestinationRecipeKind.Arc:
+                    return "target.Tween().ArcLocalTo(destination, 145f, 1.2f).Play();";
+                case DestinationRecipeKind.Bezier:
+                    return "target.Tween().BezierLocalTo(destination, controlA, controlB, 1.35f).Play();";
+                case DestinationRecipeKind.Hop:
+                    return "target.Tween().HopLocalTo(destination, 145f, 1.35f).Play();";
+                case DestinationRecipeKind.Spring:
+                    return "target.Tween().SpringLocalTo(destination, 1f, 38f).Play();";
+                case DestinationRecipeKind.MagneticSnap:
+                    return "target.Tween().MagneticSnapLocalTo(destination, 1.1f, 32f, 26f).Play();";
+                default:
+                    return string.Empty;
+            }
+        }
+
+        private static bool UsesCurvedPath(DestinationRecipeKind recipe)
+        {
+            return recipe == DestinationRecipeKind.Arc || recipe == DestinationRecipeKind.Bezier || recipe == DestinationRecipeKind.Hop;
+        }
+
+        private void UpdateDestinationPath(DestinationRecipeKind recipe)
+        {
+            Vector3 start = destinationStartMarker.anchoredPosition3D;
+            Vector3 destination = destinationEndMarker.anchoredPosition3D;
+            GetBezierControls(start, destination, out Vector3 controlA, out Vector3 controlB);
+            Transform pathRoot = destinationCurvedPath.transform;
+
+            for (int i = 0; i < pathRoot.childCount; i++)
+            {
+                float progress = (i + 1f) / (pathRoot.childCount + 1f);
+                Vector3 point = recipe == DestinationRecipeKind.Bezier
+                    ? EvaluateBezier(start, controlA, controlB, destination, progress)
+                    : EvaluateArc(start, destination, DestinationArcHeight, progress);
+                ((RectTransform)pathRoot.GetChild(i)).anchoredPosition3D = point;
+            }
+        }
+
+        private static void GetBezierControls(Vector3 start, Vector3 destination, out Vector3 controlA, out Vector3 controlB)
+        {
+            controlA = Vector3.Lerp(start, destination, 0.3f) + Vector3.up * DestinationBezierControlAHeight;
+            controlB = Vector3.Lerp(start, destination, 0.72f) + Vector3.up * DestinationBezierControlBHeight;
+        }
+
+        private static Vector3 EvaluateArc(Vector3 start, Vector3 destination, float height, float progress)
+        {
+            return Vector3.LerpUnclamped(start, destination, progress) + Vector3.up * (4f * height * progress * (1f - progress));
+        }
+
+        private static Vector3 EvaluateBezier(Vector3 start, Vector3 controlA, Vector3 controlB, Vector3 destination, float progress)
+        {
+            float inverse = 1f - progress;
+            return inverse * inverse * inverse * start + 3f * inverse * inverse * progress * controlA + 3f * inverse * progress * progress * controlB + progress * progress * progress * destination;
         }
 
         private GameObject[] CopyTargets(int count)
@@ -664,11 +827,24 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private readonly struct DestinationRecipeDefinition
+        {
+            public readonly DestinationRecipeKind Kind;
+            public readonly string Description;
+
+            public DestinationRecipeDefinition(DestinationRecipeKind kind, string description)
+            {
+                Kind = kind;
+                Description = description;
+            }
+        }
+
         private enum ShowcaseMode
         {
             Recipes,
             Presets,
-            Collections
+            Collections,
+            Destinations
         }
 
         private enum CollectionRecipeKind
@@ -678,6 +854,15 @@ namespace LB.TweenHelper.Demo
             GridWave,
             GridRipple,
             LoadingDots
+        }
+
+        private enum DestinationRecipeKind
+        {
+            Arc,
+            Bezier,
+            Hop,
+            Spring,
+            MagneticSnap
         }
 
         private readonly struct UIStateSnapshot

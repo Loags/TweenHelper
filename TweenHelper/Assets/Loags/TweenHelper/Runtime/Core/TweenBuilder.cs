@@ -11,7 +11,7 @@ namespace LB.TweenHelper
     /// Unified fluent builder for creating both single tweens and sequences.
     /// Use extension methods transform.Tween() or gameObject.Tween() to create.
     /// </summary>
-    public class TweenBuilder
+    public partial class TweenBuilder
     {
         private readonly Transform _transform;
         private readonly GameObject _gameObject;
@@ -916,7 +916,7 @@ namespace LB.TweenHelper
             {
                 ApplyOptions(tween, step.Options);
             }
-            tween.SetLink(_gameObject);
+            LinkTweenPreservingKillCallback(tween);
 
             return tween;
         }
@@ -1038,6 +1038,13 @@ namespace LB.TweenHelper
         }
 
         private bool ResolveSnapping(TweenOptions options) => options.Snapping ?? TweenHelperSettings.Instance.DefaultSnapping;
+
+        private void LinkTweenPreservingKillCallback(Tween tween)
+        {
+            var onKill = tween.onKill;
+            tween.SetLink(_gameObject);
+            if (onKill != null) tween.onKill += onKill;
+        }
 
         private void UpdateStepOptions(Func<TweenOptions, TweenOptions> update)
         {

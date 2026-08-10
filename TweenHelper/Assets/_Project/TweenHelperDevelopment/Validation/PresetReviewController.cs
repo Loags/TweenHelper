@@ -23,6 +23,7 @@ namespace LB.TweenHelper.Demo
             UiRecipe,
             CollectionRecipe,
             StaggerVariant,
+            DestinationMotion,
             Preset
         }
 
@@ -32,7 +33,9 @@ namespace LB.TweenHelper.Demo
             World,
             List,
             Grid,
-            LoadingDots
+            LoadingDots,
+            DestinationWorld,
+            DestinationUi
         }
 
         private enum CollectionReviewKind
@@ -52,6 +55,20 @@ namespace LB.TweenHelper.Demo
             GridWaveBottomToTop
         }
 
+        private enum DestinationReviewKind
+        {
+            ArcTo3D,
+            ArcLocalToUi,
+            BezierTo3D,
+            BezierLocalToUi,
+            HopTo3D,
+            HopLocalToUi,
+            SpringTo3D,
+            SpringLocalToUi,
+            MagneticSnapTo3D,
+            MagneticSnapLocalToUi
+        }
+
         private enum ReviewFilter
         {
             All,
@@ -68,9 +85,11 @@ namespace LB.TweenHelper.Demo
             public ITweenPreset Preset;
             public PreviewKind Preview;
             public CollectionReviewKind CollectionKind;
+            public DestinationReviewKind DestinationKind;
 
             public bool UsesUiTarget => Preview == PreviewKind.Ui;
             public bool UsesCollectionPreview => Preview == PreviewKind.List || Preview == PreviewKind.Grid || Preview == PreviewKind.LoadingDots;
+            public bool UsesDestinationPreview => Preview == PreviewKind.DestinationWorld || Preview == PreviewKind.DestinationUi;
         }
 
         private readonly struct TargetSnapshot
@@ -122,6 +141,12 @@ namespace LB.TweenHelper.Demo
 
         private const string StatusKeyPrefix = "TweenHelper.PresetReview.Status.";
         private const float AutoReplayDelaySeconds = 0.5f;
+        private const float DestinationWorldArcHeight = 2.1f;
+        private const float DestinationUiArcHeight = 175f;
+        private const float DestinationWorldBezierControlAHeight = 2.5f;
+        private const float DestinationWorldBezierControlBHeight = 0.8f;
+        private const float DestinationUiBezierControlAHeight = 210f;
+        private const float DestinationUiBezierControlBHeight = 70f;
         private static readonly Color UnreviewedColor = new Color(0.48f, 0.55f, 0.68f);
         private static readonly Color FailedColor = new Color(1f, 0.29f, 0.34f);
         private static readonly Color PassedColor = new Color(0.2f, 0.85f, 0.53f);
@@ -138,6 +163,18 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private GameObject[] listTargets;
         [SerializeField] private GameObject[] gridTargets;
         [SerializeField] private GameObject[] loadingDotTargets;
+
+        [Header("Destination Motion Preview")]
+        [SerializeField] private GameObject destinationWorldRoot;
+        [SerializeField] private GameObject destinationWorldTarget;
+        [SerializeField] private Transform destinationWorldStartMarker;
+        [SerializeField] private Transform destinationWorldEndMarker;
+        [SerializeField] private GameObject destinationWorldCurvedPath;
+        [SerializeField] private GameObject destinationUiRoot;
+        [SerializeField] private GameObject destinationUiTarget;
+        [SerializeField] private RectTransform destinationUiStartMarker;
+        [SerializeField] private RectTransform destinationUiEndMarker;
+        [SerializeField] private GameObject destinationUiCurvedPath;
 
         [Header("Information")]
         [SerializeField] private TMP_Text itemNameText;
@@ -166,6 +203,8 @@ namespace LB.TweenHelper.Demo
         private TargetSnapshot[] _listSnapshots;
         private TargetSnapshot[] _gridSnapshots;
         private TargetSnapshot[] _loadingDotSnapshots;
+        private TargetSnapshot _destinationWorldSnapshot;
+        private TargetSnapshot _destinationUiSnapshot;
         private TweenHandle _activeTween;
         private Coroutine _delayedReplay;
         private ReviewFilter _activeFilter;
@@ -180,6 +219,8 @@ namespace LB.TweenHelper.Demo
             _listSnapshots = CaptureTargets(listTargets);
             _gridSnapshots = CaptureTargets(gridTargets);
             _loadingDotSnapshots = CaptureTargets(loadingDotTargets);
+            _destinationWorldSnapshot = TargetSnapshot.Capture(destinationWorldTarget);
+            _destinationUiSnapshot = TargetSnapshot.Capture(destinationUiTarget);
             WireControls();
             BuildReviewItems();
             ShowCurrentItem();
@@ -240,6 +281,17 @@ namespace LB.TweenHelper.Demo
             AddStaggerVariant(CollectionReviewKind.GridWaveTopToBottom, "Reveals grid rows from top to bottom.", PreviewKind.Grid);
             AddStaggerVariant(CollectionReviewKind.GridWaveBottomToTop, "Reveals grid rows from bottom to top.", PreviewKind.Grid);
 
+            AddDestinationMotion(DestinationReviewKind.ArcTo3D, "ArcTo 3D", "Moves through a signed world-space Y arc and lands exactly at the destination.", PreviewKind.DestinationWorld);
+            AddDestinationMotion(DestinationReviewKind.ArcLocalToUi, "ArcLocalTo UI", "Moves an anchored UI target through a signed local Y arc.", PreviewKind.DestinationUi);
+            AddDestinationMotion(DestinationReviewKind.BezierTo3D, "BezierTo 3D", "Follows a cubic world-space Bezier path using two explicit controls.", PreviewKind.DestinationWorld);
+            AddDestinationMotion(DestinationReviewKind.BezierLocalToUi, "BezierLocalTo UI", "Follows a cubic anchored-position Bezier path using two local controls.", PreviewKind.DestinationUi);
+            AddDestinationMotion(DestinationReviewKind.HopTo3D, "HopTo 3D", "Anticipates, follows a world-space hop, squashes on landing, and restores scale.", PreviewKind.DestinationWorld);
+            AddDestinationMotion(DestinationReviewKind.HopLocalToUi, "HopLocalTo UI", "Hops an anchored UI target, lands with a small squash, and restores scale.", PreviewKind.DestinationUi);
+            AddDestinationMotion(DestinationReviewKind.SpringTo3D, "SpringTo 3D", "Passes a world-space destination along the travel direction, then settles exactly.", PreviewKind.DestinationWorld);
+            AddDestinationMotion(DestinationReviewKind.SpringLocalToUi, "SpringLocalTo UI", "Passes an anchored destination, then settles without positional drift.", PreviewKind.DestinationUi);
+            AddDestinationMotion(DestinationReviewKind.MagneticSnapTo3D, "MagneticSnapTo 3D", "Pulls away before accelerating past and settling on a world-space destination.", PreviewKind.DestinationWorld);
+            AddDestinationMotion(DestinationReviewKind.MagneticSnapLocalToUi, "MagneticSnapLocalTo UI", "Pulls an anchored target away before snapping past and settling on its destination.", PreviewKind.DestinationUi);
+
             TweenPresetRegistry.Refresh();
             foreach (ITweenPreset preset in TweenPresetRegistry.Presets.OrderBy(item => item.PresetName, StringComparer.Ordinal))
             {
@@ -292,6 +344,19 @@ namespace LB.TweenHelper.Demo
             });
         }
 
+        private void AddDestinationMotion(DestinationReviewKind kind, string name, string description, PreviewKind preview)
+        {
+            _allItems.Add(new ReviewItem
+            {
+                Id = "Destination:" + kind,
+                Name = name,
+                Description = description,
+                Kind = ReviewKind.DestinationMotion,
+                Preview = preview,
+                DestinationKind = kind
+            });
+        }
+
         public void ReplayCurrent()
         {
             if (_items.Count == 0) return;
@@ -300,6 +365,12 @@ namespace LB.TweenHelper.Demo
             if (CurrentItem.UsesCollectionPreview)
             {
                 _activeTween = PlayCollection(CurrentItem.CollectionKind);
+                return;
+            }
+
+            if (CurrentItem.UsesDestinationPreview)
+            {
+                _activeTween = PlayDestinationMotion(CurrentItem.DestinationKind);
                 return;
             }
 
@@ -384,6 +455,7 @@ namespace LB.TweenHelper.Demo
             }
 
             ApplyPreviewVisibility(CurrentItem.Preview);
+            SetDestinationPathVisibility(CurrentItem.Kind == ReviewKind.DestinationMotion && UsesCurvedPath(CurrentItem.DestinationKind));
             itemNameText.text = CurrentItem.Name;
             descriptionText.text = string.IsNullOrWhiteSpace(CurrentItem.Description) ? "No description provided." : CurrentItem.Description;
             categoryText.text = GetCategoryLabel(CurrentItem);
@@ -398,6 +470,8 @@ namespace LB.TweenHelper.Demo
             uiTarget.SetActive(false);
             worldTarget.SetActive(false);
             collectionPreviewRoot.SetActive(false);
+            destinationWorldRoot.SetActive(false);
+            destinationUiRoot.SetActive(false);
             itemNameText.text = "No animations";
             descriptionText.text = "No animations currently match this review filter.";
             categoryText.text = "FILTER EMPTY";
@@ -530,6 +604,51 @@ namespace LB.TweenHelper.Demo
                 .Play();
         }
 
+        private TweenHandle PlayDestinationMotion(DestinationReviewKind kind)
+        {
+            bool usesUi = CurrentItem.Preview == PreviewKind.DestinationUi;
+            GameObject target = usesUi ? destinationUiTarget : destinationWorldTarget;
+            Vector3 start = usesUi ? destinationUiStartMarker.anchoredPosition3D : destinationWorldStartMarker.position;
+            Vector3 destination = usesUi ? destinationUiEndMarker.anchoredPosition3D : destinationWorldEndMarker.position;
+            float height = usesUi ? DestinationUiArcHeight : DestinationWorldArcHeight;
+            target.transform.localScale = usesUi ? _destinationUiSnapshot.LocalScale : _destinationWorldSnapshot.LocalScale;
+
+            if (usesUi) ((RectTransform)target.transform).anchoredPosition3D = start;
+            else target.transform.position = start;
+
+            switch (kind)
+            {
+                case DestinationReviewKind.ArcTo3D:
+                    return target.Tween().ArcTo(destination, height, 1.35f).Play();
+                case DestinationReviewKind.ArcLocalToUi:
+                    return target.Tween().ArcLocalTo(destination, height, 1.35f).Play();
+                case DestinationReviewKind.BezierTo3D:
+                {
+                    GetBezierControls(false, start, destination, out Vector3 controlA, out Vector3 controlB);
+                    return target.Tween().BezierTo(destination, controlA, controlB, 1.5f).Play();
+                }
+                case DestinationReviewKind.BezierLocalToUi:
+                {
+                    GetBezierControls(true, start, destination, out Vector3 controlA, out Vector3 controlB);
+                    return target.Tween().BezierLocalTo(destination, controlA, controlB, 1.5f).Play();
+                }
+                case DestinationReviewKind.HopTo3D:
+                    return target.Tween().HopTo(destination, height, 1.5f).Play();
+                case DestinationReviewKind.HopLocalToUi:
+                    return target.Tween().HopLocalTo(destination, height, 1.5f).Play();
+                case DestinationReviewKind.SpringTo3D:
+                    return target.Tween().SpringTo(destination, 1.1f, 0.65f).Play();
+                case DestinationReviewKind.SpringLocalToUi:
+                    return target.Tween().SpringLocalTo(destination, 1.1f, 48f).Play();
+                case DestinationReviewKind.MagneticSnapTo3D:
+                    return target.Tween().MagneticSnapTo(destination, 1.25f, 0.5f, 0.4f).Play();
+                case DestinationReviewKind.MagneticSnapLocalToUi:
+                    return target.Tween().MagneticSnapLocalTo(destination, 1.25f, 42f, 32f).Play();
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown destination-motion review item.");
+            }
+        }
+
         private void ScheduleDelayedReplay()
         {
             CancelDelayedReplay();
@@ -563,6 +682,8 @@ namespace LB.TweenHelper.Demo
             KillTargets(listTargets);
             KillTargets(gridTargets);
             KillTargets(loadingDotTargets);
+            KillTargetTweens(destinationWorldTarget);
+            KillTargetTweens(destinationUiTarget);
         }
 
         private void ResetTargets()
@@ -572,6 +693,8 @@ namespace LB.TweenHelper.Demo
             ApplySnapshots(listTargets, _listSnapshots);
             ApplySnapshots(gridTargets, _gridSnapshots);
             ApplySnapshots(loadingDotTargets, _loadingDotSnapshots);
+            _destinationWorldSnapshot.Apply(destinationWorldTarget);
+            _destinationUiSnapshot.Apply(destinationUiTarget);
         }
 
         private void ApplyPreviewVisibility(PreviewKind preview)
@@ -583,6 +706,65 @@ namespace LB.TweenHelper.Demo
             listPreviewGroup.SetActive(preview == PreviewKind.List);
             gridPreviewGroup.SetActive(preview == PreviewKind.Grid);
             loadingDotsPreviewGroup.SetActive(preview == PreviewKind.LoadingDots);
+            destinationWorldRoot.SetActive(preview == PreviewKind.DestinationWorld);
+            destinationUiRoot.SetActive(preview == PreviewKind.DestinationUi);
+        }
+
+        private void SetDestinationPathVisibility(bool show)
+        {
+            if (show) UpdateDestinationPath(CurrentItem.DestinationKind);
+            destinationWorldCurvedPath.SetActive(show && CurrentItem.Preview == PreviewKind.DestinationWorld);
+            destinationUiCurvedPath.SetActive(show && CurrentItem.Preview == PreviewKind.DestinationUi);
+        }
+
+        private void UpdateDestinationPath(DestinationReviewKind kind)
+        {
+            bool usesUi = CurrentItem.Preview == PreviewKind.DestinationUi;
+            Transform pathRoot = usesUi ? destinationUiCurvedPath.transform : destinationWorldCurvedPath.transform;
+            Vector3 start = usesUi ? destinationUiStartMarker.anchoredPosition3D : destinationWorldStartMarker.position;
+            Vector3 destination = usesUi ? destinationUiEndMarker.anchoredPosition3D : destinationWorldEndMarker.position;
+            float height = usesUi ? DestinationUiArcHeight : DestinationWorldArcHeight;
+            bool usesBezier = IsBezier(kind);
+            GetBezierControls(usesUi, start, destination, out Vector3 controlA, out Vector3 controlB);
+
+            for (int i = 0; i < pathRoot.childCount; i++)
+            {
+                float progress = (i + 1f) / (pathRoot.childCount + 1f);
+                Vector3 point = usesBezier ? EvaluateBezier(start, controlA, controlB, destination, progress) : EvaluateArc(start, destination, height, progress);
+                if (usesUi) ((RectTransform)pathRoot.GetChild(i)).anchoredPosition3D = point;
+                else pathRoot.GetChild(i).position = point;
+            }
+        }
+
+        private static void GetBezierControls(bool usesUi, Vector3 start, Vector3 destination, out Vector3 controlA, out Vector3 controlB)
+        {
+            float controlAHeight = usesUi ? DestinationUiBezierControlAHeight : DestinationWorldBezierControlAHeight;
+            float controlBHeight = usesUi ? DestinationUiBezierControlBHeight : DestinationWorldBezierControlBHeight;
+            controlA = Vector3.Lerp(start, destination, 0.3f) + Vector3.up * controlAHeight;
+            controlB = Vector3.Lerp(start, destination, 0.72f) + Vector3.up * controlBHeight;
+        }
+
+        private static Vector3 EvaluateArc(Vector3 start, Vector3 destination, float height, float progress)
+        {
+            return Vector3.LerpUnclamped(start, destination, progress) + Vector3.up * (4f * height * progress * (1f - progress));
+        }
+
+        private static Vector3 EvaluateBezier(Vector3 start, Vector3 controlA, Vector3 controlB, Vector3 destination, float progress)
+        {
+            float inverse = 1f - progress;
+            return inverse * inverse * inverse * start + 3f * inverse * inverse * progress * controlA + 3f * inverse * progress * progress * controlB + progress * progress * progress * destination;
+        }
+
+        private static bool IsBezier(DestinationReviewKind kind) => kind == DestinationReviewKind.BezierTo3D || kind == DestinationReviewKind.BezierLocalToUi;
+
+        private static bool UsesCurvedPath(DestinationReviewKind kind)
+        {
+            return kind == DestinationReviewKind.ArcTo3D ||
+                   kind == DestinationReviewKind.ArcLocalToUi ||
+                   kind == DestinationReviewKind.BezierTo3D ||
+                   kind == DestinationReviewKind.BezierLocalToUi ||
+                   kind == DestinationReviewKind.HopTo3D ||
+                   kind == DestinationReviewKind.HopLocalToUi;
         }
 
         private static string GetCategoryLabel(ReviewItem item)
@@ -590,6 +772,7 @@ namespace LB.TweenHelper.Demo
             if (item.Kind == ReviewKind.UiRecipe) return "UI RECIPE";
             if (item.Kind == ReviewKind.CollectionRecipe) return "COLLECTION RECIPE";
             if (item.Kind == ReviewKind.StaggerVariant) return "STAGGER VARIANT";
+            if (item.Kind == ReviewKind.DestinationMotion) return item.Preview == PreviewKind.DestinationUi ? "DESTINATION MOTION / UI" : "DESTINATION MOTION / 3D";
             return item.UsesUiTarget ? "2D / UI PRESET" : "3D / WORLD PRESET";
         }
 

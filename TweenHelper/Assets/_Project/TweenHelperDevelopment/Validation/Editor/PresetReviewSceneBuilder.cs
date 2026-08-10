@@ -32,8 +32,9 @@ namespace LB.TweenHelper.Editor
                 string sceneText = File.ReadAllText(fullScenePath);
                 bool sceneNeedsFilters = !sceneText.Contains("allFilterToggle:");
                 bool sceneNeedsCollectionPreview = !sceneText.Contains("collectionPreviewRoot:");
+                bool sceneNeedsDestinationPreview = !sceneText.Contains("destinationWorldRoot:");
                 bool sceneNeedsMaterial = !File.Exists(Path.GetFullPath(MaterialPath));
-                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsMaterial)
+                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsDestinationPreview && !sceneNeedsMaterial)
                 {
                     Material material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
                     if (material == null || !NeedsTransparentConfiguration(material)) return;
@@ -96,6 +97,7 @@ namespace LB.TweenHelper.Editor
             SetRect(previewFrame, new Vector2(0.2f, 0.24f), new Vector2(0.8f, 0.65f), Vector2.zero, Vector2.zero);
             GameObject uiTarget = CreateUiTarget(previewFrame);
             CollectionPreview collectionPreview = CreateCollectionPreview(previewFrame);
+            DestinationPreview destinationPreview = CreateDestinationPreview(previewFrame);
 
             Button failed = CreateButton("Mark Wrong", canvas.transform, "[X]  WRONG / NEEDS WORK", new Color(0.42f, 0.16f, 0.2f));
             SetRect((RectTransform)failed.transform, new Vector2(0.015f, 0.3f), new Vector2(0.18f, 0.63f), Vector2.zero, Vector2.zero);
@@ -129,6 +131,16 @@ namespace LB.TweenHelper.Editor
             AssignArray(serializedController, "listTargets", collectionPreview.ListTargets);
             AssignArray(serializedController, "gridTargets", collectionPreview.GridTargets);
             AssignArray(serializedController, "loadingDotTargets", collectionPreview.LoadingDotTargets);
+            Assign(serializedController, "destinationWorldRoot", destinationPreview.WorldRoot);
+            Assign(serializedController, "destinationWorldTarget", destinationPreview.WorldTarget);
+            Assign(serializedController, "destinationWorldStartMarker", destinationPreview.WorldStartMarker);
+            Assign(serializedController, "destinationWorldEndMarker", destinationPreview.WorldEndMarker);
+            Assign(serializedController, "destinationWorldCurvedPath", destinationPreview.WorldCurvedPath);
+            Assign(serializedController, "destinationUiRoot", destinationPreview.UiRoot);
+            Assign(serializedController, "destinationUiTarget", destinationPreview.UiTarget);
+            Assign(serializedController, "destinationUiStartMarker", destinationPreview.UiStartMarker);
+            Assign(serializedController, "destinationUiEndMarker", destinationPreview.UiEndMarker);
+            Assign(serializedController, "destinationUiCurvedPath", destinationPreview.UiCurvedPath);
             Assign(serializedController, "itemNameText", itemName);
             Assign(serializedController, "descriptionText", description);
             Assign(serializedController, "categoryText", category);
@@ -298,6 +310,107 @@ namespace LB.TweenHelper.Editor
             return new CollectionPreview(root, listGroup, gridGroup, loadingDotsGroup, listTargets, gridTargets, loadingDotTargets);
         }
 
+        private static DestinationPreview CreateDestinationPreview(Transform uiParent)
+        {
+            var worldRoot = new GameObject("Destination World Preview");
+            Vector3 worldStart = new Vector3(-2.6f, -0.9f, 0f);
+            Vector3 worldEnd = new Vector3(2.6f, -0.9f, 0f);
+
+            GameObject worldTarget = CreateWorldDestinationObject("Destination 3D Target", PrimitiveType.Cube, worldRoot.transform, worldStart, 0.82f);
+            worldTarget.transform.rotation = Quaternion.Euler(18f, 28f, 0f);
+            GameObject worldStartMarker = CreateWorldDestinationMarker("World Start Marker", worldRoot.transform, worldStart, 0.28f);
+            GameObject worldEndMarker = CreateWorldDestinationMarker("World Destination Marker", worldRoot.transform, worldEnd, 0.38f);
+            var worldCurvedPath = new GameObject("World Curved Path Reference");
+            worldCurvedPath.transform.SetParent(worldRoot.transform, false);
+            for (int i = 1; i < 12; i++)
+            {
+                float progress = i / 12f;
+                Vector3 point = Vector3.Lerp(worldStart, worldEnd, progress) + Vector3.up * (4f * 2.1f * progress * (1f - progress));
+                CreateWorldDestinationObject($"World Path Point {i}", PrimitiveType.Sphere, worldCurvedPath.transform, point, 0.11f);
+            }
+
+            var uiRoot = new GameObject("Destination UI Preview", typeof(RectTransform));
+            uiRoot.transform.SetParent(uiParent, false);
+            SetRect((RectTransform)uiRoot.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            Vector2 uiStart = new Vector2(-300f, -70f);
+            Vector2 uiEnd = new Vector2(300f, -70f);
+            RectTransform uiStartMarker = CreateUiDestinationMarker("UI Start Marker", uiRoot.transform, uiStart, "START", new Color(0.1f, 0.58f, 0.95f, 0.22f));
+            RectTransform uiEndMarker = CreateUiDestinationMarker("UI Destination Marker", uiRoot.transform, uiEnd, "DESTINATION", new Color(1f, 0.72f, 0.2f, 0.28f));
+            GameObject uiTarget = CreateUiDestinationTarget(uiRoot.transform, uiStart);
+
+            var uiCurvedPath = new GameObject("UI Curved Path Reference", typeof(RectTransform));
+            uiCurvedPath.transform.SetParent(uiRoot.transform, false);
+            SetRect((RectTransform)uiCurvedPath.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            uiCurvedPath.transform.SetAsFirstSibling();
+            for (int i = 1; i < 12; i++)
+            {
+                float progress = i / 12f;
+                Vector2 point = Vector2.Lerp(uiStart, uiEnd, progress) + Vector2.up * (4f * 175f * progress * (1f - progress));
+                var dot = new GameObject($"UI Path Point {i}", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                dot.transform.SetParent(uiCurvedPath.transform, false);
+                var dotRect = (RectTransform)dot.transform;
+                dotRect.anchorMin = dotRect.anchorMax = new Vector2(0.5f, 0.5f);
+                dotRect.anchoredPosition = point;
+                dotRect.sizeDelta = Vector2.one * 10f;
+                dot.GetComponent<Image>().color = new Color(0.32f, 0.76f, 1f, 0.65f);
+            }
+
+            worldRoot.SetActive(false);
+            uiRoot.SetActive(false);
+            return new DestinationPreview(worldRoot, worldTarget, worldStartMarker.transform, worldEndMarker.transform, worldCurvedPath, uiRoot, uiTarget, uiStartMarker, uiEndMarker, uiCurvedPath);
+        }
+
+        private static GameObject CreateWorldDestinationObject(string name, PrimitiveType primitiveType, Transform parent, Vector3 position, float scale)
+        {
+            GameObject target = GameObject.CreatePrimitive(primitiveType);
+            target.name = name;
+            target.transform.SetParent(parent, false);
+            target.transform.localPosition = position;
+            target.transform.localScale = Vector3.one * scale;
+            target.GetComponent<Renderer>().sharedMaterial = GetOrCreatePreviewMaterial();
+            Object.DestroyImmediate(target.GetComponent<Collider>());
+            return target;
+        }
+
+        private static GameObject CreateWorldDestinationMarker(string name, Transform parent, Vector3 position, float scale)
+        {
+            var marker = new GameObject(name);
+            marker.transform.SetParent(parent, false);
+            marker.transform.localPosition = position;
+            CreateWorldDestinationObject("Marker Visual", PrimitiveType.Sphere, marker.transform, Vector3.down * 0.62f, scale);
+            return marker;
+        }
+
+        private static RectTransform CreateUiDestinationMarker(string name, Transform parent, Vector2 position, string labelValue, Color color)
+        {
+            var marker = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            marker.transform.SetParent(parent, false);
+            var rect = (RectTransform)marker.transform;
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = position;
+            rect.sizeDelta = Vector2.one * 124f;
+            marker.GetComponent<Image>().color = color;
+
+            TMP_Text label = CreateText("Label", marker.transform, labelValue, 15f, FontStyles.Bold, TextAlignmentOptions.Center);
+            label.color = new Color(0.82f, 0.9f, 1f, 0.9f);
+            SetRect(label.rectTransform, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(-30f, -34f), new Vector2(30f, -8f));
+            return rect;
+        }
+
+        private static GameObject CreateUiDestinationTarget(Transform parent, Vector2 position)
+        {
+            var target = new GameObject("Destination UI Target", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(CanvasGroup));
+            target.transform.SetParent(parent, false);
+            var rect = (RectTransform)target.transform;
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = position;
+            rect.sizeDelta = Vector2.one * 96f;
+            target.GetComponent<Image>().color = BlueColor;
+            TMP_Text label = CreateText("Label", target.transform, "MOVE", 18f, FontStyles.Bold, TextAlignmentOptions.Center);
+            SetRect(label.rectTransform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            return target;
+        }
+
         private static GameObject CreatePreviewGroup(string name, Transform parent)
         {
             var group = new GameObject(name, typeof(RectTransform));
@@ -432,6 +545,34 @@ namespace LB.TweenHelper.Editor
                 ListTargets = listTargets;
                 GridTargets = gridTargets;
                 LoadingDotTargets = loadingDotTargets;
+            }
+        }
+
+        private readonly struct DestinationPreview
+        {
+            public readonly GameObject WorldRoot;
+            public readonly GameObject WorldTarget;
+            public readonly Transform WorldStartMarker;
+            public readonly Transform WorldEndMarker;
+            public readonly GameObject WorldCurvedPath;
+            public readonly GameObject UiRoot;
+            public readonly GameObject UiTarget;
+            public readonly RectTransform UiStartMarker;
+            public readonly RectTransform UiEndMarker;
+            public readonly GameObject UiCurvedPath;
+
+            public DestinationPreview(GameObject worldRoot, GameObject worldTarget, Transform worldStartMarker, Transform worldEndMarker, GameObject worldCurvedPath, GameObject uiRoot, GameObject uiTarget, RectTransform uiStartMarker, RectTransform uiEndMarker, GameObject uiCurvedPath)
+            {
+                WorldRoot = worldRoot;
+                WorldTarget = worldTarget;
+                WorldStartMarker = worldStartMarker;
+                WorldEndMarker = worldEndMarker;
+                WorldCurvedPath = worldCurvedPath;
+                UiRoot = uiRoot;
+                UiTarget = uiTarget;
+                UiStartMarker = uiStartMarker;
+                UiEndMarker = uiEndMarker;
+                UiCurvedPath = uiCurvedPath;
             }
         }
     }

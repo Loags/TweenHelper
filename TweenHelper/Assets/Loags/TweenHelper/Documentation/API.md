@@ -215,6 +215,32 @@ loadingDots.LoadingDots(loadingRoot);
 
 DOTween cannot nest an infinite child tween inside a sequence. `TweenStaggerBuilder` rejects infinite children with an actionable exception; use a finite child and call `WithLoops(-1)` on the root group. See [Staggered collections](StaggeredCollections.md) for the full contract.
 
+## Destination-aware motion
+
+The five destination families operate in world or local coordinates without adding entries to the preset registry:
+
+```csharp
+transform.Tween().ArcTo(worldDestination, height: 2f, duration: 0.8f).Play();
+transform.Tween().BezierTo(worldDestination, worldControlA, worldControlB, 1f).Play();
+transform.Tween().HopTo(worldDestination, height: 1.5f, duration: 0.9f).Play();
+transform.Tween().SpringTo(worldDestination, duration: 0.55f, overshoot: 0.35f).Play();
+transform.Tween().MagneticSnapTo(worldDestination, duration: 0.65f, pullback: 0.2f, overshoot: 0.25f).Play();
+```
+
+Local variants are `ArcLocalTo`, `BezierLocalTo`, `HopLocalTo`, `SpringLocalTo`, and `MagneticSnapLocalTo`. They use `Transform.localPosition` for ordinary transforms and `RectTransform.anchoredPosition3D` for UI targets. Bezier control points use the same coordinate space as their method.
+
+```csharp
+TweenHandle handle = panel.Tween()
+    .ArcLocalTo(openPosition, 140f, 0.6f)
+    .WithEase(Ease.OutCubic)
+    .Then()
+    .MagneticSnapLocalTo(restPosition, 0.45f, pullback: 18f, overshoot: 12f)
+    .WithDelay(0.1f)
+    .Play();
+```
+
+Each motion is safe to compose through `Then()` and `With()`, is linked to its target, and applies delay, ease, ID, loop, update, and unscaled-time options at its own root. Normal completion corrects the final position exactly. Hop also restores the scale captured when the tween is built if playback is killed during its temporary squash. See [Destination-aware motion](DestinationMotion.md) for the full coordinate and lifecycle contract.
+
 ## Tween lifecycle
 
 A finite tween completes when DOTween invokes its completion callback. Killing a tween is a distinct terminal event and does not imply normal completion. Infinite loops never complete normally, so retain their `TweenHandle` and kill or cancel them during owner teardown.
@@ -229,4 +255,4 @@ TweenHelper initializes automatically. Without `Assets/Resources/TweenHelperSett
 
 ## Sample controls
 
-Open **TweenHelper Demos** from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The 2D scene provides 13 semantic UI recipes, five collection recipes with selectable stagger ordering, and a searchable library of 198 UI-suitable presets. When the legacy Input Manager is enabled, Space replays the current 2D selection and the 3D showcase enables its fly-camera shortcuts. The demos do not require the Input System package.
+Open **TweenHelper Demos** from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The 2D scene provides 13 semantic UI recipes, five collection recipes with selectable stagger ordering, five destination-motion examples, and a searchable library of 198 UI-suitable presets. When the legacy Input Manager is enabled, Space replays the current 2D selection and the 3D showcase enables its fly-camera shortcuts. The demos do not require the Input System package.
