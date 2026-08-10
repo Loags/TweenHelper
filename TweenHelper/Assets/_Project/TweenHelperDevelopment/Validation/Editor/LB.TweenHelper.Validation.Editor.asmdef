@@ -3,7 +3,10 @@
     "rootNamespace": "LB.TweenHelper.Editor",
     "references": [
         "LB.TweenHelper.Runtime",
-        "LB.TweenHelper.Editor"
+        "LB.TweenHelper.Editor",
+        "LB.TweenHelper.Demo",
+        "Unity.TextMeshPro",
+        "Unity.ugui"
     ],
     "includePlatforms": [
         "Editor"
