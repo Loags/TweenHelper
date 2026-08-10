@@ -212,6 +212,13 @@ namespace LB.TweenHelper.Demo
         {
             PlayerPrefs.SetInt(StatusKeyPrefix + CurrentItem.Id, (int)status);
             PlayerPrefs.Save();
+            if (_currentIndex < _items.Count - 1)
+            {
+                _currentIndex++;
+                ShowCurrentItem();
+                return;
+            }
+
             RefreshStatus();
         }
 
