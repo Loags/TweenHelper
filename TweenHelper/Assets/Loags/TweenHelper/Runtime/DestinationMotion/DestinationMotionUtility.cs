@@ -7,6 +7,7 @@ namespace LB.TweenHelper
     internal static class DestinationMotionUtility
     {
         private const float HopAnticipationRatio = 0.12f;
+        private const float HopTakeoffRestoreRatio = 0.12f;
         private const float HopFlightRatio = 0.74f;
         private const float HopLandingRatio = 0.1f;
         private const float HopRestoreRatio = 0.14f;
@@ -42,19 +43,23 @@ namespace LB.TweenHelper
             var binding = new PositionBinding(target, local);
             Transform transform = target.transform;
             Vector3 originalScale = transform.localScale;
-            Vector3 anticipationScale = Vector3.Scale(originalScale, new Vector3(1.05f, 0.92f, 1.05f));
-            Vector3 landingScale = Vector3.Scale(originalScale, new Vector3(1.1f, 0.84f, 1.1f));
+            Vector3 anticipationScale = Vector3.Scale(originalScale, new Vector3(1.06f, 0.9f, 1.06f));
+            Vector3 landingScale = Vector3.Scale(originalScale, new Vector3(1.12f, 0.8f, 1.12f));
             Ease anticipationEase = options.SecondaryEase ?? Ease.InQuad;
             Ease landingEase = options.TertiaryEase ?? options.SecondaryEase ?? Ease.OutQuad;
+            var groundedPose = new GroundedHopPose(binding, transform, originalScale, GetGroundAnchor(transform), local);
             bool scaleIsRestored = false;
             bool hopStarted = false;
             Vector3 hopStart = default;
+            float flightProgress = 0f;
 
-            Tween flight = CreatePathTween(target, binding, destination, duration * HopFlightRatio, options, (start, progress) =>
+            Tween flight = DOTween.To(() => flightProgress, value =>
             {
-                Vector3 position = Vector3.LerpUnclamped(start, destination, progress);
-                return position + Vector3.up * (4f * height * progress * (1f - progress));
-            }, false, false);
+                flightProgress = value;
+                float progress = NormalizeProgress(value);
+                Vector3 position = Vector3.LerpUnclamped(hopStart, destination, progress);
+                groundedPose.SetBasePosition(position + Vector3.up * (4f * height * progress * (1f - progress)));
+            }, 1f, duration * HopFlightRatio);
 
             var sequence = DOTween.Sequence();
             sequence.AppendCallback(() =>
@@ -65,24 +70,32 @@ namespace LB.TweenHelper
                     hopStarted = true;
                 }
 
+                groundedPose.Initialize(hopStart);
             });
-            sequence.Append(transform.DOScale(anticipationScale, duration * HopAnticipationRatio).SetEase(anticipationEase));
+            sequence.Append(CreateGroundedScaleTween(groundedPose, anticipationScale, duration * HopAnticipationRatio).SetEase(anticipationEase));
             sequence.Append(flight);
+            float takeoffStart = duration * HopAnticipationRatio;
+            sequence.Insert(takeoffStart, CreateGroundedScaleTween(groundedPose, originalScale, duration * HopTakeoffRestoreRatio).SetEase(Ease.OutBack));
             float landingStart = duration * (HopAnticipationRatio + HopFlightRatio - HopLandingRatio);
-            sequence.Insert(landingStart, transform.DOScale(landingScale, duration * HopLandingRatio).SetEase(landingEase));
-            sequence.Append(transform.DOScale(originalScale, duration * HopRestoreRatio).SetEase(Ease.OutBack));
+            sequence.Insert(landingStart, CreateGroundedScaleTween(groundedPose, landingScale, duration * HopLandingRatio).SetEase(landingEase));
+            sequence.Append(CreateGroundedScaleTween(groundedPose, originalScale, duration * HopRestoreRatio).SetEase(Ease.OutBack));
             sequence.AppendCallback(() =>
             {
-                binding.Set(destination);
-                transform.localScale = originalScale;
+                groundedPose.RestoreAt(destination);
                 scaleIsRestored = true;
             });
-            sequence.OnRewind(() => scaleIsRestored = false);
+            sequence.OnRewind(() =>
+            {
+                if (hopStarted && transform != null) groundedPose.RestoreAt(hopStart);
+                scaleIsRestored = false;
+            });
 
             ConfigureTween(sequence, options.SetEase(Ease.Linear), target);
             sequence.OnKill(() =>
             {
-                if (!scaleIsRestored && transform != null) transform.localScale = originalScale;
+                if (scaleIsRestored || transform == null) return;
+                if (hopStarted) groundedPose.RestoreCurrentBase();
+                else transform.localScale = originalScale;
             });
             ApplyExactEndpoint(sequence, binding, destination, options, () => hopStart, () => hopStarted);
             sequence.Pause();
@@ -208,6 +221,55 @@ namespace LB.TweenHelper
 
         private static float EvaluateEase(float progress, Ease ease) => DOVirtual.EasedValue(0f, 1f, Mathf.Clamp01(progress), ease);
 
+        private static Tween CreateGroundedScaleTween(GroundedHopPose groundedPose, Vector3 scale, float duration)
+        {
+            return DOTween.To(() => groundedPose.Scale, groundedPose.SetScale, scale, duration);
+        }
+
+        private static Vector3 GetGroundAnchor(Transform transform)
+        {
+            if (transform is RectTransform rectTransform)
+            {
+                Rect rect = rectTransform.rect;
+                return new Vector3(rect.center.x, rect.yMin, 0f);
+            }
+
+            Renderer[] renderers = transform.GetComponentsInChildren<Renderer>();
+            if (renderers.Length == 0) return new Vector3(0f, -0.5f, 0f);
+
+            Matrix4x4 worldToTarget = transform.worldToLocalMatrix;
+            Bounds targetBounds = default;
+            bool hasBounds = false;
+
+            foreach (Renderer renderer in renderers)
+            {
+                Bounds rendererBounds = renderer.localBounds;
+                Matrix4x4 rendererToTarget = worldToTarget * renderer.transform.localToWorldMatrix;
+
+                for (int x = -1; x <= 1; x += 2)
+                {
+                    for (int y = -1; y <= 1; y += 2)
+                    {
+                        for (int z = -1; z <= 1; z += 2)
+                        {
+                            Vector3 corner = rendererBounds.center + Vector3.Scale(rendererBounds.extents, new Vector3(x, y, z));
+                            Vector3 targetPoint = rendererToTarget.MultiplyPoint3x4(corner);
+                            if (hasBounds) targetBounds.Encapsulate(targetPoint);
+                            else
+                            {
+                                targetBounds = new Bounds(targetPoint, Vector3.zero);
+                                hasBounds = true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!hasBounds) return new Vector3(0f, -0.5f, 0f);
+            float bottom = transform.localScale.y >= 0f ? targetBounds.min.y : targetBounds.max.y;
+            return new Vector3(targetBounds.center.x, bottom, targetBounds.center.z);
+        }
+
         private static Vector3 EvaluateBezier(Vector3 start, Vector3 controlA, Vector3 controlB, Vector3 destination, float progress)
         {
             float inverse = 1f - progress;
@@ -282,6 +344,78 @@ namespace LB.TweenHelper
                 }
 
                 _transform.localPosition = position;
+            }
+        }
+
+        private sealed class GroundedHopPose
+        {
+            private readonly PositionBinding _binding;
+            private readonly Transform _transform;
+            private readonly Vector3 _originalScale;
+            private readonly Vector3 _groundAnchor;
+            private readonly bool _local;
+            private Vector3 _basePosition;
+            private Vector3 _scale;
+            private bool _isInitialized;
+
+            public GroundedHopPose(PositionBinding binding, Transform transform, Vector3 originalScale, Vector3 groundAnchor, bool local)
+            {
+                _binding = binding;
+                _transform = transform;
+                _originalScale = originalScale;
+                _groundAnchor = groundAnchor;
+                _local = local;
+                _basePosition = binding.Get();
+                _scale = originalScale;
+            }
+
+            public Vector3 Scale => _scale;
+
+            public void Initialize(Vector3 basePosition)
+            {
+                _basePosition = basePosition;
+                _scale = _originalScale;
+                _isInitialized = true;
+                Apply();
+            }
+
+            public void SetBasePosition(Vector3 basePosition)
+            {
+                _basePosition = basePosition;
+                if (_isInitialized) Apply();
+            }
+
+            public void SetScale(Vector3 scale)
+            {
+                _scale = scale;
+                if (_isInitialized) Apply();
+            }
+
+            public void RestoreAt(Vector3 basePosition)
+            {
+                _basePosition = basePosition;
+                _scale = _originalScale;
+                Apply();
+            }
+
+            public void RestoreCurrentBase()
+            {
+                _scale = _originalScale;
+                Apply();
+            }
+
+            private void Apply()
+            {
+                _transform.localScale = _scale;
+                _binding.Set(_basePosition + GetGroundingOffset());
+            }
+
+            private Vector3 GetGroundingOffset()
+            {
+                Vector3 targetLocalOffset = Vector3.Scale(_groundAnchor, _originalScale - _scale);
+                Vector3 parentLocalOffset = _transform.localRotation * targetLocalOffset;
+                if (_local || _transform.parent == null) return parentLocalOffset;
+                return _transform.parent.TransformVector(parentLocalOffset);
             }
         }
     }

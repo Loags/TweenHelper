@@ -55,7 +55,7 @@ panel.Tween().BezierLocalTo(destination, controlA, controlB, 1f).Play();
 
 ### Hop
 
-Hop briefly anticipates, travels through a signed arc, squashes on landing, and restores the scale captured when the tween is built. `height` controls the path without separate soft or hard variants. Killing during the anticipation, flight, or landing restores the captured scale so no partial squash remains.
+Hop briefly anticipates with its visual bottom anchored, releases the squash during takeoff, travels through a signed arc, and compresses downward from the top on landing. The landing recovery keeps the same bottom anchor fixed while restoring the scale captured when the tween is built. `height` controls the path without separate soft or hard variants. Killing during the anticipation, flight, or landing restores the captured scale and removes the temporary grounding offset.
 
 ### Spring
 
@@ -89,7 +89,7 @@ TweenHandle handle = token.Tween()
 - Restart loops reuse the original absolute path instead of adding offsets, preventing accumulated positional drift.
 - Yoyo loops return to the exact step-start position when their final pass ends in reverse.
 - Killing a motion leaves its current position available to the caller; reset that position from application state when cancellation should visually rewind it.
-- Killing Hop during a temporary deformation restores the scale captured at build time.
+- Killing Hop during a temporary deformation restores the scale captured at build time and removes its temporary bottom-anchor offset while leaving the current base path position intact.
 - `TweenHandle.Restart()` and newly built replays do not add offsets to the previous result.
 - Destroying the target kills the linked root through DOTween's normal link behavior.
 
