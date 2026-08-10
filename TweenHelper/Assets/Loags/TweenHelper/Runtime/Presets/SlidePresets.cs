@@ -609,23 +609,26 @@ namespace LB.TweenHelper
         {
             var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
-            var targetPos = t.localPosition;
-            var startPos = targetPos + offsetDirection * (distance * strength);
+            Tween moveTween;
 
             if (TweenTargetUtility.TryGetRectTransform(target, out var rectTransform))
             {
-                rectTransform.anchoredPosition = new Vector2(startPos.x, startPos.y);
+                var targetPosition = rectTransform.anchoredPosition;
+                rectTransform.anchoredPosition = targetPosition + new Vector2(offsetDirection.x, offsetDirection.y) * (distance * strength);
+                moveTween = rectTransform.DOAnchorPos(targetPosition, duration);
             }
             else
             {
-                t.localPosition = startPos;
+                var targetPosition = t.localPosition;
+                t.localPosition = targetPosition + offsetDirection * (distance * strength);
+                moveTween = t.DOLocalMove(targetPosition, duration);
             }
 
-            var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.OutCubic);
-            var ease = presetOptions.Ease ?? Ease.OutCubic;
+            var moveEase = options.Ease ?? Ease.OutCubic;
+            var sequenceOptions = options.SetEase(Ease.Linear);
 
             var seq = DOTween.Sequence();
-            seq.Append(TweenTargetUtility.CreateLocalMoveTween(target, targetPos, duration).SetEase(ease));
+            seq.Append(moveTween.SetEase(moveEase));
 
             var fadeTween = CodePreset.CreateFadeTweenStatic(target, CodePreset.ResolveTargetAlphaStatic(options, 1f), duration * 0.7f);
             if (fadeTween != null)
@@ -634,7 +637,7 @@ namespace LB.TweenHelper
                 seq.Join(fadeTween.SetEase(Ease.Linear));
             }
 
-            return seq.WithDefaults(presetOptions, target);
+            return seq.WithDefaults(sequenceOptions, target);
         }
     }
 
@@ -949,18 +952,19 @@ namespace LB.TweenHelper
     /// </summary>
     internal static class SlideOutFadeFactory
     {
+        private const float CanvasDistanceMultiplier = 20f;
+
         public static Tween Create(GameObject target, Vector3 direction, float distance, float duration, TweenOptions options)
         {
-            // Keep SlideOutFade subtle even when callers use a high global/preset strength.
-            var strength = Mathf.Clamp(CodePreset.ResolveStrengthStatic(options), 0f, 1f);
-            var t = target.transform;
-            var endPos = t.localPosition + direction * (distance * strength);
+            var strength = CodePreset.ResolveStrengthStatic(options);
+            var distanceMultiplier = TweenTargetUtility.TryGetRectTransform(target, out _) ? CanvasDistanceMultiplier : 1f;
+            var moveOffset = direction * (distance * strength * distanceMultiplier);
 
-            var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.InCubic);
-            var ease = presetOptions.Ease ?? Ease.InCubic;
+            var moveEase = options.Ease ?? Ease.InCubic;
+            var sequenceOptions = options.SetEase(Ease.Linear);
 
             var seq = DOTween.Sequence();
-            seq.Append(TweenTargetUtility.CreateLocalMoveTween(target, endPos, duration).SetEase(ease));
+            seq.Append(TweenTargetUtility.CreateRelativeLocalMoveTween(target, moveOffset, duration).SetEase(moveEase));
 
             var fadeTween = CodePreset.CreateFadeTweenStatic(target, CodePreset.ResolveTargetAlphaStatic(options, 0f), duration * 0.7f);
             if (fadeTween != null)
@@ -969,7 +973,7 @@ namespace LB.TweenHelper
                 seq.Join(fadeTween.SetEase(Ease.Linear));
             }
 
-            return seq.WithDefaults(presetOptions, target);
+            return seq.WithDefaults(sequenceOptions, target);
         }
     }
 

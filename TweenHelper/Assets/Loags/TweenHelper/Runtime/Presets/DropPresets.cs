@@ -18,18 +18,17 @@ namespace LB.TweenHelper
             float fallRatio,
             float[] bounceHeights,
             float[] bounceUpRatios,
-            float[] bounceDownRatios,
-            float tailIntervalRatio = 0f)
+            float[] bounceDownRatios)
         {
             var t = target.transform;
             var targetY = t.localPosition.y;
             var strength = CodePreset.ResolveStrengthStatic(options);
             var dropHeight = dropHeightBase * strength;
-            t.localPosition = t.localPosition + Vector3.up * dropHeight;
+            t.localPosition += Vector3.up * dropHeight;
 
             var fallEase = options.Ease ?? defaultFallEase;
             var bounceEase = options.SecondaryEase ?? options.Ease ?? defaultBounceEase;
-            var presetOptions = options.SetEase(fallEase);
+            var sequenceOptions = options.SetEase(Ease.Linear);
 
             var seq = DOTween.Sequence()
                 .Append(t.DOLocalMoveY(targetY, duration * fallRatio).SetEase(fallEase));
@@ -40,12 +39,7 @@ namespace LB.TweenHelper
                 seq.Append(t.DOLocalMoveY(targetY, duration * bounceDownRatios[i]).SetEase(fallEase));
             }
 
-            if (tailIntervalRatio > 0f)
-            {
-                seq.AppendInterval(duration * tailIntervalRatio);
-            }
-
-            return seq.WithDefaults(presetOptions, target);
+            return seq.WithDefaults(sequenceOptions, target);
         }
     }
 
@@ -68,14 +62,21 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var targetY = t.localPosition.y;
+            var targetY = BounceMotionUtility.GetBaseY(target);
             var strength = CodePreset.ResolveStrengthStatic(options);
-            var dropHeight = dropHeightBase * strength;
-            t.localPosition = t.localPosition + Vector3.up * dropHeight;
+            var dropHeight = dropHeightBase * strength * BounceMotionUtility.GetDistanceMultiplier(target);
+            if (TweenTargetUtility.TryGetRectTransform(target, out var rectTransform))
+            {
+                rectTransform.anchoredPosition += Vector2.up * dropHeight;
+            }
+            else
+            {
+                t.localPosition += Vector3.up * dropHeight;
+            }
 
             var fallEase = options.Ease ?? defaultFallEase;
             var bounceEase = options.SecondaryEase ?? options.Ease ?? defaultBounceEase;
-            var presetOptions = options.Ease.HasValue ? options : options.SetEase(fallEase);
+            var sequenceOptions = options.SetEase(Ease.Linear);
 
             var squash1 = new Vector3(
                 originalScale.x * (1f + squash1Amount * strength),
@@ -87,17 +88,18 @@ namespace LB.TweenHelper
                 originalScale.z);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalMoveY(targetY, duration * 0.3f).SetEase(fallEase))
+                .Append(BounceMotionUtility.CreateYTween(target, targetY, duration * 0.3f).SetEase(fallEase))
                 .Append(t.DOScale(squash1, duration * 0.05f).SetEase(squashOutEase))
                 .Append(t.DOScale(originalScale, duration * 0.05f).SetEase(squashInEase))
-                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.35f, duration * 0.12f).SetEase(bounceEase))
-                .Append(t.DOLocalMoveY(targetY, duration * 0.12f).SetEase(fallEase))
+                .Append(BounceMotionUtility.CreateYTween(target, targetY + dropHeight * 0.35f, duration * 0.12f).SetEase(bounceEase))
+                .Append(BounceMotionUtility.CreateYTween(target, targetY, duration * 0.12f).SetEase(fallEase))
                 .Append(t.DOScale(squash2, duration * 0.04f).SetEase(squashOutEase))
                 .Append(t.DOScale(originalScale, duration * 0.04f).SetEase(squashInEase))
-                .Append(t.DOLocalMoveY(targetY + dropHeight * 0.1f, duration * 0.09f).SetEase(bounceEase))
-                .Append(t.DOLocalMoveY(targetY, duration * 0.09f).SetEase(fallEase))
-                .Append(t.DOScale(originalScale, duration * 0.05f).SetEase(squashOutEase))
-                .WithDefaults(presetOptions, target);
+                .Append(BounceMotionUtility.CreateYTween(target, targetY + dropHeight * 0.1f, duration * 0.09f).SetEase(bounceEase))
+                .Append(BounceMotionUtility.CreateYTween(target, targetY, duration * 0.09f).SetEase(fallEase))
+                .Append(t.DOScale(Vector3.Lerp(originalScale, squash2, 0.5f), duration * 0.025f).SetEase(squashOutEase))
+                .Append(t.DOScale(originalScale, duration * 0.025f).SetEase(squashInEase))
+                .WithDefaults(sequenceOptions, target);
         }
     }
 
@@ -123,31 +125,31 @@ namespace LB.TweenHelper
         {
             var t = target.transform;
             var originalScale = t.localScale;
-            var baseY = t.localPosition.y;
+            var baseY = BounceMotionUtility.GetBaseY(target);
             var strength = CodePreset.ResolveStrengthStatic(options);
+            var distanceScale = strength * BounceMotionUtility.GetDistanceMultiplier(target);
             var fallEase = options.Ease ?? defaultFallEase;
             var hopEase = options.SecondaryEase ?? options.Ease ?? defaultHopEase;
-            var presetOptions = options.Ease.HasValue ? options : options.SetEase(fallEase);
+            var sequenceOptions = options.SetEase(Ease.Linear);
 
             var squash1 = new Vector3(originalScale.x * (1f + squash1Amount * strength), originalScale.y * (1f - squash1Amount * strength), originalScale.z);
             var squash2 = new Vector3(originalScale.x * (1f + squash2Amount * strength), originalScale.y * (1f - squash2Amount * strength), originalScale.z);
             var squash3 = new Vector3(originalScale.x * (1f + squash3Amount * strength), originalScale.y * (1f - squash3Amount * strength), originalScale.z);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalMoveY(baseY + hop1 * strength, duration * 0.15f).SetEase(hopEase))
-                .Append(t.DOLocalMoveY(baseY, duration * 0.15f).SetEase(fallEase))
-                .Append(t.DOScale(squash1, duration * 0.04f).SetEase(squashOutEase))
-                .Append(t.DOScale(originalScale, duration * 0.04f).SetEase(squashInEase))
-                .Append(t.DOLocalMoveY(baseY + hop2 * strength, duration * 0.1f).SetEase(hopEase))
-                .Append(t.DOLocalMoveY(baseY, duration * 0.1f).SetEase(fallEase))
-                .Append(t.DOScale(squash2, duration * 0.03f).SetEase(squashOutEase))
-                .Append(t.DOScale(originalScale, duration * 0.03f).SetEase(squashInEase))
-                .Append(t.DOLocalMoveY(baseY + hop3 * strength, duration * 0.08f).SetEase(hopEase))
-                .Append(t.DOLocalMoveY(baseY, duration * 0.08f).SetEase(fallEase))
+                .Append(BounceMotionUtility.CreateYTween(target, baseY + hop1 * distanceScale, duration * 0.18f).SetEase(hopEase))
+                .Append(BounceMotionUtility.CreateYTween(target, baseY, duration * 0.18f).SetEase(fallEase))
+                .Append(t.DOScale(squash1, duration * 0.05f).SetEase(squashOutEase))
+                .Append(t.DOScale(originalScale, duration * 0.05f).SetEase(squashInEase))
+                .Append(BounceMotionUtility.CreateYTween(target, baseY + hop2 * distanceScale, duration * 0.12f).SetEase(hopEase))
+                .Append(BounceMotionUtility.CreateYTween(target, baseY, duration * 0.12f).SetEase(fallEase))
+                .Append(t.DOScale(squash2, duration * 0.035f).SetEase(squashOutEase))
+                .Append(t.DOScale(originalScale, duration * 0.035f).SetEase(squashInEase))
+                .Append(BounceMotionUtility.CreateYTween(target, baseY + hop3 * distanceScale, duration * 0.09f).SetEase(hopEase))
+                .Append(BounceMotionUtility.CreateYTween(target, baseY, duration * 0.09f).SetEase(fallEase))
                 .Append(t.DOScale(squash3, duration * 0.03f).SetEase(squashOutEase))
                 .Append(t.DOScale(originalScale, duration * 0.03f).SetEase(squashInEase))
-                .AppendInterval(duration * 0.14f)
-                .WithDefaults(presetOptions, target);
+                .WithDefaults(sequenceOptions, target);
         }
     }
 
@@ -259,9 +261,8 @@ namespace LB.TweenHelper
                 Ease.OutQuad,
                 0.45f,
                 new[] { 0.15f, 0.04f },
-                new[] { 0.13f, 0.1f },
-                new[] { 0.13f, 0.1f },
-                tailIntervalRatio: 0.09f);
+                new[] { 0.16f, 0.115f },
+                new[] { 0.16f, 0.115f });
         }
     }
 
@@ -271,7 +272,7 @@ namespace LB.TweenHelper
     /// Offsets Y by <c>+5</c>, then builds a multi-step sequence combining position and scale:
     /// (1) fall to target (30%), (2) squash on impact <c>(1.3x, 0.7y)</c> then restore (5%+5%),
     /// (3) bounce 1 up to 35% height (12%+12%), (4) smaller squash <c>(1.15x, 0.85y)</c> then restore (4%+4%),
-    /// (5) bounce 2 up to 10% height (9%+9%), (6) final scale settle (5%).
+    /// (5) bounce 2 up to 10% height (9%+9%), (6) a small final impact and scale settle (2.5%+2.5%).
     /// Falls use <c>Ease.InQuad</c>, bounces use <c>Ease.OutQuad</c>.
     /// </para>
     /// <para>

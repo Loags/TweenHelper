@@ -12,7 +12,6 @@ namespace LB.TweenHelper.Demo
         private const float NudgePreviewStrength = 60f;
         private const float ShakePreviewStrength = 50f;
         private const float JitterPreviewStrength = 120f;
-        private const float BouncePreviewStrength = 40f;
         private const float DropPreviewStrength = 25f;
         private const float LaunchPreviewStrength = 50f;
         private const float OrbitPreviewStrength = 50f;
@@ -61,8 +60,7 @@ namespace LB.TweenHelper.Demo
             if (name.StartsWith("Nudge", StringComparison.Ordinal)) return NudgePreviewStrength;
             if (name.StartsWith("Shake", StringComparison.Ordinal)) return ShakePreviewStrength;
             if (name.StartsWith("Jitter", StringComparison.Ordinal)) return JitterPreviewStrength;
-            if (name.StartsWith("BounceLand", StringComparison.Ordinal) || name.StartsWith("BounceCartoon", StringComparison.Ordinal)) return null;
-            if (name.StartsWith("Bounce", StringComparison.Ordinal)) return BouncePreviewStrength;
+            if (name.StartsWith("Bounce", StringComparison.Ordinal)) return null;
             if (name.StartsWith("Drop", StringComparison.Ordinal)) return DropPreviewStrength;
             if (name.StartsWith("Launch", StringComparison.Ordinal)) return LaunchPreviewStrength;
             if (name.StartsWith("OrbitXY", StringComparison.Ordinal)) return OrbitPreviewStrength;

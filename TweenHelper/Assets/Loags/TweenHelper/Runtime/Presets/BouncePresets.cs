@@ -3,6 +3,30 @@ using UnityEngine;
 
 namespace LB.TweenHelper
 {
+    internal static class BounceMotionUtility
+    {
+        private const float CanvasDistanceMultiplier = 40f;
+
+        public static float GetBaseY(GameObject target)
+        {
+            return TweenTargetUtility.TryGetRectTransform(target, out var rectTransform)
+                ? rectTransform.anchoredPosition.y
+                : target.transform.localPosition.y;
+        }
+
+        public static float GetDistanceMultiplier(GameObject target)
+        {
+            return TweenTargetUtility.TryGetRectTransform(target, out _) ? CanvasDistanceMultiplier : 1f;
+        }
+
+        public static Tween CreateYTween(GameObject target, float y, float duration)
+        {
+            return TweenTargetUtility.TryGetRectTransform(target, out var rectTransform)
+                ? rectTransform.DOAnchorPosY(y, duration)
+                : target.transform.DOLocalMoveY(y, duration);
+        }
+    }
+
     /// <summary>
     /// Internal factory for squash-and-stretch pulse presets.
     /// </summary>
@@ -20,15 +44,15 @@ namespace LB.TweenHelper
             var t = target.transform;
             var originalScale = t.localScale;
             var strength = CodePreset.ResolveStrengthStatic(options);
-            var presetOptions = options.Ease.HasValue ? options : options.SetEase(finalEaseDefault);
-            var finalEase = presetOptions.Ease ?? finalEaseDefault;
+            var finalEase = options.Ease ?? finalEaseDefault;
+            var sequenceOptions = options.SetEase(Ease.Linear);
 
             return DOTween.Sequence()
                 .Append(t.DOScale(new Vector3(originalScale.x * (1f + squash1 * strength), originalScale.y * (1f - squash1 * strength), originalScale.z), duration * 0.15f))
                 .Append(t.DOScale(new Vector3(originalScale.x * (1f - stretch * strength), originalScale.y * (1f + stretch * strength), originalScale.z), duration * 0.15f))
                 .Append(t.DOScale(new Vector3(originalScale.x * (1f + squash2 * strength), originalScale.y * (1f - squash2 * strength), originalScale.z), duration * 0.15f))
                 .Append(t.DOScale(originalScale, duration * 0.25f).SetEase(finalEase))
-                .WithDefaults(presetOptions, target);
+                .WithDefaults(sequenceOptions, target);
         }
     }
 
@@ -39,21 +63,21 @@ namespace LB.TweenHelper
     {
         public static Tween Create(GameObject target, float duration, TweenOptions options, float hop1, float hop2, float hop3)
         {
-            var t = target.transform;
-            var baseY = t.localPosition.y;
+            var baseY = BounceMotionUtility.GetBaseY(target);
             var strength = CodePreset.ResolveStrengthStatic(options);
+            var distanceScale = strength * BounceMotionUtility.GetDistanceMultiplier(target);
             var upEase = options.Ease ?? Ease.OutQuad;
             var downEase = options.SecondaryEase ?? options.Ease ?? Ease.InQuad;
-            var presetOptions = options.Ease.HasValue ? options : options.SetEase(upEase);
+            var sequenceOptions = options.SetEase(Ease.Linear);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalMoveY(baseY + hop1 * strength, duration * 0.15f).SetEase(upEase))
-                .Append(t.DOLocalMoveY(baseY, duration * 0.15f).SetEase(downEase))
-                .Append(t.DOLocalMoveY(baseY + hop2 * strength, duration * 0.12f).SetEase(upEase))
-                .Append(t.DOLocalMoveY(baseY, duration * 0.12f).SetEase(downEase))
-                .Append(t.DOLocalMoveY(baseY + hop3 * strength, duration * 0.1f).SetEase(upEase))
-                .Append(t.DOLocalMoveY(baseY, duration * 0.1f).SetEase(downEase))
-                .WithDefaults(presetOptions, target);
+                .Append(BounceMotionUtility.CreateYTween(target, baseY + hop1 * distanceScale, duration * 0.2f).SetEase(upEase))
+                .Append(BounceMotionUtility.CreateYTween(target, baseY, duration * 0.2f).SetEase(downEase))
+                .Append(BounceMotionUtility.CreateYTween(target, baseY + hop2 * distanceScale, duration * 0.17f).SetEase(upEase))
+                .Append(BounceMotionUtility.CreateYTween(target, baseY, duration * 0.17f).SetEase(downEase))
+                .Append(BounceMotionUtility.CreateYTween(target, baseY + hop3 * distanceScale, duration * 0.13f).SetEase(upEase))
+                .Append(BounceMotionUtility.CreateYTween(target, baseY, duration * 0.13f).SetEase(downEase))
+                .WithDefaults(sequenceOptions, target);
         }
     }
 
@@ -136,6 +160,7 @@ namespace LB.TweenHelper
     /// Bounces the target on the Y axis with three progressively smaller hops using a sequence.
     /// <para>
     /// Builds a 6-step Y-axis sequence: hop 1 rises <c>+1.1</c>, hop 2 rises <c>+0.6</c>, hop 3 rises <c>+0.22</c>.
+    /// RectTransform targets use canvas-appropriate pixel distances automatically.
     /// Up phases use <c>Ease.OutQuad</c>, down phases use <c>Ease.InQuad</c>.
     /// </para>
     /// <para>

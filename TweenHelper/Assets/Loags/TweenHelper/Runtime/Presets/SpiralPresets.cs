@@ -135,12 +135,12 @@ namespace LB.TweenHelper
     /// Scales the target from zero to original while spinning 360 degrees on Y, creating a whirl-in entrance.
     /// <para>
     /// Sets initial scale to <c>Vector3.zero</c>. Builds a parallel sequence: scale to original with
-    /// <c>Ease.OutBack</c> (overshoot entrance), joined with 360° Y rotation using
-    /// <c>RotateMode.FastBeyond360</c> and <c>Ease.Linear</c> (uniform spin).
+    /// <c>Ease.OutBack</c> (overshoot entrance), joined with 360° additive local Y rotation using
+    /// <c>RotateMode.LocalAxisAdd</c> and <c>Ease.Linear</c> (uniform spin).
     /// The inverse of SpinScaleOut (which shrinks while spinning).
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.0s | <b>Default ease:</b> OutBack (scale), Linear (spin)<br/>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.0s | <b>Default ease:</b> OutBack (scale), Linear (spin)<br/>
     /// <b>Easing override:</b> Primary ease controls scale; secondary ease controls spin.<br/>
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
     /// <b>Strength override:</b> Multiplies spin degrees (default 1.0).
@@ -155,26 +155,12 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SwirlIn";
         public override string Description => "Spin and scale in from zero";
-        public override float DefaultDuration => 1.0f;
+        public override float DefaultDuration => 2.0f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            var t = target.transform;
-            var originalScale = t.localScale;
-            var start = ResolveStartScale(options, Vector3.zero);
-            var scaleTarget = ResolveTargetScale(options, originalScale);
-            t.localScale = start;
-            var dur = GetDuration(duration, options);
-            var scaleEase = ResolveEase(options, Ease.OutBack);
-            var spinEase = ResolveSecondaryEase(options, Ease.Linear);
-            var presetOptions = MergeWithDefaultEase(options, scaleEase);
-
-            return DOTween.Sequence()
-                .Append(t.DOScale(scaleTarget, dur).SetEase(scaleEase))
-                .Join(t.DORotate(new Vector3(0f, 360f * strength, 0f), dur, RotateMode.FastBeyond360).SetEase(spinEase))
-                .WithDefaults(presetOptions, target);
+            return SwirlInFactory.Create(target, 360f, Ease.OutBack, GetDuration(duration, options), options);
         }
     }
 
@@ -197,7 +183,7 @@ namespace LB.TweenHelper
 
             return DOTween.Sequence()
                 .Append(t.DOScale(scaleTarget, duration).SetEase(scaleEase))
-                .Join(t.DORotate(new Vector3(0f, spinDegrees * strength, 0f), duration, RotateMode.FastBeyond360).SetEase(spinEase))
+                .Join(t.DOLocalRotate(new Vector3(0f, spinDegrees * strength, 0f), duration, RotateMode.LocalAxisAdd).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -205,7 +191,7 @@ namespace LB.TweenHelper
     /// <summary>
     /// Gentle spin and scale in from zero with less rotation.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 0.8s | <b>Default ease:</b> OutQuad (scale), Linear (spin)<br/>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.6s | <b>Default ease:</b> OutQuad (scale), Linear (spin)<br/>
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
     /// <b>Strength override:</b> Multiplies spin degrees (default 1.0).
     /// </para>
@@ -216,7 +202,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SwirlInSoft";
         public override string Description => "Gentle spin and scale in from zero";
-        public override float DefaultDuration => 0.8f;
+        public override float DefaultDuration => 2.6f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
@@ -228,7 +214,7 @@ namespace LB.TweenHelper
     /// <summary>
     /// Dramatic spin and scale in from zero with extra rotation.
     /// <para>
-    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.3s | <b>Default ease:</b> OutBack (scale), Linear (spin)<br/>
+    /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 1.8s | <b>Default ease:</b> OutBack (scale), Linear (spin)<br/>
     /// <b>Scale override:</b> StartScale replaces zero; TargetScale replaces original scale.<br/>
     /// <b>Strength override:</b> Multiplies spin degrees (default 1.0).
     /// </para>
@@ -239,7 +225,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SwirlInHard";
         public override string Description => "Dramatic spin and scale in from zero";
-        public override float DefaultDuration => 1.3f;
+        public override float DefaultDuration => 1.8f;
 
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)

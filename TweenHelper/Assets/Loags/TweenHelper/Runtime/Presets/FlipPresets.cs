@@ -271,8 +271,8 @@ namespace LB.TweenHelper
         public static Tween Create(GameObject target, Vector3 axis, float degrees, float duration, Ease defaultFlipEase, TweenOptions options)
         {
             var strength = CodePreset.ResolveStrengthStatic(options);
-            var presetOptions = options.Ease.HasValue ? options : options.SetEase(defaultFlipEase);
-            var flipEase = presetOptions.Ease ?? defaultFlipEase;
+            var flipEase = options.Ease ?? defaultFlipEase;
+            var sequenceOptions = options.SetEase(Ease.Linear);
             var endAlpha = CodePreset.ResolveTargetAlphaStatic(options, 0f);
 
             var seq = DOTween.Sequence();
@@ -287,7 +287,7 @@ namespace LB.TweenHelper
                 seq.OnComplete(() => CodePreset.SetAlphaStatic(target, endAlpha));
             }
 
-            return seq.WithDefaults(presetOptions, target);
+            return seq.WithDefaults(sequenceOptions, target);
         }
     }
 

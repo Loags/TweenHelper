@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace LB.TweenHelper.Editor
@@ -30,7 +31,16 @@ namespace LB.TweenHelper.Editor
 
                 bool sceneNeedsFilters = !File.ReadAllText(fullScenePath).Contains("allFilterToggle:");
                 bool sceneNeedsMaterial = !File.Exists(Path.GetFullPath(MaterialPath));
-                if (!sceneNeedsFilters && !sceneNeedsMaterial) return;
+                if (!sceneNeedsFilters && !sceneNeedsMaterial)
+                {
+                    Material material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
+                    if (material == null || !NeedsTransparentConfiguration(material)) return;
+                    ConfigurePreviewMaterial(material);
+                    EditorUtility.SetDirty(material);
+                    AssetDatabase.SaveAssets();
+                    return;
+                }
+
                 BuildScene();
             };
         }
@@ -167,15 +177,39 @@ namespace LB.TweenHelper.Editor
         private static Material GetOrCreatePreviewMaterial()
         {
             Material material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
-            if (material != null) return material;
-
-            Shader shader = Shader.Find("Universal Render Pipeline/Lit");
-            material = new Material(shader)
+            if (material == null)
             {
-                color = new Color(0.12f, 0.63f, 1f)
-            };
-            AssetDatabase.CreateAsset(material, MaterialPath);
+                Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+                material = new Material(shader);
+                AssetDatabase.CreateAsset(material, MaterialPath);
+            }
+
+            ConfigurePreviewMaterial(material);
             return material;
+        }
+
+        private static bool NeedsTransparentConfiguration(Material material)
+        {
+            return material.HasProperty("_Surface") &&
+                   (material.GetFloat("_Surface") < 0.5f || material.renderQueue < (int)RenderQueue.Transparent);
+        }
+
+        private static void ConfigurePreviewMaterial(Material material)
+        {
+            material.color = new Color(0.12f, 0.63f, 1f, 1f);
+            material.SetFloat("_Surface", 1f);
+            material.SetFloat("_Blend", 0f);
+            material.SetFloat("_SrcBlend", (float)BlendMode.SrcAlpha);
+            material.SetFloat("_DstBlend", (float)BlendMode.OneMinusSrcAlpha);
+            material.SetFloat("_SrcBlendAlpha", (float)BlendMode.One);
+            material.SetFloat("_DstBlendAlpha", (float)BlendMode.OneMinusSrcAlpha);
+            material.SetFloat("_ZWrite", 0f);
+            material.SetFloat("_BlendModePreserveSpecular", 0f);
+            material.SetOverrideTag("RenderType", "Transparent");
+            material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+            material.SetShaderPassEnabled("ShadowCaster", false);
+            material.renderQueue = (int)RenderQueue.Transparent;
         }
 
         private static Canvas CreateCanvas()

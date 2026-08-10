@@ -4,10 +4,10 @@ using UnityEngine;
 namespace LB.TweenHelper
 {
     /// <summary>
-    /// Gentle Z-axis pendulum loop. Swings left then right continuously.
+    /// Gentle Z-axis pendulum loop. Swings continuously through its center without snapping.
     /// <para>
-    /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 2.8s (1.4s per leg) | <b>Default ease:</b> InOutSine<br/>
-    /// <b>Easing override:</b> Primary ease controls left-swing; secondary ease controls right-swing.<br/>
+    /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 2.8s | <b>Default ease:</b> Sine-based continuous swing<br/>
+    /// <b>Easing override:</b> Primary ease controls center transitions; secondary ease controls the full sweep.<br/>
     /// <b>Strength override:</b> Multiplies swing angle (default 1.0).
     /// </para>
     /// <para>
@@ -25,19 +25,7 @@ namespace LB.TweenHelper
 
         public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
         {
-            var strength = ResolveStrength(options);
-            var t = target.transform;
-            var originalRot = t.localEulerAngles;
-            var halfDur = GetDuration(duration, options) * 0.5f;
-            var leftEase = options.Ease ?? Ease.InOutSine;
-            var rightEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
-
-            return DOTween.Sequence()
-                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, 6f * strength), halfDur).SetEase(leftEase))
-                .Append(t.DOLocalRotate(originalRot + new Vector3(0f, 0f, -6f * strength), halfDur).SetEase(rightEase))
-                .SetLoops(-1, LoopType.Restart)
-                .WithLoopDefaults(options, target, applyDelayThisCycle: true)
-                .SetEase(Ease.Linear);
+            return PendulumFactory.Create(target, Vector3.forward, 6f, GetDuration(duration, options), options);
         }
     }
 
@@ -52,15 +40,18 @@ namespace LB.TweenHelper
             var strength = CodePreset.ResolveStrengthStatic(options);
             var t = target.transform;
             var originalRot = t.localEulerAngles;
-            var halfDur = duration * 0.5f;
-            var leftEase = options.Ease ?? Ease.InOutSine;
-            var rightEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
+            var quarterDuration = duration * 0.25f;
+            var halfDuration = duration * 0.5f;
+            var centerOutEase = options.Ease ?? Ease.OutSine;
+            var fullSweepEase = options.SecondaryEase ?? options.Ease ?? Ease.InOutSine;
+            var centerInEase = options.Ease ?? Ease.InSine;
 
             var delta = axis * (angle * strength);
 
             return DOTween.Sequence()
-                .Append(t.DOLocalRotate(originalRot + delta, halfDur).SetEase(leftEase))
-                .Append(t.DOLocalRotate(originalRot - delta, halfDur).SetEase(rightEase))
+                .Append(t.DOLocalRotate(originalRot + delta, quarterDuration).SetEase(centerOutEase))
+                .Append(t.DOLocalRotate(originalRot - delta, halfDuration).SetEase(fullSweepEase))
+                .Append(t.DOLocalRotate(originalRot, quarterDuration).SetEase(centerInEase))
                 .SetLoops(-1, LoopType.Restart)
                 .WithLoopDefaults(options, target, applyDelayThisCycle: true)
                 .SetEase(Ease.Linear);
@@ -117,10 +108,10 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Gentle X-axis pendulum loop. Nods forward/back continuously.
+    /// Gentle X-axis pendulum loop. Nods continuously through its center without snapping.
     /// <para>
-    /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 2.8s (1.4s per leg) | <b>Default ease:</b> InOutSine<br/>
-    /// <b>Easing override:</b> Primary ease controls first swing; secondary ease controls return swing.<br/>
+    /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 2.8s | <b>Default ease:</b> Sine-based continuous swing<br/>
+    /// <b>Easing override:</b> Primary ease controls center transitions; secondary ease controls the full sweep.<br/>
     /// <b>Strength override:</b> Multiplies swing angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset<PendulumXPreset>().Play();</c>
@@ -184,10 +175,10 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Gentle Y-axis pendulum loop. Tilts side-to-side continuously.
+    /// Gentle Y-axis pendulum loop. Tilts continuously through its center without snapping.
     /// <para>
-    /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 2.8s (1.4s per leg) | <b>Default ease:</b> InOutSine<br/>
-    /// <b>Easing override:</b> Primary ease controls first swing; secondary ease controls return swing.<br/>
+    /// <b>Type:</b> Looping (sequence) | <b>Default duration:</b> 2.8s | <b>Default ease:</b> Sine-based continuous swing<br/>
+    /// <b>Easing override:</b> Primary ease controls center transitions; secondary ease controls the full sweep.<br/>
     /// <b>Strength override:</b> Multiplies swing angle (default 1.0).
     /// </para>
     /// Usage: <c>transform.Tween().Preset<PendulumYPreset>().Play();</c>

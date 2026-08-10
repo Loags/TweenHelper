@@ -173,7 +173,7 @@ namespace LB.TweenHelper
         {
             if (TryGetRectTransform(target, out var rectTransform))
             {
-                return rectTransform.DOAnchorPos(rectTransform.anchoredPosition + ToAnchored(localOffset), duration, snapping);
+                return rectTransform.DOAnchorPos(ToAnchored(localOffset), duration, snapping).SetRelative(true);
             }
 
             return target.transform.DOLocalMove(localOffset, duration, snapping).SetRelative(true);
@@ -183,7 +183,7 @@ namespace LB.TweenHelper
         {
             if (TryGetRectTransform(target, out var rectTransform))
             {
-                return rectTransform.DOAnchorPos(rectTransform.anchoredPosition + ToAnchored(offset), duration, snapping);
+                return rectTransform.DOAnchorPos(ToAnchored(offset), duration, snapping).SetRelative(true);
             }
 
             return target.transform.DOMove(target.transform.position + offset, duration, snapping);

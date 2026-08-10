@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
@@ -76,7 +77,11 @@ namespace LB.TweenHelper.Demo
                 if (graphic != null) graphic.color = Color;
 
                 var renderer = target.GetComponent<Renderer>();
-                if (renderer != null) renderer.material.color = Color;
+                if (renderer != null)
+                {
+                    renderer.SetPropertyBlock(null);
+                    renderer.material.color = Color;
+                }
 
                 var canvasGroup = target.GetComponent<CanvasGroup>();
                 if (canvasGroup != null) canvasGroup.alpha = CanvasGroupAlpha;
@@ -84,6 +89,7 @@ namespace LB.TweenHelper.Demo
         }
 
         private const string StatusKeyPrefix = "TweenHelper.PresetReview.Status.";
+        private const float AutoReplayDelaySeconds = 0.5f;
         private static readonly Color UnreviewedColor = new Color(0.48f, 0.55f, 0.68f);
         private static readonly Color FailedColor = new Color(1f, 0.29f, 0.34f);
         private static readonly Color PassedColor = new Color(0.2f, 0.85f, 0.53f);
@@ -117,6 +123,7 @@ namespace LB.TweenHelper.Demo
         private TargetSnapshot _uiSnapshot;
         private TargetSnapshot _worldSnapshot;
         private TweenHandle _activeTween;
+        private Coroutine _delayedReplay;
         private ReviewFilter _activeFilter;
         private int _currentIndex;
 
@@ -244,6 +251,7 @@ namespace LB.TweenHelper.Demo
             RebuildFilteredItems();
             _currentIndex = Mathf.Clamp(nextIndex, 0, Mathf.Max(0, _items.Count - 1));
             ShowCurrentItem();
+            if (_items.Count > 0 && CurrentItem.Id != reviewedItem.Id) ScheduleDelayedReplay();
         }
 
         private void SetFilter(ReviewFilter filter, bool selected)
@@ -387,8 +395,31 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private void ScheduleDelayedReplay()
+        {
+            CancelDelayedReplay();
+            string scheduledItemId = CurrentItem.Id;
+            _delayedReplay = StartCoroutine(ReplayAfterDelay(scheduledItemId));
+        }
+
+        private IEnumerator ReplayAfterDelay(string scheduledItemId)
+        {
+            yield return new WaitForSecondsRealtime(AutoReplayDelaySeconds);
+            _delayedReplay = null;
+            if (_items.Count == 0 || CurrentItem.Id != scheduledItemId) yield break;
+            ReplayCurrent();
+        }
+
+        private void CancelDelayedReplay()
+        {
+            if (_delayedReplay == null) return;
+            StopCoroutine(_delayedReplay);
+            _delayedReplay = null;
+        }
+
         private void StopPlayback()
         {
+            CancelDelayedReplay();
             _activeTween?.Kill();
             _activeTween = null;
             KillTargetTweens(uiTarget);

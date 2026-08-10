@@ -60,9 +60,26 @@ namespace LB.TweenHelper
             var halfDur = duration * 0.5f;
             var moveUpEase = options.Ease ?? defaultEase;
             var moveDownEase = options.SecondaryEase ?? options.Ease ?? defaultEase;
+            var distance = height * strength;
+            Tween moveUp;
+            Tween moveDown;
+
+            if (TweenTargetUtility.TryGetRectTransform(target, out var rectTransform))
+            {
+                var originalY = rectTransform.anchoredPosition.y;
+                moveUp = rectTransform.DOAnchorPosY(originalY + distance, halfDur);
+                moveDown = rectTransform.DOAnchorPosY(originalY, halfDur);
+            }
+            else
+            {
+                var originalY = target.transform.localPosition.y;
+                moveUp = target.transform.DOLocalMoveY(originalY + distance, halfDur);
+                moveDown = target.transform.DOLocalMoveY(originalY, halfDur);
+            }
+
             return DOTween.Sequence()
-                .Append(TweenTargetUtility.CreateRelativeLocalMoveTween(target, new Vector3(0f, height * strength, 0f), halfDur).SetEase(moveUpEase))
-                .Append(TweenTargetUtility.CreateRelativeLocalMoveTween(target, new Vector3(0f, -height * strength, 0f), halfDur).SetEase(moveDownEase))
+                .Append(moveUp.SetEase(moveUpEase))
+                .Append(moveDown.SetEase(moveDownEase))
                 .SetLoops(-1, LoopType.Restart)
                 .WithLoopDefaults(options, target, applyDelayThisCycle: true)
                 .SetEase(Ease.Linear);
@@ -200,8 +217,8 @@ namespace LB.TweenHelper
     /// <summary>
     /// Gently bobs the target up and down on the Y axis in a continuous repeating sequence.
     /// <para>
-    /// Alternates between moving <c>+0.5</c> and <c>-0.5</c> on local Y (relative), each leg taking
-    /// half the total duration. Uses <c>SetRelative(true)</c> for position-independent movement.
+    /// Moves from the captured starting Y to <c>+0.5</c>, then returns to that exact starting Y, with each leg taking
+    /// half the total duration. RectTransform targets use anchored position while world targets use local position.
     /// The returned sequence owns the complete loop, so killing it stops all motion.
     /// </para>
     /// <para>

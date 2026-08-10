@@ -13,14 +13,14 @@ namespace LB.TweenHelper
             var strength = CodePreset.ResolveStrengthStatic(options);
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.InOutQuad);
             var ease = presetOptions.Ease ?? Ease.InOutQuad;
-            return target.transform.DORotate(rotationAxis * (degrees * strength), duration, RotateMode.FastBeyond360)
+            return target.transform.DOLocalRotate(rotationAxis * (degrees * strength), duration, RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
     }
 
     /// <summary>
-    /// Spins the target a full 360 degrees around the Y axis using FastBeyond360 rotation mode.
+    /// Spins the target a full 360 degrees around its local Y axis while preserving its starting orientation.
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
@@ -87,7 +87,7 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Spins the target a full 360 degrees around the X axis using FastBeyond360 rotation mode.
+    /// Spins the target a full 360 degrees around its local X axis while preserving its starting orientation.
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
@@ -154,7 +154,7 @@ namespace LB.TweenHelper
     }
 
     /// <summary>
-    /// Spins the target a full 360 degrees around the Z axis using FastBeyond360 rotation mode.
+    /// Spins the target a full 360 degrees around its local Z axis while preserving its starting orientation.
     /// <para>
     /// <b>Type:</b> One-shot effect | <b>Default duration:</b> 1.0s | <b>Default ease:</b> InOutQuad<br/>
     /// <b>Easing override:</b> Primary ease replaces InOutQuad.<br/>
@@ -230,7 +230,7 @@ namespace LB.TweenHelper
             var strength = CodePreset.ResolveStrengthStatic(options);
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.InOutQuad);
             var ease = presetOptions.Ease ?? Ease.InOutQuad;
-            return target.transform.DORotate(rotation * strength, duration, RotateMode.FastBeyond360)
+            return target.transform.DOLocalRotate(rotation * strength, duration, RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }
@@ -441,7 +441,7 @@ namespace LB.TweenHelper
     /// Spins the target 720 degrees on the Y axis while shrinking to zero scale, creating a collectible pickup effect.
     /// <para>
     /// Builds a parallel sequence: scale to <c>Vector3.zero</c> with <c>Ease.InCubic</c> (no anticipation),
-    /// joined with 720° Y rotation using <c>RotateMode.FastBeyond360</c> and <c>Ease.Linear</c>
+    /// joined with 720° additive local Y rotation using <c>RotateMode.LocalAxisAdd</c> and <c>Ease.Linear</c>
     /// (uniform spin speed). The two full rotations during shrink create a vortex-like exit.
     /// </para>
     /// <para>
@@ -473,10 +473,10 @@ namespace LB.TweenHelper
     /// Shrinks the target to zero while spinning 720° on Y, with anticipation overshoot on scale.
     /// <para>
     /// Builds a parallel sequence: scale to <c>Vector3.zero</c> with <c>Ease.InBack</c> (anticipation),
-    /// joined with 720° Y rotation using <c>RotateMode.FastBeyond360</c> and <c>Ease.Linear</c>.
+    /// joined with 720° additive local Y rotation using <c>RotateMode.LocalAxisAdd</c> and <c>Ease.Linear</c>.
     /// </para>
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.7s | <b>Default ease:</b> InBack (scale), Linear (spin)<br/>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.2s | <b>Default ease:</b> InBack (scale), Linear (spin)<br/>
     /// <b>Easing override:</b> Primary ease controls scale; secondary ease controls spin.<br/>
     /// <b>Scale override:</b> TargetScale replaces zero.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
@@ -491,7 +491,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SpinScaleOutOvershoot";
         public override string Description => "Spin and shrink to zero with anticipation overshoot";
-        public override float DefaultDuration => 0.7f;
+        public override float DefaultDuration => 1.2f;
         public override float DefaultOvershoot => 1.70158f;
 
 
@@ -550,7 +550,7 @@ namespace LB.TweenHelper
     /// <summary>
     /// Soft spin and shrink with mild anticipation overshoot on scale.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.9s | <b>Default ease:</b> InBack (1.2 overshoot, scale), Linear (spin)<br/>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 1.6s | <b>Default ease:</b> InBack (1.2 overshoot, scale), Linear (spin)<br/>
     /// <b>Scale override:</b> TargetScale replaces zero.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
@@ -561,7 +561,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SpinScaleOutOvershootSoft";
         public override string Description => "Soft spin and shrink with mild anticipation";
-        public override float DefaultDuration => 0.9f;
+        public override float DefaultDuration => 1.6f;
         public override float DefaultOvershoot => 1.2f;
 
 
@@ -574,7 +574,7 @@ namespace LB.TweenHelper
     /// <summary>
     /// Hard spin and shrink with strong anticipation overshoot on scale.
     /// <para>
-    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.5s | <b>Default ease:</b> InBack (2.0 overshoot, scale), Linear (spin)<br/>
+    /// <b>Type:</b> One-shot exit | <b>Default duration:</b> 0.8s | <b>Default ease:</b> InBack (2.0 overshoot, scale), Linear (spin)<br/>
     /// <b>Scale override:</b> TargetScale replaces zero.<br/>
     /// <b>Strength override:</b> Multiplies rotation degrees (default 1.0).
     /// </para>
@@ -585,7 +585,7 @@ namespace LB.TweenHelper
     {
         public override string PresetName => "SpinScaleOutOvershootHard";
         public override string Description => "Hard spin and shrink with strong anticipation";
-        public override float DefaultDuration => 0.5f;
+        public override float DefaultDuration => 0.8f;
         public override float DefaultOvershoot => 2.0f;
 
 
@@ -643,7 +643,7 @@ namespace LB.TweenHelper
 
             return DOTween.Sequence()
                 .Join(scaleTween)
-                .Join(t.DORotate(new Vector3(0f, rotationDegrees * strength, 0f), duration, RotateMode.FastBeyond360).SetEase(spinEase))
+                .Join(t.DOLocalRotate(new Vector3(0f, rotationDegrees * strength, 0f), duration, RotateMode.LocalAxisAdd).SetEase(spinEase))
                 .WithDefaults(presetOptions, target);
         }
     }
@@ -652,7 +652,7 @@ namespace LB.TweenHelper
     /// Spins the target 720 degrees on the Y axis while scaling in from zero, creating a pickup spawn effect.
     /// <para>
     /// Builds a parallel sequence: sets scale to zero, then scales to original size with <c>Ease.OutCubic</c>,
-    /// joined with 720° Y rotation using <c>RotateMode.FastBeyond360</c> and <c>Ease.Linear</c>.
+    /// joined with 720° additive local Y rotation using <c>RotateMode.LocalAxisAdd</c> and <c>Ease.Linear</c>.
     /// </para>
     /// <para>
     /// <b>Type:</b> One-shot entrance | <b>Default duration:</b> 2.1s | <b>Default ease:</b> OutCubic (scale), Linear (spin)<br/>
