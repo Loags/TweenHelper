@@ -40,6 +40,7 @@ namespace LB.TweenHelper.Editor
                 SerializedProperty destinationsTabProperty = serializedController.FindProperty("destinationsTabButton");
                 SerializedProperty feedbackTabProperty = serializedController.FindProperty("feedbackTabButton");
                 SerializedProperty uiSequencesTabProperty = serializedController.FindProperty("uiSequencesTabButton");
+                SerializedProperty textValuesTabProperty = serializedController.FindProperty("textValuesTabButton");
                 SerializedProperty destinationRootProperty = serializedController.FindProperty("destinationPreviewRoot");
                 SerializedProperty destinationTargetProperty = serializedController.FindProperty("destinationTarget");
                 SerializedProperty destinationStartProperty = serializedController.FindProperty("destinationStartMarker");
@@ -57,11 +58,17 @@ namespace LB.TweenHelper.Editor
                 SerializedProperty tabSequenceGroupProperty = serializedController.FindProperty("tabSequenceGroup");
                 SerializedProperty tabOutgoingProperty = serializedController.FindProperty("tabSequenceOutgoing");
                 SerializedProperty tabIncomingProperty = serializedController.FindProperty("tabSequenceIncoming");
+                SerializedProperty textValueRootProperty = serializedController.FindProperty("textValuePreviewRoot");
+                SerializedProperty typewriterTextProperty = serializedController.FindProperty("typewriterText");
+                SerializedProperty numberTextProperty = serializedController.FindProperty("numberText");
+                SerializedProperty characterTextProperty = serializedController.FindProperty("characterText");
+                SerializedProperty scoreTextProperty = serializedController.FindProperty("scoreText");
                 bool collectionsConfigured = tabProperty.objectReferenceValue != null && rootProperty.objectReferenceValue != null && targetsProperty.arraySize >= 9;
                 bool destinationsConfigured = destinationsTabProperty.objectReferenceValue != null && destinationRootProperty.objectReferenceValue != null && destinationTargetProperty.objectReferenceValue != null && destinationStartProperty.objectReferenceValue != null && destinationEndProperty.objectReferenceValue != null && destinationPathProperty.objectReferenceValue != null;
                 bool feedbackConfigured = feedbackTabProperty.objectReferenceValue != null;
                 bool uiSequencesConfigured = uiSequencesTabProperty.objectReferenceValue != null && uiSequenceRootProperty.objectReferenceValue != null && toastSequenceProperty.objectReferenceValue != null && modalSequenceGroupProperty.objectReferenceValue != null && modalBackdropProperty.objectReferenceValue != null && modalPanelProperty.objectReferenceValue != null && modalControlsProperty.arraySize >= 3 && tooltipSequenceProperty.objectReferenceValue != null && dropdownPanelProperty.objectReferenceValue != null && dropdownEntriesProperty.arraySize >= 4 && tabSequenceGroupProperty.objectReferenceValue != null && tabOutgoingProperty.objectReferenceValue != null && tabIncomingProperty.objectReferenceValue != null;
-                bool alreadyConfigured = collectionsConfigured && destinationsConfigured && feedbackConfigured && uiSequencesConfigured;
+                bool textValuesConfigured = textValuesTabProperty.objectReferenceValue != null && textValueRootProperty.objectReferenceValue != null && typewriterTextProperty.objectReferenceValue != null && numberTextProperty.objectReferenceValue != null && characterTextProperty.objectReferenceValue != null && scoreTextProperty.objectReferenceValue != null;
+                bool alreadyConfigured = collectionsConfigured && destinationsConfigured && feedbackConfigured && uiSequencesConfigured && textValuesConfigured;
                 if (alreadyConfigured && !force) return;
 
                 Button collectionsTab = tabProperty.objectReferenceValue as Button;
@@ -138,6 +145,17 @@ namespace LB.TweenHelper.Editor
                     uiSequencesTabProperty.objectReferenceValue = uiSequencesTab;
                 }
 
+                Button textValuesTab = textValuesTabProperty.objectReferenceValue as Button;
+                if (textValuesTab == null)
+                {
+                    var recipesTab = (Button)serializedController.FindProperty("recipesTabButton").objectReferenceValue;
+                    GameObject tabObject = Object.Instantiate(recipesTab.gameObject, recipesTab.transform.parent);
+                    tabObject.name = "TextValuesTab";
+                    textValuesTab = tabObject.GetComponent<Button>();
+                    tabObject.GetComponentInChildren<TMP_Text>().text = "TEXT & VALUES";
+                    textValuesTabProperty.objectReferenceValue = textValuesTab;
+                }
+
                 var recipesTabButton = (Button)serializedController.FindProperty("recipesTabButton").objectReferenceValue;
                 var presetsTabButton = (Button)serializedController.FindProperty("presetsTabButton").objectReferenceValue;
                 LayoutTab(recipesTabButton, 0);
@@ -146,6 +164,7 @@ namespace LB.TweenHelper.Editor
                 LayoutTab(destinationsTab, 3);
                 LayoutTab(feedbackTab, 4);
                 LayoutTab(uiSequencesTab, 5);
+                LayoutTab(textValuesTab, 6);
 
                 GameObject destinationRoot = destinationRootProperty.objectReferenceValue as GameObject;
                 if (destinationRoot == null)
@@ -178,6 +197,19 @@ namespace LB.TweenHelper.Editor
                     tabSequenceGroupProperty.objectReferenceValue = preview.TabGroup;
                     tabOutgoingProperty.objectReferenceValue = preview.TabOutgoing;
                     tabIncomingProperty.objectReferenceValue = preview.TabIncoming;
+                }
+
+                GameObject textValueRoot = textValueRootProperty.objectReferenceValue as GameObject;
+                if (textValueRoot == null)
+                {
+                    var presetImage = (Image)serializedController.FindProperty("presetImage").objectReferenceValue;
+                    var previewText = (TextMeshProUGUI)serializedController.FindProperty("animatedText").objectReferenceValue;
+                    TextValuePreview preview = CreateTextValuePreview(presetImage.transform.parent, previewText);
+                    textValueRootProperty.objectReferenceValue = preview.Root;
+                    typewriterTextProperty.objectReferenceValue = preview.Typewriter;
+                    numberTextProperty.objectReferenceValue = preview.Number;
+                    characterTextProperty.objectReferenceValue = preview.Character;
+                    scoreTextProperty.objectReferenceValue = preview.Score;
                 }
 
                 serializedController.ApplyModifiedPropertiesWithoutUndo();
@@ -324,6 +356,51 @@ namespace LB.TweenHelper.Editor
             return new UISequencePreview(root, toast, modalGroup, modalBackdrop, modalPanel, modalControls, tooltip, dropdownPanel, dropdownEntries, tabGroup, tabOutgoing, tabIncoming);
         }
 
+        private static TextValuePreview CreateTextValuePreview(Transform parent, TextMeshProUGUI fontSource)
+        {
+            var root = new GameObject("TextValuePreview", typeof(RectTransform));
+            root.transform.SetParent(parent, false);
+            var rootRect = (RectTransform)root.transform;
+            rootRect.anchorMin = Vector2.zero;
+            rootRect.anchorMax = Vector2.one;
+            rootRect.offsetMin = Vector2.zero;
+            rootRect.offsetMax = Vector2.zero;
+
+            TextMeshProUGUI typewriter = CreateTextValueLabel(root.transform, fontSource, "Typewriter Text", "<b>TWEEN HELPER</b>\n<color=#58BFFF>RICH TEXT READY</color>", 43f, Color.white);
+            TextMeshProUGUI number = CreateTextValueLabel(root.transform, fontSource, "Number Text", "1,250", 72f, Color.white);
+            TextMeshProUGUI character = CreateTextValueLabel(root.transform, fontSource, "Character Text", "CHARACTER MOTION\n<color=#58BFFF>MESH SAFE</color>", 44f, Color.white);
+            TextMeshProUGUI score = CreateTextValueLabel(root.transform, fontSource, "Score Text", "1,200", 76f, new Color(1f, 0.86f, 0.42f, 1f));
+
+            typewriter.gameObject.SetActive(false);
+            number.gameObject.SetActive(false);
+            character.gameObject.SetActive(false);
+            score.gameObject.SetActive(false);
+            root.SetActive(false);
+            return new TextValuePreview(root, typewriter, number, character, score);
+        }
+
+        private static TextMeshProUGUI CreateTextValueLabel(Transform parent, TextMeshProUGUI fontSource, string name, string value, float fontSize, Color color)
+        {
+            var labelObject = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(TextMeshProUGUI));
+            labelObject.transform.SetParent(parent, false);
+            var rect = (RectTransform)labelObject.transform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = new Vector2(45f, 30f);
+            rect.offsetMax = new Vector2(-45f, -30f);
+
+            var label = labelObject.GetComponent<TextMeshProUGUI>();
+            label.text = value;
+            label.font = fontSource.font;
+            label.fontSize = fontSize;
+            label.fontStyle = FontStyles.Bold;
+            label.alignment = TextAlignmentOptions.Center;
+            label.color = color;
+            label.textWrappingMode = TextWrappingModes.Normal;
+            label.raycastTarget = false;
+            return label;
+        }
+
         private static GameObject CreateSequenceGroup(string name, Transform parent)
         {
             var group = new GameObject(name, typeof(RectTransform));
@@ -417,6 +494,24 @@ namespace LB.TweenHelper.Editor
                 TabGroup = tabGroup;
                 TabOutgoing = tabOutgoing;
                 TabIncoming = tabIncoming;
+            }
+        }
+
+        private readonly struct TextValuePreview
+        {
+            public readonly GameObject Root;
+            public readonly TextMeshProUGUI Typewriter;
+            public readonly TextMeshProUGUI Number;
+            public readonly TextMeshProUGUI Character;
+            public readonly TextMeshProUGUI Score;
+
+            public TextValuePreview(GameObject root, TextMeshProUGUI typewriter, TextMeshProUGUI number, TextMeshProUGUI character, TextMeshProUGUI score)
+            {
+                Root = root;
+                Typewriter = typewriter;
+                Number = number;
+                Character = character;
+                Score = score;
             }
         }
     }

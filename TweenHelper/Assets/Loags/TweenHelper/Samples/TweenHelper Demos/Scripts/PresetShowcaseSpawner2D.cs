@@ -19,6 +19,7 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private Button destinationsTabButton;
         [SerializeField] private Button feedbackTabButton;
         [SerializeField] private Button uiSequencesTabButton;
+        [SerializeField] private Button textValuesTabButton;
         [SerializeField] private GameObject recipesPanel;
         [SerializeField] private GameObject presetsPanel;
 
@@ -56,6 +57,11 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private GameObject tabSequenceGroup;
         [SerializeField] private GameObject tabSequenceOutgoing;
         [SerializeField] private GameObject tabSequenceIncoming;
+        [SerializeField] private GameObject textValuePreviewRoot;
+        [SerializeField] private TMP_Text typewriterText;
+        [SerializeField] private TMP_Text numberText;
+        [SerializeField] private TMP_Text characterText;
+        [SerializeField] private TMP_Text scoreText;
         [SerializeField] private TMP_Text selectionNameText;
         [SerializeField] private TMP_Text selectionDescriptionText;
         [SerializeField] private TMP_Text codeExampleText;
@@ -130,6 +136,17 @@ namespace LB.TweenHelper.Demo
             new UISequenceRecipeDefinition(UISequenceRecipeKind.TabSwitch, "Overlap outgoing and incoming content in one controlled transition.")
         };
 
+        private static readonly TextValueRecipeDefinition[] TextValueRecipes =
+        {
+            new TextValueRecipeDefinition(TextValueRecipeKind.TypewriterReveal, "Reveal rich TextMesh Pro content without modifying its text string."),
+            new TextValueRecipeDefinition(TextValueRecipeKind.TypewriterHide, "Hide currently visible TextMesh Pro content character by character."),
+            new TextValueRecipeDefinition(TextValueRecipeKind.NumberCountUp, "Count upward with culture-aware numeric formatting."),
+            new TextValueRecipeDefinition(TextValueRecipeKind.NumberCountDown, "Use the same count operation for a decreasing value."),
+            new TextValueRecipeDefinition(TextValueRecipeKind.TextCharacterStaggerIn, "Reveal visible characters with directional offset, alpha, and scale."),
+            new TextValueRecipeDefinition(TextValueRecipeKind.TextWave, "Send a finite wave across characters and restore the original mesh."),
+            new TextValueRecipeDefinition(TextValueRecipeKind.ScoreIncrease, "Combine score counting with a restrained punch and color flash.")
+        };
+
         private static readonly string[] CollectionOrderNames =
         {
             "First to last",
@@ -145,6 +162,7 @@ namespace LB.TweenHelper.Demo
         private readonly List<UIRecipeCard> _destinationCards = new List<UIRecipeCard>();
         private readonly List<UIRecipeCard> _feedbackCards = new List<UIRecipeCard>();
         private readonly List<UIRecipeCard> _uiSequenceCards = new List<UIRecipeCard>();
+        private readonly List<UIRecipeCard> _textValueCards = new List<UIRecipeCard>();
         private readonly List<string> _targetOptionNames = new List<string>();
         private UIStateSnapshot _imageState;
         private UIStateSnapshot _textState;
@@ -159,6 +177,10 @@ namespace LB.TweenHelper.Demo
         private UIStateSnapshot[] _dropdownEntryStates;
         private UIStateSnapshot _tabOutgoingState;
         private UIStateSnapshot _tabIncomingState;
+        private TMPTextPreviewSnapshot _typewriterTextState;
+        private TMPTextPreviewSnapshot _numberTextState;
+        private TMPTextPreviewSnapshot _characterTextState;
+        private TMPTextPreviewSnapshot _scoreTextState;
         private GameObject[] _listTargets;
         private GameObject[] _gridTargets;
         private GameObject[] _loadingDotTargets;
@@ -169,6 +191,7 @@ namespace LB.TweenHelper.Demo
         private DestinationRecipeKind _selectedDestinationRecipe = DestinationRecipeKind.Arc;
         private FeedbackRecipeKind _selectedFeedbackRecipe = FeedbackRecipeKind.ErrorReject;
         private UISequenceRecipeKind _selectedUISequenceRecipe = UISequenceRecipeKind.ToastShow;
+        private TextValueRecipeKind _selectedTextValueRecipe = TextValueRecipeKind.TypewriterReveal;
         private StaggerOrder _selectedCollectionOrder = StaggerOrder.FirstToLast;
         private ShowcaseMode _mode = ShowcaseMode.Recipes;
         private int _selectedTargetIndex;
@@ -191,6 +214,10 @@ namespace LB.TweenHelper.Demo
             _dropdownEntryStates = CaptureStates(dropdownSequenceEntries);
             _tabOutgoingState = UIStateSnapshot.Capture(tabSequenceOutgoing);
             _tabIncomingState = UIStateSnapshot.Capture(tabSequenceIncoming);
+            _typewriterTextState = TMPTextPreviewSnapshot.Capture(typewriterText);
+            _numberTextState = TMPTextPreviewSnapshot.Capture(numberText);
+            _characterTextState = TMPTextPreviewSnapshot.Capture(characterText);
+            _scoreTextState = TMPTextPreviewSnapshot.Capture(scoreText);
             _listTargets = CopyTargets(6);
             _gridTargets = CopyTargets(9);
             _loadingDotTargets = CopyTargets(3);
@@ -203,7 +230,7 @@ namespace LB.TweenHelper.Demo
         {
             ResetTargets();
             ShowRecipes();
-            instructionsPanel.SetContent("TweenHelper 2D Showcase", "Choose UI Recipes, Collections, Destinations, Gameplay Feedback, UI Sequences, or the 2D Preset Library. Select an entry, then replay or reset the preview.");
+            instructionsPanel.SetContent("TweenHelper 2D Showcase", "Choose UI Recipes, Collections, Destinations, Gameplay Feedback, UI Sequences, Text & Values, or the 2D Preset Library. Select an entry, then replay or reset the preview.");
         }
 
         private void OnDisable() => StopPlayback();
@@ -223,6 +250,7 @@ namespace LB.TweenHelper.Demo
             destinationsTabButton.onClick.AddListener(ShowDestinations);
             feedbackTabButton.onClick.AddListener(ShowFeedback);
             uiSequencesTabButton.onClick.AddListener(ShowUISequences);
+            textValuesTabButton.onClick.AddListener(ShowTextValues);
             replayButton.onClick.AddListener(ReplaySelected);
             resetButton.onClick.AddListener(ResetPreview);
             copyButton.onClick.AddListener(CopyCodeExample);
@@ -278,6 +306,15 @@ namespace LB.TweenHelper.Demo
                 UISequenceRecipeKind kind = definition.Kind;
                 card.Configure(SplitPascalCase(kind.ToString()), definition.Description, () => SelectUISequenceRecipe(kind));
                 _uiSequenceCards.Add(card);
+            }
+
+            for (int i = 0; i < TextValueRecipes.Length; i++)
+            {
+                var definition = TextValueRecipes[i];
+                var card = Instantiate(recipeCardPrefab, recipeContent);
+                TextValueRecipeKind kind = definition.Kind;
+                card.Configure(SplitPascalCase(kind.ToString()), definition.Description, () => SelectTextValueRecipe(kind));
+                _textValueCards.Add(card);
             }
 
             TweenPresetRegistry.ScanForCodePresets();
@@ -391,6 +428,20 @@ namespace LB.TweenHelper.Demo
             SelectUISequenceRecipe(_selectedUISequenceRecipe, false);
         }
 
+        public void ShowTextValues()
+        {
+            StopPlayback();
+            ResetTargets();
+            _mode = ShowcaseMode.TextValues;
+            recipesPanel.SetActive(true);
+            presetsPanel.SetActive(false);
+            SetCardVisibility(ShowcaseMode.TextValues);
+            ResetRecipeScrollPosition();
+            SetPreviewMode(false, false, false, true);
+            ShowTextValueTargetOption();
+            SelectTextValueRecipe(_selectedTextValueRecipe, false);
+        }
+
         public void ReplaySelected()
         {
             if (_mode == ShowcaseMode.Recipes) PlayRecipe(_selectedRecipe);
@@ -398,7 +449,8 @@ namespace LB.TweenHelper.Demo
             else if (_mode == ShowcaseMode.Collections) PlayCollectionRecipe(_selectedCollectionRecipe);
             else if (_mode == ShowcaseMode.Destinations) PlayDestinationRecipe(_selectedDestinationRecipe);
             else if (_mode == ShowcaseMode.Feedback) PlayFeedbackRecipe(_selectedFeedbackRecipe);
-            else PlayUISequenceRecipe(_selectedUISequenceRecipe);
+            else if (_mode == ShowcaseMode.UISequences) PlayUISequenceRecipe(_selectedUISequenceRecipe);
+            else PlayTextValueRecipe(_selectedTextValueRecipe);
         }
 
         public void ResetPreview()
@@ -420,7 +472,7 @@ namespace LB.TweenHelper.Demo
                 return;
             }
 
-            if (_mode == ShowcaseMode.Destinations || _mode == ShowcaseMode.Feedback || _mode == ShowcaseMode.UISequences) return;
+            if (_mode == ShowcaseMode.Destinations || _mode == ShowcaseMode.Feedback || _mode == ShowcaseMode.UISequences || _mode == ShowcaseMode.TextValues) return;
 
             _selectedTargetIndex = targetDropdown.value;
             ResetPreview();
@@ -512,6 +564,19 @@ namespace LB.TweenHelper.Demo
             codeExampleText.text = GetUISequenceCodeExample(recipe);
             ConfigureUISequencePreview(recipe);
             if (play) PlayUISequenceRecipe(recipe);
+        }
+
+        private void SelectTextValueRecipe(TextValueRecipeKind recipe) => SelectTextValueRecipe(recipe, true);
+
+        private void SelectTextValueRecipe(TextValueRecipeKind recipe, bool play)
+        {
+            _selectedTextValueRecipe = recipe;
+            var definition = TextValueRecipes[(int)recipe];
+            selectionNameText.text = SplitPascalCase(recipe.ToString());
+            selectionDescriptionText.text = definition.Description;
+            codeExampleText.text = GetTextValueCodeExample(recipe);
+            ConfigureTextValuePreview(recipe);
+            if (play) PlayTextValueRecipe(recipe);
         }
 
         private void UpdatePresetDetails(ITweenPreset preset)
@@ -680,6 +745,33 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private TweenHandle PlayTextValueRecipe(TextValueRecipeKind recipe)
+        {
+            StopPlayback();
+            ResetTextValueTargets();
+            ConfigureTextValuePreview(recipe);
+
+            switch (recipe)
+            {
+                case TextValueRecipeKind.TypewriterReveal:
+                    return _activeTween = typewriterText.TypewriterReveal(1.15f);
+                case TextValueRecipeKind.TypewriterHide:
+                    return _activeTween = typewriterText.TypewriterHide(0.95f);
+                case TextValueRecipeKind.NumberCountUp:
+                    return _activeTween = numberText.NumberCountTo(0d, 1250d, "N0", 1.1f);
+                case TextValueRecipeKind.NumberCountDown:
+                    return _activeTween = numberText.NumberCountTo(1250d, 0d, "N0", 1.1f);
+                case TextValueRecipeKind.TextCharacterStaggerIn:
+                    return _activeTween = characterText.TextCharacterStaggerIn(UISequenceDirection.Up, 26f, 0.04f, 1f);
+                case TextValueRecipeKind.TextWave:
+                    return _activeTween = characterText.TextWave(UISequenceDirection.Up, 20f, 1, 1.2f);
+                case TextValueRecipeKind.ScoreIncrease:
+                    return _activeTween = scoreText.ScoreIncrease(1200d, 1475d, "N0", 1.15f);
+                default:
+                    return null;
+            }
+        }
+
         private void PositionFeedbackTarget(FeedbackRecipeKind recipe)
         {
             Vector3 start = destinationStartMarker.anchoredPosition3D;
@@ -740,6 +832,10 @@ namespace LB.TweenHelper.Demo
             KillTargets(dropdownSequenceEntries);
             KillTargetTweens(tabSequenceOutgoing);
             KillTargetTweens(tabSequenceIncoming);
+            KillTargetTweens(typewriterText.gameObject);
+            KillTargetTweens(numberText.gameObject);
+            KillTargetTweens(characterText.gameObject);
+            KillTargetTweens(scoreText.gameObject);
         }
 
         private void ResetTargets()
@@ -749,6 +845,7 @@ namespace LB.TweenHelper.Demo
             ResetCollectionTargets();
             _destinationState.Apply(destinationTarget);
             ResetUISequenceTargets();
+            ResetTextValueTargets();
         }
 
         private void ResetTarget(GameObject target)
@@ -798,6 +895,7 @@ namespace LB.TweenHelper.Demo
             for (int i = 0; i < _destinationCards.Count; i++) _destinationCards[i].gameObject.SetActive(mode == ShowcaseMode.Destinations);
             for (int i = 0; i < _feedbackCards.Count; i++) _feedbackCards[i].gameObject.SetActive(mode == ShowcaseMode.Feedback);
             for (int i = 0; i < _uiSequenceCards.Count; i++) _uiSequenceCards[i].gameObject.SetActive(mode == ShowcaseMode.UISequences);
+            for (int i = 0; i < _textValueCards.Count; i++) _textValueCards[i].gameObject.SetActive(mode == ShowcaseMode.TextValues);
         }
 
         private void ResetRecipeScrollPosition()
@@ -808,13 +906,14 @@ namespace LB.TweenHelper.Demo
             contentRect.anchoredPosition = position;
         }
 
-        private void SetPreviewMode(bool showCollection, bool showDestination, bool showUISequence = false)
+        private void SetPreviewMode(bool showCollection, bool showDestination, bool showUISequence = false, bool showTextValue = false)
         {
-            presetImage.gameObject.SetActive(!showCollection && !showDestination && !showUISequence);
-            animatedText.gameObject.SetActive(!showCollection && !showDestination && !showUISequence);
+            presetImage.gameObject.SetActive(!showCollection && !showDestination && !showUISequence && !showTextValue);
+            animatedText.gameObject.SetActive(!showCollection && !showDestination && !showUISequence && !showTextValue);
             collectionPreviewRoot.SetActive(showCollection);
             destinationPreviewRoot.SetActive(showDestination);
             uiSequencePreviewRoot.SetActive(showUISequence);
+            textValuePreviewRoot.SetActive(showTextValue);
         }
 
         private void RestoreTargetOptions()
@@ -852,6 +951,14 @@ namespace LB.TweenHelper.Demo
             targetDropdown.interactable = false;
         }
 
+        private void ShowTextValueTargetOption()
+        {
+            targetDropdown.ClearOptions();
+            targetDropdown.AddOptions(new List<string> { "TextMesh Pro" });
+            targetDropdown.SetValueWithoutNotify(0);
+            targetDropdown.interactable = false;
+        }
+
         private void ConfigureUISequencePreview(UISequenceRecipeKind recipe)
         {
             bool showToast = recipe == UISequenceRecipeKind.ToastShow || recipe == UISequenceRecipeKind.ToastHide;
@@ -863,6 +970,17 @@ namespace LB.TweenHelper.Demo
             tooltipSequenceTarget.SetActive(showTooltip);
             dropdownSequencePanel.SetActive(showDropdown);
             tabSequenceGroup.SetActive(recipe == UISequenceRecipeKind.TabSwitch);
+        }
+
+        private void ConfigureTextValuePreview(TextValueRecipeKind recipe)
+        {
+            bool showTypewriter = recipe == TextValueRecipeKind.TypewriterReveal || recipe == TextValueRecipeKind.TypewriterHide;
+            bool showNumber = recipe == TextValueRecipeKind.NumberCountUp || recipe == TextValueRecipeKind.NumberCountDown;
+            bool showCharacter = recipe == TextValueRecipeKind.TextCharacterStaggerIn || recipe == TextValueRecipeKind.TextWave;
+            typewriterText.gameObject.SetActive(showTypewriter);
+            numberText.gameObject.SetActive(showNumber);
+            characterText.gameObject.SetActive(showCharacter);
+            scoreText.gameObject.SetActive(recipe == TextValueRecipeKind.ScoreIncrease);
         }
 
         private void ConfigureCollectionLayout(CollectionRecipeKind recipe)
@@ -985,6 +1103,29 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private static string GetTextValueCodeExample(TextValueRecipeKind recipe)
+        {
+            switch (recipe)
+            {
+                case TextValueRecipeKind.TypewriterReveal:
+                    return "label.TypewriterReveal();";
+                case TextValueRecipeKind.TypewriterHide:
+                    return "label.TypewriterHide();";
+                case TextValueRecipeKind.NumberCountUp:
+                    return "score.NumberCountTo(0, 1250, format: \"N0\");";
+                case TextValueRecipeKind.NumberCountDown:
+                    return "timer.NumberCountTo(1250, 0, format: \"N0\");";
+                case TextValueRecipeKind.TextCharacterStaggerIn:
+                    return "label.TextCharacterStaggerIn(UISequenceDirection.Up);";
+                case TextValueRecipeKind.TextWave:
+                    return "label.TextWave(amplitude: 12f);";
+                case TextValueRecipeKind.ScoreIncrease:
+                    return "score.ScoreIncrease(1200, 1475, format: \"N0\");";
+                default:
+                    return string.Empty;
+            }
+        }
+
         private static bool UsesCurvedPath(DestinationRecipeKind recipe)
         {
             return recipe == DestinationRecipeKind.Arc || recipe == DestinationRecipeKind.Bezier || recipe == DestinationRecipeKind.Hop;
@@ -1069,6 +1210,14 @@ namespace LB.TweenHelper.Demo
             ApplyStates(dropdownSequenceEntries, _dropdownEntryStates);
             _tabOutgoingState.Apply(tabSequenceOutgoing);
             _tabIncomingState.Apply(tabSequenceIncoming);
+        }
+
+        private void ResetTextValueTargets()
+        {
+            _typewriterTextState.Apply(typewriterText);
+            _numberTextState.Apply(numberText);
+            _characterTextState.Apply(characterText);
+            _scoreTextState.Apply(scoreText);
         }
 
         private static void ApplyStates(GameObject[] targets, UIStateSnapshot[] states)
@@ -1185,6 +1334,18 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private readonly struct TextValueRecipeDefinition
+        {
+            public readonly TextValueRecipeKind Kind;
+            public readonly string Description;
+
+            public TextValueRecipeDefinition(TextValueRecipeKind kind, string description)
+            {
+                Kind = kind;
+                Description = description;
+            }
+        }
+
         private enum ShowcaseMode
         {
             Recipes,
@@ -1192,7 +1353,8 @@ namespace LB.TweenHelper.Demo
             Collections,
             Destinations,
             Feedback,
-            UISequences
+            UISequences,
+            TextValues
         }
 
         private enum CollectionRecipeKind
@@ -1233,6 +1395,53 @@ namespace LB.TweenHelper.Demo
             DropdownOpen,
             DropdownClose,
             TabSwitch
+        }
+
+        private enum TextValueRecipeKind
+        {
+            TypewriterReveal,
+            TypewriterHide,
+            NumberCountUp,
+            NumberCountDown,
+            TextCharacterStaggerIn,
+            TextWave,
+            ScoreIncrease
+        }
+
+        private readonly struct TMPTextPreviewSnapshot
+        {
+            public readonly string Text;
+            public readonly int MaxVisibleCharacters;
+            public readonly Vector3 Scale;
+            public readonly Quaternion Rotation;
+            public readonly Vector2 AnchoredPosition;
+            public readonly Color Color;
+
+            private TMPTextPreviewSnapshot(string text, int maxVisibleCharacters, Vector3 scale, Quaternion rotation, Vector2 anchoredPosition, Color color)
+            {
+                Text = text;
+                MaxVisibleCharacters = maxVisibleCharacters;
+                Scale = scale;
+                Rotation = rotation;
+                AnchoredPosition = anchoredPosition;
+                Color = color;
+            }
+
+            public static TMPTextPreviewSnapshot Capture(TMP_Text text)
+            {
+                return new TMPTextPreviewSnapshot(text.text, text.maxVisibleCharacters, text.transform.localScale, text.transform.localRotation, text.rectTransform.anchoredPosition, text.color);
+            }
+
+            public void Apply(TMP_Text text)
+            {
+                text.text = Text;
+                text.maxVisibleCharacters = MaxVisibleCharacters;
+                text.color = Color;
+                text.transform.localScale = Scale;
+                text.transform.localRotation = Rotation;
+                text.rectTransform.anchoredPosition = AnchoredPosition;
+                text.ForceMeshUpdate();
+            }
         }
 
         private readonly struct UIStateSnapshot

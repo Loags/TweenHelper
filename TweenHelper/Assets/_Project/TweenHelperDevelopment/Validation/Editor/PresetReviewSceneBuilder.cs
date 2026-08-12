@@ -34,8 +34,9 @@ namespace LB.TweenHelper.Editor
                 bool sceneNeedsCollectionPreview = !sceneText.Contains("collectionPreviewRoot:");
                 bool sceneNeedsDestinationPreview = !sceneText.Contains("destinationWorldRoot:");
                 bool sceneNeedsUISequencePreview = !sceneText.Contains("uiSequencePreviewRoot:");
+                bool sceneNeedsTextValuePreview = !sceneText.Contains("textValuePreviewRoot:");
                 bool sceneNeedsMaterial = !File.Exists(Path.GetFullPath(MaterialPath));
-                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsDestinationPreview && !sceneNeedsUISequencePreview && !sceneNeedsMaterial)
+                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsDestinationPreview && !sceneNeedsUISequencePreview && !sceneNeedsTextValuePreview && !sceneNeedsMaterial)
                 {
                     Material material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
                     if (material == null || !NeedsTransparentConfiguration(material)) return;
@@ -100,6 +101,7 @@ namespace LB.TweenHelper.Editor
             CollectionPreview collectionPreview = CreateCollectionPreview(previewFrame);
             DestinationPreview destinationPreview = CreateDestinationPreview(previewFrame);
             UISequencePreview uiSequencePreview = CreateUISequencePreview(previewFrame);
+            TextValuePreview textValuePreview = CreateTextValuePreview(previewFrame);
 
             Button failed = CreateButton("Mark Wrong", canvas.transform, "[X]  WRONG / NEEDS WORK", new Color(0.42f, 0.16f, 0.2f));
             SetRect((RectTransform)failed.transform, new Vector2(0.015f, 0.3f), new Vector2(0.18f, 0.63f), Vector2.zero, Vector2.zero);
@@ -155,6 +157,11 @@ namespace LB.TweenHelper.Editor
             Assign(serializedController, "tabSequenceGroup", uiSequencePreview.TabGroup);
             Assign(serializedController, "tabSequenceOutgoing", uiSequencePreview.TabOutgoing);
             Assign(serializedController, "tabSequenceIncoming", uiSequencePreview.TabIncoming);
+            Assign(serializedController, "textValuePreviewRoot", textValuePreview.Root);
+            Assign(serializedController, "typewriterText", textValuePreview.Typewriter);
+            Assign(serializedController, "numberText", textValuePreview.Number);
+            Assign(serializedController, "characterText", textValuePreview.Character);
+            Assign(serializedController, "scoreText", textValuePreview.Score);
             Assign(serializedController, "itemNameText", itemName);
             Assign(serializedController, "descriptionText", description);
             Assign(serializedController, "categoryText", category);
@@ -412,6 +419,28 @@ namespace LB.TweenHelper.Editor
             tabGroup.SetActive(false);
             root.SetActive(false);
             return new UISequencePreview(root, toast, modalGroup, modalBackdrop, modalPanel, modalControls, tooltip, dropdownPanel, dropdownEntries, tabGroup, tabOutgoing, tabIncoming);
+        }
+
+        private static TextValuePreview CreateTextValuePreview(Transform parent)
+        {
+            GameObject root = CreatePreviewGroup("Text & Value Preview", parent);
+            TMP_Text typewriter = CreateText("Typewriter Text", root.transform, "<b>TWEEN HELPER</b>\n<color=#58BFFF>RICH TEXT READY</color>", 46f, FontStyles.Normal, TextAlignmentOptions.Center);
+            TMP_Text number = CreateText("Number Text", root.transform, "1,250", 78f, FontStyles.Bold, TextAlignmentOptions.Center);
+            TMP_Text character = CreateText("Character Text", root.transform, "CHARACTER MOTION\n<color=#58BFFF>MESH SAFE</color>", 48f, FontStyles.Bold, TextAlignmentOptions.Center);
+            TMP_Text score = CreateText("Score Text", root.transform, "1,200", 82f, FontStyles.Bold, TextAlignmentOptions.Center);
+            score.color = new Color(1f, 0.86f, 0.42f, 1f);
+
+            SetRect(typewriter.rectTransform, Vector2.zero, Vector2.one, new Vector2(55f, 35f), new Vector2(-55f, -35f));
+            SetRect(number.rectTransform, Vector2.zero, Vector2.one, new Vector2(55f, 35f), new Vector2(-55f, -35f));
+            SetRect(character.rectTransform, Vector2.zero, Vector2.one, new Vector2(55f, 35f), new Vector2(-55f, -35f));
+            SetRect(score.rectTransform, Vector2.zero, Vector2.one, new Vector2(55f, 35f), new Vector2(-55f, -35f));
+
+            typewriter.gameObject.SetActive(false);
+            number.gameObject.SetActive(false);
+            character.gameObject.SetActive(false);
+            score.gameObject.SetActive(false);
+            root.SetActive(false);
+            return new TextValuePreview(root, typewriter, number, character, score);
         }
 
         private static GameObject CreateSequencePanel(string name, Transform parent, string labelValue, Vector2 anchoredPosition, Vector2 size, Color color, float fontSize)
@@ -679,6 +708,24 @@ namespace LB.TweenHelper.Editor
                 TabGroup = tabGroup;
                 TabOutgoing = tabOutgoing;
                 TabIncoming = tabIncoming;
+            }
+        }
+
+        private readonly struct TextValuePreview
+        {
+            public readonly GameObject Root;
+            public readonly TMP_Text Typewriter;
+            public readonly TMP_Text Number;
+            public readonly TMP_Text Character;
+            public readonly TMP_Text Score;
+
+            public TextValuePreview(GameObject root, TMP_Text typewriter, TMP_Text number, TMP_Text character, TMP_Text score)
+            {
+                Root = root;
+                Typewriter = typewriter;
+                Number = number;
+                Character = character;
+                Score = score;
             }
         }
     }

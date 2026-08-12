@@ -115,6 +115,18 @@ outgoingTab.TabSwitchTo(incomingTab);
 
 Toast, modal, tooltip, dropdown, and tab operations coordinate anchored position, scale, alpha, and optional child staggering through one `TweenHandle`. They preserve authored UI baselines, support interruption and rewind, and remain semantic operations rather than registered presets.
 
+Animate TextMesh Pro content and numeric values without expanding the preset registry:
+
+```csharp
+title.TypewriterReveal();
+score.NumberCountTo(0, 1250, format: "N0");
+message.TextCharacterStaggerIn(UISequenceDirection.Up);
+message.TextWave(amplitude: 12f);
+score.ScoreIncrease(1200, 1475, format: "N0");
+```
+
+Typewriter operations preserve rich-text markup by animating `maxVisibleCharacters`. Character stagger and wave operations evaluate visible TMP glyphs through one owner-linked tween and restore the original mesh exactly. Number counting accepts increasing or decreasing values, while Score Increase combines an exact count destination with temporary scale and color feedback.
+
 ## Preset browser
 
 Open **Tools > Tween Helper > Preset Browser** to search and filter all registered presets and collection animations. Select an entry to inspect its metadata and fluent API example, then use **Preview** to play it on the isolated cube stage inside the browser. The preview never reads from or modifies the active scene.
@@ -146,6 +158,7 @@ No settings asset is required. TweenHelper uses safe in-memory defaults when `Re
 - [Destination-aware motion](Documentation/DestinationMotion.md)
 - [Gameplay feedback sequences](Documentation/FeedbackSequences.md)
 - [Production UI sequences](Documentation/UISequences.md)
+- [Text and value animations](Documentation/TextAndValueAnimations.md)
 - [Preset catalog](Documentation/PresetCatalog.md)
 
 ## Licensing

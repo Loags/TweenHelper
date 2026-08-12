@@ -298,6 +298,34 @@ TweenHandle handle = toast.Tween()
 
 All targets require `RectTransform`; movement uses `anchoredPosition3D`. Show operations finish on a cached authored baseline, hide operations leave the target visually hidden, kill preserves the interrupted state, and rewind restores the state captured when playback began. Modal and dropdown child lists are copied immediately and remain inside the same root handle. Call `RefreshUIAnimationState()` after an intentional responsive-layout change to recapture the shown endpoint. See [Production UI sequences](UISequences.md) for defaults, direction semantics, layout guidance, validation rules, and lifecycle details.
 
+## Text and value animations
+
+Use the type-safe TextMesh Pro extensions for complete animations:
+
+```csharp
+title.TypewriterReveal();
+title.TypewriterHide();
+score.NumberCountTo(0, 1250, format: "N0");
+timer.NumberCountTo(60, 0, value => $"{value:0}s");
+message.TextCharacterStaggerIn(UISequenceDirection.Up, distance: 18f);
+message.TextWave(UISequenceDirection.Up, amplitude: 12f, waveCount: 2);
+score.ScoreIncrease(1200, 1475, format: "N0");
+```
+
+The same operations compose through `TweenBuilder`:
+
+```csharp
+TweenHandle handle = title.Tween()
+    .TypewriterReveal()
+    .Then()
+    .TextWave()
+    .Play();
+```
+
+`NumberCountTo` determines direction from its explicit start and destination values; it does not parse the label's current text. Format-string overloads use the current culture, and formatter overloads support localized units or custom display rules. Typewriter operations animate `maxVisibleCharacters`, so rich-text tags remain intact. Character stagger and wave support both `TextMeshProUGUI` and world-space `TextMeshPro`, including multiple TMP material submeshes.
+
+Typewriter and number operations preserve their current progress when killed and restore their invocation state on rewind. Character mesh effects restore the captured mesh on completion, kill, and rewind. Score Increase completes on the exact formatted destination; an interrupted kill preserves the displayed value while restoring scale, rotation, and color. Speed-based timing is not supported. See [Text and value animations](TextAndValueAnimations.md) for defaults, formatting, lifecycle, and composition guidance.
+
 ## Tween lifecycle
 
 A finite tween completes when DOTween invokes its completion callback. Killing a tween is a distinct terminal event and does not imply normal completion. Infinite loops never complete normally, so retain their `TweenHandle` and kill or cancel them during owner teardown.
@@ -312,4 +340,4 @@ TweenHelper initializes automatically. Without `Assets/Resources/TweenHelperSett
 
 ## Sample controls
 
-Open **TweenHelper Demos** from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The 2D scene provides 13 semantic UI recipes, five collection recipes with selectable stagger ordering, five destination-motion examples, five gameplay-feedback sequences, nine production UI sequences, and a searchable library of 198 UI-suitable presets. When the legacy Input Manager is enabled, Space replays the current 2D selection and the 3D showcase enables its fly-camera shortcuts. The demos do not require the Input System package.
+Open **TweenHelper Demos** from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The 2D scene provides 13 semantic UI recipes, five collection recipes with selectable stagger ordering, five destination-motion examples, five gameplay-feedback sequences, nine production UI sequences, seven text/value examples, and a searchable library of 198 UI-suitable presets. When the legacy Input Manager is enabled, Space replays the current 2D selection and the 3D showcase enables its fly-camera shortcuts. The demos do not require the Input System package.

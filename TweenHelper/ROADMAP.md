@@ -8,6 +8,8 @@ Ship TweenHelper 1.0 through the standard Unity Asset Store `.unitypackage` work
 
 The Unity Asset Store Submission Guidelines are the release authority. TweenHelper is not distributed as a Unity Package Manager package.
 
+The planned Unity Pipeline/UCodex integration has its own handoff roadmap at [Assets/_Project/TweenHelperDevelopment/Documentation/TweenHelperPipelineCliRoadmap.md](Assets/_Project/TweenHelperDevelopment/Documentation/TweenHelperPipelineCliRoadmap.md). It covers the repository-only developer commands and the optional customer-facing Editor integration without changing the base package dependency boundary.
+
 ## Confirmed release baseline
 
 - Publisher: `Loags`

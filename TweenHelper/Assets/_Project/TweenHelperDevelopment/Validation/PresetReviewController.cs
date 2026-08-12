@@ -26,6 +26,7 @@ namespace LB.TweenHelper.Demo
             DestinationMotion,
             FeedbackSequence,
             UISequence,
+            TextValueAnimation,
             Preset
         }
 
@@ -38,7 +39,8 @@ namespace LB.TweenHelper.Demo
             LoadingDots,
             DestinationWorld,
             DestinationUi,
-            UISequence
+            UISequence,
+            TextValue
         }
 
         private enum CollectionReviewKind
@@ -94,6 +96,17 @@ namespace LB.TweenHelper.Demo
             TabSwitch
         }
 
+        private enum TextValueReviewKind
+        {
+            TypewriterReveal,
+            TypewriterHide,
+            NumberCountUp,
+            NumberCountDown,
+            TextCharacterStaggerIn,
+            TextWave,
+            ScoreIncrease
+        }
+
         private enum ReviewFilter
         {
             All,
@@ -113,11 +126,13 @@ namespace LB.TweenHelper.Demo
             public DestinationReviewKind DestinationKind;
             public FeedbackReviewKind FeedbackKind;
             public UISequenceReviewKind UISequenceKind;
+            public TextValueReviewKind TextValueKind;
 
             public bool UsesUiTarget => Preview == PreviewKind.Ui;
             public bool UsesCollectionPreview => Preview == PreviewKind.List || Preview == PreviewKind.Grid || Preview == PreviewKind.LoadingDots;
             public bool UsesDestinationPreview => Preview == PreviewKind.DestinationWorld || Preview == PreviewKind.DestinationUi;
             public bool UsesUISequencePreview => Preview == PreviewKind.UISequence;
+            public bool UsesTextValuePreview => Preview == PreviewKind.TextValue;
         }
 
         private readonly struct TargetSnapshot
@@ -164,6 +179,44 @@ namespace LB.TweenHelper.Demo
 
                 var canvasGroup = target.GetComponent<CanvasGroup>();
                 if (canvasGroup != null) canvasGroup.alpha = CanvasGroupAlpha;
+            }
+        }
+
+        private readonly struct TMPTextSnapshot
+        {
+            public readonly string Text;
+            public readonly int MaxVisibleCharacters;
+            public readonly Vector3 LocalPosition;
+            public readonly Vector3 LocalScale;
+            public readonly Quaternion LocalRotation;
+            public readonly Color Color;
+
+            private TMPTextSnapshot(string text, int maxVisibleCharacters, Vector3 localPosition, Vector3 localScale, Quaternion localRotation, Color color)
+            {
+                Text = text;
+                MaxVisibleCharacters = maxVisibleCharacters;
+                LocalPosition = localPosition;
+                LocalScale = localScale;
+                LocalRotation = localRotation;
+                Color = color;
+            }
+
+            public static TMPTextSnapshot Capture(TMP_Text text)
+            {
+                Transform transform = text.transform;
+                return new TMPTextSnapshot(text.text, text.maxVisibleCharacters, transform.localPosition, transform.localScale, transform.localRotation, text.color);
+            }
+
+            public void Apply(TMP_Text text)
+            {
+                Transform transform = text.transform;
+                text.text = Text;
+                text.maxVisibleCharacters = MaxVisibleCharacters;
+                text.color = Color;
+                transform.localPosition = LocalPosition;
+                transform.localScale = LocalScale;
+                transform.localRotation = LocalRotation;
+                text.ForceMeshUpdate();
             }
         }
 
@@ -218,6 +271,13 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private GameObject tabSequenceOutgoing;
         [SerializeField] private GameObject tabSequenceIncoming;
 
+        [Header("Text & Value Preview")]
+        [SerializeField] private GameObject textValuePreviewRoot;
+        [SerializeField] private TMP_Text typewriterText;
+        [SerializeField] private TMP_Text numberText;
+        [SerializeField] private TMP_Text characterText;
+        [SerializeField] private TMP_Text scoreText;
+
         [Header("Information")]
         [SerializeField] private TMP_Text itemNameText;
         [SerializeField] private TMP_Text descriptionText;
@@ -256,6 +316,10 @@ namespace LB.TweenHelper.Demo
         private TargetSnapshot[] _dropdownSequenceEntrySnapshots;
         private TargetSnapshot _tabSequenceOutgoingSnapshot;
         private TargetSnapshot _tabSequenceIncomingSnapshot;
+        private TMPTextSnapshot _typewriterTextSnapshot;
+        private TMPTextSnapshot _numberTextSnapshot;
+        private TMPTextSnapshot _characterTextSnapshot;
+        private TMPTextSnapshot _scoreTextSnapshot;
         private TweenHandle _activeTween;
         private Coroutine _delayedReplay;
         private ReviewFilter _activeFilter;
@@ -281,6 +345,10 @@ namespace LB.TweenHelper.Demo
             _dropdownSequenceEntrySnapshots = CaptureTargets(dropdownSequenceEntries);
             _tabSequenceOutgoingSnapshot = TargetSnapshot.Capture(tabSequenceOutgoing);
             _tabSequenceIncomingSnapshot = TargetSnapshot.Capture(tabSequenceIncoming);
+            _typewriterTextSnapshot = TMPTextSnapshot.Capture(typewriterText);
+            _numberTextSnapshot = TMPTextSnapshot.Capture(numberText);
+            _characterTextSnapshot = TMPTextSnapshot.Capture(characterText);
+            _scoreTextSnapshot = TMPTextSnapshot.Capture(scoreText);
             WireControls();
             BuildReviewItems();
             ShowCurrentItem();
@@ -372,6 +440,14 @@ namespace LB.TweenHelper.Demo
             AddUISequence(UISequenceReviewKind.DropdownOpen, "Expands a dropdown from its pivot and staggers its entries into view.");
             AddUISequence(UISequenceReviewKind.DropdownClose, "Staggers entries out and compresses the dropdown toward its pivot.");
             AddUISequence(UISequenceReviewKind.TabSwitch, "Overlaps outgoing and incoming tab content while preserving both authored positions.");
+
+            AddTextValueAnimation(TextValueReviewKind.TypewriterReveal, "Reveals rich TextMesh Pro content character by character without exposing markup.");
+            AddTextValueAnimation(TextValueReviewKind.TypewriterHide, "Hides currently visible TextMesh Pro content in reverse character order.");
+            AddTextValueAnimation(TextValueReviewKind.NumberCountUp, "Counts from 0 to 1,250 and writes the exact formatted destination.");
+            AddTextValueAnimation(TextValueReviewKind.NumberCountDown, "Counts from 1,250 to 0 using the same direction-independent operation.");
+            AddTextValueAnimation(TextValueReviewKind.TextCharacterStaggerIn, "Reveals visible characters with directional movement, alpha, scale, and compressed stagger timing.");
+            AddTextValueAnimation(TextValueReviewKind.TextWave, "Sends a finite wave across visible characters and restores the exact mesh baseline.");
+            AddTextValueAnimation(TextValueReviewKind.ScoreIncrease, "Counts a score upward with a temporary scale punch and gold flash.");
 
             TweenPresetRegistry.Refresh();
             foreach (ITweenPreset preset in TweenPresetRegistry.Presets.OrderBy(item => item.PresetName, StringComparer.Ordinal))
@@ -465,6 +541,19 @@ namespace LB.TweenHelper.Demo
             });
         }
 
+        private void AddTextValueAnimation(TextValueReviewKind kind, string description)
+        {
+            _allItems.Add(new ReviewItem
+            {
+                Id = "TextValue:" + kind,
+                Name = SplitPascalCase(kind.ToString()),
+                Description = description,
+                Kind = ReviewKind.TextValueAnimation,
+                Preview = PreviewKind.TextValue,
+                TextValueKind = kind
+            });
+        }
+
         public void ReplayCurrent()
         {
             if (_items.Count == 0) return;
@@ -487,6 +576,12 @@ namespace LB.TweenHelper.Demo
             if (CurrentItem.UsesUISequencePreview)
             {
                 _activeTween = PlayUISequence(CurrentItem.UISequenceKind);
+                return;
+            }
+
+            if (CurrentItem.UsesTextValuePreview)
+            {
+                _activeTween = PlayTextValueAnimation(CurrentItem.TextValueKind);
                 return;
             }
 
@@ -589,6 +684,7 @@ namespace LB.TweenHelper.Demo
             destinationWorldRoot.SetActive(false);
             destinationUiRoot.SetActive(false);
             uiSequencePreviewRoot.SetActive(false);
+            textValuePreviewRoot.SetActive(false);
             itemNameText.text = "No animations";
             descriptionText.text = "No animations currently match this review filter.";
             categoryText.text = "FILTER EMPTY";
@@ -824,6 +920,30 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private TweenHandle PlayTextValueAnimation(TextValueReviewKind kind)
+        {
+            ConfigureTextValuePreview(kind);
+            switch (kind)
+            {
+                case TextValueReviewKind.TypewriterReveal:
+                    return typewriterText.TypewriterReveal(1.2f);
+                case TextValueReviewKind.TypewriterHide:
+                    return typewriterText.TypewriterHide(1f);
+                case TextValueReviewKind.NumberCountUp:
+                    return numberText.NumberCountTo(0d, 1250d, "N0", 1.15f);
+                case TextValueReviewKind.NumberCountDown:
+                    return numberText.NumberCountTo(1250d, 0d, "N0", 1.15f);
+                case TextValueReviewKind.TextCharacterStaggerIn:
+                    return characterText.TextCharacterStaggerIn(UISequenceDirection.Up, 28f, 0.045f, 1.05f);
+                case TextValueReviewKind.TextWave:
+                    return characterText.TextWave(UISequenceDirection.Up, 22f, 1, 1.25f);
+                case TextValueReviewKind.ScoreIncrease:
+                    return scoreText.ScoreIncrease(1200d, 1475d, "N0", 1.2f);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown text/value review item.");
+            }
+        }
+
         private void ScheduleDelayedReplay()
         {
             CancelDelayedReplay();
@@ -868,6 +988,10 @@ namespace LB.TweenHelper.Demo
             KillTargets(dropdownSequenceEntries);
             KillTargetTweens(tabSequenceOutgoing);
             KillTargetTweens(tabSequenceIncoming);
+            KillTargetTweens(typewriterText.gameObject);
+            KillTargetTweens(numberText.gameObject);
+            KillTargetTweens(characterText.gameObject);
+            KillTargetTweens(scoreText.gameObject);
         }
 
         private void ResetTargets()
@@ -888,6 +1012,10 @@ namespace LB.TweenHelper.Demo
             ApplySnapshots(dropdownSequenceEntries, _dropdownSequenceEntrySnapshots);
             _tabSequenceOutgoingSnapshot.Apply(tabSequenceOutgoing);
             _tabSequenceIncomingSnapshot.Apply(tabSequenceIncoming);
+            _typewriterTextSnapshot.Apply(typewriterText);
+            _numberTextSnapshot.Apply(numberText);
+            _characterTextSnapshot.Apply(characterText);
+            _scoreTextSnapshot.Apply(scoreText);
         }
 
         private void ApplyPreviewVisibility(PreviewKind preview)
@@ -904,6 +1032,9 @@ namespace LB.TweenHelper.Demo
             bool showUISequence = preview == PreviewKind.UISequence;
             uiSequencePreviewRoot.SetActive(showUISequence);
             if (showUISequence) ConfigureUISequencePreview(CurrentItem.UISequenceKind);
+            bool showTextValue = preview == PreviewKind.TextValue;
+            textValuePreviewRoot.SetActive(showTextValue);
+            if (showTextValue) ConfigureTextValuePreview(CurrentItem.TextValueKind);
         }
 
         private void ConfigureUISequencePreview(UISequenceReviewKind kind)
@@ -917,6 +1048,17 @@ namespace LB.TweenHelper.Demo
             tooltipSequenceTarget.SetActive(showTooltip);
             dropdownSequencePanel.SetActive(showDropdown);
             tabSequenceGroup.SetActive(kind == UISequenceReviewKind.TabSwitch);
+        }
+
+        private void ConfigureTextValuePreview(TextValueReviewKind kind)
+        {
+            bool showTypewriter = kind == TextValueReviewKind.TypewriterReveal || kind == TextValueReviewKind.TypewriterHide;
+            bool showNumber = kind == TextValueReviewKind.NumberCountUp || kind == TextValueReviewKind.NumberCountDown;
+            bool showCharacter = kind == TextValueReviewKind.TextCharacterStaggerIn || kind == TextValueReviewKind.TextWave;
+            typewriterText.gameObject.SetActive(showTypewriter);
+            numberText.gameObject.SetActive(showNumber);
+            characterText.gameObject.SetActive(showCharacter);
+            scoreText.gameObject.SetActive(kind == TextValueReviewKind.ScoreIncrease);
         }
 
         private void ConfigureDestinationGuides(ReviewItem item)
@@ -991,6 +1133,7 @@ namespace LB.TweenHelper.Demo
             if (item.Kind == ReviewKind.DestinationMotion) return item.Preview == PreviewKind.DestinationUi ? "DESTINATION MOTION / UI" : "DESTINATION MOTION / 3D";
             if (item.Kind == ReviewKind.FeedbackSequence) return item.Preview == PreviewKind.DestinationUi ? "GAMEPLAY FEEDBACK / UI" : "GAMEPLAY FEEDBACK / 3D";
             if (item.Kind == ReviewKind.UISequence) return "PRODUCTION UI SEQUENCE";
+            if (item.Kind == ReviewKind.TextValueAnimation) return "TEXT & VALUE ANIMATION";
             return item.UsesUiTarget ? "2D / UI PRESET" : "3D / WORLD PRESET";
         }
 
