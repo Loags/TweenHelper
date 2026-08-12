@@ -21,7 +21,7 @@ namespace LB.TweenHelper.Editor
             };
         }
 
-        [MenuItem("Tools/Tween Helper Dev/Update 2D Showcase Collections and Destinations")]
+        [MenuItem("Tools/Tween Helper Dev/Update 2D Showcase Feature Tabs")]
         public static void UpgradePrefabFromMenu() => UpgradePrefab(true);
 
         private static void UpgradePrefab(bool force)
@@ -38,6 +38,7 @@ namespace LB.TweenHelper.Editor
                 SerializedProperty rootProperty = serializedController.FindProperty("collectionPreviewRoot");
                 SerializedProperty targetsProperty = serializedController.FindProperty("collectionTargets");
                 SerializedProperty destinationsTabProperty = serializedController.FindProperty("destinationsTabButton");
+                SerializedProperty feedbackTabProperty = serializedController.FindProperty("feedbackTabButton");
                 SerializedProperty destinationRootProperty = serializedController.FindProperty("destinationPreviewRoot");
                 SerializedProperty destinationTargetProperty = serializedController.FindProperty("destinationTarget");
                 SerializedProperty destinationStartProperty = serializedController.FindProperty("destinationStartMarker");
@@ -45,7 +46,8 @@ namespace LB.TweenHelper.Editor
                 SerializedProperty destinationPathProperty = serializedController.FindProperty("destinationCurvedPath");
                 bool collectionsConfigured = tabProperty.objectReferenceValue != null && rootProperty.objectReferenceValue != null && targetsProperty.arraySize >= 9;
                 bool destinationsConfigured = destinationsTabProperty.objectReferenceValue != null && destinationRootProperty.objectReferenceValue != null && destinationTargetProperty.objectReferenceValue != null && destinationStartProperty.objectReferenceValue != null && destinationEndProperty.objectReferenceValue != null && destinationPathProperty.objectReferenceValue != null;
-                bool alreadyConfigured = collectionsConfigured && destinationsConfigured;
+                bool feedbackConfigured = feedbackTabProperty.objectReferenceValue != null;
+                bool alreadyConfigured = collectionsConfigured && destinationsConfigured && feedbackConfigured;
                 if (alreadyConfigured && !force) return;
 
                 Button collectionsTab = tabProperty.objectReferenceValue as Button;
@@ -100,13 +102,26 @@ namespace LB.TweenHelper.Editor
                     destinationsTabProperty.objectReferenceValue = destinationsTab;
                 }
 
-                GameObject destinationRoot = destinationRootProperty.objectReferenceValue as GameObject;
-                if (force && destinationRoot != null)
+                Button feedbackTab = feedbackTabProperty.objectReferenceValue as Button;
+                if (feedbackTab == null)
                 {
-                    Object.DestroyImmediate(destinationRoot);
-                    destinationRoot = null;
+                    var recipesTab = (Button)serializedController.FindProperty("recipesTabButton").objectReferenceValue;
+                    GameObject tabObject = Object.Instantiate(recipesTab.gameObject, recipesTab.transform.parent);
+                    tabObject.name = "FeedbackTab";
+                    feedbackTab = tabObject.GetComponent<Button>();
+                    tabObject.GetComponentInChildren<TMP_Text>().text = "FEEDBACK";
+                    feedbackTabProperty.objectReferenceValue = feedbackTab;
                 }
 
+                var recipesTabButton = (Button)serializedController.FindProperty("recipesTabButton").objectReferenceValue;
+                var presetsTabButton = (Button)serializedController.FindProperty("presetsTabButton").objectReferenceValue;
+                LayoutTab(recipesTabButton, 0);
+                LayoutTab(presetsTabButton, 1);
+                LayoutTab(collectionsTab, 2);
+                LayoutTab(destinationsTab, 3);
+                LayoutTab(feedbackTab, 4);
+
+                GameObject destinationRoot = destinationRootProperty.objectReferenceValue as GameObject;
                 if (destinationRoot == null)
                 {
                     var presetImage = (Image)serializedController.FindProperty("presetImage").objectReferenceValue;
@@ -123,13 +138,20 @@ namespace LB.TweenHelper.Editor
                 EditorUtility.SetDirty(controller);
                 PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
                 AssetDatabase.SaveAssets();
-                Debug.Log($"TweenHelper collection and destination showcase updated at {PrefabPath}");
+                Debug.Log($"TweenHelper 2D showcase feature tabs updated at {PrefabPath}");
             }
             finally
             {
                 PrefabUtility.UnloadPrefabContents(root);
                 _isUpdating = false;
             }
+        }
+
+        private static void LayoutTab(Button tab, int index)
+        {
+            var rect = (RectTransform)tab.transform;
+            rect.anchoredPosition = new Vector2(24f + index * 212f, -118f);
+            rect.sizeDelta = new Vector2(200f, 48f);
         }
 
         private static GameObject CreateTarget(Transform parent, TextMeshProUGUI fontSource, int index)

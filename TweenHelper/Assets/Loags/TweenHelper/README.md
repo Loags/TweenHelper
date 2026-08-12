@@ -89,6 +89,21 @@ TweenHandle handle = card.Tween()
 
 Arc, Bezier, hop, spring, and magnetic-snap operations are parameterized builder motions rather than registered presets, so the preset registry remains at 300 entries.
 
+Play semantic gameplay feedback directly or compose it inside a larger builder sequence:
+
+```csharp
+healthIcon.DamageHit();
+confirmButton.SuccessConfirm();
+
+TweenHandle handle = reward.Tween()
+    .RewardReveal()
+    .Then()
+    .PickupCollectLocalTo(counterPosition, arcHeight: 120f)
+    .Play();
+```
+
+`ErrorReject`, `DamageHit`, `SuccessConfirm`, and `RewardReveal` restore the transform and visual state captured when their step starts. `PickupCollectTo` and `PickupCollectLocalTo` finish at the supplied destination with zero scale and alpha. All five work with UI and world targets, including renderer color flashes through a `MaterialPropertyBlock`, without expanding the 300-preset catalog.
+
 ## Preset browser
 
 Open **Tools > Tween Helper > Preset Browser** to search and filter all registered presets and collection animations. Select an entry to inspect its metadata and fluent API example, then use **Preview** to play it on the isolated cube stage inside the browser. The preview never reads from or modifies the active scene.
@@ -118,6 +133,7 @@ No settings asset is required. TweenHelper uses safe in-memory defaults when `Re
 - [API examples](Documentation/API.md)
 - [Staggered collections](Documentation/StaggeredCollections.md)
 - [Destination-aware motion](Documentation/DestinationMotion.md)
+- [Gameplay feedback sequences](Documentation/FeedbackSequences.md)
 - [Preset catalog](Documentation/PresetCatalog.md)
 
 ## Licensing

@@ -241,6 +241,33 @@ TweenHandle handle = panel.Tween()
 
 Each motion is safe to compose through `Then()` and `With()`, is linked to its target, and applies delay, ease, ID, loop, update, and unscaled-time options at its own root. Normal completion corrects the final position exactly. Hop also restores the scale captured when the tween is built if playback is killed during its temporary squash. See [Destination-aware motion](DestinationMotion.md) for the full coordinate and lifecycle contract.
 
+## Gameplay feedback sequences
+
+Use the one-line extensions when the feedback is the complete animation:
+
+```csharp
+invalidSlot.ErrorReject();
+healthIcon.DamageHit(flashColor: new Color(1f, 0.15f, 0.1f));
+objective.SuccessConfirm(options: TweenOptions.WithStrength(1.2f));
+reward.RewardReveal(duration: 1.1f);
+coin.PickupCollectTo(hudCounter.position, arcHeight: 1.8f);
+```
+
+The same operations are builder steps and can be sequenced through `Then()` and `With()`:
+
+```csharp
+TweenHandle handle = rewardCard.Tween()
+    .RewardReveal()
+    .Then()
+    .PickupCollectLocalTo(counterPosition, arcHeight: 130f, duration: 0.8f)
+    .OnComplete(IncrementCounter)
+    .Play();
+```
+
+`ErrorReject`, `DamageHit`, `SuccessConfirm`, and `RewardReveal` are transient: completion, rewind, and an interrupted kill restore the position, scale, orientation, and supported color captured when the step begins. Pickup collection completes at the exact destination with zero scale and alpha; killing it early restores scale, orientation, and alpha while leaving the current path position available to the caller. A rewind restores its captured start position.
+
+`TweenOptions.WithStrength` scales shake distance, squash/stretch, bounce height, spin, and arc height without multiplying the final pickup shrink. Local feedback uses `RectTransform.anchoredPosition3D` on UI targets. See [Gameplay feedback sequences](FeedbackSequences.md) for APIs, defaults, target support, and lifecycle details.
+
 ## Tween lifecycle
 
 A finite tween completes when DOTween invokes its completion callback. Killing a tween is a distinct terminal event and does not imply normal completion. Infinite loops never complete normally, so retain their `TweenHandle` and kill or cancel them during owner teardown.
@@ -255,4 +282,4 @@ TweenHelper initializes automatically. Without `Assets/Resources/TweenHelperSett
 
 ## Sample controls
 
-Open **TweenHelper Demos** from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The 2D scene provides 13 semantic UI recipes, five collection recipes with selectable stagger ordering, five destination-motion examples, and a searchable library of 198 UI-suitable presets. When the legacy Input Manager is enabled, Space replays the current 2D selection and the 3D showcase enables its fly-camera shortcuts. The demos do not require the Input System package.
+Open **TweenHelper Demos** from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The 2D scene provides 13 semantic UI recipes, five collection recipes with selectable stagger ordering, five destination-motion examples, five gameplay-feedback sequences, and a searchable library of 198 UI-suitable presets. When the legacy Input Manager is enabled, Space replays the current 2D selection and the 3D showcase enables its fly-camera shortcuts. The demos do not require the Input System package.

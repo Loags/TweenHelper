@@ -24,6 +24,7 @@ namespace LB.TweenHelper.Demo
             CollectionRecipe,
             StaggerVariant,
             DestinationMotion,
+            FeedbackSequence,
             Preset
         }
 
@@ -69,6 +70,15 @@ namespace LB.TweenHelper.Demo
             MagneticSnapLocalToUi
         }
 
+        private enum FeedbackReviewKind
+        {
+            ErrorReject,
+            DamageHit,
+            SuccessConfirm,
+            RewardReveal,
+            PickupCollect
+        }
+
         private enum ReviewFilter
         {
             All,
@@ -86,6 +96,7 @@ namespace LB.TweenHelper.Demo
             public PreviewKind Preview;
             public CollectionReviewKind CollectionKind;
             public DestinationReviewKind DestinationKind;
+            public FeedbackReviewKind FeedbackKind;
 
             public bool UsesUiTarget => Preview == PreviewKind.Ui;
             public bool UsesCollectionPreview => Preview == PreviewKind.List || Preview == PreviewKind.Grid || Preview == PreviewKind.LoadingDots;
@@ -292,6 +303,17 @@ namespace LB.TweenHelper.Demo
             AddDestinationMotion(DestinationReviewKind.MagneticSnapTo3D, "MagneticSnapTo 3D", "Pulls away before accelerating past and settling on a world-space destination.", PreviewKind.DestinationWorld);
             AddDestinationMotion(DestinationReviewKind.MagneticSnapLocalToUi, "MagneticSnapLocalTo UI", "Pulls an anchored target away before snapping past and settling on its destination.", PreviewKind.DestinationUi);
 
+            AddFeedbackSequence(FeedbackReviewKind.ErrorReject, "ErrorReject 3D", "Rejects an action with a sharp shake, tilt, and red flash before restoring the exact baseline.", PreviewKind.DestinationWorld);
+            AddFeedbackSequence(FeedbackReviewKind.ErrorReject, "ErrorReject UI", "Rejects a UI action with an anchored shake, tilt, and red flash before restoring the exact baseline.", PreviewKind.DestinationUi);
+            AddFeedbackSequence(FeedbackReviewKind.DamageHit, "DamageHit 3D", "Communicates damage with a hit shake, grounded squash, recoil, and red flash.", PreviewKind.DestinationWorld);
+            AddFeedbackSequence(FeedbackReviewKind.DamageHit, "DamageHit UI", "Communicates UI damage with an anchored hit shake, grounded squash, recoil, and red flash.", PreviewKind.DestinationUi);
+            AddFeedbackSequence(FeedbackReviewKind.SuccessConfirm, "SuccessConfirm 3D", "Confirms success with a pop, two diminishing bounces, and green flash.", PreviewKind.DestinationWorld);
+            AddFeedbackSequence(FeedbackReviewKind.SuccessConfirm, "SuccessConfirm UI", "Confirms UI success with a pop, two diminishing anchored bounces, and green flash.", PreviewKind.DestinationUi);
+            AddFeedbackSequence(FeedbackReviewKind.RewardReveal, "RewardReveal 3D", "Reveals a reward with anticipation, a relative spin, overshoot, pulse, and gold flash.", PreviewKind.DestinationWorld);
+            AddFeedbackSequence(FeedbackReviewKind.RewardReveal, "RewardReveal UI", "Reveals a UI reward while preserving its existing orientation and final layout state.", PreviewKind.DestinationUi);
+            AddFeedbackSequence(FeedbackReviewKind.PickupCollect, "PickupCollectTo 3D", "Punches, arcs, shrinks, and fades into an exact world-space collection destination.", PreviewKind.DestinationWorld);
+            AddFeedbackSequence(FeedbackReviewKind.PickupCollect, "PickupCollectLocalTo UI", "Punches, arcs, shrinks, and fades into an exact anchored collection destination.", PreviewKind.DestinationUi);
+
             TweenPresetRegistry.Refresh();
             foreach (ITweenPreset preset in TweenPresetRegistry.Presets.OrderBy(item => item.PresetName, StringComparer.Ordinal))
             {
@@ -357,6 +379,20 @@ namespace LB.TweenHelper.Demo
             });
         }
 
+        private void AddFeedbackSequence(FeedbackReviewKind kind, string name, string description, PreviewKind preview)
+        {
+            string variant = preview == PreviewKind.DestinationUi ? "UI" : "World";
+            _allItems.Add(new ReviewItem
+            {
+                Id = $"Feedback:{kind}:{variant}",
+                Name = name,
+                Description = description,
+                Kind = ReviewKind.FeedbackSequence,
+                Preview = preview,
+                FeedbackKind = kind
+            });
+        }
+
         public void ReplayCurrent()
         {
             if (_items.Count == 0) return;
@@ -370,7 +406,9 @@ namespace LB.TweenHelper.Demo
 
             if (CurrentItem.UsesDestinationPreview)
             {
-                _activeTween = PlayDestinationMotion(CurrentItem.DestinationKind);
+                _activeTween = CurrentItem.Kind == ReviewKind.FeedbackSequence
+                    ? PlayFeedbackSequence(CurrentItem.FeedbackKind)
+                    : PlayDestinationMotion(CurrentItem.DestinationKind);
                 return;
             }
 
@@ -455,7 +493,7 @@ namespace LB.TweenHelper.Demo
             }
 
             ApplyPreviewVisibility(CurrentItem.Preview);
-            SetDestinationPathVisibility(CurrentItem.Kind == ReviewKind.DestinationMotion && UsesCurvedPath(CurrentItem.DestinationKind));
+            ConfigureDestinationGuides(CurrentItem);
             itemNameText.text = CurrentItem.Name;
             descriptionText.text = string.IsNullOrWhiteSpace(CurrentItem.Description) ? "No description provided." : CurrentItem.Description;
             categoryText.text = GetCategoryLabel(CurrentItem);
@@ -649,6 +687,37 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private TweenHandle PlayFeedbackSequence(FeedbackReviewKind kind)
+        {
+            bool usesUi = CurrentItem.Preview == PreviewKind.DestinationUi;
+            GameObject target = usesUi ? destinationUiTarget : destinationWorldTarget;
+            Vector3 start = usesUi ? destinationUiStartMarker.anchoredPosition3D : destinationWorldStartMarker.position;
+            Vector3 destination = usesUi ? destinationUiEndMarker.anchoredPosition3D : destinationWorldEndMarker.position;
+            Vector3 previewPosition = kind == FeedbackReviewKind.PickupCollect ? start : Vector3.Lerp(start, destination, 0.5f);
+            target.transform.localScale = usesUi ? _destinationUiSnapshot.LocalScale : _destinationWorldSnapshot.LocalScale;
+
+            if (usesUi) ((RectTransform)target.transform).anchoredPosition3D = previewPosition;
+            else target.transform.position = previewPosition;
+
+            switch (kind)
+            {
+                case FeedbackReviewKind.ErrorReject:
+                    return target.ErrorReject(0.72f);
+                case FeedbackReviewKind.DamageHit:
+                    return target.DamageHit(0.68f);
+                case FeedbackReviewKind.SuccessConfirm:
+                    return target.SuccessConfirm(0.95f);
+                case FeedbackReviewKind.RewardReveal:
+                    return target.RewardReveal(1.28f);
+                case FeedbackReviewKind.PickupCollect:
+                    return usesUi
+                        ? target.PickupCollectLocalTo(destination, DestinationUiArcHeight, 1.35f)
+                        : target.PickupCollectTo(destination, DestinationWorldArcHeight, 1.35f);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown feedback review item.");
+            }
+        }
+
         private void ScheduleDelayedReplay()
         {
             CancelDelayedReplay();
@@ -710,21 +779,28 @@ namespace LB.TweenHelper.Demo
             destinationUiRoot.SetActive(preview == PreviewKind.DestinationUi);
         }
 
-        private void SetDestinationPathVisibility(bool show)
+        private void ConfigureDestinationGuides(ReviewItem item)
         {
-            if (show) UpdateDestinationPath(CurrentItem.DestinationKind);
-            destinationWorldCurvedPath.SetActive(show && CurrentItem.Preview == PreviewKind.DestinationWorld);
-            destinationUiCurvedPath.SetActive(show && CurrentItem.Preview == PreviewKind.DestinationUi);
+            bool isDestination = item.Kind == ReviewKind.DestinationMotion;
+            bool isPickup = item.Kind == ReviewKind.FeedbackSequence && item.FeedbackKind == FeedbackReviewKind.PickupCollect;
+            bool showMarkers = isDestination || isPickup;
+            bool showPath = isPickup || (isDestination && UsesCurvedPath(item.DestinationKind));
+            destinationWorldStartMarker.gameObject.SetActive(showMarkers && item.Preview == PreviewKind.DestinationWorld);
+            destinationWorldEndMarker.gameObject.SetActive(showMarkers && item.Preview == PreviewKind.DestinationWorld);
+            destinationUiStartMarker.gameObject.SetActive(showMarkers && item.Preview == PreviewKind.DestinationUi);
+            destinationUiEndMarker.gameObject.SetActive(showMarkers && item.Preview == PreviewKind.DestinationUi);
+            if (showPath) UpdateDestinationPath(isDestination && IsBezier(item.DestinationKind));
+            destinationWorldCurvedPath.SetActive(showPath && item.Preview == PreviewKind.DestinationWorld);
+            destinationUiCurvedPath.SetActive(showPath && item.Preview == PreviewKind.DestinationUi);
         }
 
-        private void UpdateDestinationPath(DestinationReviewKind kind)
+        private void UpdateDestinationPath(bool usesBezier)
         {
             bool usesUi = CurrentItem.Preview == PreviewKind.DestinationUi;
             Transform pathRoot = usesUi ? destinationUiCurvedPath.transform : destinationWorldCurvedPath.transform;
             Vector3 start = usesUi ? destinationUiStartMarker.anchoredPosition3D : destinationWorldStartMarker.position;
             Vector3 destination = usesUi ? destinationUiEndMarker.anchoredPosition3D : destinationWorldEndMarker.position;
             float height = usesUi ? DestinationUiArcHeight : DestinationWorldArcHeight;
-            bool usesBezier = IsBezier(kind);
             GetBezierControls(usesUi, start, destination, out Vector3 controlA, out Vector3 controlB);
 
             for (int i = 0; i < pathRoot.childCount; i++)
@@ -773,6 +849,7 @@ namespace LB.TweenHelper.Demo
             if (item.Kind == ReviewKind.CollectionRecipe) return "COLLECTION RECIPE";
             if (item.Kind == ReviewKind.StaggerVariant) return "STAGGER VARIANT";
             if (item.Kind == ReviewKind.DestinationMotion) return item.Preview == PreviewKind.DestinationUi ? "DESTINATION MOTION / UI" : "DESTINATION MOTION / 3D";
+            if (item.Kind == ReviewKind.FeedbackSequence) return item.Preview == PreviewKind.DestinationUi ? "GAMEPLAY FEEDBACK / UI" : "GAMEPLAY FEEDBACK / 3D";
             return item.UsesUiTarget ? "2D / UI PRESET" : "3D / WORLD PRESET";
         }
 

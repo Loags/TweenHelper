@@ -85,47 +85,14 @@ namespace LB.TweenHelper
 
         public static Tween CreateColorTween(GameObject target, Color color, float duration)
         {
-            var spriteRenderer = target.GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null)
-            {
-                return spriteRenderer.DOColor(color, duration);
-            }
-
-            var graphic = target.GetComponent<Graphic>();
-            if (graphic != null)
-            {
-                return graphic.DOColor(color, duration);
-            }
-
-            var tmpText = target.GetComponent<TMP_Text>();
-            if (tmpText != null)
-            {
-                return tmpText.DOColor(color, duration);
-            }
-
-            return null;
+            return TryGetColorBinding(target, out var binding) ? binding.CreateTween(color, duration) : null;
         }
 
         public static bool TryGetColor(GameObject target, out Color color)
         {
-            var spriteRenderer = target.GetComponent<SpriteRenderer>();
-            if (spriteRenderer != null)
+            if (TryGetColorBinding(target, out var binding))
             {
-                color = spriteRenderer.color;
-                return true;
-            }
-
-            var graphic = target.GetComponent<Graphic>();
-            if (graphic != null)
-            {
-                color = graphic.color;
-                return true;
-            }
-
-            var tmpText = target.GetComponent<TMP_Text>();
-            if (tmpText != null)
-            {
-                color = tmpText.color;
+                color = binding.GetColor();
                 return true;
             }
 
@@ -135,27 +102,42 @@ namespace LB.TweenHelper
 
         public static bool TrySetColor(GameObject target, Color color)
         {
+            if (!TryGetColorBinding(target, out var binding)) return false;
+            binding.SetColor(color);
+            return true;
+        }
+
+        internal static bool TryGetColorBinding(GameObject target, out TweenColorBinding binding)
+        {
             var spriteRenderer = target.GetComponent<SpriteRenderer>();
             if (spriteRenderer != null)
             {
-                spriteRenderer.color = color;
+                binding = new TweenColorBinding(spriteRenderer);
                 return true;
             }
 
             var graphic = target.GetComponent<Graphic>();
             if (graphic != null)
             {
-                graphic.color = color;
+                binding = new TweenColorBinding(graphic);
                 return true;
             }
 
             var tmpText = target.GetComponent<TMP_Text>();
             if (tmpText != null)
             {
-                tmpText.color = color;
+                binding = new TweenColorBinding(tmpText);
                 return true;
             }
 
+            var renderer = target.GetComponent<Renderer>();
+            if (TryGetRendererColorProperty(renderer, out int colorPropertyId))
+            {
+                binding = new TweenColorBinding(new RendererColorBinding(renderer, colorPropertyId));
+                return true;
+            }
+
+            binding = default;
             return false;
         }
 
@@ -239,6 +221,69 @@ namespace LB.TweenHelper
             return false;
         }
 
+        internal readonly struct TweenColorBinding
+        {
+            private readonly SpriteRenderer _spriteRenderer;
+            private readonly Graphic _graphic;
+            private readonly TMP_Text _tmpText;
+            private readonly RendererColorBinding _renderer;
+
+            public TweenColorBinding(SpriteRenderer spriteRenderer) : this() => _spriteRenderer = spriteRenderer;
+            public TweenColorBinding(Graphic graphic) : this() => _graphic = graphic;
+            public TweenColorBinding(TMP_Text tmpText) : this() => _tmpText = tmpText;
+            public TweenColorBinding(RendererColorBinding renderer) : this() => _renderer = renderer;
+
+            public Tween CreateTween(Color color, float duration)
+            {
+                if (_spriteRenderer != null) return _spriteRenderer.DOColor(color, duration);
+                if (_graphic != null) return _graphic.DOColor(color, duration);
+                if (_tmpText != null) return _tmpText.DOColor(color, duration);
+                return _renderer?.CreateTween(color, duration);
+            }
+
+            public Color GetColor()
+            {
+                if (_spriteRenderer != null) return _spriteRenderer.color;
+                if (_graphic != null) return _graphic.color;
+                if (_tmpText != null) return _tmpText.color;
+                return _renderer != null ? _renderer.GetColor() : default;
+            }
+
+            public void SetColor(Color color)
+            {
+                if (_spriteRenderer != null)
+                {
+                    _spriteRenderer.color = color;
+                    return;
+                }
+
+                if (_graphic != null)
+                {
+                    _graphic.color = color;
+                    return;
+                }
+
+                if (_tmpText != null)
+                {
+                    _tmpText.color = color;
+                    return;
+                }
+
+                _renderer?.SetColor(color);
+            }
+
+            public void Restore(Color color)
+            {
+                if (_renderer != null)
+                {
+                    _renderer.RestoreOriginal();
+                    return;
+                }
+
+                SetColor(color);
+            }
+        }
+
         internal readonly struct TweenAlphaBinding
         {
             private readonly CanvasGroup _canvasGroup;
@@ -296,11 +341,32 @@ namespace LB.TweenHelper
 
                 _renderer?.SetAlpha(alpha);
             }
+
+            public float GetAlpha()
+            {
+                if (_canvasGroup != null) return _canvasGroup.alpha;
+                if (_spriteRenderer != null) return _spriteRenderer.color.a;
+                if (_graphic != null) return _graphic.color.a;
+                if (_tmpText != null) return _tmpText.color.a;
+                return _renderer != null ? _renderer.GetAlpha() : 1f;
+            }
+
+            public void Restore(float alpha)
+            {
+                if (_renderer != null)
+                {
+                    _renderer.RestoreOriginal();
+                    return;
+                }
+
+                SetAlpha(alpha);
+            }
         }
 
         internal sealed class RendererColorBinding
         {
             private readonly Renderer _renderer;
+            private readonly MaterialPropertyBlock _originalPropertyBlock;
             private readonly MaterialPropertyBlock _propertyBlock;
             private readonly int _colorPropertyId;
             private Color _color;
@@ -309,14 +375,26 @@ namespace LB.TweenHelper
             {
                 _renderer = renderer;
                 _colorPropertyId = colorPropertyId;
+                _originalPropertyBlock = new MaterialPropertyBlock();
                 _propertyBlock = new MaterialPropertyBlock();
+                _renderer.GetPropertyBlock(_originalPropertyBlock);
                 _renderer.GetPropertyBlock(_propertyBlock);
                 _color = _propertyBlock.HasColor(_colorPropertyId)
                     ? _propertyBlock.GetColor(_colorPropertyId)
                     : _renderer.sharedMaterial.GetColor(_colorPropertyId);
             }
 
+            public Tween CreateTween(Color color, float duration) => DOTween.To(GetColor, SetColor, color, duration).SetTarget(_renderer);
             public Tween CreateTween(float alpha, float duration) => DOTween.To(GetAlpha, SetAlpha, alpha, duration).SetTarget(_renderer);
+            public Color GetColor() => _color;
+            public void SetColor(Color color)
+            {
+                _color = color;
+                _propertyBlock.SetColor(_colorPropertyId, _color);
+                _renderer.SetPropertyBlock(_propertyBlock);
+            }
+
+            public float GetAlpha() => _color.a;
             public void SetAlpha(float alpha)
             {
                 _color.a = alpha;
@@ -324,7 +402,7 @@ namespace LB.TweenHelper
                 _renderer.SetPropertyBlock(_propertyBlock);
             }
 
-            private float GetAlpha() => _color.a;
+            public void RestoreOriginal() => _renderer.SetPropertyBlock(_originalPropertyBlock);
         }
     }
 }

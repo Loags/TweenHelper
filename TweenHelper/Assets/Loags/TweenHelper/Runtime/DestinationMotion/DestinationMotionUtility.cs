@@ -20,11 +20,7 @@ namespace LB.TweenHelper
             ValidateRequest(destination, duration);
             ValidateFinite(height, nameof(height));
             var binding = new PositionBinding(target, local);
-            return CreatePathTween(target, binding, destination, duration, options, (start, progress) =>
-            {
-                Vector3 position = Vector3.LerpUnclamped(start, destination, progress);
-                return position + Vector3.up * (4f * height * progress * (1f - progress));
-            }, false);
+            return CreatePathTween(target, binding, destination, duration, options, (start, progress) => EvaluateArc(start, destination, height, progress), false);
         }
 
         public static Tween CreateBezier(GameObject target, Vector3 destination, Vector3 controlA, Vector3 controlB, float duration, TweenOptions options, bool local)
@@ -226,7 +222,7 @@ namespace LB.TweenHelper
             return DOTween.To(() => groundedPose.Scale, groundedPose.SetScale, scale, duration);
         }
 
-        private static Vector3 GetGroundAnchor(Transform transform)
+        internal static Vector3 GetGroundAnchor(Transform transform)
         {
             if (transform is RectTransform rectTransform)
             {
@@ -279,6 +275,12 @@ namespace LB.TweenHelper
                    progress * progress * progress * destination;
         }
 
+        internal static Vector3 EvaluateArc(Vector3 start, Vector3 destination, float height, float progress)
+        {
+            Vector3 position = Vector3.LerpUnclamped(start, destination, progress);
+            return position + Vector3.up * (4f * height * progress * (1f - progress));
+        }
+
         private static Vector3 GetDirection(Vector3 start, Vector3 destination)
         {
             Vector3 delta = destination - start;
@@ -310,7 +312,7 @@ namespace LB.TweenHelper
             if (float.IsNaN(value) || float.IsInfinity(value)) throw new ArgumentOutOfRangeException(parameterName, value, "Value must be finite.");
         }
 
-        private sealed class PositionBinding
+        internal sealed class PositionBinding
         {
             private readonly Transform _transform;
             private readonly RectTransform _rectTransform;
@@ -347,7 +349,7 @@ namespace LB.TweenHelper
             }
         }
 
-        private sealed class GroundedHopPose
+        internal sealed class GroundedHopPose
         {
             private readonly PositionBinding _binding;
             private readonly Transform _transform;
