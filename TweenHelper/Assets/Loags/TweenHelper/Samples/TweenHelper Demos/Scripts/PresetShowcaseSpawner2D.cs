@@ -18,6 +18,7 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private Button collectionsTabButton;
         [SerializeField] private Button destinationsTabButton;
         [SerializeField] private Button feedbackTabButton;
+        [SerializeField] private Button uiSequencesTabButton;
         [SerializeField] private GameObject recipesPanel;
         [SerializeField] private GameObject presetsPanel;
 
@@ -43,6 +44,18 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private RectTransform destinationStartMarker;
         [SerializeField] private RectTransform destinationEndMarker;
         [SerializeField] private GameObject destinationCurvedPath;
+        [SerializeField] private GameObject uiSequencePreviewRoot;
+        [SerializeField] private GameObject toastSequenceTarget;
+        [SerializeField] private GameObject modalSequenceGroup;
+        [SerializeField] private GameObject modalSequenceBackdrop;
+        [SerializeField] private GameObject modalSequencePanel;
+        [SerializeField] private GameObject[] modalSequenceControls;
+        [SerializeField] private GameObject tooltipSequenceTarget;
+        [SerializeField] private GameObject dropdownSequencePanel;
+        [SerializeField] private GameObject[] dropdownSequenceEntries;
+        [SerializeField] private GameObject tabSequenceGroup;
+        [SerializeField] private GameObject tabSequenceOutgoing;
+        [SerializeField] private GameObject tabSequenceIncoming;
         [SerializeField] private TMP_Text selectionNameText;
         [SerializeField] private TMP_Text selectionDescriptionText;
         [SerializeField] private TMP_Text codeExampleText;
@@ -104,6 +117,19 @@ namespace LB.TweenHelper.Demo
             new FeedbackRecipeDefinition(FeedbackRecipeKind.PickupCollect, "Punch, arc, shrink, and fade into an anchored collection destination.")
         };
 
+        private static readonly UISequenceRecipeDefinition[] UISequenceRecipes =
+        {
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.ToastShow, "Slide, fade, overshoot, and settle a toast on its authored state."),
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.ToastHide, "Anticipate before sliding and fading a toast out."),
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.ModalOpen, "Fade the backdrop, open the panel, and stagger controls in."),
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.ModalClose, "Stagger controls out before dismissing the panel and backdrop."),
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.TooltipShow, "Subtly raise, scale, and fade a tooltip into view."),
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.TooltipHide, "Move and fade a tooltip out with restrained scale motion."),
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.DropdownOpen, "Expand from the authored pivot and stagger entries into view."),
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.DropdownClose, "Stagger entries out and compress toward the authored pivot."),
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.TabSwitch, "Overlap outgoing and incoming content in one controlled transition.")
+        };
+
         private static readonly string[] CollectionOrderNames =
         {
             "First to last",
@@ -118,11 +144,21 @@ namespace LB.TweenHelper.Demo
         private readonly List<UIRecipeCard> _collectionCards = new List<UIRecipeCard>();
         private readonly List<UIRecipeCard> _destinationCards = new List<UIRecipeCard>();
         private readonly List<UIRecipeCard> _feedbackCards = new List<UIRecipeCard>();
+        private readonly List<UIRecipeCard> _uiSequenceCards = new List<UIRecipeCard>();
         private readonly List<string> _targetOptionNames = new List<string>();
         private UIStateSnapshot _imageState;
         private UIStateSnapshot _textState;
         private UIStateSnapshot[] _collectionStates;
         private UIStateSnapshot _destinationState;
+        private UIStateSnapshot _toastSequenceState;
+        private UIStateSnapshot _modalBackdropState;
+        private UIStateSnapshot _modalPanelState;
+        private UIStateSnapshot[] _modalControlStates;
+        private UIStateSnapshot _tooltipSequenceState;
+        private UIStateSnapshot _dropdownPanelState;
+        private UIStateSnapshot[] _dropdownEntryStates;
+        private UIStateSnapshot _tabOutgoingState;
+        private UIStateSnapshot _tabIncomingState;
         private GameObject[] _listTargets;
         private GameObject[] _gridTargets;
         private GameObject[] _loadingDotTargets;
@@ -132,6 +168,7 @@ namespace LB.TweenHelper.Demo
         private CollectionRecipeKind _selectedCollectionRecipe = CollectionRecipeKind.ListStaggerIn;
         private DestinationRecipeKind _selectedDestinationRecipe = DestinationRecipeKind.Arc;
         private FeedbackRecipeKind _selectedFeedbackRecipe = FeedbackRecipeKind.ErrorReject;
+        private UISequenceRecipeKind _selectedUISequenceRecipe = UISequenceRecipeKind.ToastShow;
         private StaggerOrder _selectedCollectionOrder = StaggerOrder.FirstToLast;
         private ShowcaseMode _mode = ShowcaseMode.Recipes;
         private int _selectedTargetIndex;
@@ -145,6 +182,15 @@ namespace LB.TweenHelper.Demo
             _textState = UIStateSnapshot.Capture(animatedText.gameObject);
             _collectionStates = CaptureStates(collectionTargets);
             _destinationState = UIStateSnapshot.Capture(destinationTarget);
+            _toastSequenceState = UIStateSnapshot.Capture(toastSequenceTarget);
+            _modalBackdropState = UIStateSnapshot.Capture(modalSequenceBackdrop);
+            _modalPanelState = UIStateSnapshot.Capture(modalSequencePanel);
+            _modalControlStates = CaptureStates(modalSequenceControls);
+            _tooltipSequenceState = UIStateSnapshot.Capture(tooltipSequenceTarget);
+            _dropdownPanelState = UIStateSnapshot.Capture(dropdownSequencePanel);
+            _dropdownEntryStates = CaptureStates(dropdownSequenceEntries);
+            _tabOutgoingState = UIStateSnapshot.Capture(tabSequenceOutgoing);
+            _tabIncomingState = UIStateSnapshot.Capture(tabSequenceIncoming);
             _listTargets = CopyTargets(6);
             _gridTargets = CopyTargets(9);
             _loadingDotTargets = CopyTargets(3);
@@ -157,7 +203,7 @@ namespace LB.TweenHelper.Demo
         {
             ResetTargets();
             ShowRecipes();
-            instructionsPanel.SetContent("TweenHelper 2D Showcase", "Choose UI Recipes, Collections, Destinations, Gameplay Feedback, or the 2D Preset Library. Select an entry, then replay or reset the preview.");
+            instructionsPanel.SetContent("TweenHelper 2D Showcase", "Choose UI Recipes, Collections, Destinations, Gameplay Feedback, UI Sequences, or the 2D Preset Library. Select an entry, then replay or reset the preview.");
         }
 
         private void OnDisable() => StopPlayback();
@@ -176,6 +222,7 @@ namespace LB.TweenHelper.Demo
             collectionsTabButton.onClick.AddListener(ShowCollections);
             destinationsTabButton.onClick.AddListener(ShowDestinations);
             feedbackTabButton.onClick.AddListener(ShowFeedback);
+            uiSequencesTabButton.onClick.AddListener(ShowUISequences);
             replayButton.onClick.AddListener(ReplaySelected);
             resetButton.onClick.AddListener(ResetPreview);
             copyButton.onClick.AddListener(CopyCodeExample);
@@ -222,6 +269,15 @@ namespace LB.TweenHelper.Demo
                 FeedbackRecipeKind kind = definition.Kind;
                 card.Configure(kind.ToString(), definition.Description, () => SelectFeedbackRecipe(kind));
                 _feedbackCards.Add(card);
+            }
+
+            for (int i = 0; i < UISequenceRecipes.Length; i++)
+            {
+                var definition = UISequenceRecipes[i];
+                var card = Instantiate(recipeCardPrefab, recipeContent);
+                UISequenceRecipeKind kind = definition.Kind;
+                card.Configure(SplitPascalCase(kind.ToString()), definition.Description, () => SelectUISequenceRecipe(kind));
+                _uiSequenceCards.Add(card);
             }
 
             TweenPresetRegistry.ScanForCodePresets();
@@ -321,13 +377,28 @@ namespace LB.TweenHelper.Demo
             SelectFeedbackRecipe(_selectedFeedbackRecipe, false);
         }
 
+        public void ShowUISequences()
+        {
+            StopPlayback();
+            ResetTargets();
+            _mode = ShowcaseMode.UISequences;
+            recipesPanel.SetActive(true);
+            presetsPanel.SetActive(false);
+            SetCardVisibility(ShowcaseMode.UISequences);
+            ResetRecipeScrollPosition();
+            SetPreviewMode(false, false, true);
+            ShowUISequenceTargetOption();
+            SelectUISequenceRecipe(_selectedUISequenceRecipe, false);
+        }
+
         public void ReplaySelected()
         {
             if (_mode == ShowcaseMode.Recipes) PlayRecipe(_selectedRecipe);
             else if (_mode == ShowcaseMode.Presets) PlaySelectedPreset();
             else if (_mode == ShowcaseMode.Collections) PlayCollectionRecipe(_selectedCollectionRecipe);
             else if (_mode == ShowcaseMode.Destinations) PlayDestinationRecipe(_selectedDestinationRecipe);
-            else PlayFeedbackRecipe(_selectedFeedbackRecipe);
+            else if (_mode == ShowcaseMode.Feedback) PlayFeedbackRecipe(_selectedFeedbackRecipe);
+            else PlayUISequenceRecipe(_selectedUISequenceRecipe);
         }
 
         public void ResetPreview()
@@ -349,7 +420,7 @@ namespace LB.TweenHelper.Demo
                 return;
             }
 
-            if (_mode == ShowcaseMode.Destinations || _mode == ShowcaseMode.Feedback) return;
+            if (_mode == ShowcaseMode.Destinations || _mode == ShowcaseMode.Feedback || _mode == ShowcaseMode.UISequences) return;
 
             _selectedTargetIndex = targetDropdown.value;
             ResetPreview();
@@ -428,6 +499,19 @@ namespace LB.TweenHelper.Demo
             destinationCurvedPath.SetActive(usesDestination);
             if (usesDestination) UpdateDestinationPath(false);
             if (play) PlayFeedbackRecipe(recipe);
+        }
+
+        private void SelectUISequenceRecipe(UISequenceRecipeKind recipe) => SelectUISequenceRecipe(recipe, true);
+
+        private void SelectUISequenceRecipe(UISequenceRecipeKind recipe, bool play)
+        {
+            _selectedUISequenceRecipe = recipe;
+            var definition = UISequenceRecipes[(int)recipe];
+            selectionNameText.text = recipe == UISequenceRecipeKind.TabSwitch ? "Tab Switch" : SplitPascalCase(recipe.ToString());
+            selectionDescriptionText.text = definition.Description;
+            codeExampleText.text = GetUISequenceCodeExample(recipe);
+            ConfigureUISequencePreview(recipe);
+            if (play) PlayUISequenceRecipe(recipe);
         }
 
         private void UpdatePresetDetails(ITweenPreset preset)
@@ -565,6 +649,37 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private TweenHandle PlayUISequenceRecipe(UISequenceRecipeKind recipe)
+        {
+            StopPlayback();
+            ResetUISequenceTargets();
+            ConfigureUISequencePreview(recipe);
+
+            switch (recipe)
+            {
+                case UISequenceRecipeKind.ToastShow:
+                    return _activeTween = toastSequenceTarget.ToastShow(UISequenceDirection.Up, 64f, 0.5f);
+                case UISequenceRecipeKind.ToastHide:
+                    return _activeTween = toastSequenceTarget.ToastHide(UISequenceDirection.Up, 64f, 0.38f);
+                case UISequenceRecipeKind.ModalOpen:
+                    return _activeTween = modalSequencePanel.ModalOpen(modalSequenceBackdrop, modalSequenceControls, 0.68f, 0.075f);
+                case UISequenceRecipeKind.ModalClose:
+                    return _activeTween = modalSequencePanel.ModalClose(modalSequenceBackdrop, modalSequenceControls, 0.58f, 0.075f);
+                case UISequenceRecipeKind.TooltipShow:
+                    return _activeTween = tooltipSequenceTarget.TooltipShow(UISequenceDirection.Up, 22f, 0.36f);
+                case UISequenceRecipeKind.TooltipHide:
+                    return _activeTween = tooltipSequenceTarget.TooltipHide(UISequenceDirection.Up, 22f, 0.28f);
+                case UISequenceRecipeKind.DropdownOpen:
+                    return _activeTween = dropdownSequencePanel.DropdownOpen(dropdownSequenceEntries, 0.54f, 0.06f);
+                case UISequenceRecipeKind.DropdownClose:
+                    return _activeTween = dropdownSequencePanel.DropdownClose(dropdownSequenceEntries, 0.44f, 0.06f);
+                case UISequenceRecipeKind.TabSwitch:
+                    return _activeTween = tabSequenceOutgoing.TabSwitchTo(tabSequenceIncoming, UISequenceDirection.Left, 108f, 0.58f);
+                default:
+                    return null;
+            }
+        }
+
         private void PositionFeedbackTarget(FeedbackRecipeKind recipe)
         {
             Vector3 start = destinationStartMarker.anchoredPosition3D;
@@ -616,6 +731,15 @@ namespace LB.TweenHelper.Demo
             DOTween.Kill(collectionPreviewRoot, false);
             for (int i = 0; i < collectionTargets.Length; i++) KillTargetTweens(collectionTargets[i]);
             KillTargetTweens(destinationTarget);
+            KillTargetTweens(toastSequenceTarget);
+            KillTargetTweens(modalSequenceBackdrop);
+            KillTargetTweens(modalSequencePanel);
+            KillTargets(modalSequenceControls);
+            KillTargetTweens(tooltipSequenceTarget);
+            KillTargetTweens(dropdownSequencePanel);
+            KillTargets(dropdownSequenceEntries);
+            KillTargetTweens(tabSequenceOutgoing);
+            KillTargetTweens(tabSequenceIncoming);
         }
 
         private void ResetTargets()
@@ -624,6 +748,7 @@ namespace LB.TweenHelper.Demo
             _textState.Apply(animatedText.gameObject);
             ResetCollectionTargets();
             _destinationState.Apply(destinationTarget);
+            ResetUISequenceTargets();
         }
 
         private void ResetTarget(GameObject target)
@@ -672,6 +797,7 @@ namespace LB.TweenHelper.Demo
             for (int i = 0; i < _collectionCards.Count; i++) _collectionCards[i].gameObject.SetActive(mode == ShowcaseMode.Collections);
             for (int i = 0; i < _destinationCards.Count; i++) _destinationCards[i].gameObject.SetActive(mode == ShowcaseMode.Destinations);
             for (int i = 0; i < _feedbackCards.Count; i++) _feedbackCards[i].gameObject.SetActive(mode == ShowcaseMode.Feedback);
+            for (int i = 0; i < _uiSequenceCards.Count; i++) _uiSequenceCards[i].gameObject.SetActive(mode == ShowcaseMode.UISequences);
         }
 
         private void ResetRecipeScrollPosition()
@@ -682,12 +808,13 @@ namespace LB.TweenHelper.Demo
             contentRect.anchoredPosition = position;
         }
 
-        private void SetPreviewMode(bool showCollection, bool showDestination)
+        private void SetPreviewMode(bool showCollection, bool showDestination, bool showUISequence = false)
         {
-            presetImage.gameObject.SetActive(!showCollection && !showDestination);
-            animatedText.gameObject.SetActive(!showCollection && !showDestination);
+            presetImage.gameObject.SetActive(!showCollection && !showDestination && !showUISequence);
+            animatedText.gameObject.SetActive(!showCollection && !showDestination && !showUISequence);
             collectionPreviewRoot.SetActive(showCollection);
             destinationPreviewRoot.SetActive(showDestination);
+            uiSequencePreviewRoot.SetActive(showUISequence);
         }
 
         private void RestoreTargetOptions()
@@ -715,6 +842,27 @@ namespace LB.TweenHelper.Demo
             targetDropdown.AddOptions(new List<string> { "Anchored UI" });
             targetDropdown.SetValueWithoutNotify(0);
             targetDropdown.interactable = false;
+        }
+
+        private void ShowUISequenceTargetOption()
+        {
+            targetDropdown.ClearOptions();
+            targetDropdown.AddOptions(new List<string> { "Production UI" });
+            targetDropdown.SetValueWithoutNotify(0);
+            targetDropdown.interactable = false;
+        }
+
+        private void ConfigureUISequencePreview(UISequenceRecipeKind recipe)
+        {
+            bool showToast = recipe == UISequenceRecipeKind.ToastShow || recipe == UISequenceRecipeKind.ToastHide;
+            bool showModal = recipe == UISequenceRecipeKind.ModalOpen || recipe == UISequenceRecipeKind.ModalClose;
+            bool showTooltip = recipe == UISequenceRecipeKind.TooltipShow || recipe == UISequenceRecipeKind.TooltipHide;
+            bool showDropdown = recipe == UISequenceRecipeKind.DropdownOpen || recipe == UISequenceRecipeKind.DropdownClose;
+            toastSequenceTarget.SetActive(showToast);
+            modalSequenceGroup.SetActive(showModal);
+            tooltipSequenceTarget.SetActive(showTooltip);
+            dropdownSequencePanel.SetActive(showDropdown);
+            tabSequenceGroup.SetActive(recipe == UISequenceRecipeKind.TabSwitch);
         }
 
         private void ConfigureCollectionLayout(CollectionRecipeKind recipe)
@@ -810,6 +958,33 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private static string GetUISequenceCodeExample(UISequenceRecipeKind recipe)
+        {
+            switch (recipe)
+            {
+                case UISequenceRecipeKind.ToastShow:
+                    return "toast.ToastShow();";
+                case UISequenceRecipeKind.ToastHide:
+                    return "toast.ToastHide();";
+                case UISequenceRecipeKind.ModalOpen:
+                    return "panel.ModalOpen(backdrop, controls);";
+                case UISequenceRecipeKind.ModalClose:
+                    return "panel.ModalClose(backdrop, controls);";
+                case UISequenceRecipeKind.TooltipShow:
+                    return "tooltip.TooltipShow();";
+                case UISequenceRecipeKind.TooltipHide:
+                    return "tooltip.TooltipHide();";
+                case UISequenceRecipeKind.DropdownOpen:
+                    return "dropdown.DropdownOpen(entries);";
+                case UISequenceRecipeKind.DropdownClose:
+                    return "dropdown.DropdownClose(entries);";
+                case UISequenceRecipeKind.TabSwitch:
+                    return "outgoing.TabSwitchTo(incoming);";
+                default:
+                    return string.Empty;
+            }
+        }
+
         private static bool UsesCurvedPath(DestinationRecipeKind recipe)
         {
             return recipe == DestinationRecipeKind.Arc || recipe == DestinationRecipeKind.Bezier || recipe == DestinationRecipeKind.Hop;
@@ -881,6 +1056,29 @@ namespace LB.TweenHelper.Demo
         private void ResetCollectionTargets()
         {
             for (int i = 0; i < collectionTargets.Length; i++) _collectionStates[i].Apply(collectionTargets[i]);
+        }
+
+        private void ResetUISequenceTargets()
+        {
+            _toastSequenceState.Apply(toastSequenceTarget);
+            _modalBackdropState.Apply(modalSequenceBackdrop);
+            _modalPanelState.Apply(modalSequencePanel);
+            ApplyStates(modalSequenceControls, _modalControlStates);
+            _tooltipSequenceState.Apply(tooltipSequenceTarget);
+            _dropdownPanelState.Apply(dropdownSequencePanel);
+            ApplyStates(dropdownSequenceEntries, _dropdownEntryStates);
+            _tabOutgoingState.Apply(tabSequenceOutgoing);
+            _tabIncomingState.Apply(tabSequenceIncoming);
+        }
+
+        private static void ApplyStates(GameObject[] targets, UIStateSnapshot[] states)
+        {
+            for (int i = 0; i < targets.Length; i++) states[i].Apply(targets[i]);
+        }
+
+        private static void KillTargets(GameObject[] targets)
+        {
+            for (int i = 0; i < targets.Length; i++) KillTargetTweens(targets[i]);
         }
 
         private static void KillTargetTweens(GameObject target)
@@ -975,13 +1173,26 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private readonly struct UISequenceRecipeDefinition
+        {
+            public readonly UISequenceRecipeKind Kind;
+            public readonly string Description;
+
+            public UISequenceRecipeDefinition(UISequenceRecipeKind kind, string description)
+            {
+                Kind = kind;
+                Description = description;
+            }
+        }
+
         private enum ShowcaseMode
         {
             Recipes,
             Presets,
             Collections,
             Destinations,
-            Feedback
+            Feedback,
+            UISequences
         }
 
         private enum CollectionRecipeKind
@@ -1009,6 +1220,19 @@ namespace LB.TweenHelper.Demo
             SuccessConfirm,
             RewardReveal,
             PickupCollect
+        }
+
+        private enum UISequenceRecipeKind
+        {
+            ToastShow,
+            ToastHide,
+            ModalOpen,
+            ModalClose,
+            TooltipShow,
+            TooltipHide,
+            DropdownOpen,
+            DropdownClose,
+            TabSwitch
         }
 
         private readonly struct UIStateSnapshot

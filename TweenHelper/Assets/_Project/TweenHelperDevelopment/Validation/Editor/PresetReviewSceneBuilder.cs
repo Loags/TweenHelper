@@ -33,8 +33,9 @@ namespace LB.TweenHelper.Editor
                 bool sceneNeedsFilters = !sceneText.Contains("allFilterToggle:");
                 bool sceneNeedsCollectionPreview = !sceneText.Contains("collectionPreviewRoot:");
                 bool sceneNeedsDestinationPreview = !sceneText.Contains("destinationWorldRoot:");
+                bool sceneNeedsUISequencePreview = !sceneText.Contains("uiSequencePreviewRoot:");
                 bool sceneNeedsMaterial = !File.Exists(Path.GetFullPath(MaterialPath));
-                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsDestinationPreview && !sceneNeedsMaterial)
+                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsDestinationPreview && !sceneNeedsUISequencePreview && !sceneNeedsMaterial)
                 {
                     Material material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
                     if (material == null || !NeedsTransparentConfiguration(material)) return;
@@ -98,6 +99,7 @@ namespace LB.TweenHelper.Editor
             GameObject uiTarget = CreateUiTarget(previewFrame);
             CollectionPreview collectionPreview = CreateCollectionPreview(previewFrame);
             DestinationPreview destinationPreview = CreateDestinationPreview(previewFrame);
+            UISequencePreview uiSequencePreview = CreateUISequencePreview(previewFrame);
 
             Button failed = CreateButton("Mark Wrong", canvas.transform, "[X]  WRONG / NEEDS WORK", new Color(0.42f, 0.16f, 0.2f));
             SetRect((RectTransform)failed.transform, new Vector2(0.015f, 0.3f), new Vector2(0.18f, 0.63f), Vector2.zero, Vector2.zero);
@@ -141,6 +143,18 @@ namespace LB.TweenHelper.Editor
             Assign(serializedController, "destinationUiStartMarker", destinationPreview.UiStartMarker);
             Assign(serializedController, "destinationUiEndMarker", destinationPreview.UiEndMarker);
             Assign(serializedController, "destinationUiCurvedPath", destinationPreview.UiCurvedPath);
+            Assign(serializedController, "uiSequencePreviewRoot", uiSequencePreview.Root);
+            Assign(serializedController, "toastSequenceTarget", uiSequencePreview.Toast);
+            Assign(serializedController, "modalSequenceGroup", uiSequencePreview.ModalGroup);
+            Assign(serializedController, "modalSequenceBackdrop", uiSequencePreview.ModalBackdrop);
+            Assign(serializedController, "modalSequencePanel", uiSequencePreview.ModalPanel);
+            AssignArray(serializedController, "modalSequenceControls", uiSequencePreview.ModalControls);
+            Assign(serializedController, "tooltipSequenceTarget", uiSequencePreview.Tooltip);
+            Assign(serializedController, "dropdownSequencePanel", uiSequencePreview.DropdownPanel);
+            AssignArray(serializedController, "dropdownSequenceEntries", uiSequencePreview.DropdownEntries);
+            Assign(serializedController, "tabSequenceGroup", uiSequencePreview.TabGroup);
+            Assign(serializedController, "tabSequenceOutgoing", uiSequencePreview.TabOutgoing);
+            Assign(serializedController, "tabSequenceIncoming", uiSequencePreview.TabIncoming);
             Assign(serializedController, "itemNameText", itemName);
             Assign(serializedController, "descriptionText", description);
             Assign(serializedController, "categoryText", category);
@@ -360,6 +374,66 @@ namespace LB.TweenHelper.Editor
             return new DestinationPreview(worldRoot, worldTarget, worldStartMarker.transform, worldEndMarker.transform, worldCurvedPath, uiRoot, uiTarget, uiStartMarker, uiEndMarker, uiCurvedPath);
         }
 
+        private static UISequencePreview CreateUISequencePreview(Transform parent)
+        {
+            GameObject root = CreatePreviewGroup("UI Sequence Preview", parent);
+
+            GameObject toast = CreateSequencePanel("Toast", root.transform, "SAVED SUCCESSFULLY", new Vector2(0f, 20f), new Vector2(460f, 92f), new Color(0.08f, 0.55f, 0.82f, 1f), 23f);
+
+            GameObject modalGroup = CreatePreviewGroup("Modal Preview", root.transform);
+            GameObject modalBackdrop = CreateSequencePanel("Modal Backdrop", modalGroup.transform, string.Empty, Vector2.zero, new Vector2(980f, 440f), new Color(0.01f, 0.02f, 0.04f, 0.78f), 1f);
+            GameObject modalPanel = CreateSequencePanel("Modal Panel", modalGroup.transform, "CONFIRM ACTION", new Vector2(0f, 20f), new Vector2(500f, 280f), new Color(0.08f, 0.16f, 0.28f, 1f), 28f);
+            var modalControls = new GameObject[3];
+            string[] modalLabels = { "CANCEL", "DETAILS", "CONFIRM" };
+            for (int i = 0; i < modalControls.Length; i++)
+            {
+                modalControls[i] = CreateSequencePanel($"Modal Control {i + 1}", modalPanel.transform, modalLabels[i], new Vector2((i - 1) * 145f, -72f), new Vector2(126f, 58f), i == 2 ? new Color(0.1f, 0.58f, 0.95f, 1f) : new Color(0.14f, 0.24f, 0.38f, 1f), 16f);
+            }
+
+            GameObject tooltip = CreateSequencePanel("Tooltip", root.transform, "Helpful context appears here", new Vector2(0f, 25f), new Vector2(390f, 92f), new Color(0.12f, 0.18f, 0.28f, 1f), 20f);
+
+            GameObject dropdownPanel = CreateSequencePanel("Dropdown Panel", root.transform, string.Empty, new Vector2(0f, 135f), new Vector2(390f, 300f), new Color(0.07f, 0.13f, 0.22f, 1f), 1f);
+            ((RectTransform)dropdownPanel.transform).pivot = new Vector2(0.5f, 1f);
+            var dropdownEntries = new GameObject[4];
+            string[] dropdownLabels = { "NEW PROJECT", "OPEN PROJECT", "SETTINGS", "QUIT" };
+            for (int i = 0; i < dropdownEntries.Length; i++)
+            {
+                dropdownEntries[i] = CreateSequencePanel($"Dropdown Entry {i + 1}", dropdownPanel.transform, dropdownLabels[i], new Vector2(0f, 105f - i * 68f), new Vector2(340f, 52f), new Color(0.12f, 0.24f, 0.39f, 1f), 17f);
+            }
+
+            GameObject tabGroup = CreatePreviewGroup("Tab Switch Preview", root.transform);
+            GameObject tabIncoming = CreateSequencePanel("Incoming Tab", tabGroup.transform, "INVENTORY\n\n12 ITEMS READY", Vector2.zero, new Vector2(570f, 280f), new Color(0.12f, 0.38f, 0.32f, 1f), 25f);
+            GameObject tabOutgoing = CreateSequencePanel("Outgoing Tab", tabGroup.transform, "CHARACTER\n\nLEVEL 24", Vector2.zero, new Vector2(570f, 280f), new Color(0.1f, 0.3f, 0.55f, 1f), 25f);
+
+            toast.SetActive(false);
+            modalGroup.SetActive(false);
+            tooltip.SetActive(false);
+            dropdownPanel.SetActive(false);
+            tabGroup.SetActive(false);
+            root.SetActive(false);
+            return new UISequencePreview(root, toast, modalGroup, modalBackdrop, modalPanel, modalControls, tooltip, dropdownPanel, dropdownEntries, tabGroup, tabOutgoing, tabIncoming);
+        }
+
+        private static GameObject CreateSequencePanel(string name, Transform parent, string labelValue, Vector2 anchoredPosition, Vector2 size, Color color, float fontSize)
+        {
+            var panel = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(CanvasGroup));
+            panel.transform.SetParent(parent, false);
+            var rect = (RectTransform)panel.transform;
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = anchoredPosition;
+            rect.sizeDelta = size;
+            panel.GetComponent<Image>().color = color;
+
+            if (!string.IsNullOrEmpty(labelValue))
+            {
+                TMP_Text label = CreateText("Label", panel.transform, labelValue, fontSize, FontStyles.Bold, TextAlignmentOptions.Center);
+                label.color = Color.white;
+                SetRect(label.rectTransform, Vector2.zero, Vector2.one, new Vector2(18f, 12f), new Vector2(-18f, -12f));
+            }
+
+            return panel;
+        }
+
         private static GameObject CreateWorldDestinationObject(string name, PrimitiveType primitiveType, Transform parent, Vector3 position, float scale)
         {
             GameObject target = GameObject.CreatePrimitive(primitiveType);
@@ -573,6 +647,38 @@ namespace LB.TweenHelper.Editor
                 UiStartMarker = uiStartMarker;
                 UiEndMarker = uiEndMarker;
                 UiCurvedPath = uiCurvedPath;
+            }
+        }
+
+        private readonly struct UISequencePreview
+        {
+            public readonly GameObject Root;
+            public readonly GameObject Toast;
+            public readonly GameObject ModalGroup;
+            public readonly GameObject ModalBackdrop;
+            public readonly GameObject ModalPanel;
+            public readonly GameObject[] ModalControls;
+            public readonly GameObject Tooltip;
+            public readonly GameObject DropdownPanel;
+            public readonly GameObject[] DropdownEntries;
+            public readonly GameObject TabGroup;
+            public readonly GameObject TabOutgoing;
+            public readonly GameObject TabIncoming;
+
+            public UISequencePreview(GameObject root, GameObject toast, GameObject modalGroup, GameObject modalBackdrop, GameObject modalPanel, GameObject[] modalControls, GameObject tooltip, GameObject dropdownPanel, GameObject[] dropdownEntries, GameObject tabGroup, GameObject tabOutgoing, GameObject tabIncoming)
+            {
+                Root = root;
+                Toast = toast;
+                ModalGroup = modalGroup;
+                ModalBackdrop = modalBackdrop;
+                ModalPanel = modalPanel;
+                ModalControls = modalControls;
+                Tooltip = tooltip;
+                DropdownPanel = dropdownPanel;
+                DropdownEntries = dropdownEntries;
+                TabGroup = tabGroup;
+                TabOutgoing = tabOutgoing;
+                TabIncoming = tabIncoming;
             }
         }
     }

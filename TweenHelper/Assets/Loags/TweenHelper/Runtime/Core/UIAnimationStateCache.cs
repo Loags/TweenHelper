@@ -15,21 +15,29 @@ namespace LB.TweenHelper
         [SerializeField] private Color _baseColor;
         [SerializeField] private bool _hasCanvasGroup;
         [SerializeField] private float _baseCanvasAlpha;
+        [SerializeField] private float baseAnchoredPositionZ;
+        [SerializeField] private bool hasAlpha;
+        [SerializeField] private float baseAlpha;
 
+        public bool IsCaptured => _captured;
         public Vector3 BaseScale => _baseScale;
         public Vector3 BaseEulerAngles => _baseEulerAngles;
         public Vector2 BaseAnchoredPosition => _baseAnchoredPosition;
+        public Vector3 BaseAnchoredPosition3D => new Vector3(_baseAnchoredPosition.x, _baseAnchoredPosition.y, baseAnchoredPositionZ);
         public bool HasColor => _hasColor;
         public Color BaseColor => _baseColor;
         public bool HasCanvasGroup => _hasCanvasGroup;
         public float BaseCanvasAlpha => _baseCanvasAlpha;
+        public bool HasAlpha => hasAlpha;
+        public float BaseAlpha => baseAlpha;
 
-        public void CaptureIfNeeded()
+        public void CaptureIfNeeded() => Capture(false);
+
+        public void Refresh() => Capture(true);
+
+        private void Capture(bool force)
         {
-            if (_captured)
-            {
-                return;
-            }
+            if (_captured && !force) return;
 
             _captured = true;
 
@@ -40,8 +48,10 @@ namespace LB.TweenHelper
             if (targetTransform is RectTransform rectTransform)
             {
                 _baseAnchoredPosition = rectTransform.anchoredPosition;
+                baseAnchoredPositionZ = rectTransform.anchoredPosition3D.z;
             }
 
+            _hasColor = false;
             if (TweenTargetUtility.TryGetColor(gameObject, out var color))
             {
                 _hasColor = true;
@@ -49,11 +59,14 @@ namespace LB.TweenHelper
             }
 
             var canvasGroup = GetComponent<CanvasGroup>();
+            _hasCanvasGroup = canvasGroup != null;
             if (canvasGroup != null)
             {
-                _hasCanvasGroup = true;
                 _baseCanvasAlpha = canvasGroup.alpha;
             }
+
+            hasAlpha = TweenTargetUtility.TryGetAlphaBinding(gameObject, out var alphaBinding);
+            if (hasAlpha) baseAlpha = alphaBinding.GetAlpha();
         }
 
         public static UIAnimationStateCache GetOrCreate(GameObject target)

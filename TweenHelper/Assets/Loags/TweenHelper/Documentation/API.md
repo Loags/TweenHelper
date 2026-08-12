@@ -268,6 +268,36 @@ TweenHandle handle = rewardCard.Tween()
 
 `TweenOptions.WithStrength` scales shake distance, squash/stretch, bounce height, spin, and arc height without multiplying the final pickup shrink. Local feedback uses `RectTransform.anchoredPosition3D` on UI targets. See [Gameplay feedback sequences](FeedbackSequences.md) for APIs, defaults, target support, and lifecycle details.
 
+## Production UI sequences
+
+Use one-line extensions for complete UI transitions:
+
+```csharp
+toast.ToastShow(UISequenceDirection.Up);
+toast.ToastHide(UISequenceDirection.Right);
+modalPanel.ModalOpen(backdrop, controls);
+modalPanel.ModalClose(backdrop, controls);
+tooltip.TooltipShow();
+tooltip.TooltipHide();
+dropdown.DropdownOpen(entries);
+dropdown.DropdownClose(entries);
+outgoingTab.TabSwitchTo(incomingTab, UISequenceDirection.Left);
+```
+
+The same nine operations are composable builder steps:
+
+```csharp
+TweenHandle handle = toast.Tween()
+    .ToastShow()
+    .Then()
+    .Delay(2f)
+    .Then()
+    .ToastHide()
+    .Play();
+```
+
+All targets require `RectTransform`; movement uses `anchoredPosition3D`. Show operations finish on a cached authored baseline, hide operations leave the target visually hidden, kill preserves the interrupted state, and rewind restores the state captured when playback began. Modal and dropdown child lists are copied immediately and remain inside the same root handle. Call `RefreshUIAnimationState()` after an intentional responsive-layout change to recapture the shown endpoint. See [Production UI sequences](UISequences.md) for defaults, direction semantics, layout guidance, validation rules, and lifecycle details.
+
 ## Tween lifecycle
 
 A finite tween completes when DOTween invokes its completion callback. Killing a tween is a distinct terminal event and does not imply normal completion. Infinite loops never complete normally, so retain their `TweenHandle` and kill or cancel them during owner teardown.
@@ -282,4 +312,4 @@ TweenHelper initializes automatically. Without `Assets/Resources/TweenHelperSett
 
 ## Sample controls
 
-Open **TweenHelper Demos** from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The 2D scene provides 13 semantic UI recipes, five collection recipes with selectable stagger ordering, five destination-motion examples, five gameplay-feedback sequences, and a searchable library of 198 UI-suitable presets. When the legacy Input Manager is enabled, Space replays the current 2D selection and the 3D showcase enables its fly-camera shortcuts. The demos do not require the Input System package.
+Open **TweenHelper Demos** from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The 2D scene provides 13 semantic UI recipes, five collection recipes with selectable stagger ordering, five destination-motion examples, five gameplay-feedback sequences, nine production UI sequences, and a searchable library of 198 UI-suitable presets. When the legacy Input Manager is enabled, Space replays the current 2D selection and the 3D showcase enables its fly-camera shortcuts. The demos do not require the Input System package.

@@ -104,6 +104,17 @@ TweenHandle handle = reward.Tween()
 
 `ErrorReject`, `DamageHit`, `SuccessConfirm`, and `RewardReveal` restore the transform and visual state captured when their step starts. `PickupCollectTo` and `PickupCollectLocalTo` finish at the supplied destination with zero scale and alpha. All five work with UI and world targets, including renderer color flashes through a `MaterialPropertyBlock`, without expanding the 300-preset catalog.
 
+Build complete production UI transitions with the same one-line and builder APIs:
+
+```csharp
+toast.ToastShow();
+modalPanel.ModalOpen(backdrop, controls);
+dropdown.DropdownOpen(entries);
+outgoingTab.TabSwitchTo(incomingTab);
+```
+
+Toast, modal, tooltip, dropdown, and tab operations coordinate anchored position, scale, alpha, and optional child staggering through one `TweenHandle`. They preserve authored UI baselines, support interruption and rewind, and remain semantic operations rather than registered presets.
+
 ## Preset browser
 
 Open **Tools > Tween Helper > Preset Browser** to search and filter all registered presets and collection animations. Select an entry to inspect its metadata and fluent API example, then use **Preview** to play it on the isolated cube stage inside the browser. The preview never reads from or modifies the active scene.
@@ -134,6 +145,7 @@ No settings asset is required. TweenHelper uses safe in-memory defaults when `Re
 - [Staggered collections](Documentation/StaggeredCollections.md)
 - [Destination-aware motion](Documentation/DestinationMotion.md)
 - [Gameplay feedback sequences](Documentation/FeedbackSequences.md)
+- [Production UI sequences](Documentation/UISequences.md)
 - [Preset catalog](Documentation/PresetCatalog.md)
 
 ## Licensing

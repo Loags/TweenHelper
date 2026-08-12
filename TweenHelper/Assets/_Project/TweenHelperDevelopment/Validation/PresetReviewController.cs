@@ -25,6 +25,7 @@ namespace LB.TweenHelper.Demo
             StaggerVariant,
             DestinationMotion,
             FeedbackSequence,
+            UISequence,
             Preset
         }
 
@@ -36,7 +37,8 @@ namespace LB.TweenHelper.Demo
             Grid,
             LoadingDots,
             DestinationWorld,
-            DestinationUi
+            DestinationUi,
+            UISequence
         }
 
         private enum CollectionReviewKind
@@ -79,6 +81,19 @@ namespace LB.TweenHelper.Demo
             PickupCollect
         }
 
+        private enum UISequenceReviewKind
+        {
+            ToastShow,
+            ToastHide,
+            ModalOpen,
+            ModalClose,
+            TooltipShow,
+            TooltipHide,
+            DropdownOpen,
+            DropdownClose,
+            TabSwitch
+        }
+
         private enum ReviewFilter
         {
             All,
@@ -97,10 +112,12 @@ namespace LB.TweenHelper.Demo
             public CollectionReviewKind CollectionKind;
             public DestinationReviewKind DestinationKind;
             public FeedbackReviewKind FeedbackKind;
+            public UISequenceReviewKind UISequenceKind;
 
             public bool UsesUiTarget => Preview == PreviewKind.Ui;
             public bool UsesCollectionPreview => Preview == PreviewKind.List || Preview == PreviewKind.Grid || Preview == PreviewKind.LoadingDots;
             public bool UsesDestinationPreview => Preview == PreviewKind.DestinationWorld || Preview == PreviewKind.DestinationUi;
+            public bool UsesUISequencePreview => Preview == PreviewKind.UISequence;
         }
 
         private readonly struct TargetSnapshot
@@ -187,6 +204,20 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private RectTransform destinationUiEndMarker;
         [SerializeField] private GameObject destinationUiCurvedPath;
 
+        [Header("UI Sequence Preview")]
+        [SerializeField] private GameObject uiSequencePreviewRoot;
+        [SerializeField] private GameObject toastSequenceTarget;
+        [SerializeField] private GameObject modalSequenceGroup;
+        [SerializeField] private GameObject modalSequenceBackdrop;
+        [SerializeField] private GameObject modalSequencePanel;
+        [SerializeField] private GameObject[] modalSequenceControls;
+        [SerializeField] private GameObject tooltipSequenceTarget;
+        [SerializeField] private GameObject dropdownSequencePanel;
+        [SerializeField] private GameObject[] dropdownSequenceEntries;
+        [SerializeField] private GameObject tabSequenceGroup;
+        [SerializeField] private GameObject tabSequenceOutgoing;
+        [SerializeField] private GameObject tabSequenceIncoming;
+
         [Header("Information")]
         [SerializeField] private TMP_Text itemNameText;
         [SerializeField] private TMP_Text descriptionText;
@@ -216,6 +247,15 @@ namespace LB.TweenHelper.Demo
         private TargetSnapshot[] _loadingDotSnapshots;
         private TargetSnapshot _destinationWorldSnapshot;
         private TargetSnapshot _destinationUiSnapshot;
+        private TargetSnapshot _toastSequenceSnapshot;
+        private TargetSnapshot _modalSequenceBackdropSnapshot;
+        private TargetSnapshot _modalSequencePanelSnapshot;
+        private TargetSnapshot[] _modalSequenceControlSnapshots;
+        private TargetSnapshot _tooltipSequenceSnapshot;
+        private TargetSnapshot _dropdownSequencePanelSnapshot;
+        private TargetSnapshot[] _dropdownSequenceEntrySnapshots;
+        private TargetSnapshot _tabSequenceOutgoingSnapshot;
+        private TargetSnapshot _tabSequenceIncomingSnapshot;
         private TweenHandle _activeTween;
         private Coroutine _delayedReplay;
         private ReviewFilter _activeFilter;
@@ -232,6 +272,15 @@ namespace LB.TweenHelper.Demo
             _loadingDotSnapshots = CaptureTargets(loadingDotTargets);
             _destinationWorldSnapshot = TargetSnapshot.Capture(destinationWorldTarget);
             _destinationUiSnapshot = TargetSnapshot.Capture(destinationUiTarget);
+            _toastSequenceSnapshot = TargetSnapshot.Capture(toastSequenceTarget);
+            _modalSequenceBackdropSnapshot = TargetSnapshot.Capture(modalSequenceBackdrop);
+            _modalSequencePanelSnapshot = TargetSnapshot.Capture(modalSequencePanel);
+            _modalSequenceControlSnapshots = CaptureTargets(modalSequenceControls);
+            _tooltipSequenceSnapshot = TargetSnapshot.Capture(tooltipSequenceTarget);
+            _dropdownSequencePanelSnapshot = TargetSnapshot.Capture(dropdownSequencePanel);
+            _dropdownSequenceEntrySnapshots = CaptureTargets(dropdownSequenceEntries);
+            _tabSequenceOutgoingSnapshot = TargetSnapshot.Capture(tabSequenceOutgoing);
+            _tabSequenceIncomingSnapshot = TargetSnapshot.Capture(tabSequenceIncoming);
             WireControls();
             BuildReviewItems();
             ShowCurrentItem();
@@ -314,6 +363,16 @@ namespace LB.TweenHelper.Demo
             AddFeedbackSequence(FeedbackReviewKind.PickupCollect, "PickupCollectTo 3D", "Punches, arcs, shrinks, and fades into an exact world-space collection destination.", PreviewKind.DestinationWorld);
             AddFeedbackSequence(FeedbackReviewKind.PickupCollect, "PickupCollectLocalTo UI", "Punches, arcs, shrinks, and fades into an exact anchored collection destination.", PreviewKind.DestinationUi);
 
+            AddUISequence(UISequenceReviewKind.ToastShow, "Slides, fades, overshoots, and settles a toast on its exact authored state.");
+            AddUISequence(UISequenceReviewKind.ToastHide, "Anticipates before sliding and fading a toast out of view.");
+            AddUISequence(UISequenceReviewKind.ModalOpen, "Fades the backdrop, opens the panel, and staggers controls into view.");
+            AddUISequence(UISequenceReviewKind.ModalClose, "Staggers controls out before dismissing the panel and backdrop.");
+            AddUISequence(UISequenceReviewKind.TooltipShow, "Subtly raises, scales, and fades a tooltip into view.");
+            AddUISequence(UISequenceReviewKind.TooltipHide, "Moves and fades a tooltip out with restrained scale motion.");
+            AddUISequence(UISequenceReviewKind.DropdownOpen, "Expands a dropdown from its pivot and staggers its entries into view.");
+            AddUISequence(UISequenceReviewKind.DropdownClose, "Staggers entries out and compresses the dropdown toward its pivot.");
+            AddUISequence(UISequenceReviewKind.TabSwitch, "Overlaps outgoing and incoming tab content while preserving both authored positions.");
+
             TweenPresetRegistry.Refresh();
             foreach (ITweenPreset preset in TweenPresetRegistry.Presets.OrderBy(item => item.PresetName, StringComparer.Ordinal))
             {
@@ -393,6 +452,19 @@ namespace LB.TweenHelper.Demo
             });
         }
 
+        private void AddUISequence(UISequenceReviewKind kind, string description)
+        {
+            _allItems.Add(new ReviewItem
+            {
+                Id = "UISequence:" + kind,
+                Name = kind == UISequenceReviewKind.TabSwitch ? "Tab Switch" : SplitPascalCase(kind.ToString()),
+                Description = description,
+                Kind = ReviewKind.UISequence,
+                Preview = PreviewKind.UISequence,
+                UISequenceKind = kind
+            });
+        }
+
         public void ReplayCurrent()
         {
             if (_items.Count == 0) return;
@@ -409,6 +481,12 @@ namespace LB.TweenHelper.Demo
                 _activeTween = CurrentItem.Kind == ReviewKind.FeedbackSequence
                     ? PlayFeedbackSequence(CurrentItem.FeedbackKind)
                     : PlayDestinationMotion(CurrentItem.DestinationKind);
+                return;
+            }
+
+            if (CurrentItem.UsesUISequencePreview)
+            {
+                _activeTween = PlayUISequence(CurrentItem.UISequenceKind);
                 return;
             }
 
@@ -510,6 +588,7 @@ namespace LB.TweenHelper.Demo
             collectionPreviewRoot.SetActive(false);
             destinationWorldRoot.SetActive(false);
             destinationUiRoot.SetActive(false);
+            uiSequencePreviewRoot.SetActive(false);
             itemNameText.text = "No animations";
             descriptionText.text = "No animations currently match this review filter.";
             categoryText.text = "FILTER EMPTY";
@@ -718,6 +797,33 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private TweenHandle PlayUISequence(UISequenceReviewKind kind)
+        {
+            switch (kind)
+            {
+                case UISequenceReviewKind.ToastShow:
+                    return toastSequenceTarget.ToastShow(UISequenceDirection.Up, 70f, 0.56f);
+                case UISequenceReviewKind.ToastHide:
+                    return toastSequenceTarget.ToastHide(UISequenceDirection.Up, 70f, 0.42f);
+                case UISequenceReviewKind.ModalOpen:
+                    return modalSequencePanel.ModalOpen(modalSequenceBackdrop, modalSequenceControls, 0.72f, 0.08f);
+                case UISequenceReviewKind.ModalClose:
+                    return modalSequencePanel.ModalClose(modalSequenceBackdrop, modalSequenceControls, 0.62f, 0.08f);
+                case UISequenceReviewKind.TooltipShow:
+                    return tooltipSequenceTarget.TooltipShow(UISequenceDirection.Up, 24f, 0.4f);
+                case UISequenceReviewKind.TooltipHide:
+                    return tooltipSequenceTarget.TooltipHide(UISequenceDirection.Up, 24f, 0.32f);
+                case UISequenceReviewKind.DropdownOpen:
+                    return dropdownSequencePanel.DropdownOpen(dropdownSequenceEntries, 0.58f, 0.065f);
+                case UISequenceReviewKind.DropdownClose:
+                    return dropdownSequencePanel.DropdownClose(dropdownSequenceEntries, 0.48f, 0.065f);
+                case UISequenceReviewKind.TabSwitch:
+                    return tabSequenceOutgoing.TabSwitchTo(tabSequenceIncoming, UISequenceDirection.Left, 120f, 0.62f);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown UI-sequence review item.");
+            }
+        }
+
         private void ScheduleDelayedReplay()
         {
             CancelDelayedReplay();
@@ -753,6 +859,15 @@ namespace LB.TweenHelper.Demo
             KillTargets(loadingDotTargets);
             KillTargetTweens(destinationWorldTarget);
             KillTargetTweens(destinationUiTarget);
+            KillTargetTweens(toastSequenceTarget);
+            KillTargetTweens(modalSequencePanel);
+            KillTargetTweens(modalSequenceBackdrop);
+            KillTargets(modalSequenceControls);
+            KillTargetTweens(tooltipSequenceTarget);
+            KillTargetTweens(dropdownSequencePanel);
+            KillTargets(dropdownSequenceEntries);
+            KillTargetTweens(tabSequenceOutgoing);
+            KillTargetTweens(tabSequenceIncoming);
         }
 
         private void ResetTargets()
@@ -764,6 +879,15 @@ namespace LB.TweenHelper.Demo
             ApplySnapshots(loadingDotTargets, _loadingDotSnapshots);
             _destinationWorldSnapshot.Apply(destinationWorldTarget);
             _destinationUiSnapshot.Apply(destinationUiTarget);
+            _toastSequenceSnapshot.Apply(toastSequenceTarget);
+            _modalSequenceBackdropSnapshot.Apply(modalSequenceBackdrop);
+            _modalSequencePanelSnapshot.Apply(modalSequencePanel);
+            ApplySnapshots(modalSequenceControls, _modalSequenceControlSnapshots);
+            _tooltipSequenceSnapshot.Apply(tooltipSequenceTarget);
+            _dropdownSequencePanelSnapshot.Apply(dropdownSequencePanel);
+            ApplySnapshots(dropdownSequenceEntries, _dropdownSequenceEntrySnapshots);
+            _tabSequenceOutgoingSnapshot.Apply(tabSequenceOutgoing);
+            _tabSequenceIncomingSnapshot.Apply(tabSequenceIncoming);
         }
 
         private void ApplyPreviewVisibility(PreviewKind preview)
@@ -777,6 +901,22 @@ namespace LB.TweenHelper.Demo
             loadingDotsPreviewGroup.SetActive(preview == PreviewKind.LoadingDots);
             destinationWorldRoot.SetActive(preview == PreviewKind.DestinationWorld);
             destinationUiRoot.SetActive(preview == PreviewKind.DestinationUi);
+            bool showUISequence = preview == PreviewKind.UISequence;
+            uiSequencePreviewRoot.SetActive(showUISequence);
+            if (showUISequence) ConfigureUISequencePreview(CurrentItem.UISequenceKind);
+        }
+
+        private void ConfigureUISequencePreview(UISequenceReviewKind kind)
+        {
+            bool showToast = kind == UISequenceReviewKind.ToastShow || kind == UISequenceReviewKind.ToastHide;
+            bool showModal = kind == UISequenceReviewKind.ModalOpen || kind == UISequenceReviewKind.ModalClose;
+            bool showTooltip = kind == UISequenceReviewKind.TooltipShow || kind == UISequenceReviewKind.TooltipHide;
+            bool showDropdown = kind == UISequenceReviewKind.DropdownOpen || kind == UISequenceReviewKind.DropdownClose;
+            toastSequenceTarget.SetActive(showToast);
+            modalSequenceGroup.SetActive(showModal);
+            tooltipSequenceTarget.SetActive(showTooltip);
+            dropdownSequencePanel.SetActive(showDropdown);
+            tabSequenceGroup.SetActive(kind == UISequenceReviewKind.TabSwitch);
         }
 
         private void ConfigureDestinationGuides(ReviewItem item)
@@ -850,7 +990,20 @@ namespace LB.TweenHelper.Demo
             if (item.Kind == ReviewKind.StaggerVariant) return "STAGGER VARIANT";
             if (item.Kind == ReviewKind.DestinationMotion) return item.Preview == PreviewKind.DestinationUi ? "DESTINATION MOTION / UI" : "DESTINATION MOTION / 3D";
             if (item.Kind == ReviewKind.FeedbackSequence) return item.Preview == PreviewKind.DestinationUi ? "GAMEPLAY FEEDBACK / UI" : "GAMEPLAY FEEDBACK / 3D";
+            if (item.Kind == ReviewKind.UISequence) return "PRODUCTION UI SEQUENCE";
             return item.UsesUiTarget ? "2D / UI PRESET" : "3D / WORLD PRESET";
+        }
+
+        private static string SplitPascalCase(string value)
+        {
+            var result = new System.Text.StringBuilder(value.Length + 4);
+            for (int i = 0; i < value.Length; i++)
+            {
+                if (i > 0 && char.IsUpper(value[i])) result.Append(' ');
+                result.Append(value[i]);
+            }
+
+            return result.ToString();
         }
 
         private static TargetSnapshot[] CaptureTargets(GameObject[] targets)

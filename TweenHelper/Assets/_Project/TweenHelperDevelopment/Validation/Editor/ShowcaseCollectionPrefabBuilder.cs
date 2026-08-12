@@ -39,15 +39,29 @@ namespace LB.TweenHelper.Editor
                 SerializedProperty targetsProperty = serializedController.FindProperty("collectionTargets");
                 SerializedProperty destinationsTabProperty = serializedController.FindProperty("destinationsTabButton");
                 SerializedProperty feedbackTabProperty = serializedController.FindProperty("feedbackTabButton");
+                SerializedProperty uiSequencesTabProperty = serializedController.FindProperty("uiSequencesTabButton");
                 SerializedProperty destinationRootProperty = serializedController.FindProperty("destinationPreviewRoot");
                 SerializedProperty destinationTargetProperty = serializedController.FindProperty("destinationTarget");
                 SerializedProperty destinationStartProperty = serializedController.FindProperty("destinationStartMarker");
                 SerializedProperty destinationEndProperty = serializedController.FindProperty("destinationEndMarker");
                 SerializedProperty destinationPathProperty = serializedController.FindProperty("destinationCurvedPath");
+                SerializedProperty uiSequenceRootProperty = serializedController.FindProperty("uiSequencePreviewRoot");
+                SerializedProperty toastSequenceProperty = serializedController.FindProperty("toastSequenceTarget");
+                SerializedProperty modalSequenceGroupProperty = serializedController.FindProperty("modalSequenceGroup");
+                SerializedProperty modalBackdropProperty = serializedController.FindProperty("modalSequenceBackdrop");
+                SerializedProperty modalPanelProperty = serializedController.FindProperty("modalSequencePanel");
+                SerializedProperty modalControlsProperty = serializedController.FindProperty("modalSequenceControls");
+                SerializedProperty tooltipSequenceProperty = serializedController.FindProperty("tooltipSequenceTarget");
+                SerializedProperty dropdownPanelProperty = serializedController.FindProperty("dropdownSequencePanel");
+                SerializedProperty dropdownEntriesProperty = serializedController.FindProperty("dropdownSequenceEntries");
+                SerializedProperty tabSequenceGroupProperty = serializedController.FindProperty("tabSequenceGroup");
+                SerializedProperty tabOutgoingProperty = serializedController.FindProperty("tabSequenceOutgoing");
+                SerializedProperty tabIncomingProperty = serializedController.FindProperty("tabSequenceIncoming");
                 bool collectionsConfigured = tabProperty.objectReferenceValue != null && rootProperty.objectReferenceValue != null && targetsProperty.arraySize >= 9;
                 bool destinationsConfigured = destinationsTabProperty.objectReferenceValue != null && destinationRootProperty.objectReferenceValue != null && destinationTargetProperty.objectReferenceValue != null && destinationStartProperty.objectReferenceValue != null && destinationEndProperty.objectReferenceValue != null && destinationPathProperty.objectReferenceValue != null;
                 bool feedbackConfigured = feedbackTabProperty.objectReferenceValue != null;
-                bool alreadyConfigured = collectionsConfigured && destinationsConfigured && feedbackConfigured;
+                bool uiSequencesConfigured = uiSequencesTabProperty.objectReferenceValue != null && uiSequenceRootProperty.objectReferenceValue != null && toastSequenceProperty.objectReferenceValue != null && modalSequenceGroupProperty.objectReferenceValue != null && modalBackdropProperty.objectReferenceValue != null && modalPanelProperty.objectReferenceValue != null && modalControlsProperty.arraySize >= 3 && tooltipSequenceProperty.objectReferenceValue != null && dropdownPanelProperty.objectReferenceValue != null && dropdownEntriesProperty.arraySize >= 4 && tabSequenceGroupProperty.objectReferenceValue != null && tabOutgoingProperty.objectReferenceValue != null && tabIncomingProperty.objectReferenceValue != null;
+                bool alreadyConfigured = collectionsConfigured && destinationsConfigured && feedbackConfigured && uiSequencesConfigured;
                 if (alreadyConfigured && !force) return;
 
                 Button collectionsTab = tabProperty.objectReferenceValue as Button;
@@ -113,6 +127,17 @@ namespace LB.TweenHelper.Editor
                     feedbackTabProperty.objectReferenceValue = feedbackTab;
                 }
 
+                Button uiSequencesTab = uiSequencesTabProperty.objectReferenceValue as Button;
+                if (uiSequencesTab == null)
+                {
+                    var recipesTab = (Button)serializedController.FindProperty("recipesTabButton").objectReferenceValue;
+                    GameObject tabObject = Object.Instantiate(recipesTab.gameObject, recipesTab.transform.parent);
+                    tabObject.name = "UISequencesTab";
+                    uiSequencesTab = tabObject.GetComponent<Button>();
+                    tabObject.GetComponentInChildren<TMP_Text>().text = "UI SEQUENCES";
+                    uiSequencesTabProperty.objectReferenceValue = uiSequencesTab;
+                }
+
                 var recipesTabButton = (Button)serializedController.FindProperty("recipesTabButton").objectReferenceValue;
                 var presetsTabButton = (Button)serializedController.FindProperty("presetsTabButton").objectReferenceValue;
                 LayoutTab(recipesTabButton, 0);
@@ -120,6 +145,7 @@ namespace LB.TweenHelper.Editor
                 LayoutTab(collectionsTab, 2);
                 LayoutTab(destinationsTab, 3);
                 LayoutTab(feedbackTab, 4);
+                LayoutTab(uiSequencesTab, 5);
 
                 GameObject destinationRoot = destinationRootProperty.objectReferenceValue as GameObject;
                 if (destinationRoot == null)
@@ -132,6 +158,26 @@ namespace LB.TweenHelper.Editor
                     destinationStartProperty.objectReferenceValue = startMarker;
                     destinationEndProperty.objectReferenceValue = endMarker;
                     destinationPathProperty.objectReferenceValue = curvedPath;
+                }
+
+                GameObject uiSequenceRoot = uiSequenceRootProperty.objectReferenceValue as GameObject;
+                if (uiSequenceRoot == null)
+                {
+                    var presetImage = (Image)serializedController.FindProperty("presetImage").objectReferenceValue;
+                    var previewText = (TextMeshProUGUI)serializedController.FindProperty("animatedText").objectReferenceValue;
+                    UISequencePreview preview = CreateUISequencePreview(presetImage.transform.parent, previewText);
+                    uiSequenceRootProperty.objectReferenceValue = preview.Root;
+                    toastSequenceProperty.objectReferenceValue = preview.Toast;
+                    modalSequenceGroupProperty.objectReferenceValue = preview.ModalGroup;
+                    modalBackdropProperty.objectReferenceValue = preview.ModalBackdrop;
+                    modalPanelProperty.objectReferenceValue = preview.ModalPanel;
+                    AssignArray(modalControlsProperty, preview.ModalControls);
+                    tooltipSequenceProperty.objectReferenceValue = preview.Tooltip;
+                    dropdownPanelProperty.objectReferenceValue = preview.DropdownPanel;
+                    AssignArray(dropdownEntriesProperty, preview.DropdownEntries);
+                    tabSequenceGroupProperty.objectReferenceValue = preview.TabGroup;
+                    tabOutgoingProperty.objectReferenceValue = preview.TabOutgoing;
+                    tabIncomingProperty.objectReferenceValue = preview.TabIncoming;
                 }
 
                 serializedController.ApplyModifiedPropertiesWithoutUndo();
@@ -232,6 +278,77 @@ namespace LB.TweenHelper.Editor
             return root;
         }
 
+        private static UISequencePreview CreateUISequencePreview(Transform parent, TextMeshProUGUI fontSource)
+        {
+            var root = new GameObject("UISequencePreview", typeof(RectTransform));
+            root.transform.SetParent(parent, false);
+            var rootRect = (RectTransform)root.transform;
+            rootRect.anchorMin = Vector2.zero;
+            rootRect.anchorMax = Vector2.one;
+            rootRect.offsetMin = Vector2.zero;
+            rootRect.offsetMax = Vector2.zero;
+
+            GameObject toast = CreateSequencePanel("Toast", root.transform, fontSource, "SAVED SUCCESSFULLY", new Vector2(0f, 72f), new Vector2(430f, 82f), new Color(0.08f, 0.55f, 0.82f, 1f), 21f);
+
+            GameObject modalGroup = CreateSequenceGroup("Modal Preview", root.transform);
+            GameObject modalBackdrop = CreateSequencePanel("Modal Backdrop", modalGroup.transform, fontSource, string.Empty, new Vector2(0f, 72f), new Vector2(700f, 370f), new Color(0.01f, 0.02f, 0.04f, 0.78f), 1f);
+            GameObject modalPanel = CreateSequencePanel("Modal Panel", modalGroup.transform, fontSource, "CONFIRM ACTION", new Vector2(0f, 72f), new Vector2(450f, 250f), new Color(0.08f, 0.16f, 0.28f, 1f), 25f);
+            var modalControls = new GameObject[3];
+            string[] modalLabels = { "CANCEL", "DETAILS", "CONFIRM" };
+            for (int i = 0; i < modalControls.Length; i++)
+            {
+                modalControls[i] = CreateSequencePanel($"Modal Control {i + 1}", modalPanel.transform, fontSource, modalLabels[i], new Vector2((i - 1) * 126f, -64f), new Vector2(112f, 52f), i == 2 ? new Color(0.1f, 0.58f, 0.95f, 1f) : new Color(0.14f, 0.24f, 0.38f, 1f), 14f);
+            }
+
+            GameObject tooltip = CreateSequencePanel("Tooltip", root.transform, fontSource, "Helpful context appears here", new Vector2(0f, 72f), new Vector2(370f, 82f), new Color(0.12f, 0.18f, 0.28f, 1f), 18f);
+
+            GameObject dropdownPanel = CreateSequencePanel("Dropdown Panel", root.transform, fontSource, string.Empty, new Vector2(0f, 205f), new Vector2(360f, 280f), new Color(0.07f, 0.13f, 0.22f, 1f), 1f);
+            ((RectTransform)dropdownPanel.transform).pivot = new Vector2(0.5f, 1f);
+            var dropdownEntries = new GameObject[4];
+            string[] dropdownLabels = { "NEW PROJECT", "OPEN PROJECT", "SETTINGS", "QUIT" };
+            for (int i = 0; i < dropdownEntries.Length; i++)
+            {
+                dropdownEntries[i] = CreateSequencePanel($"Dropdown Entry {i + 1}", dropdownPanel.transform, fontSource, dropdownLabels[i], new Vector2(0f, 98f - i * 62f), new Vector2(318f, 48f), new Color(0.12f, 0.24f, 0.39f, 1f), 15f);
+            }
+
+            GameObject tabGroup = CreateSequenceGroup("Tab Switch Preview", root.transform);
+            GameObject tabIncoming = CreateSequencePanel("Incoming Tab", tabGroup.transform, fontSource, "INVENTORY\n\n12 ITEMS READY", new Vector2(0f, 72f), new Vector2(520f, 250f), new Color(0.12f, 0.38f, 0.32f, 1f), 23f);
+            GameObject tabOutgoing = CreateSequencePanel("Outgoing Tab", tabGroup.transform, fontSource, "CHARACTER\n\nLEVEL 24", new Vector2(0f, 72f), new Vector2(520f, 250f), new Color(0.1f, 0.3f, 0.55f, 1f), 23f);
+
+            toast.SetActive(false);
+            modalGroup.SetActive(false);
+            tooltip.SetActive(false);
+            dropdownPanel.SetActive(false);
+            tabGroup.SetActive(false);
+            root.SetActive(false);
+            return new UISequencePreview(root, toast, modalGroup, modalBackdrop, modalPanel, modalControls, tooltip, dropdownPanel, dropdownEntries, tabGroup, tabOutgoing, tabIncoming);
+        }
+
+        private static GameObject CreateSequenceGroup(string name, Transform parent)
+        {
+            var group = new GameObject(name, typeof(RectTransform));
+            group.transform.SetParent(parent, false);
+            var rect = (RectTransform)group.transform;
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            return group;
+        }
+
+        private static GameObject CreateSequencePanel(string name, Transform parent, TextMeshProUGUI fontSource, string labelValue, Vector2 anchoredPosition, Vector2 size, Color color, float fontSize)
+        {
+            var panel = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(CanvasGroup));
+            panel.transform.SetParent(parent, false);
+            var rect = (RectTransform)panel.transform;
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = anchoredPosition;
+            rect.sizeDelta = size;
+            panel.GetComponent<Image>().color = color;
+            if (!string.IsNullOrEmpty(labelValue)) CreateLabel(panel.transform, fontSource, labelValue, fontSize, Vector2.zero, Vector2.one, new Vector2(16f, 10f), new Vector2(-16f, -10f));
+            return panel;
+        }
+
         private static RectTransform CreateDestinationMarker(Transform parent, TextMeshProUGUI fontSource, string name, Vector2 position, string labelValue, Color color)
         {
             var marker = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
@@ -263,6 +380,44 @@ namespace LB.TweenHelper.Editor
             label.alignment = TextAlignmentOptions.Center;
             label.color = Color.white;
             label.raycastTarget = false;
+        }
+
+        private static void AssignArray(SerializedProperty property, GameObject[] values)
+        {
+            property.arraySize = values.Length;
+            for (int i = 0; i < values.Length; i++) property.GetArrayElementAtIndex(i).objectReferenceValue = values[i];
+        }
+
+        private readonly struct UISequencePreview
+        {
+            public readonly GameObject Root;
+            public readonly GameObject Toast;
+            public readonly GameObject ModalGroup;
+            public readonly GameObject ModalBackdrop;
+            public readonly GameObject ModalPanel;
+            public readonly GameObject[] ModalControls;
+            public readonly GameObject Tooltip;
+            public readonly GameObject DropdownPanel;
+            public readonly GameObject[] DropdownEntries;
+            public readonly GameObject TabGroup;
+            public readonly GameObject TabOutgoing;
+            public readonly GameObject TabIncoming;
+
+            public UISequencePreview(GameObject root, GameObject toast, GameObject modalGroup, GameObject modalBackdrop, GameObject modalPanel, GameObject[] modalControls, GameObject tooltip, GameObject dropdownPanel, GameObject[] dropdownEntries, GameObject tabGroup, GameObject tabOutgoing, GameObject tabIncoming)
+            {
+                Root = root;
+                Toast = toast;
+                ModalGroup = modalGroup;
+                ModalBackdrop = modalBackdrop;
+                ModalPanel = modalPanel;
+                ModalControls = modalControls;
+                Tooltip = tooltip;
+                DropdownPanel = dropdownPanel;
+                DropdownEntries = dropdownEntries;
+                TabGroup = tabGroup;
+                TabOutgoing = tabOutgoing;
+                TabIncoming = tabIncoming;
+            }
         }
     }
 }

@@ -4,15 +4,16 @@ This sample contains a prefab-authored 2D UI showcase and the full 3D preset sho
 
 Before opening the scenes, import TextMesh Pro Essential Resources. The 3D scene materials are authored for the Universal Render Pipeline; the 2D scene and TweenHelper runtime are render-pipeline independent.
 
-The 2D scene has five runtime tabs:
+The 2D scene has six runtime tabs:
 
 - **UI Recipes** demonstrates all 13 semantic UI helpers on Image and Text targets.
 - **2D Preset Library** provides searchable, family-filtered access to the 198 presets that use UI-suitable position, scale, color/alpha, and Z-rotation animation.
 - **Collections** demonstrates `ListStaggerIn`, `ListStaggerOut`, `GridWave`, `GridRipple`, and `LoadingDots` on an authored nine-item preview. For the two list recipes, the existing target dropdown becomes a five-mode stagger-order selector.
 - **Destinations** demonstrates the anchored-position versions of Arc, Bezier, Hop, Spring, and Magnetic Snap between prefab-authored start and destination markers.
 - **Feedback** demonstrates Error Reject, Damage Hit, Success Confirm, Reward Reveal, and Pickup Collect on the shared authored UI preview.
+- **UI Sequences** demonstrates Toast Show/Hide, Modal Open/Close, Tooltip Show/Hide, Dropdown Open/Close, and Tab Switch on dedicated authored interface hierarchies.
 
-Select a recipe, destination motion, feedback sequence, or preset to preview it, change its relevant target or order, replay or reset it, and copy its typed fluent API example. The showcase controller only configures and instantiates authored UI prefabs from `Prefabs/UI`; it does not construct UI hierarchies at runtime.
+Select a recipe, destination motion, feedback sequence, production UI sequence, or preset to preview it, change its relevant target or order, replay or reset it, and copy its typed fluent API example. The showcase controller only configures and instantiates authored UI prefabs from `Prefabs/UI`; it does not construct UI hierarchies at runtime.
 
 World-scale movement presets use an explicit strength override in the 2D canvas preview so their motion remains visible in pixel space. The displayed and copied API example includes that override.
 
