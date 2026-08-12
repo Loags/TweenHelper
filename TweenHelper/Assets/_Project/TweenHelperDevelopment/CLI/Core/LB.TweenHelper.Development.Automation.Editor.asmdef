@@ -1,0 +1,21 @@
+{
+    "name": "LB.TweenHelper.Development.Automation.Editor",
+    "rootNamespace": "LB.TweenHelper.Automation.Editor",
+    "references": [
+        "LB.TweenHelper.Runtime",
+        "DOTween.Modules",
+        "Unity.TextMeshPro",
+        "Unity.ugui"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

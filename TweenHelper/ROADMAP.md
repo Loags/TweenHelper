@@ -10,6 +10,8 @@ The Unity Asset Store Submission Guidelines are the release authority. TweenHelp
 
 The planned Unity Pipeline/UCodex integration has its own handoff roadmap at [Assets/_Project/TweenHelperDevelopment/Documentation/TweenHelperPipelineCliRoadmap.md](Assets/_Project/TweenHelperDevelopment/Documentation/TweenHelperPipelineCliRoadmap.md). It covers the repository-only developer commands and the optional customer-facing Editor integration without changing the base package dependency boundary.
 
+The post-CLI Serialized Animation Recipes and `TweenPlayer` feature has a separate gated roadmap at [Assets/_Project/TweenHelperDevelopment/Documentation/SerializedAnimationRecipesTweenPlayerRoadmap.md](Assets/_Project/TweenHelperDevelopment/Documentation/SerializedAnimationRecipesTweenPlayerRoadmap.md). It must remain in its wait state until the CLI foundation is accepted and a mandatory post-implementation audit, roadmap review, agent-command design pass, and final roadmap validation are complete.
+
 ## Confirmed release baseline
 
 - Publisher: `Loags`

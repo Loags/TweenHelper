@@ -1,0 +1,21 @@
+{
+    "name": "LB.TweenHelper.Development.Pipeline.Editor",
+    "rootNamespace": "LB.TweenHelper.Pipeline.Editor",
+    "references": [
+        "LB.TweenHelper.Development.Automation.Editor",
+        "Unity.Pipeline",
+        "Unity.Pipeline.Editor",
+        "Unity.Nuget.Newtonsoft-Json"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

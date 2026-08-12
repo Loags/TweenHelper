@@ -2,9 +2,13 @@
 
 - Status: Reviewed implementation roadmap and agent handoff document
 - Last reviewed: 2026-08-12
-- Scope: Unity Pipeline CLI commands, UCodex workflows, TweenHelper planning, sandbox preview, verification, and gated authoring
+- Scope: Unity Pipeline CLI commands, UCodex workflows, TweenHelper planning, sandbox preview, verification, gated authoring, and developer-only local telemetry
 
 This document is the implementation plan for exposing TweenHelper through Unity's local Pipeline command surface. It deliberately separates repository-only developer commands from generic commands that may eventually ship for TweenHelper users.
+
+The parallel [TweenHelper Pipeline CLI Developer Telemetry Roadmap](TweenHelperPipelineCliTelemetryRoadmap.md) defines an optional repository-only observation layer for these commands. Telemetry is not part of the base artifact or future public companion and does not weaken the privacy or packaging boundaries in this document.
+
+Persisted recipe and `TweenPlayer` authoring has a two-way dependency handoff documented in [SerializedAnimationRecipesTweenPlayerRoadmap.md](SerializedAnimationRecipesTweenPlayerRoadmap.md). CLI Phases 0–5 must be accepted first; the implemented CLI is then audited and the serialized-authoring roadmap is revalidated before feature implementation. After the public recipe/player representation exists, this roadmap resumes Phase 6 and completes persisted CLI authoring. This ordering prevents either roadmap from waiting on the other indefinitely.
 
 ## Review verdict and binding decisions
 
@@ -18,6 +22,7 @@ The integration idea is viable, and the developer-first approach is correct. Imp
 6. **Sandbox preview and verification.** Public v1 must animate only owned, isolated preview objects. It must not tween the user's live scene or prefab target; current UI helpers can add serialized cache components, and ordinary Transform changes can dirty a scene even when values are restored.
 7. **Start with a preset MVP.** Registered built-in presets on one explicit target are the first executable plan slice. Fluent graphs, collections, destination motion, feedback, and production UI sequences are added only after each family has descriptors, a mutation footprint, and a verification oracle.
 8. **Keep persistence gated.** `tween_helper_apply_plan` remains unavailable until TweenHelper has a stable serialized recipe/component representation, an enforceable preflight token, idempotency behavior, and a rollback story.
+9. **Keep telemetry developer-only, local, and explicit.** Repository tooling may record bounded allowlisted metadata for command attempts only when a maintainer opts in. It must not retain raw payloads, create external traffic, affect command outcomes, or enter a customer artifact. Broader all-Pipeline HTTP observation is a separate opt-in because Pipeline's current transaction source stores raw request/response JSON.
 
 The likely public distribution is a separate Unity-6-compatible companion. UPM is technically preferable because it can declare package dependencies and can support multiple packages per product, but it requires the publisher's UPM enrollment and product decision. A second `.unitypackage` remains only a compatibility-tested fallback with manually disclosed dependencies. Neither option is a release commitment while Pipeline is experimental.
 
@@ -64,6 +69,7 @@ That evidence is time-scoped and must not be copied forward as proof for a later
 | Pipeline-neutral automation core | Future `Assets/Loags/TweenHelper/Editor/Automation` if it also benefits public Editor tooling | Every TweenHelper user | None | Yes, after API review |
 | Public Pipeline adapter | Separate companion root or UPM package, never the current base export root | Unity 6 users who install Pipeline | Required by companion, Editor-only | Yes, after compatibility and publishing proof |
 | Developer Pipeline adapter | `Assets/_Project/TweenHelperDevelopment/CLI` | Maintainers and agents | Pipeline plus test/validation tooling | No |
+| Developer telemetry | Code under `Assets/_Project/TweenHelperDevelopment/CLI/Telemetry`; local data under ignored `Library/TweenHelper/Telemetry` | Maintainers only, explicit opt-in | Developer adapter; optional sanitized Pipeline-log importer | No |
 | Validation assets and tests | `Assets/_Project/TweenHelperDevelopment` | Maintainers and CI-like local runs | Development-only | No |
 
 The public adapter must not reference development scenes, test assemblies, `AnimationResetAuditRunner`, private project callbacks, or project-specific folder assumptions. The developer adapter may call those systems, but it must not accidentally register project-only presets in the public catalog.
@@ -101,6 +107,8 @@ The normal agent sequence is:
 6. Start a bounded verification job, poll it with `job_status`, and use `job_cancel` if needed.
 7. Only after a public authoring representation exists, call `apply_plan` in dry-run mode to receive a short-lived preflight token, then call it again with that token and `confirm: true`.
 8. Verify the persisted representation again and return the canonical plan plus evidence.
+
+When explicitly enabled, developer telemetry observes this sequence as a side channel. It is never a prerequisite for a command, never supplies hidden plan/session state, and never changes the result returned to the caller.
 
 ## Proposed public command catalog
 
@@ -150,6 +158,11 @@ These commands are intentionally namespaced with `dev` and must remain under rep
 | `tween_helper_dev_run_tests` | Conditional wrapper; test execution and artifacts | Add only if a TweenHelper suite alias/report normalization materially improves the built-in Pipeline `run_tests`, `test_status`, and `cancel_tests` commands. Otherwise use the built-ins directly. |
 | `tween_helper_dev_collect_diagnostics` | Read-only, optional report output | Collect Editor state, package versions, assemblies, console logs, catalog hash, plan hash, and validation summaries without external upload. |
 | `tween_helper_dev_cleanup_sessions` | Restores temporary state | Dispose abandoned preview/verification sessions and report anything that could not be restored. |
+| `tween_helper_dev_telemetry_status` | Read-only | Report whether local telemetry is enabled, its exact handler/HTTP coverage, retention, dropped-event/write health, and the raw Pipeline-log risk warning. |
+| `tween_helper_dev_telemetry_query` | Read-only | Return a bounded cursor page of sanitized developer events using allowlisted filters. |
+| `tween_helper_dev_telemetry_summary` | Read-only | Aggregate command health, latency, typed issues, retries, workflow transitions, and cleanup outcomes for a bounded local window. |
+| `tween_helper_dev_telemetry_export` | Optional sanitized report under `Temp` | Export aggregates by default and event metadata only when explicitly requested. Never copy Pipeline raw logs. |
+| `tween_helper_dev_telemetry_clear` | Deletes only the resolved developer telemetry store | Require dry-run, explicit scope, matching store generation, and confirmation. It never deletes Pipeline-owned logs. |
 
 Developer commands may call existing validation code, but should not duplicate its logic. They should be thin Pipeline adapters over testable application services.
 
@@ -286,12 +299,13 @@ Do not silently translate unsupported options, ignore extra fields, or coerce on
 
 ## Architecture and assembly plan
 
-Keep the implementation in four separable parts:
+Keep the implementation in five separable parts:
 
 1. **Operation descriptors and domain services** - deterministic built-in catalog, target profiling, canonical plan building, validation, hashing, mutation footprints, verification oracles, and result models. These are Pipeline-neutral.
 2. **Editor execution/session services** - sandbox construction, tween ownership, manual-clock sampling, job state machines, cancellation, TTL cleanup, and safe observations. These may use UnityEditor but remain transport-neutral.
 3. **Unity/Pipeline adapter** - `[CliCommand]` entry points, command-specific `IStructuredCommandInput` DTOs, structured object-reference conversion, main-thread dispatch, result mapping, and nested `AuthoringResult` identities.
 4. **Developer orchestration adapter** - repository-only fixture, reset-audit, diagnostics, and optional test-suite services. It must never be referenced by a customer assembly.
+5. **Developer telemetry** - repository-only command wrappers, allowlisted event models, bounded local storage, queries/aggregates, and an optional sanitized Pipeline transaction importer. Public or otherwise shippable domain assemblies must not reference it.
 
 Do not make the UI-specific `PresetBrowserCatalog` the automation source of truth. Extract or introduce one descriptor provider that the browser and automation services can both consume. The provider must enumerate the 300 built-ins directly from the TweenHelper runtime assembly without mutating `TweenPresetRegistry` and must add non-preset descriptors explicitly.
 
@@ -316,9 +330,11 @@ Assets/_Project/TweenHelperDevelopment/
 |   |-- Commands/
 |   |-- PipelineModels/
 |   |-- Services/
+|   |-- Telemetry/                        # developer-only, off by default
 |   `-- LB.TweenHelper.Development.Pipeline.Editor.asmdef
 `-- Documentation/
-    `-- TweenHelperPipelineCliRoadmap.md
+    |-- TweenHelperPipelineCliRoadmap.md
+    `-- TweenHelperPipelineCliTelemetryRoadmap.md
 
 # Choose one companion container only after the packaging gate:
 Assets/Loags/TweenHelperPipeline/               # separate .unitypackage root
@@ -357,6 +373,8 @@ The installed Pipeline `0.3.1-exp.1` documentation and source establish the foll
 - `RuntimeOnly` hides a command from Editor discovery but does not make it unexecutable, so it is not a security boundary;
 - command integration tests use direct invocation plus an isolated HTTP server in ports `7850-7899`, never the live descriptor/production server range;
 - Pipeline's packaged test server/client types are test-only implementation facilities, not a shipping API. The pinned developer project may use them if its test assembly can reference them; otherwise reproduce the documented isolated-server pattern using public/protected APIs. No production assembly references `Unity.Pipeline.Tests.*`.
+- Pipeline `0.3.1-exp.1` can optionally write every authenticated `/api/exec` request/response transaction as raw JSON to `Logs/pipeline.log`, but it exposes no supported public transaction observer. That log is a sensitive diagnostic source, not the TweenHelper telemetry store.
+- Developer handler instrumentation is the authoritative source for semantic `tween_helper_*` timing/outcomes. Optional Pipeline-wide import must be separately enabled, sanitize through an allowlist in memory, distinguish unavailable timing/coverage, and never patch or reference Pipeline internals.
 
 Future agents must verify these APIs against the exact installed Pipeline version before coding. Do not copy method signatures from this document as if they were already part of the project's public API.
 
@@ -437,7 +455,8 @@ The TweenHelper command surface should be least-authority by default:
 
 - No arbitrary C# evaluation, shell execution, reflection-based method invocation supplied by the caller, or source-code rewriting.
 - No package installation, package updates, package removal, manifest edits, or project-setting changes from setup/status commands.
-- No telemetry, cloud upload, external logging, or automatic support submission.
+- No customer/product telemetry, cloud upload, external logging, or automatic support submission. Optional developer telemetry follows the separate telemetry roadmap: off by default, repository-only, local, bounded, and metadata-only.
+- Never enable Pipeline's raw request/response transaction log automatically. If a maintainer explicitly enables the optional all-Pipeline import source, warn that the Pipeline-owned source file remains raw even though TweenHelper events and exports are sanitized.
 - No automatic scene/prefab saving. A confirmed authoring command may leave a supported scene/prefab representation dirty and report that fact; saving is a separate explicit user action. Asset creation reports its unavoidable persistence behavior.
 - No writes outside an allowlisted project-relative authoring root.
 - No silent fallback from a requested target to a similarly named object.
@@ -473,33 +492,39 @@ Do not make the first public write operation generate arbitrary MonoBehaviour so
 
 ## Phased roadmap
 
+The developer telemetry roadmap is a parallel, non-blocking track. Its T0 contract aligns with CLI Phase 0; first-party handler recording starts only after Phase 1 has a shared command-entry path. Later CLI phases add allowlisted semantic dimensions for the features they introduce. Telemetry failure never replaces the authoritative phase tests or changes a command exit criterion.
+
 ### Phase 0 - Contract and compatibility proof
 
-- [ ] Record the exact compatibility tuple for the development adapter: TweenHelper, Unity, Pipeline, DOTween, UI/TextMeshPro modules, and test framework versions.
-- [ ] Freeze the command naming convention, one-`input` DTO convention, result layering, schema-version policy, typed issue shape, and expected-domain-failure semantics.
-- [ ] Prove through generated `/api/commands` schema that nested TweenHelper object-reference/vector/color inputs appear as objects/arrays rather than strings.
-- [ ] Write the canonical JSON and SHA-256 specification, including culture, float, null/default, enum, ordering, and hash-exclusion rules.
-- [ ] Define the built-in preset descriptor MVP: stable ID, target requirements, option allowlist, mutation footprint, determinism class, and verification oracle class.
-- [ ] Reconcile the DOTween package/runtime minimum into one shared setup compatibility policy.
-- [ ] Confirm the base artifact remains Pipeline-free and document that installed Pipeline requires Unity `6000.0+`.
-- [ ] Record the public distribution decision as unresolved until publisher enrollment/product strategy and clean-artifact tests are available; do not put adapter files in the base root as an experiment.
-- [ ] Keep public persistence disabled; an authoring representation decision may remain deferred without blocking read-only work.
+- [x] Record the exact compatibility tuple for the development adapter: TweenHelper, Unity, Pipeline, DOTween, UI/TextMeshPro modules, and test framework versions.
+- [x] Freeze the command naming convention, one-`input` DTO convention, result layering, schema-version policy, typed issue shape, and expected-domain-failure semantics.
+- [x] Prove through generated `/api/commands` schema that nested TweenHelper object-reference/vector/color inputs appear as objects/arrays rather than strings.
+- [x] Write the canonical JSON and SHA-256 specification, including culture, float, null/default, enum, ordering, and hash-exclusion rules.
+- [x] Define the built-in preset descriptor MVP: stable ID, target requirements, option allowlist, mutation footprint, determinism class, and verification oracle class.
+- [x] Reconcile the DOTween package/runtime minimum into one shared setup compatibility policy.
+- [x] Confirm the base artifact remains Pipeline-free and document that installed Pipeline requires Unity `6000.0+`.
+- [x] Record the public distribution decision as unresolved until publisher enrollment/product strategy and clean-artifact tests are available; do not put adapter files in the base root as an experiment.
+- [x] Keep public persistence disabled; an authoring representation decision may remain deferred without blocking read-only work.
+- [ ] Complete telemetry Phase T0: freeze the observable-call boundary, event/redaction contract, disabled-by-default configuration, local storage budgets, and public-artifact exclusion rule without delaying schema proof.
 
 Exit criteria: schemas generated by the pinned Pipeline version match the intended wire shapes, hashes have a written reproducible algorithm, the preset MVP has descriptor requirements, and another agent can identify every assembly/dependency boundary without guessing.
 
 ### Phase 1 - Developer-only discovery and descriptors
 
-- [ ] Add a repository-only Editor assembly under `Assets/_Project/TweenHelperDevelopment/CLI` referencing the pinned Pipeline Editor/runtime assemblies and TweenHelper public assemblies.
-- [ ] Implement Pipeline-neutral prototype services and adapter commands for `context`, `setup_status`, paginated `catalog`, `describe_operation`, and explicit `target_profile`.
-- [ ] Enumerate the 300 built-in presets directly from the runtime assembly without calling `TweenPresetRegistry.Refresh()` or instantiating project extensions.
-- [ ] Return compact catalog pages and separately requested descriptor details with a stable built-in hash.
-- [ ] Validate exactly-one reference form and canonicalize it through Pipeline's resolver without implicit selection fallback.
-- [ ] Verify command discovery after recompilation, unique command IDs, and the generated command schemas.
-- [ ] Test direct behavior and the isolated client/server path; do not disturb the live descriptor/server.
-- [ ] Prove source scene/prefab dirty flags, target dirtiness, selection, assets, package manifest, project settings, and built-in registry state are unchanged.
-- [ ] Keep all code outside the customer export root in this phase.
+- [x] Add a repository-only Editor assembly under `Assets/_Project/TweenHelperDevelopment/CLI` referencing the pinned Pipeline Editor/runtime assemblies and TweenHelper public assemblies.
+- [x] Implement Pipeline-neutral prototype services and adapter commands for `context`, `setup_status`, paginated `catalog`, `describe_operation`, and explicit `target_profile`.
+- [x] Enumerate the 300 built-in presets directly from the runtime assembly without calling `TweenPresetRegistry.Refresh()` or instantiating project extensions.
+- [x] Return compact catalog pages and separately requested descriptor details with a stable built-in hash.
+- [x] Validate exactly-one reference form and canonicalize it through Pipeline's resolver without implicit selection fallback.
+- [x] Verify command discovery after recompilation, unique command IDs, and the generated command schemas.
+- [x] Test direct behavior and the isolated client/server path; do not disturb the live descriptor/server.
+- [x] Prove source scene/prefab dirty flags, target dirtiness, selection, assets, package manifest, project settings, and built-in registry state are unchanged.
+- [x] Keep all code outside the customer export root in this phase.
+- [ ] After command entries share one stable path, implement telemetry Phase T1 around the repository-only adapter; keep it disabled by default and do not add Pipeline raw-log import in the recorder MVP.
 
 Exit criteria: UCodex can inspect sanitized context, retrieve a bounded catalog, describe a candidate preset, and profile an explicit target without mutating the project or global preset registry.
+
+Implementation evidence captured on 2026-08-12: Pipeline discovered six unique developer commands with one structured `input` each; generated reference/vector/color schemas are closed nested objects; the built-in catalog contains exactly 300 descriptors with a stable SHA-256 hash; direct, live HTTP, and isolated HTTP paths passed; and the complete `LB.TweenHelper.EditorTests` EditMode assembly passed 26/26. The active scene remained clean, selection remained unchanged, Play Mode remained stopped, no post-compile Console errors were observed, and no base artifact, package manifest, project setting, preview, job, persistence, telemetry, or batch-build implementation was added by this slice.
 
 ### Phase 2 - Canonical preset planner and validator
 
@@ -511,6 +536,7 @@ Exit criteria: UCodex can inspect sanitized context, retrieve a bounded catalog,
 - [ ] Add schema/golden-hash fixtures that produce identical output under multiple current cultures and after a serialize/deserialize round trip.
 - [ ] Reject arbitrary type names, callbacks, unrecognized fields, project extensions, and unsupported operation kinds.
 - [ ] Add infinite built-in presets only after explicit kill/hard-timeout validation is complete.
+- [ ] Add only allowlisted planner/validator telemetry dimensions: schema versions, operation family/ID, target-reference kind, retry/idempotency category, timing spans, and per-session HMAC correlations; never retain plans, targets, request IDs, or stable hashes.
 
 Exit criteria: the same supported request and relevant source state produce the same canonical plan, warnings, hashes, and validation result, and downstream calls need no hidden in-memory plan record.
 
@@ -523,6 +549,7 @@ Exit criteria: the same supported request and relevant source state produce the 
 - [ ] Track and kill only session-owned tweens/objects; prove no global DOTween cleanup occurs.
 - [ ] Compare source fingerprints, dirty state, selection, assets, settings, manifest, and Console evidence before/after every path, including exceptions and cancellation.
 - [ ] Keep live-target preview explicitly unavailable.
+- [ ] Add preview telemetry for lifecycle transitions, concurrency, TTL/timeout categories, owned-resource counts, and cleanup/source-state-change booleans without recording sampled values or object identities.
 
 Exit criteria: an agent can start, sample, and stop a preset preview while the source target and project remain unchanged, and every exit path reports owned-resource cleanup evidence.
 
@@ -537,6 +564,7 @@ Exit criteria: an agent can start, sample, and stop a preset preview while the s
 - [ ] Prefer Pipeline's built-in test commands; add `dev_run_tests` only after documenting a concrete wrapper benefit.
 - [ ] Expand plan/descriptor/preview/verification coverage one family at a time: fluent steps, stagger, destination, feedback, then UI sequences. A family remains unadvertised until its full slice passes.
 - [ ] Keep all reports under `Temp` by default and return project-relative report paths.
+- [ ] Implement bounded telemetry query/summary/export/clear commands, verification/job lifecycle dimensions, and—only after the separate privacy gate—the optional sanitized all-Pipeline HTTP transaction importer.
 
 Exit criteria: an agent can receive bounded lifecycle evidence and a maintainer can run repository audits through structured commands without ad hoc evaluation or contamination of public services.
 
@@ -550,12 +578,13 @@ Exit criteria: an agent can receive bounded lifecycle evidence and a maintainer 
 - [ ] Add `CLIIntegration.md` with installation, exact compatibility, absence behavior, command examples, result layering, local-server/threat boundary, data handling, limits, cleanup behavior, and troubleshooting.
 - [ ] Disclose the Pipeline dependency and any material MCP/AI-connected behavior in the listing/documentation as required by current Asset Store guidelines.
 - [ ] Validate command discovery, schemas, compile state, no hidden package/manifest changes, and exact exported content.
+- [ ] Prove the base export and public companion contain no telemetry assembly, settings, events, reports, menus, commands, or Pipeline raw logs.
 
 Exit criteria: the base product still works without Pipeline on its declared minimum, and a separately installed supported companion exposes only documented TweenHelper commands without customer-project mutations during discovery/preview/verification.
 
 ### Phase 6 - Persisted authoring and release hardening
 
-- [ ] Design, version, document, and separately approve the persisted TweenHelper recipe/component representation before adding `apply_plan`.
+- [ ] Complete the audit, review, command-design, and final-validation gates in [SerializedAnimationRecipesTweenPlayerRoadmap.md](SerializedAnimationRecipesTweenPlayerRoadmap.md), then implement and approve the persisted TweenHelper recipe/component representation before adding `apply_plan`.
 - [ ] Implement apply dry-run as a real preflight that returns the exact change set, hashes, save/dirty implications, rollback support, and short-lived token.
 - [ ] Require token-bound confirmation, stable explicit references, an allowlisted path, matching recalculated fingerprints, and request/idempotency semantics.
 - [ ] Use Undo/authoring scopes where supported, report every changed object/asset, and report partial failure plus rollback/cleanup outcomes.
@@ -563,6 +592,7 @@ Exit criteria: the base product still works without Pipeline on its declared min
 - [ ] Validate base and companion artifacts in clean projects with Pipeline absent/present and supported/unsupported version tuples.
 - [ ] During an explicitly requested release task, run the Asset Store validator against the exact artifact roots, inspect exported contents, and update compatibility disclosure, changelog, and release notes.
 - [ ] Publish only after the command contract matrix and exact artifact evidence pass.
+- [ ] If developer telemetry covers authoring, record only preflight/idempotency/rollback categories and bounded change counts after a separate privacy review; never record targets, paths, values, hashes, tokens, or change-set contents.
 
 Exit criteria: public persistence is explicit, idempotent, validated immediately before mutation, reversible where Unity supports it, fully reported, and does not weaken the base package's compatibility or trust boundary.
 
@@ -587,7 +617,8 @@ Every phase that adds code should produce evidence at the narrowest relevant lev
 | Lifecycle | Normal completion, owned external kill, cancellation, hard timeout, destroyed sandbox target, rewind/reset, infinite-loop kill, no owned dangling handles, cleanup after assertion failure. |
 | Project extensions | Built-in query never constructs extensions; double opt-in; assembly/source classification; ID collision rejection; scope-specific hash. |
 | Authoring | Dry-run no-op, exact preflight token, token expiry/mismatch, duplicate idempotency ID, stale fingerprints, path confinement, concurrent edit, Undo limits, explicit save behavior, partial-failure report, changed identities. |
-| Privacy/performance | No external traffic/telemetry, no secrets or absolute paths, bounded payload/pages/jobs/logs/main-thread work, documented Pipeline threat boundary. |
+| Developer telemetry | Disabled path creates no data; handler registration coverage; paired start/completion; redaction fixtures; bounded queue/storage/query/export; reload/interruption; dropped-event health; optional Pipeline-import gaps/deduplication; command outcomes unaffected. |
+| Privacy/performance | No external traffic or customer telemetry, no raw payloads/secrets/identities/absolute paths in developer events, bounded payload/pages/jobs/logs/telemetry/main-thread work, documented Pipeline threat boundary. |
 | Packaging | Base export contains no Pipeline dependency/development tooling; companion contains no tests/private assets; dependency and compatibility metadata/listing disclosure match the artifact. |
 
 Use Unity MCP for Editor inspection and validation when it is available, and capture fresh evidence after every Unity-facing code change. Do not run a batch build merely because a phase exists; the repository instructions require a task that explicitly needs batch/release validation. If MCP or licensing is unavailable, perform static checks and clearly record the missing runtime evidence.
@@ -605,14 +636,14 @@ Use Unity MCP for Editor inspection and validation when it is available, and cap
 - Mutating the user's live scene/prefab target for public v1 preview or verification.
 - Promising exact intermediate samples for unseeded random effects or guaranteed cleanup after an Editor/process crash.
 - Shipping repository validation scenes, test assemblies, reset reports, or private callbacks in the customer package.
-- Adding telemetry or uploading project data.
+- Shipping developer telemetry in customer artifacts, enabling it automatically, retaining raw command payloads, creating persistent user/machine/project identities, or uploading project data.
 - Supporting persistent public writes before a stable authoring representation and rollback story exist.
 
 ## Immediate next implementation task
 
 The next implementation request should cover only the Phase 0 proof plus the Phase 1 developer discovery slice unless the user explicitly expands scope:
 
-1. Read this roadmap, the root `ROADMAP.md`, both `AGENTS.md` files, the exact installed Pipeline `package.json`, `creating-commands.md`, `authoring-commands.md`, `safety-and-mutations.md`, and `testing.md`.
+1. Read this roadmap, the telemetry roadmap, the root `ROADMAP.md`, both `AGENTS.md` files, the exact installed Pipeline `package.json`, `creating-commands.md`, `authoring-commands.md`, `safety-and-mutations.md`, and `testing.md`.
 2. Capture fresh Unity MCP Editor/package/Console/scene state before changing code. Do not enter Play Mode.
 3. Add only a repository-owned Editor assembly, Pipeline wire DTOs, Pipeline-neutral prototype services, and read-only discovery commands under `Assets/_Project/TweenHelperDevelopment/CLI`.
 4. Prove the generated nested schemas before implementing the full command set, especially structured object references and vectors/colors.
@@ -621,12 +652,15 @@ The next implementation request should cover only the Phase 0 proof plus the Pha
 7. Prove no scene/prefab/asset/settings/manifest/selection/global-registry mutation and check the Unity Console after compilation.
 8. Do not add public/base package files, preview, jobs, persistence, fixture mutation, Play Mode transitions, or batch builds in the same first task.
 9. Preserve unrelated worktree changes and report any unavailable runtime evidence precisely.
+10. Treat telemetry as a separate follow-on slice unless explicitly included. If included, complete only telemetry T0/T1 after the shared handler path exists; do not enable/import Pipeline raw request/response logs.
 
 ## References
 
 Project references:
 
 - `ROADMAP.md`
+- `Assets/_Project/TweenHelperDevelopment/Documentation/SerializedAnimationRecipesTweenPlayerRoadmap.md`
+- `Assets/_Project/TweenHelperDevelopment/Documentation/TweenHelperPipelineCliTelemetryRoadmap.md`
 - `Assets/Loags/TweenHelper/README.md`
 - `Assets/Loags/TweenHelper/Documentation/API.md`
 - `Assets/Loags/TweenHelper/Documentation/PresetCatalog.md`
@@ -642,6 +676,10 @@ Project references:
 - `Assets/Loags/TweenHelper/Runtime/Core/TweenPresetRegistry.cs`
 - `Assets/Loags/TweenHelper/Runtime/Core/UIAnimationStateCache.cs`
 - installed `Library/PackageCache/com.unity.pipeline@*/package.json`
+- installed `Library/PackageCache/com.unity.pipeline@*/Runtime/Common/BasePipelineServer.cs`
+- installed `Library/PackageCache/com.unity.pipeline@*/Editor/EditorPipelineServer.cs`
+- installed `Library/PackageCache/com.unity.pipeline@*/Editor/EditorPipelineManager.cs`
+- installed `Library/PackageCache/com.unity.pipeline@*/Editor/PipelineTransactionLog.cs`
 - installed `Library/PackageCache/com.unity.pipeline@*/Documentation~/creating-commands.md`
 - installed `Library/PackageCache/com.unity.pipeline@*/Documentation~/authoring-commands.md`
 - installed `Library/PackageCache/com.unity.pipeline@*/Documentation~/safety-and-mutations.md`
