@@ -20,6 +20,15 @@ TweenBuilder DropdownOpen(IEnumerable<GameObject> entries = null, float? duratio
 TweenBuilder DropdownClose(IEnumerable<GameObject> entries = null, float? duration = null, float childStagger = 0.035f);
 
 TweenBuilder TabSwitchTo(GameObject incoming, UISequenceDirection direction = UISequenceDirection.Left, float distance = 72f, float? duration = null);
+
+TweenBuilder DrawerShow(UISequenceDirection edge = UISequenceDirection.Left, GameObject backdrop = null, float distance = 360f, float? duration = null);
+TweenBuilder DrawerHide(UISequenceDirection edge = UISequenceDirection.Left, GameObject backdrop = null, float distance = 360f, float? duration = null);
+
+TweenBuilder BottomSheetShow(GameObject backdrop = null, float distance = 420f, float? duration = null);
+TweenBuilder BottomSheetHide(GameObject backdrop = null, float distance = 420f, float? duration = null);
+
+TweenBuilder PagePushTo(GameObject incoming, UISequenceDirection direction = UISequenceDirection.Left, float distance = 720f, float? duration = null);
+TweenBuilder PageCrossFadeTo(GameObject incoming, float depthScale = 0.04f, float? duration = null);
 ```
 
 Each operation is also available directly on `GameObject` and `Component`. Direct extensions return `TweenHandle` and accept `TweenOptions` as their final optional argument.
@@ -30,6 +39,10 @@ tooltip.TooltipHide(UISequenceDirection.Right);
 panel.ModalOpen(backdrop, controls);
 dropdown.DropdownOpen(entries);
 outgoingTab.TabSwitchTo(incomingTab);
+drawer.DrawerShow(UISequenceDirection.Left, backdrop);
+sheet.BottomSheetShow(backdrop);
+outgoingPage.PagePushTo(incomingPage);
+outgoingPage.PageCrossFadeTo(incomingPage);
 ```
 
 ## Direction semantics
@@ -39,6 +52,8 @@ outgoingTab.TabSwitchTo(incomingTab);
 - Show operations begin opposite the direction and travel toward the authored shown position.
 - Hide operations travel from the shown position in the selected direction.
 - `TabSwitchTo(Left)` moves outgoing content left and brings incoming content from the right.
+- Drawer direction names the screen edge itself: `DrawerShow(Left)` enters from the left and `DrawerHide(Left)` exits through the left.
+- `PagePushTo(Left)` pushes outgoing content left and brings incoming content from the right.
 
 Distances use canvas units, normally pixels.
 
@@ -78,6 +93,20 @@ Animate a wrapper when a `LayoutGroup`, `ContentSizeFitter`, or another layout s
 
 The outgoing and incoming objects must be different `RectTransform` targets.
 
+### Drawer
+
+Drawer Show/Hide performs a full edge transition with restrained scale and alpha support. An optional backdrop fades inside the same root tween. Default durations are `0.44s` and `0.32s`, and the default travel distance is `360` canvas units.
+
+### Bottom sheet
+
+Bottom Sheet Show rises from below, passes the authored position slightly, and settles while its optional backdrop fades in. Hide performs a small upward anticipation before dismissing the sheet and backdrop. Default durations are `0.5s` and `0.36s`, with a `420`-unit default travel distance.
+
+### Page transitions
+
+`PagePushTo` coordinates outgoing and incoming page containers over one overlapping horizontal or vertical timeline. `PageCrossFadeTo` overlaps their alpha while applying a small depth-scale separation. Both leave outgoing content hidden and incoming content on its exact authored shown state. Their default durations are `0.52s` and `0.4s`.
+
+Outgoing and incoming pages must be different `RectTransform` targets. `depthScale` must be at least zero and less than one.
+
 ## Composition and options
 
 The operations compose like other builder steps:
@@ -111,7 +140,7 @@ Modal controls, dropdown entries, and other supplied collections are copied imme
 
 - Show completion writes the exact cached shown position, scale, rotation, and alpha.
 - Hide completion leaves the target visually hidden at the family-specific exit state.
-- `TabSwitchTo` leaves outgoing content hidden and incoming content shown.
+- `TabSwitchTo`, `PagePushTo`, and `PageCrossFadeTo` leave outgoing content hidden and incoming content shown.
 - Killing a sequence preserves its current visual state so another transition can continue from the interruption point.
 - Rewind restores every involved target to the state captured when that sequence began.
 - Restart and repeated playback reuse absolute cached endpoints without accumulating drift.

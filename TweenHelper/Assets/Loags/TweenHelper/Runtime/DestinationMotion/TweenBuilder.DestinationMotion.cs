@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace LB.TweenHelper
@@ -91,6 +92,50 @@ namespace LB.TweenHelper
         public TweenBuilder MagneticSnapLocalTo(Vector3 destination, float? duration = null, float pullback = 0.2f, float overshoot = 0.25f)
         {
             AddStep(options => DestinationMotionUtility.CreateMagneticSnap(_gameObject, destination, ResolveDuration(duration, options), pullback, overshoot, options, true), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Moves through world-space waypoints using linear or Catmull-Rom interpolation.</summary>
+        public TweenBuilder PathThrough(IEnumerable<Vector3> waypoints, DestinationPathInterpolation interpolation = DestinationPathInterpolation.CatmullRom, float? duration = null)
+        {
+            IReadOnlyList<Vector3> snapshot = DestinationMotionUtility.SnapshotWaypoints(waypoints);
+            AddStep(options => DestinationMotionUtility.CreateWaypointPath(_gameObject, snapshot, interpolation, ResolveDuration(duration, options), options, false), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Moves through local-space waypoints. RectTransform targets use anchoredPosition3D.</summary>
+        public TweenBuilder PathLocalThrough(IEnumerable<Vector3> waypoints, DestinationPathInterpolation interpolation = DestinationPathInterpolation.CatmullRom, float? duration = null)
+        {
+            IReadOnlyList<Vector3> snapshot = DestinationMotionUtility.SnapshotWaypoints(waypoints);
+            AddStep(options => DestinationMotionUtility.CreateWaypointPath(_gameObject, snapshot, interpolation, ResolveDuration(duration, options), options, true), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Progresses to a world-space destination through a finite spiral that closes exactly at both endpoints.</summary>
+        public TweenBuilder SpiralTo(Vector3 destination, float radius, float revolutions = 1.5f, float? duration = null)
+        {
+            AddStep(options => DestinationMotionUtility.CreateSpiral(_gameObject, destination, radius, revolutions, ResolveDuration(duration, options), options, false), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Progresses to a local destination through a finite spiral. RectTransform targets use anchoredPosition3D.</summary>
+        public TweenBuilder SpiralLocalTo(Vector3 destination, float radius, float revolutions = 1.5f, float? duration = null)
+        {
+            AddStep(options => DestinationMotionUtility.CreateSpiral(_gameObject, destination, radius, revolutions, ResolveDuration(duration, options), options, true), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Advances to a world-space destination through several diminishing hops.</summary>
+        public TweenBuilder MultiHopTo(Vector3 destination, float height, int hopCount = 3, float decay = 1.25f, float? duration = null)
+        {
+            AddStep(options => DestinationMotionUtility.CreateMultiHop(_gameObject, destination, height, hopCount, decay, ResolveDuration(duration, options), options, false), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Advances to a local destination through several diminishing hops. RectTransform targets use anchoredPosition3D.</summary>
+        public TweenBuilder MultiHopLocalTo(Vector3 destination, float height, int hopCount = 3, float decay = 1.25f, float? duration = null)
+        {
+            AddStep(options => DestinationMotionUtility.CreateMultiHop(_gameObject, destination, height, hopCount, decay, ResolveDuration(duration, options), options, true), applyBuilderOptions: false);
             return this;
         }
     }

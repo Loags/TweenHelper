@@ -22,8 +22,26 @@ namespace LB.TweenHelper
         public static TweenHandle TextCharacterStaggerIn(this TMP_Text text, UISequenceDirection direction = UISequenceDirection.Up, float distance = 18f, float characterStagger = 0.025f, float? duration = null, TweenOptions options = default)
             => RequireText(text).Tween().WithOptions(options).TextCharacterStaggerIn(direction, distance, characterStagger, duration).Play();
 
+        public static TweenHandle TextCharacterStaggerOut(this TMP_Text text, UISequenceDirection direction = UISequenceDirection.Up, float distance = 18f, float characterStagger = 0.025f, float? duration = null, TweenOptions options = default)
+            => RequireText(text).Tween().WithOptions(options).TextCharacterStaggerOut(direction, distance, characterStagger, duration).Play();
+
         public static TweenHandle TextWave(this TMP_Text text, UISequenceDirection direction = UISequenceDirection.Up, float amplitude = 12f, int waveCount = 1, float? duration = null, TweenOptions options = default)
             => RequireText(text).Tween().WithOptions(options).TextWave(direction, amplitude, waveCount, duration).Play();
+
+        public static TweenHandle TextCharacterBounce(this TMP_Text text, UISequenceDirection direction = UISequenceDirection.Up, float amplitude = 14f, float? duration = null, TweenOptions options = default)
+            => RequireText(text).Tween().WithOptions(options).TextCharacterBounce(direction, amplitude, duration).Play();
+
+        public static TweenHandle TextColorSweep(this TMP_Text text, Color? highlightColor = null, float width = 2.5f, float? duration = null, TweenOptions options = default)
+            => RequireText(text).Tween().WithOptions(options).TextColorSweep(highlightColor, width, duration).Play();
+
+        public static TweenHandle TextGlitch(this TMP_Text text, float distance = 6f, int seed = 1337, float? duration = null, TweenOptions options = default)
+            => RequireText(text).Tween().WithOptions(options).TextGlitch(distance, seed, duration).Play();
+
+        public static TweenHandle TextEmphasis(this TMP_Text text, UISequenceDirection direction = UISequenceDirection.Up, float amplitude = 8f, int startCharacter = 0, int characterCount = -1, Color? highlightColor = null, float? duration = null, TweenOptions options = default)
+            => RequireText(text).Tween().WithOptions(options).TextEmphasis(direction, amplitude, startCharacter, characterCount, highlightColor, duration).Play();
+
+        public static TweenHandle TextScrambleReveal(this TMP_Text text, int seed = 1337, float? duration = null, TweenOptions options = default)
+            => RequireText(text).Tween().WithOptions(options).TextScrambleReveal(seed, duration).Play();
 
         public static TweenHandle ScoreIncrease(this TMP_Text text, double fromValue, double toValue, string format = "0", float? duration = null, Color? flashColor = null, TweenOptions options = default)
             => RequireText(text).Tween().WithOptions(options).ScoreIncrease(fromValue, toValue, format, duration, flashColor).Play();

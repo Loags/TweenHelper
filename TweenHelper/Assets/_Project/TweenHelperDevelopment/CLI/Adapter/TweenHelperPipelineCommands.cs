@@ -1,118 +1,117 @@
 using System;
 using System.Collections.Generic;
-using LB.TweenHelper.Automation.Editor;
-using Newtonsoft.Json.Linq;
+using System.Linq;
+using System.Reflection;
+using Newtonsoft.Json;
 using Unity.Pipeline.Commands;
 
 namespace LB.TweenHelper.Pipeline.Editor
 {
     public static class TweenHelperPipelineCommands
     {
-        [CliCommand("tween_helper_context", "Developer-only read-only TweenHelper automation context and capability discovery.", MainThreadRequired = true)]
-        public static JObject Context([CliArg("input", "Versioned structured command input.", Required = true)] ContextInput input)
-        {
-            List<CommandIssue> issues = PipelineInputValidation.Validate(input);
-            if (issues.Count > 0) return PipelineResultMapping.Invalid(input?.RequestId, issues);
-            return PipelineResultMapping.Context(ContextService.Get(input.RequestId));
-        }
+        private const int DefaultLimit = 50;
+        private const int MaximumLimit = 100;
 
-        [CliCommand("tween_helper_setup_status", "Developer-only read-only TweenHelper and Pipeline compatibility diagnostics.", MainThreadRequired = true)]
-        public static JObject SetupStatus([CliArg("input", "Versioned structured command input.", Required = true)] SetupStatusInput input)
-        {
-            List<CommandIssue> issues = PipelineInputValidation.Validate(input);
-            if (issues.Count > 0) return PipelineResultMapping.Invalid(input?.RequestId, issues);
-            return PipelineResultMapping.Setup(SetupStatusService.Get(input.RequestId));
-        }
+        private static readonly Lazy<IReadOnlyList<TweenHelperPresetInfo>> Catalog = new Lazy<IReadOnlyList<TweenHelperPresetInfo>>(BuildCatalog);
 
-        [CliCommand("tween_helper_catalog", "Developer-only read-only discovery of TweenHelper's built-in preset operation catalog.", MainThreadRequired = true)]
-        public static JObject Catalog([CliArg("input", "Versioned structured catalog query.", Required = true)] CatalogInput input)
+        [CliCommand(CliCommandTelemetry.CatalogCommandId, "List TweenHelper's built-in presets. Supports optional text/family filters and offset/limit paging.")]
+        public static TweenHelperCatalogResult GetCatalog(
+            [CliArg("query", "Optional case-insensitive name, family, or description filter.")] string query = null,
+            [CliArg("family", "Optional exact preset-family filter.")] string family = null,
+            [CliArg("offset", "Zero-based result offset.")] int offset = 0,
+            [CliArg("limit", "Maximum results to return (1-100, default 50).")] int limit = DefaultLimit)
         {
-            List<CommandIssue> issues = PipelineInputValidation.Validate(input);
-            if (issues.Count > 0) return PipelineResultMapping.Invalid(input?.RequestId, issues);
-
-            var query = new CatalogQuery
+            return CliCommandTelemetry.Record(CliCommandTelemetry.CatalogCommandId, () =>
             {
-                RequestId = input.RequestId,
-                Scope = input.Scope,
-                Query = input.Query,
-                Family = input.Family,
-                Determinism = input.Determinism,
-                PageSize = input.PageSize ?? 0,
-                Cursor = input.Cursor
-            };
-            return PipelineResultMapping.Catalog(CatalogService.Query(query));
-        }
+                if (offset < 0) throw new ArgumentOutOfRangeException(nameof(offset), "offset must be zero or greater.");
+                if (limit < 1 || limit > MaximumLimit) throw new ArgumentOutOfRangeException(nameof(limit), $"limit must be between 1 and {MaximumLimit}.");
 
-        [CliCommand("tween_helper_describe_operation", "Developer-only read-only details for one built-in TweenHelper preset operation.", MainThreadRequired = true)]
-        public static JObject DescribeOperation([CliArg("input", "Versioned structured operation lookup.", Required = true)] DescribeOperationInput input)
-        {
-            List<CommandIssue> issues = PipelineInputValidation.Validate(input);
-            if (issues.Count > 0) return PipelineResultMapping.Invalid(input?.RequestId, issues);
-            return PipelineResultMapping.Operation(CatalogService.Describe(input.RequestId, input.Scope, input.OperationId));
-        }
+                string normalizedQuery = query?.Trim() ?? string.Empty;
+                string normalizedFamily = family?.Trim() ?? string.Empty;
+                TweenHelperPresetInfo[] filtered = Catalog.Value
+                    .Where(preset => Matches(preset, normalizedQuery, normalizedFamily))
+                    .ToArray();
+                TweenHelperPresetInfo[] page = filtered.Skip(offset).Take(limit).ToArray();
 
-        [CliCommand("tween_helper_target_profile", "Developer-only read-only profile of one explicitly referenced TweenHelper target.", MainThreadRequired = true)]
-        public static JObject TargetProfile([CliArg("input", "Versioned structured target-profile request.", Required = true)] TargetProfileInput input)
-        {
-            List<CommandIssue> issues = PipelineInputValidation.Validate(input);
-            if (issues.Count > 0) return PipelineResultMapping.Invalid(input?.RequestId, issues);
-
-            ServiceResult<ResolvedPipelineTarget> resolved = PipelineObjectReferenceResolver.Resolve(input.RequestId, input.Target);
-            if (resolved.Errors.Count > 0 || resolved.Data == null) return PipelineResultMapping.Invalid(input.RequestId, resolved.Errors);
-
-            var request = new TargetProfileRequest
-            {
-                RequestId = input.RequestId,
-                Identity = resolved.Data.Identity,
-                CompatiblePageSize = input.CompatiblePageSize ?? 0,
-                CompatibleCursor = input.CompatibleCursor
-            };
-            return PipelineResultMapping.TargetProfile(TargetProfileService.Profile(resolved.Data.GameObject, request));
-        }
-
-        [CliCommand("tween_helper_dev_contract_probe", "Developer-only proof that Pipeline emits and binds nested object-reference, vector, and color DTO schemas.", MainThreadRequired = true)]
-        public static JObject ContractProbe([CliArg("input", "Versioned nested structured schema probe.", Required = true)] ContractProbeInput input)
-        {
-            List<CommandIssue> issues = PipelineInputValidation.Validate(input);
-            if (input != null)
-            {
-                issues.AddRange(PipelineObjectReferenceResolver.ValidateShape(input.ObjectReference, "input.objectReference"));
-                PipelineInputValidation.AddFiniteVectorIssues(issues, input.Vector, "input.vector");
-                PipelineInputValidation.AddFiniteColorIssues(issues, input.Color, "input.color");
-            }
-            if (issues.Count > 0) return PipelineResultMapping.Invalid(input?.RequestId, issues);
-
-            var data = new JObject
-            {
-                ["objectReference"] = new JObject
+                return new TweenHelperCatalogResult
                 {
-                    ["addressForm"] = GetAddressForm(input.ObjectReference),
-                    ["hasFileId"] = input.ObjectReference.FileId.HasValue
-                },
-                ["vector"] = new JObject
-                {
-                    ["x"] = input.Vector.X.Value,
-                    ["y"] = input.Vector.Y.Value,
-                    ["z"] = input.Vector.Z.Value
-                },
-                ["color"] = new JObject
-                {
-                    ["r"] = input.Color.R.Value,
-                    ["g"] = input.Color.G.Value,
-                    ["b"] = input.Color.B.Value,
-                    ["a"] = input.Color.A.Value
-                }
-            };
-            return PipelineResultMapping.Probe(input.RequestId, "valid", data);
+                    PresetCount = Catalog.Value.Count,
+                    MatchedCount = filtered.Length,
+                    Offset = offset,
+                    ReturnedCount = page.Length,
+                    HasMore = (long)offset + page.Length < filtered.Length,
+                    Presets = page
+                };
+            });
         }
 
-        private static string GetAddressForm(ObjectReferenceInput input)
+        [CliCommand(CliCommandTelemetry.SummaryCommandId, "Summarize bounded local telemetry for TweenHelper CLI commands.")]
+        public static TweenHelperTelemetrySummaryResult GetTelemetrySummary() => CliCommandTelemetry.Record(CliCommandTelemetry.SummaryCommandId, CliCommandTelemetry.BuildSummary);
+
+        private static IReadOnlyList<TweenHelperPresetInfo> BuildCatalog()
         {
-            if (!string.IsNullOrWhiteSpace(input.GlobalId)) return "globalId";
-            if (!string.IsNullOrWhiteSpace(input.Path)) return "path";
-            if (!string.IsNullOrWhiteSpace(input.Guid)) return "guid";
-            if (!string.IsNullOrWhiteSpace(input.InstanceId)) return "instanceId";
-            return "selection";
+            return typeof(ITweenPreset).Assembly.GetTypes()
+                .Where(type => !type.IsAbstract && typeof(ITweenPreset).IsAssignableFrom(type) && type.GetCustomAttribute<AutoRegisterPresetAttribute>(false) != null)
+                .Select(type => (ITweenPreset)Activator.CreateInstance(type))
+                .OrderBy(preset => preset.PresetName, StringComparer.Ordinal)
+                .Select(preset =>
+                {
+                    PresetVariantMetadata metadata = PresetVariantParser.Parse(preset.PresetName);
+                    return new TweenHelperPresetInfo
+                    {
+                        Name = preset.PresetName,
+                        Description = preset.Description ?? string.Empty,
+                        Family = metadata.Family ?? string.Empty,
+                        DefaultDuration = preset.DefaultDuration
+                    };
+                })
+                .ToArray();
         }
+
+        private static bool Matches(TweenHelperPresetInfo preset, string query, string family)
+        {
+            if (!string.IsNullOrEmpty(family) && !string.Equals(preset.Family, family, StringComparison.OrdinalIgnoreCase)) return false;
+            if (string.IsNullOrEmpty(query)) return true;
+
+            return preset.Name.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   preset.Family.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                   preset.Description.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0;
+        }
+    }
+
+    public sealed class TweenHelperCatalogResult
+    {
+        [JsonProperty("presetCount")]
+        public int PresetCount { get; set; }
+
+        [JsonProperty("matchedCount")]
+        public int MatchedCount { get; set; }
+
+        [JsonProperty("offset")]
+        public int Offset { get; set; }
+
+        [JsonProperty("returnedCount")]
+        public int ReturnedCount { get; set; }
+
+        [JsonProperty("hasMore")]
+        public bool HasMore { get; set; }
+
+        [JsonProperty("presets")]
+        public TweenHelperPresetInfo[] Presets { get; set; }
+    }
+
+    public sealed class TweenHelperPresetInfo
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("description")]
+        public string Description { get; set; }
+
+        [JsonProperty("family")]
+        public string Family { get; set; }
+
+        [JsonProperty("defaultDuration")]
+        public float DefaultDuration { get; set; }
     }
 }

@@ -214,6 +214,18 @@ namespace LB.TweenHelper.Editor
                     return _collectionTargets.GridWave(_stageRoot, 3, GridWaveDirection.TopToBottom, options: options);
                 case PresetBrowserCollectionKind.GridWaveBottomToTop:
                     return _collectionTargets.GridWave(_stageRoot, 3, GridWaveDirection.BottomToTop, options: options);
+                case PresetBrowserCollectionKind.GridDiagonalWave:
+                    return _collectionTargets.GridDiagonalWave(_stageRoot, 3, options: options);
+                case PresetBrowserCollectionKind.GridSpiral:
+                    return _collectionTargets.GridSpiral(_stageRoot, 3, options: options);
+                case PresetBrowserCollectionKind.GridCheckerboard:
+                    return _collectionTargets.GridCheckerboard(_stageRoot, 3, options: options);
+                case PresetBrowserCollectionKind.CollectionBurstIn:
+                    return _collectionTargets.CollectionBurstIn(_stageRoot, Vector3.zero, options: options);
+                case PresetBrowserCollectionKind.CollectionBurstOut:
+                    return _collectionTargets.CollectionBurstOut(_stageRoot, Vector3.zero, 2f, options: options);
+                case PresetBrowserCollectionKind.CollectionGatherTo:
+                    return _collectionTargets.CollectionGatherTo(_stageRoot, Vector3.zero, options: options);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown collection preview.");
             }

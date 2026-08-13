@@ -1,6 +1,6 @@
 # Staggered collections
 
-`TweenStaggerBuilder` schedules one finite tween per collection item and returns one `TweenHandle` for the complete group. It supports typed presets, dynamic preset names, custom DOTween factories, five ordering modes, custom delay maps, root lifecycle options, and five ready-to-play recipes.
+`TweenStaggerBuilder` schedules one finite tween per collection item and returns one `TweenHandle` for the complete group. It supports typed presets, dynamic preset names, custom DOTween factories, five ordering modes, custom delay maps, root lifecycle options, and eleven ready-to-play recipes.
 
 Collection recipes are orchestration helpers, not `ITweenPreset` implementations. The built-in preset registry therefore remains at 300 entries.
 
@@ -111,12 +111,20 @@ items.ListStaggerIn(owner);                                  // PopInFade, first
 items.ListStaggerOut(owner);                                 // PopOutFade, last to first
 items.GridWave(owner, columns: 4, direction: GridWaveDirection.LeftToRight);
 items.GridRipple(owner, columns: 4);                         // Defaults to the center origin
+items.GridDiagonalWave(owner, columns: 4, direction: GridDiagonalDirection.TopLeftToBottomRight);
+items.GridSpiral(owner, columns: 4, direction: GridSpiralDirection.OutsideInClockwise);
+items.GridCheckerboard(owner, columns: 4);
+items.CollectionBurstIn(owner, origin);
+items.CollectionBurstOut(owner, origin);
+items.CollectionGatherTo(owner, destination);
 dots.LoadingDots(owner);                                     // Finite pulses, looping root
 ```
 
-Grid collections are interpreted in row-major order. `GridWave` supports left-to-right, right-to-left, top-to-bottom, and bottom-to-top directions. `GridRipple` accepts an optional source `originIndex` and otherwise chooses a centered item.
+Grid collections are interpreted in row-major order. `GridWave` supports left-to-right, right-to-left, top-to-bottom, and bottom-to-top directions. `GridRipple` accepts an optional source `originIndex` and otherwise chooses a centered item. Diagonal Wave supports all four corners. Spiral supports clockwise/counter-clockwise and outside-in/inside-out traversal. Checkerboard accepts an `inverted` flag to swap its two phases.
 
-Every recipe returns its active `TweenHandle` and accepts duration, stagger interval, and `TweenOptions` overrides. `LoadingDots` also accepts the pause between complete cycles.
+Burst In starts all items at one origin and restores their authored positions, scale, rotation, and alpha. Burst Out scatters radially from an origin; Gather To converges on a destination. Burst Out and Gather To finish at zero scale and supported alpha. Burst Out chooses a default distance of `120` canvas units for locally animated `RectTransform` items and `1.2` units for ordinary or world-space motion. Set `local: false` for world positions; the default local mode uses `localPosition`, or `anchoredPosition3D` for `RectTransform` targets.
+
+Every recipe returns its active `TweenHandle` and accepts duration, stagger interval, and `TweenOptions` overrides. `LoadingDots` also accepts the pause between complete cycles. Strength scales the spatial distance and deformation without moving Burst In or Gather To away from their exact requested endpoint.
 
 ## Validation and errors
 
@@ -125,6 +133,7 @@ Every recipe returns its active `TweenHandle` and accepts duration, stagger inte
 - An owner or item destroyed between configuration and `Build` is rejected before child tweens are created.
 - Missing presets, incompatible targets, invalid delays, invalid column counts, and invalid ripple origins throw descriptive exceptions.
 - Building without first selecting a preset or custom factory is rejected.
-- Killing a group follows normal `TweenHandle` semantics and does not restore arbitrary target state automatically.
+- Killing a preset-based stagger group follows normal `TweenHandle` semantics and does not restore arbitrary target state automatically.
+- Burst In, Burst Out, and Gather To restore their captured item states on interrupted kill and rewind. Normal Burst Out and Gather To completion intentionally leaves their hidden endpoint.
 
 For replayable previews or pooled UI, capture the desired target state before playback and restore it before starting the next group.

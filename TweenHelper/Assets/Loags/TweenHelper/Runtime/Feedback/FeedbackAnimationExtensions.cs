@@ -29,6 +29,42 @@ namespace LB.TweenHelper
         public static TweenHandle RewardReveal(this GameObject target, float? duration = null, Color? flashColor = null, TweenOptions options = default)
             => target.Tween().WithOptions(options).RewardReveal(duration, flashColor).Play();
 
+        public static TweenHandle HealReceive(this Component component, float? duration = null, Color? flashColor = null, TweenOptions options = default)
+            => HealReceive(component.gameObject, duration, flashColor, options);
+
+        public static TweenHandle HealReceive(this GameObject target, float? duration = null, Color? flashColor = null, TweenOptions options = default)
+            => target.Tween().WithOptions(options).HealReceive(duration, flashColor).Play();
+
+        public static TweenHandle ShieldBlock(this Component component, Vector3 impactDirection, float? duration = null, Color? flashColor = null, TweenOptions options = default)
+            => ShieldBlock(component.gameObject, impactDirection, duration, flashColor, options);
+
+        public static TweenHandle ShieldBlock(this GameObject target, Vector3 impactDirection, float? duration = null, Color? flashColor = null, TweenOptions options = default)
+            => target.Tween().WithOptions(options).ShieldBlock(impactDirection, duration, flashColor).Play();
+
+        public static TweenHandle CriticalHit(this Component component, Vector3 impactDirection, float? duration = null, Color? flashColor = null, TweenOptions options = default)
+            => CriticalHit(component.gameObject, impactDirection, duration, flashColor, options);
+
+        public static TweenHandle CriticalHit(this GameObject target, Vector3 impactDirection, float? duration = null, Color? flashColor = null, TweenOptions options = default)
+            => target.Tween().WithOptions(options).CriticalHit(impactDirection, duration, flashColor).Play();
+
+        public static TweenHandle CooldownReady(this Component component, float? duration = null, Color? flashColor = null, TweenOptions options = default)
+            => CooldownReady(component.gameObject, duration, flashColor, options);
+
+        public static TweenHandle CooldownReady(this GameObject target, float? duration = null, Color? flashColor = null, TweenOptions options = default)
+            => target.Tween().WithOptions(options).CooldownReady(duration, flashColor).Play();
+
+        public static TweenHandle LevelUp(this Component component, float? duration = null, Color? flashColor = null, TweenOptions options = default)
+            => LevelUp(component.gameObject, duration, flashColor, options);
+
+        public static TweenHandle LevelUp(this GameObject target, float? duration = null, Color? flashColor = null, TweenOptions options = default)
+            => target.Tween().WithOptions(options).LevelUp(duration, flashColor).Play();
+
+        public static TweenHandle LowHealthWarning(this Component component, float? duration = null, Color? flashColor = null, TweenOptions options = default)
+            => LowHealthWarning(component.gameObject, duration, flashColor, options);
+
+        public static TweenHandle LowHealthWarning(this GameObject target, float? duration = null, Color? flashColor = null, TweenOptions options = default)
+            => target.Tween().WithOptions(options).LowHealthWarning(duration, flashColor).Play();
+
         public static TweenHandle PickupCollectTo(this Component component, Vector3 destination, float? arcHeight = null, float? duration = null, TweenOptions options = default)
             => PickupCollectTo(component.gameObject, destination, arcHeight, duration, options);
 

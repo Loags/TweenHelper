@@ -31,7 +31,13 @@ namespace LB.TweenHelper.Editor
         OrderRandom,
         GridWaveRightToLeft,
         GridWaveTopToBottom,
-        GridWaveBottomToTop
+        GridWaveBottomToTop,
+        GridDiagonalWave,
+        GridSpiral,
+        GridCheckerboard,
+        CollectionBurstIn,
+        CollectionBurstOut,
+        CollectionGatherTo
     }
 
     internal sealed class PresetBrowserEntry

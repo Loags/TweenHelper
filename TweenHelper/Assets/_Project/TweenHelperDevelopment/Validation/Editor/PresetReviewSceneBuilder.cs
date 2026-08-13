@@ -35,8 +35,9 @@ namespace LB.TweenHelper.Editor
                 bool sceneNeedsDestinationPreview = !sceneText.Contains("destinationWorldRoot:");
                 bool sceneNeedsUISequencePreview = !sceneText.Contains("uiSequencePreviewRoot:");
                 bool sceneNeedsTextValuePreview = !sceneText.Contains("textValuePreviewRoot:");
+                bool sceneNeedsCameraFeedback = !sceneText.Contains("feedbackCamera:");
                 bool sceneNeedsMaterial = !File.Exists(Path.GetFullPath(MaterialPath));
-                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsDestinationPreview && !sceneNeedsUISequencePreview && !sceneNeedsTextValuePreview && !sceneNeedsMaterial)
+                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsDestinationPreview && !sceneNeedsUISequencePreview && !sceneNeedsTextValuePreview && !sceneNeedsCameraFeedback && !sceneNeedsMaterial)
                 {
                     Material material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
                     if (material == null || !NeedsTransparentConfiguration(material)) return;
@@ -114,7 +115,7 @@ namespace LB.TweenHelper.Editor
             SetRect(status.rectTransform, new Vector2(0.34f, 0.56f), new Vector2(0.66f, 1f), Vector2.zero, Vector2.zero);
             TMP_Text position = CreateText("Position", footer, string.Empty, 18, FontStyles.Bold, TextAlignmentOptions.Center);
             position.color = MutedTextColor;
-            SetRect(position.rectTransform, new Vector2(0.43f, 0f), new Vector2(0.57f, 0.34f), Vector2.zero, Vector2.zero);
+            SetRect(position.rectTransform, new Vector2(0.43f, 0.01f), new Vector2(0.57f, 0.14f), Vector2.zero, Vector2.zero);
 
             Button previous = CreateButton("Previous", footer, "<  PREVIOUS", new Color(0.12f, 0.24f, 0.42f));
             SetRect((RectTransform)previous.transform, new Vector2(0.16f, 0.15f), new Vector2(0.34f, 0.58f), Vector2.zero, Vector2.zero);
@@ -162,6 +163,8 @@ namespace LB.TweenHelper.Editor
             Assign(serializedController, "numberText", textValuePreview.Number);
             Assign(serializedController, "characterText", textValuePreview.Character);
             Assign(serializedController, "scoreText", textValuePreview.Score);
+            Assign(serializedController, "feedbackCamera", camera);
+            Assign(serializedController, "cameraFocusTarget", worldTarget.transform);
             Assign(serializedController, "itemNameText", itemName);
             Assign(serializedController, "descriptionText", description);
             Assign(serializedController, "categoryText", category);

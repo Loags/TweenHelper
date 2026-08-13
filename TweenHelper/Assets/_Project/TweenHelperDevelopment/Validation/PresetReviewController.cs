@@ -27,6 +27,7 @@ namespace LB.TweenHelper.Demo
             FeedbackSequence,
             UISequence,
             TextValueAnimation,
+            CameraFeedback,
             Preset
         }
 
@@ -40,7 +41,8 @@ namespace LB.TweenHelper.Demo
             DestinationWorld,
             DestinationUi,
             UISequence,
-            TextValue
+            TextValue,
+            CameraFeedback
         }
 
         private enum CollectionReviewKind
@@ -57,7 +59,13 @@ namespace LB.TweenHelper.Demo
             OrderRandom,
             GridWaveRightToLeft,
             GridWaveTopToBottom,
-            GridWaveBottomToTop
+            GridWaveBottomToTop,
+            GridDiagonalWave,
+            GridSpiral,
+            GridCheckerboard,
+            CollectionBurstIn,
+            CollectionBurstOut,
+            CollectionGatherTo
         }
 
         private enum DestinationReviewKind
@@ -71,7 +79,13 @@ namespace LB.TweenHelper.Demo
             SpringTo3D,
             SpringLocalToUi,
             MagneticSnapTo3D,
-            MagneticSnapLocalToUi
+            MagneticSnapLocalToUi,
+            PathThrough3D,
+            PathLocalThroughUi,
+            SpiralTo3D,
+            SpiralLocalToUi,
+            MultiHopTo3D,
+            MultiHopLocalToUi
         }
 
         private enum FeedbackReviewKind
@@ -80,7 +94,13 @@ namespace LB.TweenHelper.Demo
             DamageHit,
             SuccessConfirm,
             RewardReveal,
-            PickupCollect
+            PickupCollect,
+            HealReceive,
+            ShieldBlock,
+            CriticalHit,
+            CooldownReady,
+            LevelUp,
+            LowHealthWarning
         }
 
         private enum UISequenceReviewKind
@@ -93,7 +113,13 @@ namespace LB.TweenHelper.Demo
             TooltipHide,
             DropdownOpen,
             DropdownClose,
-            TabSwitch
+            TabSwitch,
+            DrawerShow,
+            DrawerHide,
+            BottomSheetShow,
+            BottomSheetHide,
+            PagePush,
+            PageCrossFade
         }
 
         private enum TextValueReviewKind
@@ -104,7 +130,23 @@ namespace LB.TweenHelper.Demo
             NumberCountDown,
             TextCharacterStaggerIn,
             TextWave,
-            ScoreIncrease
+            ScoreIncrease,
+            TextCharacterStaggerOut,
+            TextCharacterBounce,
+            TextColorSweep,
+            TextGlitch,
+            TextEmphasis,
+            TextScrambleReveal
+        }
+
+        private enum CameraFeedbackReviewKind
+        {
+            Impact,
+            Recoil,
+            LandingImpact,
+            FovKick,
+            FocusZoom,
+            Breathing
         }
 
         private enum ReviewFilter
@@ -127,12 +169,14 @@ namespace LB.TweenHelper.Demo
             public FeedbackReviewKind FeedbackKind;
             public UISequenceReviewKind UISequenceKind;
             public TextValueReviewKind TextValueKind;
+            public CameraFeedbackReviewKind CameraFeedbackKind;
 
             public bool UsesUiTarget => Preview == PreviewKind.Ui;
             public bool UsesCollectionPreview => Preview == PreviewKind.List || Preview == PreviewKind.Grid || Preview == PreviewKind.LoadingDots;
             public bool UsesDestinationPreview => Preview == PreviewKind.DestinationWorld || Preview == PreviewKind.DestinationUi;
             public bool UsesUISequencePreview => Preview == PreviewKind.UISequence;
             public bool UsesTextValuePreview => Preview == PreviewKind.TextValue;
+            public bool UsesCameraFeedbackPreview => Preview == PreviewKind.CameraFeedback;
         }
 
         private readonly struct TargetSnapshot
@@ -220,6 +264,30 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private readonly struct CameraSnapshot
+        {
+            public readonly Vector3 LocalPosition;
+            public readonly Quaternion LocalRotation;
+            public readonly float FieldOfView;
+
+            private CameraSnapshot(Vector3 localPosition, Quaternion localRotation, float fieldOfView)
+            {
+                LocalPosition = localPosition;
+                LocalRotation = localRotation;
+                FieldOfView = fieldOfView;
+            }
+
+            public static CameraSnapshot Capture(Camera camera)
+                => new CameraSnapshot(camera.transform.localPosition, camera.transform.localRotation, camera.fieldOfView);
+
+            public void Apply(Camera camera)
+            {
+                camera.transform.localPosition = LocalPosition;
+                camera.transform.localRotation = LocalRotation;
+                camera.fieldOfView = FieldOfView;
+            }
+        }
+
         private const string StatusKeyPrefix = "TweenHelper.PresetReview.Status.";
         private const float AutoReplayDelaySeconds = 0.5f;
         private const float DestinationWorldArcHeight = 2.1f;
@@ -278,6 +346,10 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private TMP_Text characterText;
         [SerializeField] private TMP_Text scoreText;
 
+        [Header("Camera Feedback Preview")]
+        [SerializeField] private Camera feedbackCamera;
+        [SerializeField] private Transform cameraFocusTarget;
+
         [Header("Information")]
         [SerializeField] private TMP_Text itemNameText;
         [SerializeField] private TMP_Text descriptionText;
@@ -320,6 +392,7 @@ namespace LB.TweenHelper.Demo
         private TMPTextSnapshot _numberTextSnapshot;
         private TMPTextSnapshot _characterTextSnapshot;
         private TMPTextSnapshot _scoreTextSnapshot;
+        private CameraSnapshot _feedbackCameraSnapshot;
         private TweenHandle _activeTween;
         private Coroutine _delayedReplay;
         private ReviewFilter _activeFilter;
@@ -349,6 +422,7 @@ namespace LB.TweenHelper.Demo
             _numberTextSnapshot = TMPTextSnapshot.Capture(numberText);
             _characterTextSnapshot = TMPTextSnapshot.Capture(characterText);
             _scoreTextSnapshot = TMPTextSnapshot.Capture(scoreText);
+            _feedbackCameraSnapshot = CameraSnapshot.Capture(feedbackCamera);
             WireControls();
             BuildReviewItems();
             ShowCurrentItem();
@@ -408,6 +482,12 @@ namespace LB.TweenHelper.Demo
             AddStaggerVariant(CollectionReviewKind.GridWaveRightToLeft, "Reveals grid columns from right to left.", PreviewKind.Grid);
             AddStaggerVariant(CollectionReviewKind.GridWaveTopToBottom, "Reveals grid rows from top to bottom.", PreviewKind.Grid);
             AddStaggerVariant(CollectionReviewKind.GridWaveBottomToTop, "Reveals grid rows from bottom to top.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.GridDiagonalWave, "Reveals grid diagonals from the top-left toward the bottom-right.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.GridSpiral, "Reveals grid items in a clockwise outside-in spiral.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.GridCheckerboard, "Pulses alternating checkerboard cells in two coordinated phases.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.CollectionBurstIn, "Launches every grid item from the collection center into its authored position.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.CollectionBurstOut, "Scatters grid items away from the collection center while shrinking and fading them.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.CollectionGatherTo, "Gathers every grid item into one destination while shrinking and fading them.", PreviewKind.Grid);
 
             AddDestinationMotion(DestinationReviewKind.ArcTo3D, "ArcTo 3D", "Moves through a signed world-space Y arc and lands exactly at the destination.", PreviewKind.DestinationWorld);
             AddDestinationMotion(DestinationReviewKind.ArcLocalToUi, "ArcLocalTo UI", "Moves an anchored UI target through a signed local Y arc.", PreviewKind.DestinationUi);
@@ -419,6 +499,12 @@ namespace LB.TweenHelper.Demo
             AddDestinationMotion(DestinationReviewKind.SpringLocalToUi, "SpringLocalTo UI", "Passes an anchored destination, then settles without positional drift.", PreviewKind.DestinationUi);
             AddDestinationMotion(DestinationReviewKind.MagneticSnapTo3D, "MagneticSnapTo 3D", "Pulls away before accelerating past and settling on a world-space destination.", PreviewKind.DestinationWorld);
             AddDestinationMotion(DestinationReviewKind.MagneticSnapLocalToUi, "MagneticSnapLocalTo UI", "Pulls an anchored target away before snapping past and settling on its destination.", PreviewKind.DestinationUi);
+            AddDestinationMotion(DestinationReviewKind.PathThrough3D, "PathThrough 3D", "Traverses two world-space waypoints with Catmull-Rom interpolation and an exact final endpoint.", PreviewKind.DestinationWorld);
+            AddDestinationMotion(DestinationReviewKind.PathLocalThroughUi, "PathLocalThrough UI", "Traverses anchored waypoints with Catmull-Rom interpolation and an exact final endpoint.", PreviewKind.DestinationUi);
+            AddDestinationMotion(DestinationReviewKind.SpiralTo3D, "SpiralTo 3D", "Progresses through a closing world-space spiral without jumping at either endpoint.", PreviewKind.DestinationWorld);
+            AddDestinationMotion(DestinationReviewKind.SpiralLocalToUi, "SpiralLocalTo UI", "Progresses through a closing anchored spiral and lands on the exact destination.", PreviewKind.DestinationUi);
+            AddDestinationMotion(DestinationReviewKind.MultiHopTo3D, "MultiHopTo 3D", "Advances through three diminishing world-space hops before landing exactly.", PreviewKind.DestinationWorld);
+            AddDestinationMotion(DestinationReviewKind.MultiHopLocalToUi, "MultiHopLocalTo UI", "Advances through three diminishing anchored hops before landing exactly.", PreviewKind.DestinationUi);
 
             AddFeedbackSequence(FeedbackReviewKind.ErrorReject, "ErrorReject 3D", "Rejects an action with a sharp shake, tilt, and red flash before restoring the exact baseline.", PreviewKind.DestinationWorld);
             AddFeedbackSequence(FeedbackReviewKind.ErrorReject, "ErrorReject UI", "Rejects a UI action with an anchored shake, tilt, and red flash before restoring the exact baseline.", PreviewKind.DestinationUi);
@@ -430,6 +516,12 @@ namespace LB.TweenHelper.Demo
             AddFeedbackSequence(FeedbackReviewKind.RewardReveal, "RewardReveal UI", "Reveals a UI reward while preserving its existing orientation and final layout state.", PreviewKind.DestinationUi);
             AddFeedbackSequence(FeedbackReviewKind.PickupCollect, "PickupCollectTo 3D", "Punches, arcs, shrinks, and fades into an exact world-space collection destination.", PreviewKind.DestinationWorld);
             AddFeedbackSequence(FeedbackReviewKind.PickupCollect, "PickupCollectLocalTo UI", "Punches, arcs, shrinks, and fades into an exact anchored collection destination.", PreviewKind.DestinationUi);
+            AddFeedbackSequence(FeedbackReviewKind.HealReceive, "Heal Receive 3D", "Communicates healing with a lift, restorative stretch, settling pulse, and green flash.", PreviewKind.DestinationWorld);
+            AddFeedbackSequence(FeedbackReviewKind.ShieldBlock, "Shield Block 3D", "Compresses and recoils opposite a supplied impact direction with a blue shield flash.", PreviewKind.DestinationWorld);
+            AddFeedbackSequence(FeedbackReviewKind.CriticalHit, "Critical Hit 3D", "Combines a white-hot impact, grounded squash, directional recoil, and decaying aftershock.", PreviewKind.DestinationWorld);
+            AddFeedbackSequence(FeedbackReviewKind.CooldownReady, "Cooldown Ready UI", "Announces a ready ability with a relative flip, pop, lift, and cyan flash.", PreviewKind.DestinationUi);
+            AddFeedbackSequence(FeedbackReviewKind.LevelUp, "Level Up UI", "Celebrates progression with lift, a relative spin, staged pulses, and gold flash.", PreviewKind.DestinationUi);
+            AddFeedbackSequence(FeedbackReviewKind.LowHealthWarning, "Low Health Warning UI", "Plays one finite double-beat warning cycle suitable for caller-controlled looping.", PreviewKind.DestinationUi);
 
             AddUISequence(UISequenceReviewKind.ToastShow, "Slides, fades, overshoots, and settles a toast on its exact authored state.");
             AddUISequence(UISequenceReviewKind.ToastHide, "Anticipates before sliding and fading a toast out of view.");
@@ -440,6 +532,12 @@ namespace LB.TweenHelper.Demo
             AddUISequence(UISequenceReviewKind.DropdownOpen, "Expands a dropdown from its pivot and staggers its entries into view.");
             AddUISequence(UISequenceReviewKind.DropdownClose, "Staggers entries out and compresses the dropdown toward its pivot.");
             AddUISequence(UISequenceReviewKind.TabSwitch, "Overlaps outgoing and incoming tab content while preserving both authored positions.");
+            AddUISequence(UISequenceReviewKind.DrawerShow, "Slides a drawer in from the left screen edge and settles on its authored position.");
+            AddUISequence(UISequenceReviewKind.DrawerHide, "Slides a drawer back through the left screen edge while fading it out.");
+            AddUISequence(UISequenceReviewKind.BottomSheetShow, "Raises a bottom sheet with a small overshoot while fading its backdrop in.");
+            AddUISequence(UISequenceReviewKind.BottomSheetHide, "Anticipates upward before dismissing the sheet and backdrop below the screen.");
+            AddUISequence(UISequenceReviewKind.PagePush, "Pushes the outgoing page left while the incoming page enters from the right.");
+            AddUISequence(UISequenceReviewKind.PageCrossFade, "Cross-fades pages with restrained depth scaling and overlapping timing.");
 
             AddTextValueAnimation(TextValueReviewKind.TypewriterReveal, "Reveals rich TextMesh Pro content character by character without exposing markup.");
             AddTextValueAnimation(TextValueReviewKind.TypewriterHide, "Hides currently visible TextMesh Pro content in reverse character order.");
@@ -448,6 +546,19 @@ namespace LB.TweenHelper.Demo
             AddTextValueAnimation(TextValueReviewKind.TextCharacterStaggerIn, "Reveals visible characters with directional movement, alpha, scale, and compressed stagger timing.");
             AddTextValueAnimation(TextValueReviewKind.TextWave, "Sends a finite wave across visible characters and restores the exact mesh baseline.");
             AddTextValueAnimation(TextValueReviewKind.ScoreIncrease, "Counts a score upward with a temporary scale punch and gold flash.");
+            AddTextValueAnimation(TextValueReviewKind.TextCharacterStaggerOut, "Hides visible characters in reverse order with directional movement, scale, and alpha.");
+            AddTextValueAnimation(TextValueReviewKind.TextCharacterBounce, "Sends a finite traveling bounce across visible characters and restores the mesh baseline.");
+            AddTextValueAnimation(TextValueReviewKind.TextColorSweep, "Sweeps a cyan highlight across per-character vertex colors and restores the original colors.");
+            AddTextValueAnimation(TextValueReviewKind.TextGlitch, "Applies a deterministic seeded offset, scale, and two-color glitch before exact restoration.");
+            AddTextValueAnimation(TextValueReviewKind.TextEmphasis, "Temporarily lifts, scales, and colors a selected visible-character range.");
+            AddTextValueAnimation(TextValueReviewKind.TextScrambleReveal, "Resolves deterministic substitute glyphs into the untouched rich-text source string.");
+
+            AddCameraFeedback(CameraFeedbackReviewKind.Impact, "Camera Impact", "Applies a sharp deterministic position and rotation impact before restoring the exact camera pose.");
+            AddCameraFeedback(CameraFeedbackReviewKind.Recoil, "Camera Recoil", "Kicks the camera backward and upward, adds a small aftershock, and settles exactly.");
+            AddCameraFeedback(CameraFeedbackReviewKind.LandingImpact, "Camera Landing Impact", "Combines a downward bump, roll aftershock, and field-of-view kick for a heavy landing.");
+            AddCameraFeedback(CameraFeedbackReviewKind.FovKick, "Camera FOV Kick", "Widens the field of view quickly and restores the exact captured value.");
+            AddCameraFeedback(CameraFeedbackReviewKind.FocusZoom, "Camera Focus Zoom", "Temporarily moves and aims toward the review target while narrowing the field of view.");
+            AddCameraFeedback(CameraFeedbackReviewKind.Breathing, "Camera Breathing", "Plays one subtle finite position, rotation, and field-of-view breathing cycle.");
 
             TweenPresetRegistry.Refresh();
             foreach (ITweenPreset preset in TweenPresetRegistry.Presets.OrderBy(item => item.PresetName, StringComparer.Ordinal))
@@ -554,6 +665,19 @@ namespace LB.TweenHelper.Demo
             });
         }
 
+        private void AddCameraFeedback(CameraFeedbackReviewKind kind, string name, string description)
+        {
+            _allItems.Add(new ReviewItem
+            {
+                Id = "CameraFeedback:" + kind,
+                Name = name,
+                Description = description,
+                Kind = ReviewKind.CameraFeedback,
+                Preview = PreviewKind.CameraFeedback,
+                CameraFeedbackKind = kind
+            });
+        }
+
         public void ReplayCurrent()
         {
             if (_items.Count == 0) return;
@@ -582,6 +706,12 @@ namespace LB.TweenHelper.Demo
             if (CurrentItem.UsesTextValuePreview)
             {
                 _activeTween = PlayTextValueAnimation(CurrentItem.TextValueKind);
+                return;
+            }
+
+            if (CurrentItem.UsesCameraFeedbackPreview)
+            {
+                _activeTween = PlayCameraFeedback(CurrentItem.CameraFeedbackKind);
                 return;
             }
 
@@ -802,6 +932,18 @@ namespace LB.TweenHelper.Demo
                     return gridTargets.GridWave(gridPreviewGroup, 3, GridWaveDirection.TopToBottom);
                 case CollectionReviewKind.GridWaveBottomToTop:
                     return gridTargets.GridWave(gridPreviewGroup, 3, GridWaveDirection.BottomToTop);
+                case CollectionReviewKind.GridDiagonalWave:
+                    return gridTargets.GridDiagonalWave(gridPreviewGroup, 3, GridDiagonalDirection.TopLeftToBottomRight, 0.34f, 0.085f);
+                case CollectionReviewKind.GridSpiral:
+                    return gridTargets.GridSpiral(gridPreviewGroup, 3, GridSpiralDirection.OutsideInClockwise, 0.32f, 0.07f);
+                case CollectionReviewKind.GridCheckerboard:
+                    return gridTargets.GridCheckerboard(gridPreviewGroup, 3, false, 0.4f, 0.2f);
+                case CollectionReviewKind.CollectionBurstIn:
+                    return gridTargets.CollectionBurstIn(gridPreviewGroup, Vector3.zero, 0.58f, 0.055f);
+                case CollectionReviewKind.CollectionBurstOut:
+                    return gridTargets.CollectionBurstOut(gridPreviewGroup, Vector3.zero, 170f, 0.52f, 0.045f);
+                case CollectionReviewKind.CollectionGatherTo:
+                    return gridTargets.CollectionGatherTo(gridPreviewGroup, Vector3.zero, 0.62f, 0.055f);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown collection review item.");
             }
@@ -857,6 +999,18 @@ namespace LB.TweenHelper.Demo
                     return target.Tween().MagneticSnapTo(destination, 1.25f, 0.5f, 0.4f).Play();
                 case DestinationReviewKind.MagneticSnapLocalToUi:
                     return target.Tween().MagneticSnapLocalTo(destination, 1.25f, 42f, 32f).Play();
+                case DestinationReviewKind.PathThrough3D:
+                    return target.Tween().PathThrough(GetPathWaypoints(false, start, destination), DestinationPathInterpolation.CatmullRom, 1.65f).Play();
+                case DestinationReviewKind.PathLocalThroughUi:
+                    return target.Tween().PathLocalThrough(GetPathWaypoints(true, start, destination), DestinationPathInterpolation.CatmullRom, 1.65f).Play();
+                case DestinationReviewKind.SpiralTo3D:
+                    return target.Tween().SpiralTo(destination, 1.1f, 1.75f, 1.65f).Play();
+                case DestinationReviewKind.SpiralLocalToUi:
+                    return target.Tween().SpiralLocalTo(destination, 92f, 1.75f, 1.65f).Play();
+                case DestinationReviewKind.MultiHopTo3D:
+                    return target.Tween().MultiHopTo(destination, 2.1f, 3, 1.15f, 1.65f).Play();
+                case DestinationReviewKind.MultiHopLocalToUi:
+                    return target.Tween().MultiHopLocalTo(destination, 175f, 3, 1.15f, 1.65f).Play();
                 default:
                     throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown destination-motion review item.");
             }
@@ -888,6 +1042,18 @@ namespace LB.TweenHelper.Demo
                     return usesUi
                         ? target.PickupCollectLocalTo(destination, DestinationUiArcHeight, 1.35f)
                         : target.PickupCollectTo(destination, DestinationWorldArcHeight, 1.35f);
+                case FeedbackReviewKind.HealReceive:
+                    return target.HealReceive(1f);
+                case FeedbackReviewKind.ShieldBlock:
+                    return target.ShieldBlock(Vector3.right, 0.8f);
+                case FeedbackReviewKind.CriticalHit:
+                    return target.CriticalHit(new Vector3(1f, -0.2f, 0f), 0.9f);
+                case FeedbackReviewKind.CooldownReady:
+                    return target.CooldownReady(1f);
+                case FeedbackReviewKind.LevelUp:
+                    return target.LevelUp(1.35f);
+                case FeedbackReviewKind.LowHealthWarning:
+                    return target.LowHealthWarning(1.1f);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown feedback review item.");
             }
@@ -915,6 +1081,18 @@ namespace LB.TweenHelper.Demo
                     return dropdownSequencePanel.DropdownClose(dropdownSequenceEntries, 0.48f, 0.065f);
                 case UISequenceReviewKind.TabSwitch:
                     return tabSequenceOutgoing.TabSwitchTo(tabSequenceIncoming, UISequenceDirection.Left, 120f, 0.62f);
+                case UISequenceReviewKind.DrawerShow:
+                    return dropdownSequencePanel.DrawerShow(UISequenceDirection.Left, null, 420f, 0.68f);
+                case UISequenceReviewKind.DrawerHide:
+                    return dropdownSequencePanel.DrawerHide(UISequenceDirection.Left, null, 420f, 0.52f);
+                case UISequenceReviewKind.BottomSheetShow:
+                    return modalSequencePanel.BottomSheetShow(modalSequenceBackdrop, 460f, 0.76f);
+                case UISequenceReviewKind.BottomSheetHide:
+                    return modalSequencePanel.BottomSheetHide(modalSequenceBackdrop, 460f, 0.62f);
+                case UISequenceReviewKind.PagePush:
+                    return tabSequenceOutgoing.PagePushTo(tabSequenceIncoming, UISequenceDirection.Left, 640f, 0.72f);
+                case UISequenceReviewKind.PageCrossFade:
+                    return tabSequenceOutgoing.PageCrossFadeTo(tabSequenceIncoming, 0.06f, 0.62f);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown UI-sequence review item.");
             }
@@ -939,8 +1117,41 @@ namespace LB.TweenHelper.Demo
                     return characterText.TextWave(UISequenceDirection.Up, 22f, 1, 1.25f);
                 case TextValueReviewKind.ScoreIncrease:
                     return scoreText.ScoreIncrease(1200d, 1475d, "N0", 1.2f);
+                case TextValueReviewKind.TextCharacterStaggerOut:
+                    return characterText.TextCharacterStaggerOut(UISequenceDirection.Up, 30f, 0.045f, 1.05f);
+                case TextValueReviewKind.TextCharacterBounce:
+                    return characterText.TextCharacterBounce(UISequenceDirection.Up, 24f, 1.2f);
+                case TextValueReviewKind.TextColorSweep:
+                    return characterText.TextColorSweep(new Color(0.18f, 0.9f, 1f), 2.4f, 1.2f);
+                case TextValueReviewKind.TextGlitch:
+                    return characterText.TextGlitch(9f, 1729, 0.9f);
+                case TextValueReviewKind.TextEmphasis:
+                    return characterText.TextEmphasis(UISequenceDirection.Up, 12f, 0, 9, new Color(1f, 0.7f, 0.12f), 0.9f);
+                case TextValueReviewKind.TextScrambleReveal:
+                    return characterText.TextScrambleReveal(1729, 1.35f);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown text/value review item.");
+            }
+        }
+
+        private TweenHandle PlayCameraFeedback(CameraFeedbackReviewKind kind)
+        {
+            switch (kind)
+            {
+                case CameraFeedbackReviewKind.Impact:
+                    return feedbackCamera.CameraImpact(0.24f, 3.2f, 0.58f);
+                case CameraFeedbackReviewKind.Recoil:
+                    return feedbackCamera.CameraRecoil(0.48f, 5.5f, 0.72f);
+                case CameraFeedbackReviewKind.LandingImpact:
+                    return feedbackCamera.CameraLandingImpact(0.32f, 4.5f, 0.78f);
+                case CameraFeedbackReviewKind.FovKick:
+                    return feedbackCamera.CameraFovKick(11f, 0.68f);
+                case CameraFeedbackReviewKind.FocusZoom:
+                    return feedbackCamera.CameraFocusZoom(cameraFocusTarget, 1.8f, 9f, 1.15f);
+                case CameraFeedbackReviewKind.Breathing:
+                    return feedbackCamera.CameraBreathing(0.06f, 0.55f, 0.75f, 3.2f);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown camera-feedback review item.");
             }
         }
 
@@ -992,6 +1203,7 @@ namespace LB.TweenHelper.Demo
             KillTargetTweens(numberText.gameObject);
             KillTargetTweens(characterText.gameObject);
             KillTargetTweens(scoreText.gameObject);
+            KillTargetTweens(feedbackCamera.gameObject);
         }
 
         private void ResetTargets()
@@ -1016,12 +1228,13 @@ namespace LB.TweenHelper.Demo
             _numberTextSnapshot.Apply(numberText);
             _characterTextSnapshot.Apply(characterText);
             _scoreTextSnapshot.Apply(scoreText);
+            _feedbackCameraSnapshot.Apply(feedbackCamera);
         }
 
         private void ApplyPreviewVisibility(PreviewKind preview)
         {
             uiTarget.SetActive(preview == PreviewKind.Ui);
-            worldTarget.SetActive(preview == PreviewKind.World);
+            worldTarget.SetActive(preview == PreviewKind.World || preview == PreviewKind.CameraFeedback);
             bool showCollection = preview == PreviewKind.List || preview == PreviewKind.Grid || preview == PreviewKind.LoadingDots;
             collectionPreviewRoot.SetActive(showCollection);
             listPreviewGroup.SetActive(preview == PreviewKind.List);
@@ -1040,21 +1253,29 @@ namespace LB.TweenHelper.Demo
         private void ConfigureUISequencePreview(UISequenceReviewKind kind)
         {
             bool showToast = kind == UISequenceReviewKind.ToastShow || kind == UISequenceReviewKind.ToastHide;
-            bool showModal = kind == UISequenceReviewKind.ModalOpen || kind == UISequenceReviewKind.ModalClose;
+            bool showModal = kind == UISequenceReviewKind.ModalOpen || kind == UISequenceReviewKind.ModalClose || kind == UISequenceReviewKind.BottomSheetShow || kind == UISequenceReviewKind.BottomSheetHide;
             bool showTooltip = kind == UISequenceReviewKind.TooltipShow || kind == UISequenceReviewKind.TooltipHide;
-            bool showDropdown = kind == UISequenceReviewKind.DropdownOpen || kind == UISequenceReviewKind.DropdownClose;
+            bool showDropdown = kind == UISequenceReviewKind.DropdownOpen || kind == UISequenceReviewKind.DropdownClose || kind == UISequenceReviewKind.DrawerShow || kind == UISequenceReviewKind.DrawerHide;
             toastSequenceTarget.SetActive(showToast);
             modalSequenceGroup.SetActive(showModal);
             tooltipSequenceTarget.SetActive(showTooltip);
             dropdownSequencePanel.SetActive(showDropdown);
-            tabSequenceGroup.SetActive(kind == UISequenceReviewKind.TabSwitch);
+            bool showPages = kind == UISequenceReviewKind.TabSwitch || kind == UISequenceReviewKind.PagePush || kind == UISequenceReviewKind.PageCrossFade;
+            tabSequenceGroup.SetActive(showPages);
         }
 
         private void ConfigureTextValuePreview(TextValueReviewKind kind)
         {
             bool showTypewriter = kind == TextValueReviewKind.TypewriterReveal || kind == TextValueReviewKind.TypewriterHide;
             bool showNumber = kind == TextValueReviewKind.NumberCountUp || kind == TextValueReviewKind.NumberCountDown;
-            bool showCharacter = kind == TextValueReviewKind.TextCharacterStaggerIn || kind == TextValueReviewKind.TextWave;
+            bool showCharacter = kind == TextValueReviewKind.TextCharacterStaggerIn ||
+                                 kind == TextValueReviewKind.TextWave ||
+                                 kind == TextValueReviewKind.TextCharacterStaggerOut ||
+                                 kind == TextValueReviewKind.TextCharacterBounce ||
+                                 kind == TextValueReviewKind.TextColorSweep ||
+                                 kind == TextValueReviewKind.TextGlitch ||
+                                 kind == TextValueReviewKind.TextEmphasis ||
+                                 kind == TextValueReviewKind.TextScrambleReveal;
             typewriterText.gameObject.SetActive(showTypewriter);
             numberText.gameObject.SetActive(showNumber);
             characterText.gameObject.SetActive(showCharacter);
@@ -1071,12 +1292,12 @@ namespace LB.TweenHelper.Demo
             destinationWorldEndMarker.gameObject.SetActive(showMarkers && item.Preview == PreviewKind.DestinationWorld);
             destinationUiStartMarker.gameObject.SetActive(showMarkers && item.Preview == PreviewKind.DestinationUi);
             destinationUiEndMarker.gameObject.SetActive(showMarkers && item.Preview == PreviewKind.DestinationUi);
-            if (showPath) UpdateDestinationPath(isDestination && IsBezier(item.DestinationKind));
+            if (showPath) UpdateDestinationPath(isDestination ? item.DestinationKind : DestinationReviewKind.ArcTo3D);
             destinationWorldCurvedPath.SetActive(showPath && item.Preview == PreviewKind.DestinationWorld);
             destinationUiCurvedPath.SetActive(showPath && item.Preview == PreviewKind.DestinationUi);
         }
 
-        private void UpdateDestinationPath(bool usesBezier)
+        private void UpdateDestinationPath(DestinationReviewKind kind)
         {
             bool usesUi = CurrentItem.Preview == PreviewKind.DestinationUi;
             Transform pathRoot = usesUi ? destinationUiCurvedPath.transform : destinationWorldCurvedPath.transform;
@@ -1084,14 +1305,32 @@ namespace LB.TweenHelper.Demo
             Vector3 destination = usesUi ? destinationUiEndMarker.anchoredPosition3D : destinationWorldEndMarker.position;
             float height = usesUi ? DestinationUiArcHeight : DestinationWorldArcHeight;
             GetBezierControls(usesUi, start, destination, out Vector3 controlA, out Vector3 controlB);
+            Vector3[] waypoints = GetPathWaypoints(usesUi, start, destination);
 
             for (int i = 0; i < pathRoot.childCount; i++)
             {
                 float progress = (i + 1f) / (pathRoot.childCount + 1f);
-                Vector3 point = usesBezier ? EvaluateBezier(start, controlA, controlB, destination, progress) : EvaluateArc(start, destination, height, progress);
+                Vector3 point;
+                if (IsBezier(kind)) point = EvaluateBezier(start, controlA, controlB, destination, progress);
+                else if (IsPath(kind)) point = EvaluatePath(start, waypoints, progress);
+                else if (IsSpiral(kind)) point = EvaluateSpiral(start, destination, usesUi ? 92f : 1.1f, 1.75f, progress, usesUi);
+                else if (IsMultiHop(kind)) point = EvaluateMultiHop(start, destination, height, 3, 1.15f, progress);
+                else point = EvaluateArc(start, destination, height, progress);
                 if (usesUi) ((RectTransform)pathRoot.GetChild(i)).anchoredPosition3D = point;
                 else pathRoot.GetChild(i).position = point;
             }
+        }
+
+        private static Vector3[] GetPathWaypoints(bool usesUi, Vector3 start, Vector3 destination)
+        {
+            float height = usesUi ? DestinationUiArcHeight : DestinationWorldArcHeight;
+            float horizontal = usesUi ? 75f : 0.9f;
+            return new[]
+            {
+                Vector3.Lerp(start, destination, 0.32f) + Vector3.up * height + Vector3.left * horizontal,
+                Vector3.Lerp(start, destination, 0.68f) + Vector3.up * height * 0.28f + Vector3.right * horizontal,
+                destination
+            };
         }
 
         private static void GetBezierControls(bool usesUi, Vector3 start, Vector3 destination, out Vector3 controlA, out Vector3 controlB)
@@ -1113,7 +1352,60 @@ namespace LB.TweenHelper.Demo
             return inverse * inverse * inverse * start + 3f * inverse * inverse * progress * controlA + 3f * inverse * progress * progress * controlB + progress * progress * progress * destination;
         }
 
+        private static Vector3 EvaluatePath(Vector3 start, Vector3[] waypoints, float progress)
+        {
+            float scaled = Mathf.Clamp01(progress) * waypoints.Length;
+            int segment = Mathf.Min(Mathf.FloorToInt(scaled), waypoints.Length - 1);
+            float localProgress = progress >= 1f ? 1f : scaled - segment;
+            Vector3 pointA = segment == 0 ? start : waypoints[segment - 1];
+            Vector3 pointB = waypoints[segment];
+            Vector3 previous = segment <= 1 ? start : waypoints[segment - 2];
+            Vector3 next = segment + 1 < waypoints.Length ? waypoints[segment + 1] : pointB;
+            float square = localProgress * localProgress;
+            float cube = square * localProgress;
+            return 0.5f * ((2f * pointA) + (-previous + pointB) * localProgress + (2f * previous - 5f * pointA + 4f * pointB - next) * square + (-previous + 3f * pointA - 3f * pointB + next) * cube);
+        }
+
+        private static Vector3 EvaluateSpiral(Vector3 start, Vector3 destination, float radius, float revolutions, float progress, bool usesUi)
+        {
+            Vector3 basePosition = Vector3.LerpUnclamped(start, destination, DOVirtual.EasedValue(0f, 1f, progress, Ease.InOutCubic));
+            Vector3 axis = destination - start;
+            if (axis.sqrMagnitude <= 0.000001f) return basePosition;
+            axis.Normalize();
+            Vector3 basisA;
+            Vector3 basisB;
+            if (usesUi)
+            {
+                basisA = Vector3.right;
+                basisB = Vector3.up;
+            }
+            else
+            {
+                Vector3 reference = Mathf.Abs(Vector3.Dot(axis, Vector3.up)) > 0.92f ? Vector3.right : Vector3.up;
+                basisA = Vector3.Cross(axis, reference).normalized;
+                basisB = Vector3.Cross(axis, basisA).normalized;
+            }
+
+            float angle = progress * revolutions * Mathf.PI * 2f;
+            float envelope = Mathf.Sin(progress * Mathf.PI);
+            return basePosition + (basisA * Mathf.Cos(angle) + basisB * Mathf.Sin(angle)) * radius * envelope;
+        }
+
+        private static Vector3 EvaluateMultiHop(Vector3 start, Vector3 destination, float height, int hopCount, float decay, float progress)
+        {
+            float travel = DOVirtual.EasedValue(0f, 1f, progress, Ease.InOutCubic);
+            float bounce = Mathf.Abs(Mathf.Sin(progress * hopCount * Mathf.PI));
+            float envelope = Mathf.Pow(1f - Mathf.Clamp01(progress), decay);
+            return Vector3.LerpUnclamped(start, destination, travel) + Vector3.up * height * bounce * envelope;
+        }
+
         private static bool IsBezier(DestinationReviewKind kind) => kind == DestinationReviewKind.BezierTo3D || kind == DestinationReviewKind.BezierLocalToUi;
+
+        private static bool IsPath(DestinationReviewKind kind) => kind == DestinationReviewKind.PathThrough3D || kind == DestinationReviewKind.PathLocalThroughUi;
+
+        private static bool IsSpiral(DestinationReviewKind kind) => kind == DestinationReviewKind.SpiralTo3D || kind == DestinationReviewKind.SpiralLocalToUi;
+
+        private static bool IsMultiHop(DestinationReviewKind kind) => kind == DestinationReviewKind.MultiHopTo3D || kind == DestinationReviewKind.MultiHopLocalToUi;
 
         private static bool UsesCurvedPath(DestinationReviewKind kind)
         {
@@ -1122,7 +1414,10 @@ namespace LB.TweenHelper.Demo
                    kind == DestinationReviewKind.BezierTo3D ||
                    kind == DestinationReviewKind.BezierLocalToUi ||
                    kind == DestinationReviewKind.HopTo3D ||
-                   kind == DestinationReviewKind.HopLocalToUi;
+                   kind == DestinationReviewKind.HopLocalToUi ||
+                   IsPath(kind) ||
+                   IsSpiral(kind) ||
+                   IsMultiHop(kind);
         }
 
         private static string GetCategoryLabel(ReviewItem item)
@@ -1134,6 +1429,7 @@ namespace LB.TweenHelper.Demo
             if (item.Kind == ReviewKind.FeedbackSequence) return item.Preview == PreviewKind.DestinationUi ? "GAMEPLAY FEEDBACK / UI" : "GAMEPLAY FEEDBACK / 3D";
             if (item.Kind == ReviewKind.UISequence) return "PRODUCTION UI SEQUENCE";
             if (item.Kind == ReviewKind.TextValueAnimation) return "TEXT & VALUE ANIMATION";
+            if (item.Kind == ReviewKind.CameraFeedback) return "CAMERA FEEDBACK";
             return item.UsesUiTarget ? "2D / UI PRESET" : "3D / WORLD PRESET";
         }
 

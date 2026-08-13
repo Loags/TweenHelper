@@ -37,10 +37,52 @@ namespace LB.TweenHelper
             return this;
         }
 
+        /// <summary>Hides visible TextMesh Pro characters with directional offset, alpha, scale, and reverse-order stagger.</summary>
+        public TweenBuilder TextCharacterStaggerOut(UISequenceDirection direction = UISequenceDirection.Up, float distance = 18f, float characterStagger = 0.025f, float? duration = null)
+        {
+            AddStep(options => TMPTextAnimationUtility.CreateCharacterStaggerOut(_gameObject, direction, distance, characterStagger, ResolveTextAnimationDuration(duration, options, 0.58f), options), applyBuilderOptions: false);
+            return this;
+        }
+
         /// <summary>Sends one or more finite directional waves across visible TextMesh Pro characters.</summary>
         public TweenBuilder TextWave(UISequenceDirection direction = UISequenceDirection.Up, float amplitude = 12f, int waveCount = 1, float? duration = null)
         {
             AddStep(options => TMPTextAnimationUtility.CreateTextWave(_gameObject, direction, amplitude, waveCount, ResolveTextAnimationDuration(duration, options, 0.8f), options), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Sends a finite bounce across visible TextMesh Pro characters.</summary>
+        public TweenBuilder TextCharacterBounce(UISequenceDirection direction = UISequenceDirection.Up, float amplitude = 14f, float? duration = null)
+        {
+            AddStep(options => TMPTextAnimationUtility.CreateCharacterBounce(_gameObject, direction, amplitude, ResolveTextAnimationDuration(duration, options, 0.72f), options), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Sweeps a temporary highlight color across visible TextMesh Pro characters.</summary>
+        public TweenBuilder TextColorSweep(Color? highlightColor = null, float width = 2.5f, float? duration = null)
+        {
+            AddStep(options => TMPTextAnimationUtility.CreateColorSweep(_gameObject, highlightColor, width, ResolveTextAnimationDuration(duration, options, 0.78f), options), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Applies a finite deterministic offset, scale, and color glitch to visible characters.</summary>
+        public TweenBuilder TextGlitch(float distance = 6f, int seed = 1337, float? duration = null)
+        {
+            AddStep(options => TMPTextAnimationUtility.CreateGlitch(_gameObject, distance, seed, ResolveTextAnimationDuration(duration, options, 0.52f), options), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Emphasizes all or part of a label with a temporary lift, scale pulse, and color accent.</summary>
+        public TweenBuilder TextEmphasis(UISequenceDirection direction = UISequenceDirection.Up, float amplitude = 8f, int startCharacter = 0, int characterCount = -1, Color? highlightColor = null, float? duration = null)
+        {
+            AddStep(options => TMPTextAnimationUtility.CreateEmphasis(_gameObject, direction, amplitude, startCharacter, characterCount, highlightColor, ResolveTextAnimationDuration(duration, options, 0.55f), options), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Resolves deterministic substitute glyphs into the original rich TextMesh Pro content.</summary>
+        public TweenBuilder TextScrambleReveal(int seed = 1337, float? duration = null)
+        {
+            AddStep(options => TMPTextAnimationUtility.CreateScrambleReveal(_gameObject, seed, ResolveTextAnimationDuration(duration, options, 0.9f), options), applyBuilderOptions: false);
             return this;
         }
 

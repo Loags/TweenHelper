@@ -309,6 +309,258 @@ namespace LB.TweenHelper
             return CreateTimeline(outgoing, duration, options, Initialize, Evaluate, Complete, Rewind);
         }
 
+        public static Tween CreateDrawer(GameObject panel, GameObject backdrop, bool show, UISequenceDirection edge, float distance, float duration, TweenOptions options)
+        {
+            ValidateRequest(panel, duration, distance, edge, options);
+            ValidateBackdrop(panel, backdrop);
+            float strength = ResolveStrength(options);
+            Vector3 movement = DirectionVector(edge) * distance * strength;
+            var panelState = new UISequenceState(panel);
+            var backdropState = backdrop == null ? null : new UISequenceState(backdrop);
+            UISequencePose panelStart = default;
+            UISequencePose panelEnd = default;
+            UISequencePose backdropStart = default;
+            UISequencePose backdropEnd = default;
+
+            void Initialize()
+            {
+                panelState.Initialize();
+                backdropState?.Initialize();
+                RequireBackdropAlpha(backdrop, backdropState);
+                if (show)
+                {
+                    panelStart = ResolveShowStart(panelState, movement, UniformScale(panelState.Shown.Scale, 1f - 0.025f * strength));
+                    panelEnd = panelState.Shown;
+                    if (backdropState != null)
+                    {
+                        backdropStart = ResolveFadeInStart(backdropState);
+                        backdropEnd = backdropState.Shown;
+                    }
+                    return;
+                }
+
+                panelStart = panelState.Invocation;
+                panelEnd = HiddenPose(panelState.Shown, movement, UniformScale(panelState.Shown.Scale, 1f - 0.025f * strength));
+                if (backdropState != null)
+                {
+                    backdropStart = backdropState.Invocation;
+                    backdropEnd = HiddenPose(backdropState.Shown, Vector3.zero, backdropState.Shown.Scale);
+                }
+            }
+
+            void Evaluate(float time)
+            {
+                float progress = Mathf.Clamp01(time / duration);
+                float positionProgress = EaseValue(progress, options.Ease ?? (show ? Ease.OutCubic : Ease.InCubic));
+                float scaleProgress = EaseValue(progress, show ? Ease.OutBack : Ease.InQuad);
+                float alphaProgress = EaseValue(progress, show ? Ease.OutQuad : Ease.InQuad);
+                ApplyInterpolated(panelState, panelStart, panelEnd, positionProgress, scaleProgress, alphaProgress, positionProgress);
+                if (backdropState != null)
+                {
+                    float backdropProgress = Progress(progress, show ? 0f : 0.12f, show ? 0.72f : 0.88f, show ? Ease.OutQuad : Ease.InQuad);
+                    ApplyInterpolated(backdropState, backdropStart, backdropEnd, backdropProgress, backdropProgress, backdropProgress, backdropProgress);
+                }
+            }
+
+            void Complete()
+            {
+                panelState.Apply(panelEnd);
+                if (backdropState != null) backdropState.Apply(backdropEnd);
+            }
+
+            void Rewind()
+            {
+                panelState.RestoreInvocation();
+                backdropState?.RestoreInvocation();
+            }
+
+            return CreateTimeline(panel, duration, options, Initialize, Evaluate, Complete, Rewind);
+        }
+
+        public static Tween CreateBottomSheet(GameObject panel, GameObject backdrop, bool show, float distance, float duration, TweenOptions options)
+        {
+            ValidateRequest(panel, duration, distance, UISequenceDirection.Down, options);
+            ValidateBackdrop(panel, backdrop);
+            float strength = ResolveStrength(options);
+            Vector3 movement = Vector3.down * distance * strength;
+            var panelState = new UISequenceState(panel);
+            var backdropState = backdrop == null ? null : new UISequenceState(backdrop);
+            UISequencePose panelStart = default;
+            UISequencePose panelEnd = default;
+            UISequencePose backdropStart = default;
+            UISequencePose backdropEnd = default;
+
+            void Initialize()
+            {
+                panelState.Initialize();
+                backdropState?.Initialize();
+                RequireBackdropAlpha(backdrop, backdropState);
+                if (show)
+                {
+                    panelStart = ResolveShowStart(panelState, movement, CompressY(panelState.Shown.Scale, 1f - 0.055f * strength));
+                    panelEnd = panelState.Shown;
+                    if (backdropState != null)
+                    {
+                        backdropStart = ResolveFadeInStart(backdropState);
+                        backdropEnd = backdropState.Shown;
+                    }
+                    return;
+                }
+
+                panelStart = panelState.Invocation;
+                panelEnd = HiddenPose(panelState.Shown, movement, CompressY(panelState.Shown.Scale, 1f - 0.055f * strength));
+                if (backdropState != null)
+                {
+                    backdropStart = backdropState.Invocation;
+                    backdropEnd = HiddenPose(backdropState.Shown, Vector3.zero, backdropState.Shown.Scale);
+                }
+            }
+
+            void Evaluate(float time)
+            {
+                float progress = Mathf.Clamp01(time / duration);
+                Vector3 position;
+                Vector3 scale;
+                if (show)
+                {
+                    Vector3 overshootPosition = panelEnd.Position + Vector3.up * 12f * strength;
+                    position = progress <= 0.82f
+                        ? Vector3.LerpUnclamped(panelStart.Position, overshootPosition, EaseValue(progress / 0.82f, options.Ease ?? Ease.OutCubic))
+                        : Vector3.LerpUnclamped(overshootPosition, panelEnd.Position, EaseValue((progress - 0.82f) / 0.18f, Ease.OutSine));
+                    Vector3 overshootScale = UniformScale(panelEnd.Scale, 1f + 0.018f * strength);
+                    scale = progress <= 0.76f
+                        ? Vector3.LerpUnclamped(panelStart.Scale, overshootScale, EaseValue(progress / 0.76f, Ease.OutCubic))
+                        : Vector3.LerpUnclamped(overshootScale, panelEnd.Scale, EaseValue((progress - 0.76f) / 0.24f, Ease.OutBack));
+                }
+                else
+                {
+                    Vector3 anticipation = panelStart.Position + Vector3.up * 9f * strength;
+                    position = progress <= 0.14f
+                        ? Vector3.LerpUnclamped(panelStart.Position, anticipation, EaseValue(progress / 0.14f, Ease.OutQuad))
+                        : Vector3.LerpUnclamped(anticipation, panelEnd.Position, EaseValue((progress - 0.14f) / 0.86f, options.Ease ?? Ease.InCubic));
+                    scale = Vector3.LerpUnclamped(panelStart.Scale, panelEnd.Scale, EaseValue(progress, Ease.InQuad));
+                }
+
+                float alpha = Mathf.LerpUnclamped(panelStart.Alpha, panelEnd.Alpha, EaseValue(progress, show ? Ease.OutQuad : Ease.InQuad));
+                panelState.Apply(new UISequencePose(position, scale, Quaternion.SlerpUnclamped(panelStart.Rotation, panelEnd.Rotation, progress), alpha));
+                if (backdropState != null)
+                {
+                    float backdropProgress = Progress(progress, show ? 0f : 0.16f, show ? 0.7f : 0.84f, show ? Ease.OutQuad : Ease.InQuad);
+                    ApplyInterpolated(backdropState, backdropStart, backdropEnd, backdropProgress, backdropProgress, backdropProgress, backdropProgress);
+                }
+            }
+
+            void Complete()
+            {
+                panelState.Apply(panelEnd);
+                if (backdropState != null) backdropState.Apply(backdropEnd);
+            }
+
+            void Rewind()
+            {
+                panelState.RestoreInvocation();
+                backdropState?.RestoreInvocation();
+            }
+
+            return CreateTimeline(panel, duration, options, Initialize, Evaluate, Complete, Rewind);
+        }
+
+        public static Tween CreatePagePush(GameObject outgoing, GameObject incoming, UISequenceDirection direction, float distance, float duration, TweenOptions options)
+        {
+            ValidateRequest(outgoing, duration, distance, direction, options);
+            ValidateIncoming(outgoing, incoming);
+            float strength = ResolveStrength(options);
+            Vector3 movement = DirectionVector(direction) * distance * strength;
+            var outgoingState = new UISequenceState(outgoing);
+            var incomingState = new UISequenceState(incoming);
+            UISequencePose outgoingStart = default;
+            UISequencePose outgoingEnd = default;
+            UISequencePose incomingStart = default;
+            UISequencePose incomingEnd = default;
+
+            void Initialize()
+            {
+                outgoingState.Initialize();
+                incomingState.Initialize();
+                outgoingStart = outgoingState.Invocation;
+                outgoingEnd = HiddenPose(outgoingState.Shown, movement, outgoingState.Shown.Scale);
+                incomingStart = ResolveShowStart(incomingState, -movement, incomingState.Shown.Scale);
+                incomingEnd = incomingState.Shown;
+            }
+
+            void Evaluate(float time)
+            {
+                float progress = Mathf.Clamp01(time / duration);
+                float outgoingProgress = Progress(progress, 0f, 0.9f, options.Ease ?? Ease.InOutCubic);
+                float incomingProgress = Progress(progress, 0.1f, 0.9f, options.Ease ?? Ease.InOutCubic);
+                ApplyInterpolated(outgoingState, outgoingStart, outgoingEnd, outgoingProgress, outgoingProgress, EaseValue(outgoingProgress, Ease.InQuad), outgoingProgress);
+                ApplyInterpolated(incomingState, incomingStart, incomingEnd, incomingProgress, incomingProgress, EaseValue(incomingProgress, Ease.OutQuad), incomingProgress);
+            }
+
+            void Complete()
+            {
+                outgoingState.Apply(outgoingEnd);
+                incomingState.Apply(incomingEnd);
+            }
+
+            void Rewind()
+            {
+                outgoingState.RestoreInvocation();
+                incomingState.RestoreInvocation();
+            }
+
+            return CreateTimeline(outgoing, duration, options, Initialize, Evaluate, Complete, Rewind);
+        }
+
+        public static Tween CreatePageCrossFade(GameObject outgoing, GameObject incoming, float depthScale, float duration, TweenOptions options)
+        {
+            ValidateRequest(outgoing, duration, options);
+            ValidateIncoming(outgoing, incoming);
+            ValidateFinite(depthScale, nameof(depthScale));
+            if (depthScale < 0f || depthScale >= 1f) throw new ArgumentOutOfRangeException(nameof(depthScale), depthScale, "Depth scale must be at least zero and less than one.");
+            float strength = ResolveStrength(options);
+            float scaleOffset = depthScale * strength;
+            var outgoingState = new UISequenceState(outgoing);
+            var incomingState = new UISequenceState(incoming);
+            UISequencePose outgoingStart = default;
+            UISequencePose outgoingEnd = default;
+            UISequencePose incomingStart = default;
+            UISequencePose incomingEnd = default;
+
+            void Initialize()
+            {
+                outgoingState.Initialize();
+                incomingState.Initialize();
+                outgoingStart = outgoingState.Invocation;
+                outgoingEnd = HiddenPose(outgoingState.Shown, Vector3.zero, UniformScale(outgoingState.Shown.Scale, 1f - scaleOffset));
+                incomingStart = ResolveShowStart(incomingState, Vector3.zero, UniformScale(incomingState.Shown.Scale, 1f + scaleOffset));
+                incomingEnd = incomingState.Shown;
+            }
+
+            void Evaluate(float time)
+            {
+                float progress = Mathf.Clamp01(time / duration);
+                float outgoingProgress = Progress(progress, 0f, 0.76f, options.Ease ?? Ease.InOutSine);
+                float incomingProgress = Progress(progress, 0.18f, 0.82f, options.Ease ?? Ease.InOutSine);
+                ApplyInterpolated(outgoingState, outgoingStart, outgoingEnd, outgoingProgress, EaseValue(outgoingProgress, Ease.InQuad), EaseValue(outgoingProgress, Ease.InQuad), outgoingProgress);
+                ApplyInterpolated(incomingState, incomingStart, incomingEnd, incomingProgress, EaseValue(incomingProgress, Ease.OutCubic), EaseValue(incomingProgress, Ease.OutQuad), incomingProgress);
+            }
+
+            void Complete()
+            {
+                outgoingState.Apply(outgoingEnd);
+                incomingState.Apply(incomingEnd);
+            }
+
+            void Rewind()
+            {
+                outgoingState.RestoreInvocation();
+                incomingState.RestoreInvocation();
+            }
+
+            return CreateTimeline(outgoing, duration, options, Initialize, Evaluate, Complete, Rewind);
+        }
+
         public static IReadOnlyList<GameObject> SnapshotTargets(IEnumerable<GameObject> targets, string parameterName, params GameObject[] excluded)
         {
             if (targets == null) return Array.Empty<GameObject>();
@@ -538,6 +790,25 @@ namespace LB.TweenHelper
                 if (targets[i] == null) throw new ArgumentException($"Target at index {i} was destroyed before the sequence was built.", parameterName);
                 ValidateRectTransform(targets[i], parameterName);
             }
+        }
+
+        private static void ValidateBackdrop(GameObject panel, GameObject backdrop)
+        {
+            if (backdrop == null) return;
+            if (backdrop == panel) throw new ArgumentException("Backdrop and panel must be different objects.", nameof(backdrop));
+            ValidateRectTransform(backdrop, nameof(backdrop));
+        }
+
+        private static void RequireBackdropAlpha(GameObject backdrop, UISequenceState backdropState)
+        {
+            if (backdropState != null && !backdropState.HasAlpha) throw new InvalidOperationException($"Backdrop '{backdrop.name}' requires a CanvasGroup or supported Graphic alpha target.");
+        }
+
+        private static void ValidateIncoming(GameObject outgoing, GameObject incoming)
+        {
+            if (incoming == null) throw new ArgumentNullException(nameof(incoming));
+            if (incoming == outgoing) throw new ArgumentException("Outgoing and incoming page content must be different objects.", nameof(incoming));
+            ValidateRectTransform(incoming, nameof(incoming));
         }
 
         private static void ValidateFinite(float value, string parameterName)

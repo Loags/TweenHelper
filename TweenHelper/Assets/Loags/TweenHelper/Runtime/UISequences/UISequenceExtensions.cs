@@ -60,6 +60,42 @@ namespace LB.TweenHelper
         public static TweenHandle TabSwitchTo(this GameObject target, GameObject incoming, UISequenceDirection direction = UISequenceDirection.Left, float distance = 72f, float? duration = null, TweenOptions options = default)
             => target.Tween().WithOptions(options).TabSwitchTo(incoming, direction, distance, duration).Play();
 
+        public static TweenHandle DrawerShow(this Component component, UISequenceDirection edge = UISequenceDirection.Left, GameObject backdrop = null, float distance = 360f, float? duration = null, TweenOptions options = default)
+            => DrawerShow(component.gameObject, edge, backdrop, distance, duration, options);
+
+        public static TweenHandle DrawerShow(this GameObject target, UISequenceDirection edge = UISequenceDirection.Left, GameObject backdrop = null, float distance = 360f, float? duration = null, TweenOptions options = default)
+            => target.Tween().WithOptions(options).DrawerShow(edge, backdrop, distance, duration).Play();
+
+        public static TweenHandle DrawerHide(this Component component, UISequenceDirection edge = UISequenceDirection.Left, GameObject backdrop = null, float distance = 360f, float? duration = null, TweenOptions options = default)
+            => DrawerHide(component.gameObject, edge, backdrop, distance, duration, options);
+
+        public static TweenHandle DrawerHide(this GameObject target, UISequenceDirection edge = UISequenceDirection.Left, GameObject backdrop = null, float distance = 360f, float? duration = null, TweenOptions options = default)
+            => target.Tween().WithOptions(options).DrawerHide(edge, backdrop, distance, duration).Play();
+
+        public static TweenHandle BottomSheetShow(this Component component, GameObject backdrop = null, float distance = 420f, float? duration = null, TweenOptions options = default)
+            => BottomSheetShow(component.gameObject, backdrop, distance, duration, options);
+
+        public static TweenHandle BottomSheetShow(this GameObject target, GameObject backdrop = null, float distance = 420f, float? duration = null, TweenOptions options = default)
+            => target.Tween().WithOptions(options).BottomSheetShow(backdrop, distance, duration).Play();
+
+        public static TweenHandle BottomSheetHide(this Component component, GameObject backdrop = null, float distance = 420f, float? duration = null, TweenOptions options = default)
+            => BottomSheetHide(component.gameObject, backdrop, distance, duration, options);
+
+        public static TweenHandle BottomSheetHide(this GameObject target, GameObject backdrop = null, float distance = 420f, float? duration = null, TweenOptions options = default)
+            => target.Tween().WithOptions(options).BottomSheetHide(backdrop, distance, duration).Play();
+
+        public static TweenHandle PagePushTo(this Component component, GameObject incoming, UISequenceDirection direction = UISequenceDirection.Left, float distance = 720f, float? duration = null, TweenOptions options = default)
+            => PagePushTo(component.gameObject, incoming, direction, distance, duration, options);
+
+        public static TweenHandle PagePushTo(this GameObject target, GameObject incoming, UISequenceDirection direction = UISequenceDirection.Left, float distance = 720f, float? duration = null, TweenOptions options = default)
+            => target.Tween().WithOptions(options).PagePushTo(incoming, direction, distance, duration).Play();
+
+        public static TweenHandle PageCrossFadeTo(this Component component, GameObject incoming, float depthScale = 0.04f, float? duration = null, TweenOptions options = default)
+            => PageCrossFadeTo(component.gameObject, incoming, depthScale, duration, options);
+
+        public static TweenHandle PageCrossFadeTo(this GameObject target, GameObject incoming, float depthScale = 0.04f, float? duration = null, TweenOptions options = default)
+            => target.Tween().WithOptions(options).PageCrossFadeTo(incoming, depthScale, duration).Play();
+
         /// <summary>Recaptures the current authored UI state used as the shown endpoint.</summary>
         public static void RefreshUIAnimationState(this Component component) => RefreshUIAnimationState(component.gameObject);
 

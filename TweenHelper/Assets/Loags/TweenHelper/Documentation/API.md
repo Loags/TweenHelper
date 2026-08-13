@@ -210,6 +210,12 @@ menuItems.ListStaggerIn(menuRoot);
 menuItems.ListStaggerOut(menuRoot);
 inventoryCells.GridWave(inventoryRoot, columns: 4, direction: GridWaveDirection.TopToBottom);
 inventoryCells.GridRipple(inventoryRoot, columns: 4);
+inventoryCells.GridDiagonalWave(inventoryRoot, columns: 4);
+inventoryCells.GridSpiral(inventoryRoot, columns: 4);
+inventoryCells.GridCheckerboard(inventoryRoot, columns: 4);
+inventoryCells.CollectionBurstIn(inventoryRoot, origin);
+inventoryCells.CollectionBurstOut(inventoryRoot, origin);
+inventoryCells.CollectionGatherTo(inventoryRoot, destination);
 loadingDots.LoadingDots(loadingRoot);
 ```
 
@@ -217,7 +223,7 @@ DOTween cannot nest an infinite child tween inside a sequence. `TweenStaggerBuil
 
 ## Destination-aware motion
 
-The five destination families operate in world or local coordinates without adding entries to the preset registry:
+Eight destination families operate in world or local coordinates without adding entries to the preset registry:
 
 ```csharp
 transform.Tween().ArcTo(worldDestination, height: 2f, duration: 0.8f).Play();
@@ -225,9 +231,12 @@ transform.Tween().BezierTo(worldDestination, worldControlA, worldControlB, 1f).P
 transform.Tween().HopTo(worldDestination, height: 1.5f, duration: 0.9f).Play();
 transform.Tween().SpringTo(worldDestination, duration: 0.55f, overshoot: 0.35f).Play();
 transform.Tween().MagneticSnapTo(worldDestination, duration: 0.65f, pullback: 0.2f, overshoot: 0.25f).Play();
+transform.Tween().PathThrough(new[] { checkpointA, checkpointB, worldDestination }, duration: 1.2f).Play();
+transform.Tween().SpiralTo(worldDestination, radius: 0.8f, revolutions: 1.5f, duration: 1.1f).Play();
+transform.Tween().MultiHopTo(worldDestination, height: 1.2f, hopCount: 3, duration: 1.1f).Play();
 ```
 
-Local variants are `ArcLocalTo`, `BezierLocalTo`, `HopLocalTo`, `SpringLocalTo`, and `MagneticSnapLocalTo`. They use `Transform.localPosition` for ordinary transforms and `RectTransform.anchoredPosition3D` for UI targets. Bezier control points use the same coordinate space as their method.
+Local variants are `ArcLocalTo`, `BezierLocalTo`, `HopLocalTo`, `SpringLocalTo`, `MagneticSnapLocalTo`, `PathLocalThrough`, `SpiralLocalTo`, and `MultiHopLocalTo`. They use `Transform.localPosition` for ordinary transforms and `RectTransform.anchoredPosition3D` for UI targets. Bezier controls and path waypoints use the same coordinate space as their method.
 
 ```csharp
 TweenHandle handle = panel.Tween()
@@ -250,6 +259,12 @@ invalidSlot.ErrorReject();
 healthIcon.DamageHit(flashColor: new Color(1f, 0.15f, 0.1f));
 objective.SuccessConfirm(options: TweenOptions.WithStrength(1.2f));
 reward.RewardReveal(duration: 1.1f);
+player.HealReceive();
+shield.ShieldBlock(impactDirection);
+enemy.CriticalHit(impactDirection);
+abilityIcon.CooldownReady();
+levelBadge.LevelUp();
+healthFrame.LowHealthWarning(options: TweenOptions.WithLoops(-1));
 coin.PickupCollectTo(hudCounter.position, arcHeight: 1.8f);
 ```
 
@@ -264,7 +279,7 @@ TweenHandle handle = rewardCard.Tween()
     .Play();
 ```
 
-`ErrorReject`, `DamageHit`, `SuccessConfirm`, and `RewardReveal` are transient: completion, rewind, and an interrupted kill restore the position, scale, orientation, and supported color captured when the step begins. Pickup collection completes at the exact destination with zero scale and alpha; killing it early restores scale, orientation, and alpha while leaving the current path position available to the caller. A rewind restores its captured start position.
+All feedback families except Pickup Collect are transient: completion, rewind, and an interrupted kill restore the position, scale, orientation, and supported color captured when the step begins. Pickup collection completes at the exact destination with zero scale and alpha; killing it early restores scale, orientation, and alpha while leaving the current path position available to the caller. A rewind restores its captured start position.
 
 `TweenOptions.WithStrength` scales shake distance, squash/stretch, bounce height, spin, and arc height without multiplying the final pickup shrink. Local feedback uses `RectTransform.anchoredPosition3D` on UI targets. See [Gameplay feedback sequences](FeedbackSequences.md) for APIs, defaults, target support, and lifecycle details.
 
@@ -282,9 +297,15 @@ tooltip.TooltipHide();
 dropdown.DropdownOpen(entries);
 dropdown.DropdownClose(entries);
 outgoingTab.TabSwitchTo(incomingTab, UISequenceDirection.Left);
+drawer.DrawerShow(UISequenceDirection.Left, backdrop);
+drawer.DrawerHide(UISequenceDirection.Left, backdrop);
+sheet.BottomSheetShow(backdrop);
+sheet.BottomSheetHide(backdrop);
+outgoingPage.PagePushTo(incomingPage);
+outgoingPage.PageCrossFadeTo(incomingPage);
 ```
 
-The same nine operations are composable builder steps:
+The same fifteen operations are composable builder steps:
 
 ```csharp
 TweenHandle handle = toast.Tween()
@@ -308,7 +329,13 @@ title.TypewriterHide();
 score.NumberCountTo(0, 1250, format: "N0");
 timer.NumberCountTo(60, 0, value => $"{value:0}s");
 message.TextCharacterStaggerIn(UISequenceDirection.Up, distance: 18f);
+message.TextCharacterStaggerOut(UISequenceDirection.Up, distance: 18f);
 message.TextWave(UISequenceDirection.Up, amplitude: 12f, waveCount: 2);
+message.TextCharacterBounce(amplitude: 14f);
+message.TextColorSweep(highlightColor);
+message.TextGlitch(seed: 1729);
+message.TextEmphasis(startCharacter: 0, characterCount: 8);
+message.TextScrambleReveal(seed: 1729);
 score.ScoreIncrease(1200, 1475, format: "N0");
 ```
 
@@ -322,9 +349,24 @@ TweenHandle handle = title.Tween()
     .Play();
 ```
 
-`NumberCountTo` determines direction from its explicit start and destination values; it does not parse the label's current text. Format-string overloads use the current culture, and formatter overloads support localized units or custom display rules. Typewriter operations animate `maxVisibleCharacters`, so rich-text tags remain intact. Character stagger and wave support both `TextMeshProUGUI` and world-space `TextMeshPro`, including multiple TMP material submeshes.
+`NumberCountTo` determines direction from its explicit start and destination values; it does not parse the label's current text. Format-string overloads use the current culture, and formatter overloads support localized units or custom display rules. Typewriter operations animate `maxVisibleCharacters`, so rich-text tags remain intact. Character mesh effects support both `TextMeshProUGUI` and world-space `TextMeshPro`, including multiple TMP material submeshes. Scramble Reveal preserves rich-text tags while replacing eligible visible glyphs deterministically.
 
 Typewriter and number operations preserve their current progress when killed and restore their invocation state on rewind. Character mesh effects restore the captured mesh on completion, kill, and rewind. Score Increase completes on the exact formatted destination; an interrupted kill preserves the displayed value while restoring scale, rotation, and color. Speed-based timing is not supported. See [Text and value animations](TextAndValueAnimations.md) for defaults, formatting, lifecycle, and composition guidance.
+
+## Camera feedback
+
+Camera feedback is available directly on `Camera` or as composable builder operations on its GameObject:
+
+```csharp
+gameplayCamera.CameraImpact();
+gameplayCamera.CameraRecoil();
+gameplayCamera.CameraLandingImpact();
+gameplayCamera.CameraFovKick();
+gameplayCamera.CameraFocusZoom(focusTarget);
+gameplayCamera.CameraBreathing(options: TweenOptions.WithLoops(-1));
+```
+
+All six operations are finite and transient: completion, rewind, and interrupted kill restore the exact captured local pose and field of view. Strength scales only temporary feedback magnitude, and speed-based timing is rejected. See [Camera feedback](CameraFeedback.md) for defaults, lifecycle, perspective-camera guidance, and camera-controller integration.
 
 ## Tween lifecycle
 
@@ -340,4 +382,4 @@ TweenHelper initializes automatically. Without `Assets/Resources/TweenHelperSett
 
 ## Sample controls
 
-Open **TweenHelper Demos** from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The 2D scene provides 13 semantic UI recipes, five collection recipes with selectable stagger ordering, five destination-motion examples, five gameplay-feedback sequences, nine production UI sequences, seven text/value examples, and a searchable library of 198 UI-suitable presets. When the legacy Input Manager is enabled, Space replays the current 2D selection and the 3D showcase enables its fly-camera shortcuts. The demos do not require the Input System package.
+Open **TweenHelper Demos** from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The 2D scene provides 13 semantic UI recipes, eleven collection recipes with selectable stagger ordering, eight destination-motion examples, eleven gameplay-feedback sequences, fifteen production UI sequences, thirteen text/value examples, and a searchable library of 198 UI-suitable presets. When the legacy Input Manager is enabled, Space replays the current 2D selection and the 3D showcase enables its fly-camera shortcuts. The demos do not require the Input System package.

@@ -19,6 +19,15 @@ TweenBuilder SpringLocalTo(Vector3 destination, float? duration = null, float ov
 
 TweenBuilder MagneticSnapTo(Vector3 destination, float? duration = null, float pullback = 0.2f, float overshoot = 0.25f);
 TweenBuilder MagneticSnapLocalTo(Vector3 destination, float? duration = null, float pullback = 0.2f, float overshoot = 0.25f);
+
+TweenBuilder PathThrough(IEnumerable<Vector3> waypoints, DestinationPathInterpolation interpolation = DestinationPathInterpolation.CatmullRom, float? duration = null);
+TweenBuilder PathLocalThrough(IEnumerable<Vector3> waypoints, DestinationPathInterpolation interpolation = DestinationPathInterpolation.CatmullRom, float? duration = null);
+
+TweenBuilder SpiralTo(Vector3 destination, float radius, float revolutions = 1.5f, float? duration = null);
+TweenBuilder SpiralLocalTo(Vector3 destination, float radius, float revolutions = 1.5f, float? duration = null);
+
+TweenBuilder MultiHopTo(Vector3 destination, float height, int hopCount = 3, float decay = 1.25f, float? duration = null);
+TweenBuilder MultiHopLocalTo(Vector3 destination, float height, int hopCount = 3, float decay = 1.25f, float? duration = null);
 ```
 
 All distances use the selected coordinate space. A world overshoot of `0.35f` means 0.35 world units. An anchored UI overshoot is normally supplied in canvas units, such as `24f` pixels.
@@ -65,6 +74,23 @@ Spring travels quickly toward the destination, passes it by `overshoot` along th
 
 Magnetic snap first moves `pullback` units opposite the destination direction, accelerates toward the target, passes it by `overshoot`, and settles exactly. Separate strengths keep it visually distinct from Spring.
 
+### Waypoint path
+
+`PathThrough` copies its waypoint enumerable immediately and traverses each segment in equal normalized time. The final waypoint is the exact destination. `Linear` interpolation connects each point directly; `CatmullRom` produces a smooth curve that passes through every supplied waypoint.
+
+```csharp
+Vector3[] path = { checkpointA, checkpointB, destination };
+token.Tween().PathThrough(path, DestinationPathInterpolation.CatmullRom, 1.2f).Play();
+```
+
+### Spiral
+
+Spiral motion advances toward the destination while a sinusoidal radial envelope opens and closes at the endpoints. World motion forms a three-dimensional spiral around the travel axis. `SpiralLocalTo` uses a visible XY-plane spiral for `RectTransform` targets, so it does not disturb authored anchored Z. A negative revolution count reverses winding direction.
+
+### Multi-hop
+
+Multi-hop advances continuously while applying the requested number of diminishing signed Y hops. `decay` controls how quickly successive hop heights reduce; zero keeps all hops at equal height. Positive height hops upward and negative height hops downward.
+
 ## Builder composition and options
 
 Destination steps use the same builder contract as movement, scale, and preset steps:
@@ -81,7 +107,7 @@ TweenHandle handle = token.Tween()
     .Play();
 ```
 
-`Then()` appends and `With()` joins a destination motion like any other builder step. The step captures its position when playback reaches it, so a preceding movement does not leave it with a stale path start. `WithEase()` controls the main travel phase. Multi-stage families preserve their own anticipation or settle phases while applying caller delay, loop, ID, update type, and unscaled-time settings at the motion root.
+`Then()` appends and `With()` joins a destination motion like any other builder step. The step captures its position when playback reaches it, so a preceding movement does not leave it with a stale path start. `WithEase()` controls the main travel phase. Multi-stage families preserve their own anticipation or settle phases while applying caller delay, loop, ID, update type, and unscaled-time settings at the motion root. Waypoint, spiral, and multi-hop paths use normalized timing and reject speed-based options.
 
 ## Completion, kill, reset, and replay
 
@@ -102,4 +128,4 @@ handle.Kill();
 panelRect.anchoredPosition3D = closedPosition;
 ```
 
-`destination`, controls, duration, height, pullback, and overshoot must be finite. Duration must be greater than zero; pullback and overshoot cannot be negative. Signed arc and hop heights are supported intentionally.
+Destinations, waypoints, controls, duration, height, radius, revolutions, decay, pullback, and overshoot must be finite. Duration must be greater than zero; radius, decay, pullback, and overshoot cannot be negative; hop count must be positive. Signed arc, hop, multi-hop heights, and signed spiral revolutions are supported intentionally.

@@ -8,11 +8,11 @@ The 2D scene has seven runtime tabs:
 
 - **UI Recipes** demonstrates all 13 semantic UI helpers on Image and Text targets.
 - **2D Preset Library** provides searchable, family-filtered access to the 198 presets that use UI-suitable position, scale, color/alpha, and Z-rotation animation.
-- **Collections** demonstrates `ListStaggerIn`, `ListStaggerOut`, `GridWave`, `GridRipple`, and `LoadingDots` on an authored nine-item preview. For the two list recipes, the existing target dropdown becomes a five-mode stagger-order selector.
-- **Destinations** demonstrates the anchored-position versions of Arc, Bezier, Hop, Spring, and Magnetic Snap between prefab-authored start and destination markers.
-- **Feedback** demonstrates Error Reject, Damage Hit, Success Confirm, Reward Reveal, and Pickup Collect on the shared authored UI preview.
-- **UI Sequences** demonstrates Toast Show/Hide, Modal Open/Close, Tooltip Show/Hide, Dropdown Open/Close, and Tab Switch on dedicated authored interface hierarchies.
-- **Text & Values** demonstrates Typewriter Reveal/Hide, count up/down, Character Stagger In, Text Wave, and Score Increase on dedicated TextMesh Pro labels.
+- **Collections** demonstrates eleven recipes: list in/out, wave, ripple, diagonal, spiral, checkerboard, burst in/out, gather, and loading dots. For the two list recipes, the existing target dropdown becomes a five-mode stagger-order selector.
+- **Destinations** demonstrates anchored Arc, Bezier, Hop, Spring, Magnetic Snap, Waypoint Path, Spiral, and Multi-Hop motion between prefab-authored markers.
+- **Feedback** demonstrates eleven semantic responses, including heal, shield block, critical hit, cooldown ready, level up, and low-health warning alongside the original five.
+- **UI Sequences** demonstrates fifteen production transitions, including drawers, bottom sheets, page push, and page cross-fade alongside the original toast, modal, tooltip, dropdown, and tab families.
+- **Text & Values** demonstrates thirteen operations, including Stagger Out, Character Bounce, Color Sweep, Glitch, Emphasis, and Scramble Reveal alongside the original seven.
 
 Select a recipe, destination motion, feedback sequence, production UI sequence, text/value animation, or preset to preview it, change its relevant target or order, replay or reset it, and copy its typed fluent API example. The showcase controller only configures and instantiates authored UI prefabs from `Prefabs/UI`; it does not construct UI hierarchies at runtime.
 

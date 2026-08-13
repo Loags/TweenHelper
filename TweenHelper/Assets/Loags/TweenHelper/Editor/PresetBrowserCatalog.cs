@@ -87,6 +87,66 @@ namespace LB.TweenHelper.Editor
             yield return CreateWaveEntry("GridWaveRightToLeft", "Reveals grid columns from right to left.", "RightToLeft", PresetBrowserCollectionKind.GridWaveRightToLeft, "Right to left");
             yield return CreateWaveEntry("GridWaveTopToBottom", "Reveals grid rows from top to bottom.", "TopToBottom", PresetBrowserCollectionKind.GridWaveTopToBottom, "Top to bottom");
             yield return CreateWaveEntry("GridWaveBottomToTop", "Reveals grid rows from bottom to top.", "BottomToTop", PresetBrowserCollectionKind.GridWaveBottomToTop, "Bottom to top");
+
+            yield return PresetBrowserEntry.Collection(
+                "GridDiagonalWave",
+                "Reveals grid diagonals from the top-left toward the bottom-right.",
+                "0.32s per item",
+                "items.GridDiagonalWave(owner, columns: 3);",
+                PresetBrowserEntryKind.CollectionRecipe,
+                PresetBrowserPreviewKind.Grid,
+                PresetBrowserCollectionKind.GridDiagonalWave,
+                "Top-left diagonal");
+
+            yield return PresetBrowserEntry.Collection(
+                "GridSpiral",
+                "Reveals grid items in a clockwise outside-in spiral.",
+                "0.3s per item",
+                "items.GridSpiral(owner, columns: 3);",
+                PresetBrowserEntryKind.CollectionRecipe,
+                PresetBrowserPreviewKind.Grid,
+                PresetBrowserCollectionKind.GridSpiral,
+                "Outside in");
+
+            yield return PresetBrowserEntry.Collection(
+                "GridCheckerboard",
+                "Pulses alternating checkerboard cells in two phases.",
+                "0.34s per item",
+                "items.GridCheckerboard(owner, columns: 3);",
+                PresetBrowserEntryKind.CollectionRecipe,
+                PresetBrowserPreviewKind.Grid,
+                PresetBrowserCollectionKind.GridCheckerboard,
+                "Alternating");
+
+            yield return PresetBrowserEntry.Collection(
+                "CollectionBurstIn",
+                "Launches every item from one origin into its authored position.",
+                "0.48s per item",
+                "items.CollectionBurstIn(owner, origin);",
+                PresetBrowserEntryKind.CollectionRecipe,
+                PresetBrowserPreviewKind.Grid,
+                PresetBrowserCollectionKind.CollectionBurstIn,
+                "Center outward");
+
+            yield return PresetBrowserEntry.Collection(
+                "CollectionBurstOut",
+                "Scatters items radially while shrinking and fading them.",
+                "0.42s per item",
+                "items.CollectionBurstOut(owner, origin);",
+                PresetBrowserEntryKind.CollectionRecipe,
+                PresetBrowserPreviewKind.Grid,
+                PresetBrowserCollectionKind.CollectionBurstOut,
+                "Center outward");
+
+            yield return PresetBrowserEntry.Collection(
+                "CollectionGatherTo",
+                "Gathers every item into one destination while shrinking and fading.",
+                "0.52s per item",
+                "items.CollectionGatherTo(owner, destination);",
+                PresetBrowserEntryKind.CollectionRecipe,
+                PresetBrowserPreviewKind.Grid,
+                PresetBrowserCollectionKind.CollectionGatherTo,
+                "Edges inward");
         }
 
         private static PresetBrowserEntry CreateOrderEntry(string name, string description, string order, PresetBrowserCollectionKind collectionKind, string direction)

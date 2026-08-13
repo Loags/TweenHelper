@@ -5,11 +5,9 @@
         "LB.TweenHelper.Runtime",
         "LB.TweenHelper.Editor",
         "LB.TweenHelper.Validation.Editor",
-        "LB.TweenHelper.Development.Automation.Editor",
         "LB.TweenHelper.Development.Pipeline.Editor",
         "DOTween.Modules",
-        "Unity.Pipeline",
-        "Unity.Pipeline.Editor"
+        "Unity.Pipeline"
     ],
     "includePlatforms": [
         "Editor"
@@ -18,8 +16,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "DOTween.dll",
-        "Newtonsoft.Json.dll"
+        "DOTween.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [],

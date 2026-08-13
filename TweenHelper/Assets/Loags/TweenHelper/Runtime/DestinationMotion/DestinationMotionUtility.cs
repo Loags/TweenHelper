@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 
@@ -155,6 +156,81 @@ namespace LB.TweenHelper
             }, true);
         }
 
+        public static IReadOnlyList<Vector3> SnapshotWaypoints(IEnumerable<Vector3> waypoints)
+        {
+            if (waypoints == null) throw new ArgumentNullException(nameof(waypoints));
+            var snapshot = new List<Vector3>();
+            int index = 0;
+            foreach (Vector3 waypoint in waypoints)
+            {
+                ValidateVector(waypoint, $"waypoint at index {index}");
+                snapshot.Add(waypoint);
+                index++;
+            }
+
+            if (snapshot.Count == 0) throw new ArgumentException("At least one waypoint is required.", nameof(waypoints));
+            return snapshot;
+        }
+
+        public static Tween CreateWaypointPath(GameObject target, IReadOnlyList<Vector3> waypoints, DestinationPathInterpolation interpolation, float duration, TweenOptions options, bool local)
+        {
+            if (waypoints == null) throw new ArgumentNullException(nameof(waypoints));
+            if (waypoints.Count == 0) throw new ArgumentException("At least one waypoint is required.", nameof(waypoints));
+            for (int i = 0; i < waypoints.Count; i++) ValidateVector(waypoints[i], $"waypoint at index {i}");
+            if (!Enum.IsDefined(typeof(DestinationPathInterpolation), interpolation)) throw new ArgumentOutOfRangeException(nameof(interpolation));
+            ValidateRequest(waypoints[waypoints.Count - 1], duration);
+            ValidateNormalizedTiming(options, "Waypoint paths");
+            var binding = new PositionBinding(target, local);
+            Vector3 destination = waypoints[waypoints.Count - 1];
+            return CreatePathTween(target, binding, destination, duration, options, (start, progress) => EvaluateWaypointPath(start, waypoints, interpolation, progress), false);
+        }
+
+        public static Tween CreateSpiral(GameObject target, Vector3 destination, float radius, float revolutions, float duration, TweenOptions options, bool local)
+        {
+            ValidateRequest(destination, duration);
+            ValidateNonNegative(radius, nameof(radius));
+            ValidateFinite(revolutions, nameof(revolutions));
+            ValidateNormalizedTiming(options, "Spiral motion");
+            float strength = ResolveStrength(options);
+            var binding = new PositionBinding(target, local);
+            Ease travelEase = options.Ease ?? Ease.InOutCubic;
+
+            return CreatePathTween(target, binding, destination, duration, options, (start, progress) =>
+            {
+                float travel = EvaluateEase(progress, travelEase);
+                Vector3 basePosition = Vector3.LerpUnclamped(start, destination, travel);
+                Vector3 axis = destination - start;
+                if (axis.sqrMagnitude <= 0.000001f || radius <= 0f || Mathf.Approximately(revolutions, 0f)) return basePosition;
+                axis.Normalize();
+                GetSpiralBasis(axis, binding.IsRectTransform, out Vector3 basisA, out Vector3 basisB);
+                float envelope = Mathf.Sin(progress * Mathf.PI);
+                float angle = progress * revolutions * Mathf.PI * 2f;
+                Vector3 radial = basisA * Mathf.Cos(angle) + basisB * Mathf.Sin(angle);
+                return basePosition + radial * (radius * strength * envelope);
+            }, true);
+        }
+
+        public static Tween CreateMultiHop(GameObject target, Vector3 destination, float height, int hopCount, float decay, float duration, TweenOptions options, bool local)
+        {
+            ValidateRequest(destination, duration);
+            ValidateFinite(height, nameof(height));
+            ValidateNonNegative(decay, nameof(decay));
+            if (hopCount <= 0) throw new ArgumentOutOfRangeException(nameof(hopCount), hopCount, "Hop count must be greater than zero.");
+            ValidateNormalizedTiming(options, "Multi-hop motion");
+            float strength = ResolveStrength(options);
+            var binding = new PositionBinding(target, local);
+            Ease travelEase = options.Ease ?? Ease.InOutCubic;
+
+            return CreatePathTween(target, binding, destination, duration, options, (start, progress) =>
+            {
+                float travel = EvaluateEase(progress, travelEase);
+                Vector3 position = Vector3.LerpUnclamped(start, destination, travel);
+                float bounce = Mathf.Abs(Mathf.Sin(progress * hopCount * Mathf.PI));
+                float envelope = Mathf.Pow(1f - Mathf.Clamp01(progress), decay);
+                return position + Vector3.up * (height * strength * bounce * envelope);
+            }, true);
+        }
+
         private static Tween CreatePathTween(GameObject target, PositionBinding binding, Vector3 destination, float duration, TweenOptions options, Func<Vector3, float, Vector3> evaluator, bool evaluatesInternalEases, bool applyOptions = true)
         {
             float progress = 0f;
@@ -287,6 +363,55 @@ namespace LB.TweenHelper
             return delta.sqrMagnitude > Mathf.Epsilon ? delta.normalized : Vector3.zero;
         }
 
+        private static Vector3 EvaluateWaypointPath(Vector3 start, IReadOnlyList<Vector3> waypoints, DestinationPathInterpolation interpolation, float progress)
+        {
+            if (progress >= 1f) return waypoints[waypoints.Count - 1];
+            float scaled = Mathf.Clamp01(progress) * waypoints.Count;
+            int segment = Mathf.Min(Mathf.FloorToInt(scaled), waypoints.Count - 1);
+            float segmentProgress = scaled - segment;
+            Vector3 pointA = segment == 0 ? start : waypoints[segment - 1];
+            Vector3 pointB = waypoints[segment];
+            if (interpolation == DestinationPathInterpolation.Linear) return Vector3.LerpUnclamped(pointA, pointB, segmentProgress);
+
+            Vector3 previous = segment <= 1 ? start : waypoints[segment - 2];
+            Vector3 next = segment + 1 < waypoints.Count ? waypoints[segment + 1] : pointB;
+            return EvaluateCatmullRom(previous, pointA, pointB, next, segmentProgress);
+        }
+
+        private static Vector3 EvaluateCatmullRom(Vector3 previous, Vector3 start, Vector3 end, Vector3 next, float progress)
+        {
+            float square = progress * progress;
+            float cube = square * progress;
+            return 0.5f * ((2f * start) + (-previous + end) * progress + (2f * previous - 5f * start + 4f * end - next) * square + (-previous + 3f * start - 3f * end + next) * cube);
+        }
+
+        private static void GetSpiralBasis(Vector3 axis, bool isUi, out Vector3 basisA, out Vector3 basisB)
+        {
+            if (isUi)
+            {
+                basisA = Vector3.right;
+                basisB = Vector3.up;
+                return;
+            }
+
+            Vector3 reference = Mathf.Abs(Vector3.Dot(axis, Vector3.up)) > 0.92f ? Vector3.right : Vector3.up;
+            basisA = Vector3.Cross(axis, reference).normalized;
+            basisB = Vector3.Cross(axis, basisA).normalized;
+        }
+
+        private static float ResolveStrength(TweenOptions options)
+        {
+            float strength = options.Strength ?? 1f;
+            ValidateFinite(strength, nameof(TweenOptions.Strength));
+            if (strength < 0f) throw new ArgumentOutOfRangeException(nameof(TweenOptions.Strength), strength, "Strength cannot be negative.");
+            return strength;
+        }
+
+        private static void ValidateNormalizedTiming(TweenOptions options, string operation)
+        {
+            if (options.SpeedBased == true) throw new NotSupportedException($"{operation} does not support speed-based timing.");
+        }
+
         private static void ValidateRequest(Vector3 destination, float duration)
         {
             ValidateVector(destination, nameof(destination));
@@ -324,6 +449,8 @@ namespace LB.TweenHelper
                 _rectTransform = local ? target.GetComponent<RectTransform>() : null;
                 _local = local;
             }
+
+            public bool IsRectTransform => _rectTransform != null;
 
             public Vector3 Get()
             {

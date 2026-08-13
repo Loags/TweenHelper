@@ -2539,6 +2539,8 @@ MonoBehaviour:
   numberText: {fileID: 1214195978}
   characterText: {fileID: 1339122951}
   scoreText: {fileID: 792914346}
+  feedbackCamera: {fileID: 1895172074}
+  cameraFocusTarget: {fileID: 1908568081}
   itemNameText: {fileID: 1481838711}
   descriptionText: {fileID: 1509862529}
   categoryText: {fileID: 1035804865}
@@ -9155,8 +9157,8 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 264558402}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.43, y: 0}
-  m_AnchorMax: {x: 0.57, y: 0.34}
+  m_AnchorMin: {x: 0.43, y: 0.01}
+  m_AnchorMax: {x: 0.57, y: 0.14}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}

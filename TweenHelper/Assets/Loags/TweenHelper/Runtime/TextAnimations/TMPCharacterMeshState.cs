@@ -56,6 +56,37 @@ namespace LB.TweenHelper
             UpdateTextMesh();
         }
 
+        public void ApplyStaggerOut(float progress, Vector3 direction, float distance, float characterStagger, float duration, float strength)
+        {
+            EnsureCurrentMesh();
+            RestoreBuffers();
+
+            int count = _visibleCharacterIndices.Length;
+            if (count == 0)
+            {
+                UpdateTextMesh();
+                return;
+            }
+
+            float requestedLastStart = duration <= 0f ? 0f : (count - 1) * characterStagger / duration;
+            float compression = requestedLastStart > 0.58f ? 0.58f / requestedLastStart : 1f;
+            float endScale = Mathf.Max(0.1f, 1f - 0.1f * strength);
+
+            for (int order = 0; order < count; order++)
+            {
+                float start = duration <= 0f ? 0f : order * characterStagger / duration * compression;
+                float characterProgress = Mathf.Clamp01((progress - start) / Mathf.Max(0.0001f, 1f - start));
+                float positionProgress = EaseValue(characterProgress, Ease.InCubic);
+                float scaleProgress = EaseValue(characterProgress, Ease.InQuad);
+                float alphaProgress = 1f - EaseValue(characterProgress, Ease.InQuad);
+                Vector3 offset = direction * distance * strength * positionProgress;
+                float scale = Mathf.LerpUnclamped(1f, endScale, scaleProgress);
+                ApplyCharacter(_visibleCharacterIndices[count - 1 - order], offset, scale, alphaProgress);
+            }
+
+            UpdateTextMesh();
+        }
+
         public void ApplyWave(float progress, Vector3 direction, float amplitude, int waveCount, float strength)
         {
             EnsureCurrentMesh();
@@ -85,6 +116,111 @@ namespace LB.TweenHelper
                 Vector3 offset = direction * amplitude * strength * wave;
                 float scale = 1f + 0.045f * strength * wave;
                 ApplyCharacter(_visibleCharacterIndices[order], offset, scale, 1f);
+            }
+
+            UpdateTextMesh();
+        }
+
+        public void ApplyBounce(float progress, Vector3 direction, float amplitude, float strength)
+        {
+            EnsureCurrentMesh();
+            RestoreBuffers();
+
+            int count = _visibleCharacterIndices.Length;
+            if (count == 0 || progress <= 0f || progress >= 1f)
+            {
+                UpdateTextMesh();
+                return;
+            }
+
+            const float bounceWidth = 2.25f;
+            float center = Mathf.LerpUnclamped(-bounceWidth, count - 1 + bounceWidth, progress);
+            for (int order = 0; order < count; order++)
+            {
+                float proximity = Mathf.Clamp01(1f - Mathf.Abs(order - center) / bounceWidth);
+                float bounce = Mathf.Sin(proximity * Mathf.PI);
+                Vector3 offset = direction * amplitude * strength * bounce;
+                float scale = 1f + 0.07f * strength * bounce;
+                ApplyCharacter(_visibleCharacterIndices[order], offset, scale, 1f);
+            }
+
+            UpdateTextMesh();
+        }
+
+        public void ApplyColorSweep(float progress, Color highlightColor, float width, float strength)
+        {
+            EnsureCurrentMesh();
+            RestoreBuffers();
+
+            int count = _visibleCharacterIndices.Length;
+            if (count == 0 || progress <= 0f || progress >= 1f)
+            {
+                UpdateTextMesh();
+                return;
+            }
+
+            float center = Mathf.LerpUnclamped(-width, count - 1 + width, progress);
+            for (int order = 0; order < count; order++)
+            {
+                float proximity = Mathf.Clamp01(1f - Mathf.Abs(order - center) / width);
+                float intensity = Mathf.Sin(proximity * Mathf.PI * 0.5f) * strength;
+                ApplyCharacter(_visibleCharacterIndices[order], Vector3.zero, 1f + 0.035f * intensity, 1f, highlightColor, Mathf.Clamp01(intensity));
+            }
+
+            UpdateTextMesh();
+        }
+
+        public void ApplyGlitch(float progress, float distance, int seed, float strength)
+        {
+            EnsureCurrentMesh();
+            RestoreBuffers();
+
+            int count = _visibleCharacterIndices.Length;
+            float envelope = Mathf.Sin(Mathf.Clamp01(progress) * Mathf.PI);
+            if (count == 0 || envelope <= 0.0001f)
+            {
+                UpdateTextMesh();
+                return;
+            }
+
+            int timeSlice = Mathf.FloorToInt(progress * 21f);
+            for (int order = 0; order < count; order++)
+            {
+                float horizontal = Hash(seed, order, timeSlice, 1) * 2f - 1f;
+                float vertical = Hash(seed, order, timeSlice, 2) * 2f - 1f;
+                float scaleNoise = Hash(seed, order, timeSlice, 3) * 2f - 1f;
+                float colorNoise = Hash(seed, order, timeSlice, 4);
+                Vector3 offset = new Vector3(horizontal, vertical * 0.45f, 0f) * distance * strength * envelope;
+                float scale = 1f + scaleNoise * 0.055f * strength * envelope;
+                Color tint = colorNoise < 0.5f ? new Color(0.25f, 0.95f, 1f, 1f) : new Color(1f, 0.22f, 0.45f, 1f);
+                float tintStrength = Mathf.Clamp01((0.18f + colorNoise * 0.28f) * strength * envelope);
+                ApplyCharacter(_visibleCharacterIndices[order], offset, scale, 1f, tint, tintStrength);
+            }
+
+            UpdateTextMesh();
+        }
+
+        public void ApplyEmphasis(float progress, Vector3 direction, float amplitude, int startCharacter, int characterCount, Color highlightColor, float strength)
+        {
+            EnsureCurrentMesh();
+            RestoreBuffers();
+
+            int count = _visibleCharacterIndices.Length;
+            int start = Mathf.Clamp(startCharacter, 0, count);
+            int end = characterCount < 0 ? count : Mathf.Min(count, start + characterCount);
+            float pulse = Mathf.Sin(Mathf.Clamp01(progress) * Mathf.PI);
+            if (start >= end || pulse <= 0.0001f)
+            {
+                UpdateTextMesh();
+                return;
+            }
+
+            for (int order = start; order < end; order++)
+            {
+                float localOrder = end - start <= 1 ? 0.5f : (order - start) / (float)(end - start - 1);
+                float arch = Mathf.Sin(localOrder * Mathf.PI);
+                float amount = pulse * Mathf.Lerp(0.78f, 1f, arch) * strength;
+                ApplyCharacter(_visibleCharacterIndices[order], direction * amplitude * amount, 1f + 0.12f * amount, 1f, highlightColor, Mathf.Clamp01(amount * 0.72f));
             }
 
             UpdateTextMesh();
@@ -132,7 +268,7 @@ namespace LB.TweenHelper
             _initialized = true;
         }
 
-        private void ApplyCharacter(int characterIndex, Vector3 offset, float scale, float alpha)
+        private void ApplyCharacter(int characterIndex, Vector3 offset, float scale, float alpha, Color? tint = null, float tintStrength = 0f)
         {
             TMP_CharacterInfo character = _text.textInfo.characterInfo[characterIndex];
             int materialIndex = character.materialReferenceIndex;
@@ -151,9 +287,21 @@ namespace LB.TweenHelper
                 int index = vertexIndex + i;
                 vertices[index] = center + (baselineVertices[index] - center) * scale + offset;
                 if (index >= baselineColors.Length || index >= colors.Length) continue;
-                Color32 color = baselineColors[index];
-                color.a = (byte)Mathf.Clamp(Mathf.RoundToInt(color.a * Mathf.Clamp01(alpha)), 0, 255);
+                Color baselineColor = baselineColors[index];
+                Color color = tint.HasValue ? Color.LerpUnclamped(baselineColor, tint.Value, Mathf.Clamp01(tintStrength)) : baselineColor;
+                color.a = baselineColor.a * Mathf.Clamp01(alpha);
                 colors[index] = color;
+            }
+        }
+
+        private static float Hash(int seed, int character, int timeSlice, int channel)
+        {
+            unchecked
+            {
+                uint value = unchecked((uint)seed * 374761393u + (uint)character * 668265263u + (uint)timeSlice * 2246822519u + (uint)channel * 3266489917u);
+                value = (value ^ (value >> 13)) * 1274126177;
+                value ^= value >> 16;
+                return (value & 0x00ffffff) / 16777215f;
             }
         }
 

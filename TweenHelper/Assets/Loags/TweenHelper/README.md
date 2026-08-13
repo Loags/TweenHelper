@@ -75,7 +75,7 @@ TweenHandle handle = cards.TweenStagger(this)
     .Play();
 ```
 
-Five ready-to-play collection recipes cover list entrances, list exits, directional grid waves, grid ripples, and looping loading dots. Collection recipes orchestrate the existing finite presets and do not add entries to the 300-preset registry.
+Eleven ready-to-play collection recipes cover list entrances/exits, directional, diagonal, spiral, checkerboard, and ripple grid timing, spatial burst/gather motion, and looping loading dots. Collection recipes orchestrate semantic group timelines without adding entries to the 300-preset registry.
 
 Move to explicit destinations with reusable world, local, and anchored-position motions:
 
@@ -87,13 +87,15 @@ TweenHandle handle = card.Tween()
     .Play();
 ```
 
-Arc, Bezier, hop, spring, and magnetic-snap operations are parameterized builder motions rather than registered presets, so the preset registry remains at 300 entries.
+Arc, Bezier, hop, spring, magnetic-snap, waypoint-path, spiral, and multi-hop operations are parameterized builder motions rather than registered presets, so the preset registry remains at 300 entries.
 
 Play semantic gameplay feedback directly or compose it inside a larger builder sequence:
 
 ```csharp
 healthIcon.DamageHit();
 confirmButton.SuccessConfirm();
+shield.ShieldBlock(impactDirection);
+abilityIcon.CooldownReady();
 
 TweenHandle handle = reward.Tween()
     .RewardReveal()
@@ -102,7 +104,7 @@ TweenHandle handle = reward.Tween()
     .Play();
 ```
 
-`ErrorReject`, `DamageHit`, `SuccessConfirm`, and `RewardReveal` restore the transform and visual state captured when their step starts. `PickupCollectTo` and `PickupCollectLocalTo` finish at the supplied destination with zero scale and alpha. All five work with UI and world targets, including renderer color flashes through a `MaterialPropertyBlock`, without expanding the 300-preset catalog.
+Error, damage, success, reward, heal, block, critical-hit, cooldown-ready, level-up, and low-health feedback restore the transform and visual state captured when their step starts. `PickupCollectTo` and `PickupCollectLocalTo` finish at the supplied destination with zero scale and alpha. The families work with UI and world targets, including renderer color flashes through a `MaterialPropertyBlock`, without expanding the 300-preset catalog.
 
 Build complete production UI transitions with the same one-line and builder APIs:
 
@@ -111,9 +113,12 @@ toast.ToastShow();
 modalPanel.ModalOpen(backdrop, controls);
 dropdown.DropdownOpen(entries);
 outgoingTab.TabSwitchTo(incomingTab);
+drawer.DrawerShow(UISequenceDirection.Left, backdrop);
+sheet.BottomSheetShow(backdrop);
+outgoingPage.PagePushTo(incomingPage);
 ```
 
-Toast, modal, tooltip, dropdown, and tab operations coordinate anchored position, scale, alpha, and optional child staggering through one `TweenHandle`. They preserve authored UI baselines, support interruption and rewind, and remain semantic operations rather than registered presets.
+Toast, modal, tooltip, dropdown, tab, drawer, bottom-sheet, page-push, and page-cross-fade operations coordinate anchored position, scale, alpha, optional backdrops, and child staggering through one `TweenHandle`. They preserve authored UI baselines, support interruption and rewind, and remain semantic operations rather than registered presets.
 
 Animate TextMesh Pro content and numeric values without expanding the preset registry:
 
@@ -122,10 +127,22 @@ title.TypewriterReveal();
 score.NumberCountTo(0, 1250, format: "N0");
 message.TextCharacterStaggerIn(UISequenceDirection.Up);
 message.TextWave(amplitude: 12f);
+message.TextColorSweep();
+message.TextScrambleReveal(seed: 1729);
 score.ScoreIncrease(1200, 1475, format: "N0");
 ```
 
-Typewriter operations preserve rich-text markup by animating `maxVisibleCharacters`. Character stagger and wave operations evaluate visible TMP glyphs through one owner-linked tween and restore the original mesh exactly. Number counting accepts increasing or decreasing values, while Score Increase combines an exact count destination with temporary scale and color feedback.
+Typewriter operations preserve rich-text markup by animating `maxVisibleCharacters`. Stagger, wave, bounce, color-sweep, glitch, and emphasis operations evaluate visible TMP glyphs through one owner-linked tween and restore the original mesh exactly. Scramble Reveal preserves markup while resolving deterministic substitute glyphs. Number counting accepts increasing or decreasing values, while Score Increase combines an exact count destination with temporary scale and color feedback.
+
+Apply transient camera feedback without accumulating pose or lens changes:
+
+```csharp
+gameplayCamera.CameraImpact();
+gameplayCamera.CameraRecoil();
+gameplayCamera.CameraFocusZoom(focusTarget);
+```
+
+Impact, recoil, landing, FOV kick, focus zoom, and one finite breathing cycle restore the exact camera pose and field of view on completion, rewind, or interrupted kill.
 
 ## Preset browser
 
@@ -159,6 +176,7 @@ No settings asset is required. TweenHelper uses safe in-memory defaults when `Re
 - [Gameplay feedback sequences](Documentation/FeedbackSequences.md)
 - [Production UI sequences](Documentation/UISequences.md)
 - [Text and value animations](Documentation/TextAndValueAnimations.md)
+- [Camera feedback](Documentation/CameraFeedback.md)
 - [Preset catalog](Documentation/PresetCatalog.md)
 
 ## Licensing

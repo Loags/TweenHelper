@@ -102,7 +102,13 @@ namespace LB.TweenHelper.Demo
             new CollectionRecipeDefinition(CollectionRecipeKind.ListStaggerOut, "Dismiss a list in a staggered sequence."),
             new CollectionRecipeDefinition(CollectionRecipeKind.GridWave, "Reveal a grid one column at a time."),
             new CollectionRecipeDefinition(CollectionRecipeKind.GridRipple, "Pulse outward from the center of a grid."),
-            new CollectionRecipeDefinition(CollectionRecipeKind.LoadingDots, "Loop a soft pulse across three loading dots.")
+            new CollectionRecipeDefinition(CollectionRecipeKind.LoadingDots, "Loop a soft pulse across three loading dots."),
+            new CollectionRecipeDefinition(CollectionRecipeKind.GridDiagonalWave, "Reveal diagonals from the top-left toward the bottom-right."),
+            new CollectionRecipeDefinition(CollectionRecipeKind.GridSpiral, "Reveal grid items in a clockwise outside-in spiral."),
+            new CollectionRecipeDefinition(CollectionRecipeKind.GridCheckerboard, "Pulse alternating checkerboard cells in two phases."),
+            new CollectionRecipeDefinition(CollectionRecipeKind.CollectionBurstIn, "Launch all items from the center into their authored positions."),
+            new CollectionRecipeDefinition(CollectionRecipeKind.CollectionBurstOut, "Scatter items away from the center while shrinking and fading."),
+            new CollectionRecipeDefinition(CollectionRecipeKind.CollectionGatherTo, "Gather all items into one point while shrinking and fading.")
         };
 
         private static readonly DestinationRecipeDefinition[] DestinationRecipes =
@@ -111,7 +117,10 @@ namespace LB.TweenHelper.Demo
             new DestinationRecipeDefinition(DestinationRecipeKind.Bezier, "Follow a cubic anchored-position path with two explicit controls."),
             new DestinationRecipeDefinition(DestinationRecipeKind.Hop, "Anticipate, hop, land with a squash, and restore scale."),
             new DestinationRecipeDefinition(DestinationRecipeKind.Spring, "Pass the destination along the travel direction, then settle exactly."),
-            new DestinationRecipeDefinition(DestinationRecipeKind.MagneticSnap, "Pull away before accelerating past and settling on the destination.")
+            new DestinationRecipeDefinition(DestinationRecipeKind.MagneticSnap, "Pull away before accelerating past and settling on the destination."),
+            new DestinationRecipeDefinition(DestinationRecipeKind.PathThrough, "Traverse anchored waypoints with Catmull-Rom interpolation."),
+            new DestinationRecipeDefinition(DestinationRecipeKind.Spiral, "Progress through a closing anchored spiral without endpoint jumps."),
+            new DestinationRecipeDefinition(DestinationRecipeKind.MultiHop, "Advance through three diminishing hops and land exactly.")
         };
 
         private static readonly FeedbackRecipeDefinition[] FeedbackRecipes =
@@ -120,7 +129,13 @@ namespace LB.TweenHelper.Demo
             new FeedbackRecipeDefinition(FeedbackRecipeKind.DamageHit, "Communicate damage with a hit shake, grounded squash, recoil, and red flash."),
             new FeedbackRecipeDefinition(FeedbackRecipeKind.SuccessConfirm, "Confirm success with a pop, two diminishing bounces, and green flash."),
             new FeedbackRecipeDefinition(FeedbackRecipeKind.RewardReveal, "Reveal a reward with anticipation, relative spin, overshoot, pulse, and gold flash."),
-            new FeedbackRecipeDefinition(FeedbackRecipeKind.PickupCollect, "Punch, arc, shrink, and fade into an anchored collection destination.")
+            new FeedbackRecipeDefinition(FeedbackRecipeKind.PickupCollect, "Punch, arc, shrink, and fade into an anchored collection destination."),
+            new FeedbackRecipeDefinition(FeedbackRecipeKind.HealReceive, "Communicate healing with a lift, restorative stretch, settle, and green flash."),
+            new FeedbackRecipeDefinition(FeedbackRecipeKind.ShieldBlock, "Compress and recoil opposite a supplied impact direction."),
+            new FeedbackRecipeDefinition(FeedbackRecipeKind.CriticalHit, "Combine a white-hot flash, heavy squash, recoil, and aftershock."),
+            new FeedbackRecipeDefinition(FeedbackRecipeKind.CooldownReady, "Announce a ready ability with a flip, pop, lift, and cyan flash."),
+            new FeedbackRecipeDefinition(FeedbackRecipeKind.LevelUp, "Celebrate progression with lift, spin, staged pulses, and gold flash."),
+            new FeedbackRecipeDefinition(FeedbackRecipeKind.LowHealthWarning, "Play one finite double-beat warning cycle.")
         };
 
         private static readonly UISequenceRecipeDefinition[] UISequenceRecipes =
@@ -133,7 +148,13 @@ namespace LB.TweenHelper.Demo
             new UISequenceRecipeDefinition(UISequenceRecipeKind.TooltipHide, "Move and fade a tooltip out with restrained scale motion."),
             new UISequenceRecipeDefinition(UISequenceRecipeKind.DropdownOpen, "Expand from the authored pivot and stagger entries into view."),
             new UISequenceRecipeDefinition(UISequenceRecipeKind.DropdownClose, "Stagger entries out and compress toward the authored pivot."),
-            new UISequenceRecipeDefinition(UISequenceRecipeKind.TabSwitch, "Overlap outgoing and incoming content in one controlled transition.")
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.TabSwitch, "Overlap outgoing and incoming content in one controlled transition."),
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.DrawerShow, "Slide a drawer in from the left screen edge."),
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.DrawerHide, "Slide a drawer back through the left screen edge."),
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.BottomSheetShow, "Raise a bottom sheet with overshoot and backdrop fade."),
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.BottomSheetHide, "Dismiss a bottom sheet and backdrop below the screen."),
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.PagePush, "Push one page out while the next enters from the opposite side."),
+            new UISequenceRecipeDefinition(UISequenceRecipeKind.PageCrossFade, "Cross-fade pages with restrained depth scaling.")
         };
 
         private static readonly TextValueRecipeDefinition[] TextValueRecipes =
@@ -144,7 +165,13 @@ namespace LB.TweenHelper.Demo
             new TextValueRecipeDefinition(TextValueRecipeKind.NumberCountDown, "Use the same count operation for a decreasing value."),
             new TextValueRecipeDefinition(TextValueRecipeKind.TextCharacterStaggerIn, "Reveal visible characters with directional offset, alpha, and scale."),
             new TextValueRecipeDefinition(TextValueRecipeKind.TextWave, "Send a finite wave across characters and restore the original mesh."),
-            new TextValueRecipeDefinition(TextValueRecipeKind.ScoreIncrease, "Combine score counting with a restrained punch and color flash.")
+            new TextValueRecipeDefinition(TextValueRecipeKind.ScoreIncrease, "Combine score counting with a restrained punch and color flash."),
+            new TextValueRecipeDefinition(TextValueRecipeKind.TextCharacterStaggerOut, "Hide visible characters in reverse order with offset, alpha, and scale."),
+            new TextValueRecipeDefinition(TextValueRecipeKind.TextCharacterBounce, "Send a traveling bounce across visible characters."),
+            new TextValueRecipeDefinition(TextValueRecipeKind.TextColorSweep, "Sweep a temporary highlight through per-character vertex colors."),
+            new TextValueRecipeDefinition(TextValueRecipeKind.TextGlitch, "Apply a deterministic seeded offset, scale, and color glitch."),
+            new TextValueRecipeDefinition(TextValueRecipeKind.TextEmphasis, "Lift, scale, and color a selected visible-character range."),
+            new TextValueRecipeDefinition(TextValueRecipeKind.TextScrambleReveal, "Resolve substitute glyphs into the untouched rich-text source.")
         };
 
         private static readonly string[] CollectionOrderNames =
@@ -657,6 +684,18 @@ namespace LB.TweenHelper.Demo
                     return _activeTween = _gridTargets.GridRipple(collectionPreviewRoot, 3);
                 case CollectionRecipeKind.LoadingDots:
                     return _activeTween = _loadingDotTargets.LoadingDots(collectionPreviewRoot);
+                case CollectionRecipeKind.GridDiagonalWave:
+                    return _activeTween = _gridTargets.GridDiagonalWave(collectionPreviewRoot, 3, GridDiagonalDirection.TopLeftToBottomRight, 0.34f, 0.08f);
+                case CollectionRecipeKind.GridSpiral:
+                    return _activeTween = _gridTargets.GridSpiral(collectionPreviewRoot, 3, GridSpiralDirection.OutsideInClockwise, 0.32f, 0.065f);
+                case CollectionRecipeKind.GridCheckerboard:
+                    return _activeTween = _gridTargets.GridCheckerboard(collectionPreviewRoot, 3, false, 0.4f, 0.2f);
+                case CollectionRecipeKind.CollectionBurstIn:
+                    return _activeTween = _gridTargets.CollectionBurstIn(collectionPreviewRoot, Vector3.zero, 0.56f, 0.05f);
+                case CollectionRecipeKind.CollectionBurstOut:
+                    return _activeTween = _gridTargets.CollectionBurstOut(collectionPreviewRoot, Vector3.zero, 160f, 0.5f, 0.045f);
+                case CollectionRecipeKind.CollectionGatherTo:
+                    return _activeTween = _gridTargets.CollectionGatherTo(collectionPreviewRoot, Vector3.zero, 0.6f, 0.05f);
                 default:
                     return null;
             }
@@ -686,6 +725,12 @@ namespace LB.TweenHelper.Demo
                     return _activeTween = destinationTarget.Tween().SpringLocalTo(destination, 1f, 38f).Play();
                 case DestinationRecipeKind.MagneticSnap:
                     return _activeTween = destinationTarget.Tween().MagneticSnapLocalTo(destination, 1.1f, 32f, 26f).Play();
+                case DestinationRecipeKind.PathThrough:
+                    return _activeTween = destinationTarget.Tween().PathLocalThrough(GetPathWaypoints(start, destination), DestinationPathInterpolation.CatmullRom, 1.5f).Play();
+                case DestinationRecipeKind.Spiral:
+                    return _activeTween = destinationTarget.Tween().SpiralLocalTo(destination, 82f, 1.75f, 1.5f).Play();
+                case DestinationRecipeKind.MultiHop:
+                    return _activeTween = destinationTarget.Tween().MultiHopLocalTo(destination, DestinationArcHeight, 3, 1.15f, 1.5f).Play();
                 default:
                     return null;
             }
@@ -709,6 +754,18 @@ namespace LB.TweenHelper.Demo
                     return _activeTween = destinationTarget.RewardReveal(1.28f);
                 case FeedbackRecipeKind.PickupCollect:
                     return _activeTween = destinationTarget.PickupCollectLocalTo(destination, DestinationArcHeight, 1.35f);
+                case FeedbackRecipeKind.HealReceive:
+                    return _activeTween = destinationTarget.HealReceive(0.95f);
+                case FeedbackRecipeKind.ShieldBlock:
+                    return _activeTween = destinationTarget.ShieldBlock(Vector3.right, 0.76f);
+                case FeedbackRecipeKind.CriticalHit:
+                    return _activeTween = destinationTarget.CriticalHit(new Vector3(1f, -0.2f, 0f), 0.86f);
+                case FeedbackRecipeKind.CooldownReady:
+                    return _activeTween = destinationTarget.CooldownReady(0.95f);
+                case FeedbackRecipeKind.LevelUp:
+                    return _activeTween = destinationTarget.LevelUp(1.3f);
+                case FeedbackRecipeKind.LowHealthWarning:
+                    return _activeTween = destinationTarget.LowHealthWarning(1.05f);
                 default:
                     return null;
             }
@@ -740,6 +797,18 @@ namespace LB.TweenHelper.Demo
                     return _activeTween = dropdownSequencePanel.DropdownClose(dropdownSequenceEntries, 0.44f, 0.06f);
                 case UISequenceRecipeKind.TabSwitch:
                     return _activeTween = tabSequenceOutgoing.TabSwitchTo(tabSequenceIncoming, UISequenceDirection.Left, 108f, 0.58f);
+                case UISequenceRecipeKind.DrawerShow:
+                    return _activeTween = dropdownSequencePanel.DrawerShow(UISequenceDirection.Left, null, 390f, 0.64f);
+                case UISequenceRecipeKind.DrawerHide:
+                    return _activeTween = dropdownSequencePanel.DrawerHide(UISequenceDirection.Left, null, 390f, 0.48f);
+                case UISequenceRecipeKind.BottomSheetShow:
+                    return _activeTween = modalSequencePanel.BottomSheetShow(modalSequenceBackdrop, 430f, 0.72f);
+                case UISequenceRecipeKind.BottomSheetHide:
+                    return _activeTween = modalSequencePanel.BottomSheetHide(modalSequenceBackdrop, 430f, 0.58f);
+                case UISequenceRecipeKind.PagePush:
+                    return _activeTween = tabSequenceOutgoing.PagePushTo(tabSequenceIncoming, UISequenceDirection.Left, 600f, 0.68f);
+                case UISequenceRecipeKind.PageCrossFade:
+                    return _activeTween = tabSequenceOutgoing.PageCrossFadeTo(tabSequenceIncoming, 0.06f, 0.58f);
                 default:
                     return null;
             }
@@ -767,6 +836,18 @@ namespace LB.TweenHelper.Demo
                     return _activeTween = characterText.TextWave(UISequenceDirection.Up, 20f, 1, 1.2f);
                 case TextValueRecipeKind.ScoreIncrease:
                     return _activeTween = scoreText.ScoreIncrease(1200d, 1475d, "N0", 1.15f);
+                case TextValueRecipeKind.TextCharacterStaggerOut:
+                    return _activeTween = characterText.TextCharacterStaggerOut(UISequenceDirection.Up, 28f, 0.04f, 1f);
+                case TextValueRecipeKind.TextCharacterBounce:
+                    return _activeTween = characterText.TextCharacterBounce(UISequenceDirection.Up, 22f, 1.15f);
+                case TextValueRecipeKind.TextColorSweep:
+                    return _activeTween = characterText.TextColorSweep(new Color(0.18f, 0.9f, 1f), 2.4f, 1.15f);
+                case TextValueRecipeKind.TextGlitch:
+                    return _activeTween = characterText.TextGlitch(8f, 1729, 0.86f);
+                case TextValueRecipeKind.TextEmphasis:
+                    return _activeTween = characterText.TextEmphasis(UISequenceDirection.Up, 11f, 0, 9, new Color(1f, 0.7f, 0.12f), 0.86f);
+                case TextValueRecipeKind.TextScrambleReveal:
+                    return _activeTween = characterText.TextScrambleReveal(1729, 1.3f);
                 default:
                     return null;
             }
@@ -962,21 +1043,28 @@ namespace LB.TweenHelper.Demo
         private void ConfigureUISequencePreview(UISequenceRecipeKind recipe)
         {
             bool showToast = recipe == UISequenceRecipeKind.ToastShow || recipe == UISequenceRecipeKind.ToastHide;
-            bool showModal = recipe == UISequenceRecipeKind.ModalOpen || recipe == UISequenceRecipeKind.ModalClose;
+            bool showModal = recipe == UISequenceRecipeKind.ModalOpen || recipe == UISequenceRecipeKind.ModalClose || recipe == UISequenceRecipeKind.BottomSheetShow || recipe == UISequenceRecipeKind.BottomSheetHide;
             bool showTooltip = recipe == UISequenceRecipeKind.TooltipShow || recipe == UISequenceRecipeKind.TooltipHide;
-            bool showDropdown = recipe == UISequenceRecipeKind.DropdownOpen || recipe == UISequenceRecipeKind.DropdownClose;
+            bool showDropdown = recipe == UISequenceRecipeKind.DropdownOpen || recipe == UISequenceRecipeKind.DropdownClose || recipe == UISequenceRecipeKind.DrawerShow || recipe == UISequenceRecipeKind.DrawerHide;
             toastSequenceTarget.SetActive(showToast);
             modalSequenceGroup.SetActive(showModal);
             tooltipSequenceTarget.SetActive(showTooltip);
             dropdownSequencePanel.SetActive(showDropdown);
-            tabSequenceGroup.SetActive(recipe == UISequenceRecipeKind.TabSwitch);
+            tabSequenceGroup.SetActive(recipe == UISequenceRecipeKind.TabSwitch || recipe == UISequenceRecipeKind.PagePush || recipe == UISequenceRecipeKind.PageCrossFade);
         }
 
         private void ConfigureTextValuePreview(TextValueRecipeKind recipe)
         {
             bool showTypewriter = recipe == TextValueRecipeKind.TypewriterReveal || recipe == TextValueRecipeKind.TypewriterHide;
             bool showNumber = recipe == TextValueRecipeKind.NumberCountUp || recipe == TextValueRecipeKind.NumberCountDown;
-            bool showCharacter = recipe == TextValueRecipeKind.TextCharacterStaggerIn || recipe == TextValueRecipeKind.TextWave;
+            bool showCharacter = recipe == TextValueRecipeKind.TextCharacterStaggerIn ||
+                                 recipe == TextValueRecipeKind.TextWave ||
+                                 recipe == TextValueRecipeKind.TextCharacterStaggerOut ||
+                                 recipe == TextValueRecipeKind.TextCharacterBounce ||
+                                 recipe == TextValueRecipeKind.TextColorSweep ||
+                                 recipe == TextValueRecipeKind.TextGlitch ||
+                                 recipe == TextValueRecipeKind.TextEmphasis ||
+                                 recipe == TextValueRecipeKind.TextScrambleReveal;
             typewriterText.gameObject.SetActive(showTypewriter);
             numberText.gameObject.SetActive(showNumber);
             characterText.gameObject.SetActive(showCharacter);
@@ -1033,6 +1121,18 @@ namespace LB.TweenHelper.Demo
                     return "items.GridRipple(owner, columns: 3);";
                 case CollectionRecipeKind.LoadingDots:
                     return "dots.LoadingDots(owner);";
+                case CollectionRecipeKind.GridDiagonalWave:
+                    return "items.GridDiagonalWave(owner, columns: 3);";
+                case CollectionRecipeKind.GridSpiral:
+                    return "items.GridSpiral(owner, columns: 3);";
+                case CollectionRecipeKind.GridCheckerboard:
+                    return "items.GridCheckerboard(owner, columns: 3);";
+                case CollectionRecipeKind.CollectionBurstIn:
+                    return "items.CollectionBurstIn(owner, origin);";
+                case CollectionRecipeKind.CollectionBurstOut:
+                    return "items.CollectionBurstOut(owner, origin);";
+                case CollectionRecipeKind.CollectionGatherTo:
+                    return "items.CollectionGatherTo(owner, destination);";
                 default:
                     return string.Empty;
             }
@@ -1052,6 +1152,12 @@ namespace LB.TweenHelper.Demo
                     return "target.Tween().SpringLocalTo(destination, 1f, 38f).Play();";
                 case DestinationRecipeKind.MagneticSnap:
                     return "target.Tween().MagneticSnapLocalTo(destination, 1.1f, 32f, 26f).Play();";
+                case DestinationRecipeKind.PathThrough:
+                    return "target.Tween().PathLocalThrough(waypoints).Play();";
+                case DestinationRecipeKind.Spiral:
+                    return "target.Tween().SpiralLocalTo(destination, 82f).Play();";
+                case DestinationRecipeKind.MultiHop:
+                    return "target.Tween().MultiHopLocalTo(destination, 145f, hopCount: 3).Play();";
                 default:
                     return string.Empty;
             }
@@ -1071,6 +1177,18 @@ namespace LB.TweenHelper.Demo
                     return "target.RewardReveal();";
                 case FeedbackRecipeKind.PickupCollect:
                     return "target.PickupCollectLocalTo(destination);";
+                case FeedbackRecipeKind.HealReceive:
+                    return "target.HealReceive();";
+                case FeedbackRecipeKind.ShieldBlock:
+                    return "target.ShieldBlock(impactDirection);";
+                case FeedbackRecipeKind.CriticalHit:
+                    return "target.CriticalHit(impactDirection);";
+                case FeedbackRecipeKind.CooldownReady:
+                    return "icon.CooldownReady();";
+                case FeedbackRecipeKind.LevelUp:
+                    return "badge.LevelUp();";
+                case FeedbackRecipeKind.LowHealthWarning:
+                    return "health.LowHealthWarning();";
                 default:
                     return string.Empty;
             }
@@ -1098,6 +1216,18 @@ namespace LB.TweenHelper.Demo
                     return "dropdown.DropdownClose(entries);";
                 case UISequenceRecipeKind.TabSwitch:
                     return "outgoing.TabSwitchTo(incoming);";
+                case UISequenceRecipeKind.DrawerShow:
+                    return "drawer.DrawerShow(UISequenceDirection.Left, backdrop);";
+                case UISequenceRecipeKind.DrawerHide:
+                    return "drawer.DrawerHide(UISequenceDirection.Left, backdrop);";
+                case UISequenceRecipeKind.BottomSheetShow:
+                    return "sheet.BottomSheetShow(backdrop);";
+                case UISequenceRecipeKind.BottomSheetHide:
+                    return "sheet.BottomSheetHide(backdrop);";
+                case UISequenceRecipeKind.PagePush:
+                    return "outgoing.PagePushTo(incoming);";
+                case UISequenceRecipeKind.PageCrossFade:
+                    return "outgoing.PageCrossFadeTo(incoming);";
                 default:
                     return string.Empty;
             }
@@ -1121,6 +1251,18 @@ namespace LB.TweenHelper.Demo
                     return "label.TextWave(amplitude: 12f);";
                 case TextValueRecipeKind.ScoreIncrease:
                     return "score.ScoreIncrease(1200, 1475, format: \"N0\");";
+                case TextValueRecipeKind.TextCharacterStaggerOut:
+                    return "label.TextCharacterStaggerOut(UISequenceDirection.Up);";
+                case TextValueRecipeKind.TextCharacterBounce:
+                    return "label.TextCharacterBounce();";
+                case TextValueRecipeKind.TextColorSweep:
+                    return "label.TextColorSweep(highlightColor);";
+                case TextValueRecipeKind.TextGlitch:
+                    return "label.TextGlitch(seed: 1729);";
+                case TextValueRecipeKind.TextEmphasis:
+                    return "label.TextEmphasis(startCharacter: 0, characterCount: 9);";
+                case TextValueRecipeKind.TextScrambleReveal:
+                    return "label.TextScrambleReveal(seed: 1729);";
                 default:
                     return string.Empty;
             }
@@ -1128,12 +1270,33 @@ namespace LB.TweenHelper.Demo
 
         private static bool UsesCurvedPath(DestinationRecipeKind recipe)
         {
-            return recipe == DestinationRecipeKind.Arc || recipe == DestinationRecipeKind.Bezier || recipe == DestinationRecipeKind.Hop;
+            return recipe == DestinationRecipeKind.Arc ||
+                   recipe == DestinationRecipeKind.Bezier ||
+                   recipe == DestinationRecipeKind.Hop ||
+                   recipe == DestinationRecipeKind.PathThrough ||
+                   recipe == DestinationRecipeKind.Spiral ||
+                   recipe == DestinationRecipeKind.MultiHop;
         }
 
         private void UpdateDestinationPath(DestinationRecipeKind recipe)
         {
-            UpdateDestinationPath(recipe == DestinationRecipeKind.Bezier);
+            Vector3 start = destinationStartMarker.anchoredPosition3D;
+            Vector3 destination = destinationEndMarker.anchoredPosition3D;
+            GetBezierControls(start, destination, out Vector3 controlA, out Vector3 controlB);
+            Vector3[] waypoints = GetPathWaypoints(start, destination);
+            Transform pathRoot = destinationCurvedPath.transform;
+
+            for (int i = 0; i < pathRoot.childCount; i++)
+            {
+                float progress = (i + 1f) / (pathRoot.childCount + 1f);
+                Vector3 point;
+                if (recipe == DestinationRecipeKind.Bezier) point = EvaluateBezier(start, controlA, controlB, destination, progress);
+                else if (recipe == DestinationRecipeKind.PathThrough) point = EvaluatePath(start, waypoints, progress);
+                else if (recipe == DestinationRecipeKind.Spiral) point = EvaluateSpiral(start, destination, 82f, 1.75f, progress);
+                else if (recipe == DestinationRecipeKind.MultiHop) point = EvaluateMultiHop(start, destination, DestinationArcHeight, 3, 1.15f, progress);
+                else point = EvaluateArc(start, destination, DestinationArcHeight, progress);
+                ((RectTransform)pathRoot.GetChild(i)).anchoredPosition3D = point;
+            }
         }
 
         private void UpdateDestinationPath(bool usesBezier)
@@ -1153,6 +1316,16 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private static Vector3[] GetPathWaypoints(Vector3 start, Vector3 destination)
+        {
+            return new[]
+            {
+                Vector3.Lerp(start, destination, 0.32f) + Vector3.up * DestinationArcHeight + Vector3.left * 68f,
+                Vector3.Lerp(start, destination, 0.68f) + Vector3.up * DestinationArcHeight * 0.28f + Vector3.right * 68f,
+                destination
+            };
+        }
+
         private static void GetBezierControls(Vector3 start, Vector3 destination, out Vector3 controlA, out Vector3 controlB)
         {
             controlA = Vector3.Lerp(start, destination, 0.3f) + Vector3.up * DestinationBezierControlAHeight;
@@ -1168,6 +1341,37 @@ namespace LB.TweenHelper.Demo
         {
             float inverse = 1f - progress;
             return inverse * inverse * inverse * start + 3f * inverse * inverse * progress * controlA + 3f * inverse * progress * progress * controlB + progress * progress * progress * destination;
+        }
+
+        private static Vector3 EvaluatePath(Vector3 start, Vector3[] waypoints, float progress)
+        {
+            float scaled = Mathf.Clamp01(progress) * waypoints.Length;
+            int segment = Mathf.Min(Mathf.FloorToInt(scaled), waypoints.Length - 1);
+            float localProgress = progress >= 1f ? 1f : scaled - segment;
+            Vector3 pointA = segment == 0 ? start : waypoints[segment - 1];
+            Vector3 pointB = waypoints[segment];
+            Vector3 previous = segment <= 1 ? start : waypoints[segment - 2];
+            Vector3 next = segment + 1 < waypoints.Length ? waypoints[segment + 1] : pointB;
+            float square = localProgress * localProgress;
+            float cube = square * localProgress;
+            return 0.5f * ((2f * pointA) + (-previous + pointB) * localProgress + (2f * previous - 5f * pointA + 4f * pointB - next) * square + (-previous + 3f * pointA - 3f * pointB + next) * cube);
+        }
+
+        private static Vector3 EvaluateSpiral(Vector3 start, Vector3 destination, float radius, float revolutions, float progress)
+        {
+            float travel = DOVirtual.EasedValue(0f, 1f, progress, Ease.InOutCubic);
+            float angle = progress * revolutions * Mathf.PI * 2f;
+            float envelope = Mathf.Sin(progress * Mathf.PI);
+            Vector3 radial = Vector3.right * Mathf.Cos(angle) + Vector3.up * Mathf.Sin(angle);
+            return Vector3.LerpUnclamped(start, destination, travel) + radial * radius * envelope;
+        }
+
+        private static Vector3 EvaluateMultiHop(Vector3 start, Vector3 destination, float height, int hopCount, float decay, float progress)
+        {
+            float travel = DOVirtual.EasedValue(0f, 1f, progress, Ease.InOutCubic);
+            float bounce = Mathf.Abs(Mathf.Sin(progress * hopCount * Mathf.PI));
+            float envelope = Mathf.Pow(1f - Mathf.Clamp01(progress), decay);
+            return Vector3.LerpUnclamped(start, destination, travel) + Vector3.up * height * bounce * envelope;
         }
 
         private static string SplitPascalCase(string value)
@@ -1363,7 +1567,13 @@ namespace LB.TweenHelper.Demo
             ListStaggerOut,
             GridWave,
             GridRipple,
-            LoadingDots
+            LoadingDots,
+            GridDiagonalWave,
+            GridSpiral,
+            GridCheckerboard,
+            CollectionBurstIn,
+            CollectionBurstOut,
+            CollectionGatherTo
         }
 
         private enum DestinationRecipeKind
@@ -1372,7 +1582,10 @@ namespace LB.TweenHelper.Demo
             Bezier,
             Hop,
             Spring,
-            MagneticSnap
+            MagneticSnap,
+            PathThrough,
+            Spiral,
+            MultiHop
         }
 
         private enum FeedbackRecipeKind
@@ -1381,7 +1594,13 @@ namespace LB.TweenHelper.Demo
             DamageHit,
             SuccessConfirm,
             RewardReveal,
-            PickupCollect
+            PickupCollect,
+            HealReceive,
+            ShieldBlock,
+            CriticalHit,
+            CooldownReady,
+            LevelUp,
+            LowHealthWarning
         }
 
         private enum UISequenceRecipeKind
@@ -1394,7 +1613,13 @@ namespace LB.TweenHelper.Demo
             TooltipHide,
             DropdownOpen,
             DropdownClose,
-            TabSwitch
+            TabSwitch,
+            DrawerShow,
+            DrawerHide,
+            BottomSheetShow,
+            BottomSheetHide,
+            PagePush,
+            PageCrossFade
         }
 
         private enum TextValueRecipeKind
@@ -1405,7 +1630,13 @@ namespace LB.TweenHelper.Demo
             NumberCountDown,
             TextCharacterStaggerIn,
             TextWave,
-            ScoreIncrease
+            ScoreIncrease,
+            TextCharacterStaggerOut,
+            TextCharacterBounce,
+            TextColorSweep,
+            TextGlitch,
+            TextEmphasis,
+            TextScrambleReveal
         }
 
         private readonly struct TMPTextPreviewSnapshot

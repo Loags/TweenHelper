@@ -72,6 +72,48 @@ namespace LB.TweenHelper
             return this;
         }
 
+        /// <summary>Slides a drawer from its selected screen edge while optionally fading a backdrop.</summary>
+        public TweenBuilder DrawerShow(UISequenceDirection edge = UISequenceDirection.Left, GameObject backdrop = null, float distance = 360f, float? duration = null)
+        {
+            AddStep(options => UISequenceUtility.CreateDrawer(_gameObject, backdrop, true, edge, distance, ResolveUISequenceDuration(duration, options, 0.44f), options), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Slides a drawer back through its selected screen edge while optionally fading a backdrop.</summary>
+        public TweenBuilder DrawerHide(UISequenceDirection edge = UISequenceDirection.Left, GameObject backdrop = null, float distance = 360f, float? duration = null)
+        {
+            AddStep(options => UISequenceUtility.CreateDrawer(_gameObject, backdrop, false, edge, distance, ResolveUISequenceDuration(duration, options, 0.32f), options), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Raises a bottom sheet into its authored state while optionally fading a backdrop.</summary>
+        public TweenBuilder BottomSheetShow(GameObject backdrop = null, float distance = 420f, float? duration = null)
+        {
+            AddStep(options => UISequenceUtility.CreateBottomSheet(_gameObject, backdrop, true, distance, ResolveUISequenceDuration(duration, options, 0.5f), options), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Dismisses a bottom sheet below its authored state while optionally fading a backdrop.</summary>
+        public TweenBuilder BottomSheetHide(GameObject backdrop = null, float distance = 420f, float? duration = null)
+        {
+            AddStep(options => UISequenceUtility.CreateBottomSheet(_gameObject, backdrop, false, distance, ResolveUISequenceDuration(duration, options, 0.36f), options), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Pushes this page out while an incoming page enters from the opposite side.</summary>
+        public TweenBuilder PagePushTo(GameObject incoming, UISequenceDirection direction = UISequenceDirection.Left, float distance = 720f, float? duration = null)
+        {
+            AddStep(options => UISequenceUtility.CreatePagePush(_gameObject, incoming, direction, distance, ResolveUISequenceDuration(duration, options, 0.52f), options), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Cross-fades this page into an incoming page with restrained depth scaling.</summary>
+        public TweenBuilder PageCrossFadeTo(GameObject incoming, float depthScale = 0.04f, float? duration = null)
+        {
+            AddStep(options => UISequenceUtility.CreatePageCrossFade(_gameObject, incoming, depthScale, ResolveUISequenceDuration(duration, options, 0.4f), options), applyBuilderOptions: false);
+            return this;
+        }
+
         private static float ResolveUISequenceDuration(float? duration, TweenOptions options, float fallback) => duration ?? options.Duration ?? fallback;
     }
 }

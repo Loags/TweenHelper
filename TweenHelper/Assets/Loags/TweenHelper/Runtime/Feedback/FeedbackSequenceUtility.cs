@@ -10,6 +10,12 @@ namespace LB.TweenHelper
         private static readonly Color DamageColor = new Color(1f, 0.08f, 0.04f, 1f);
         private static readonly Color SuccessColor = new Color(0.12f, 0.9f, 0.32f, 1f);
         private static readonly Color RewardColor = new Color(1f, 0.68f, 0.08f, 1f);
+        private static readonly Color HealColor = new Color(0.18f, 1f, 0.48f, 1f);
+        private static readonly Color ShieldColor = new Color(0.2f, 0.72f, 1f, 1f);
+        private static readonly Color CriticalColor = new Color(1f, 0.12f, 0.04f, 1f);
+        private static readonly Color ReadyColor = new Color(0.22f, 0.88f, 1f, 1f);
+        private static readonly Color LevelColor = new Color(1f, 0.74f, 0.12f, 1f);
+        private static readonly Color LowHealthColor = new Color(1f, 0.05f, 0.08f, 1f);
 
         public static Tween CreateErrorReject(GameObject target, float duration, Color? flashColor, TweenOptions options)
         {
@@ -69,6 +75,120 @@ namespace LB.TweenHelper
                 Quaternion rotationOffset = state.IsUi ? Quaternion.Euler(0f, 0f, angle) : Quaternion.Euler(0f, angle, 0f);
                 state.SetPose(Vector3.up * lift, Vector3.Scale(state.BaseScale, scaleMultiplier), rotationOffset);
                 state.SetFlash(resolvedColor, Mathf.Sin(Mathf.Clamp01(progress) * Mathf.PI) * 0.58f);
+            });
+        }
+
+        public static Tween CreateHealReceive(GameObject target, float duration, Color? flashColor, TweenOptions options)
+        {
+            float strength = ResolveStrength(options);
+            Color resolvedColor = flashColor ?? HealColor;
+            return CreateTransient(target, duration, options, false, (state, progress) =>
+            {
+                float height = (state.IsUi ? 24f : 0.24f) * strength;
+                float lift = Mathf.Sin(progress * Mathf.PI) * height;
+                Vector3 stretch = ScaleMagnitude(new Vector3(0.94f, 1.14f, 0.94f), strength);
+                Vector3 settle = ScaleMagnitude(Vector3.one * 1.07f, strength);
+                Vector3 scale = progress <= 0.3f
+                    ? Vector3.LerpUnclamped(Vector3.one, stretch, EvaluateEase(progress / 0.3f, Ease.OutCubic))
+                    : progress <= 0.66f
+                        ? Vector3.LerpUnclamped(stretch, settle, EvaluateEase((progress - 0.3f) / 0.36f, Ease.InOutSine))
+                        : Vector3.LerpUnclamped(settle, Vector3.one, EvaluateEase((progress - 0.66f) / 0.34f, Ease.OutBack));
+                state.SetPose(Vector3.up * lift, Vector3.Scale(state.BaseScale, scale), Quaternion.identity);
+                state.SetFlash(resolvedColor, FlashEnvelope(progress, 0.22f, 0.88f) * 0.72f);
+            });
+        }
+
+        public static Tween CreateShieldBlock(GameObject target, Vector3 impactDirection, float duration, Color? flashColor, TweenOptions options)
+        {
+            Vector3 direction = ResolveDirection(impactDirection, nameof(impactDirection));
+            float strength = ResolveStrength(options);
+            Color resolvedColor = flashColor ?? ShieldColor;
+            return CreateTransient(target, duration, options, false, (state, progress) =>
+            {
+                float envelope = Mathf.Pow(1f - progress, 2.1f);
+                float recoilDistance = (state.IsUi ? 30f : 0.3f) * strength;
+                float rebound = Mathf.Sin(progress * Mathf.PI * 3f) * envelope;
+                Vector3 offset = -direction * recoilDistance * (0.65f * envelope + 0.35f * rebound);
+                Vector3 compressed = ScaleMagnitude(new Vector3(0.86f, 1.08f, 1.08f), strength);
+                Vector3 scale = progress <= 0.16f
+                    ? Vector3.LerpUnclamped(Vector3.one, compressed, EvaluateEase(progress / 0.16f, Ease.OutQuad))
+                    : Vector3.LerpUnclamped(compressed, Vector3.one, EvaluateEase((progress - 0.16f) / 0.84f, Ease.OutElastic));
+                float angle = -direction.x * 8f * strength * envelope;
+                state.SetPose(offset, Vector3.Scale(state.BaseScale, scale), Quaternion.Euler(0f, 0f, angle));
+                state.SetFlash(resolvedColor, FlashEnvelope(progress, 0.08f, 0.62f) * 0.84f);
+            });
+        }
+
+        public static Tween CreateCriticalHit(GameObject target, Vector3 impactDirection, float duration, Color? flashColor, TweenOptions options)
+        {
+            Vector3 direction = ResolveDirection(impactDirection, nameof(impactDirection));
+            float strength = ResolveStrength(options);
+            Color resolvedColor = flashColor ?? CriticalColor;
+            return CreateTransient(target, duration, options, true, (state, progress) =>
+            {
+                float envelope = Mathf.Pow(1f - progress, 1.55f);
+                float distance = (state.IsUi ? 46f : 0.46f) * strength;
+                float aftershock = Mathf.Sin(progress * Mathf.PI * 7f) * envelope;
+                Vector3 offset = -direction * distance * (envelope * 0.72f + aftershock * 0.28f);
+                Vector3 impactScale = ScaleMagnitude(new Vector3(1.22f, 0.68f, 1.22f), strength);
+                Vector3 recoilScale = ScaleMagnitude(new Vector3(0.9f, 1.16f, 0.9f), strength);
+                Vector3 scale = progress <= 0.11f
+                    ? Vector3.LerpUnclamped(Vector3.one, impactScale, EvaluateEase(progress / 0.11f, Ease.OutQuad))
+                    : progress <= 0.38f
+                        ? Vector3.LerpUnclamped(impactScale, recoilScale, EvaluateEase((progress - 0.11f) / 0.27f, Ease.OutCubic))
+                        : Vector3.LerpUnclamped(recoilScale, Vector3.one, EvaluateEase((progress - 0.38f) / 0.62f, Ease.OutBack));
+                Color flash = Color.LerpUnclamped(Color.white, resolvedColor, Mathf.Clamp01((progress - 0.06f) / 0.3f));
+                state.SetGroundedPose(offset, Vector3.Scale(state.BaseScale, scale), Quaternion.Euler(0f, 0f, -direction.x * 5f * envelope));
+                state.SetFlash(flash, FlashEnvelope(progress, 0.04f, 0.58f));
+            });
+        }
+
+        public static Tween CreateCooldownReady(GameObject target, float duration, Color? flashColor, TweenOptions options)
+        {
+            float strength = ResolveStrength(options);
+            Color resolvedColor = flashColor ?? ReadyColor;
+            return CreateTransient(target, duration, options, false, (state, progress) =>
+            {
+                float angle = EvaluateEase(progress, Ease.OutCubic) * 360f * strength;
+                float pulse = Mathf.Sin(progress * Mathf.PI);
+                float settle = Mathf.Sin(progress * Mathf.PI * 2f) * (1f - progress);
+                float scale = 1f + (0.16f * pulse + 0.035f * settle) * strength;
+                Quaternion rotation = state.IsUi ? Quaternion.Euler(0f, 0f, angle) : Quaternion.Euler(0f, angle, 0f);
+                state.SetPose(Vector3.up * (state.IsUi ? 7f : 0.07f) * pulse * strength, state.BaseScale * scale, rotation);
+                state.SetFlash(resolvedColor, Mathf.Sin(progress * Mathf.PI) * 0.72f);
+            });
+        }
+
+        public static Tween CreateLevelUp(GameObject target, float duration, Color? flashColor, TweenOptions options)
+        {
+            float strength = ResolveStrength(options);
+            Color resolvedColor = flashColor ?? LevelColor;
+            return CreateTransient(target, duration, options, false, (state, progress) =>
+            {
+                float height = (state.IsUi ? 42f : 0.42f) * strength;
+                float lift = Mathf.Sin(progress * Mathf.PI) * height;
+                float pulses = Mathf.Sin(progress * Mathf.PI * 3f) * (1f - progress);
+                float reveal = Mathf.Sin(progress * Mathf.PI);
+                float scale = 1f + (0.17f * reveal + 0.045f * pulses) * strength;
+                float angle = EvaluateEase(progress, Ease.InOutCubic) * 360f * strength;
+                Quaternion rotation = state.IsUi ? Quaternion.Euler(0f, 0f, angle) : Quaternion.Euler(0f, angle, 0f);
+                state.SetPose(Vector3.up * lift, state.BaseScale * scale, rotation);
+                state.SetFlash(resolvedColor, Mathf.Clamp01(reveal * 0.64f + Mathf.Max(0f, pulses) * 0.18f));
+            });
+        }
+
+        public static Tween CreateLowHealthWarning(GameObject target, float duration, Color? flashColor, TweenOptions options)
+        {
+            float strength = ResolveStrength(options);
+            Color resolvedColor = flashColor ?? LowHealthColor;
+            return CreateTransient(target, duration, options, false, (state, progress) =>
+            {
+                float firstBeat = Pulse(progress, 0.04f, 0.28f);
+                float secondBeat = Pulse(progress, 0.34f, 0.62f) * 0.78f;
+                float beat = Mathf.Max(firstBeat, secondBeat);
+                float scale = 1f + 0.15f * beat * strength;
+                state.SetPose(Vector3.zero, state.BaseScale * scale, Quaternion.identity);
+                state.SetFlash(resolvedColor, beat * 0.82f);
             });
         }
 
@@ -213,6 +333,19 @@ namespace LB.TweenHelper
             if (progress <= peak) return EvaluateEase(progress / peak, Ease.OutQuad);
             if (progress >= end) return 0f;
             return 1f - EvaluateEase((progress - peak) / (end - peak), Ease.InQuad);
+        }
+
+        private static float Pulse(float progress, float start, float end)
+        {
+            if (progress <= start || progress >= end) return 0f;
+            return Mathf.Sin((progress - start) / (end - start) * Mathf.PI);
+        }
+
+        private static Vector3 ResolveDirection(Vector3 direction, string parameterName)
+        {
+            ValidateVector(direction, parameterName);
+            if (direction.sqrMagnitude <= 0.000001f) throw new ArgumentException("Impact direction cannot be zero.", parameterName);
+            return direction.normalized;
         }
 
         private static Vector3 ScaleMagnitude(Vector3 scale, float strength) => Vector3.one + (scale - Vector3.one) * strength;

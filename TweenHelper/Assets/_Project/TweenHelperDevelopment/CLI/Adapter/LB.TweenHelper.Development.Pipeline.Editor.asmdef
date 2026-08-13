@@ -2,9 +2,8 @@
     "name": "LB.TweenHelper.Development.Pipeline.Editor",
     "rootNamespace": "LB.TweenHelper.Pipeline.Editor",
     "references": [
-        "LB.TweenHelper.Development.Automation.Editor",
+        "LB.TweenHelper.Runtime",
         "Unity.Pipeline",
-        "Unity.Pipeline.Editor",
         "Unity.Nuget.Newtonsoft-Json"
     ],
     "includePlatforms": [
