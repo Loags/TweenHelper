@@ -120,47 +120,17 @@ namespace LB.TweenHelper
         {
             ValidateRequest(target, duration, options);
             var state = new CameraState(RequireCamera(target));
-            float progress = 0f;
-            bool initialized = false;
-            bool completed = false;
-
-            void EnsureInitialized()
-            {
-                if (initialized) return;
-                state.Initialize();
-                initialized = true;
-            }
-
-            var tween = DOTween.To(() => progress, value =>
-            {
-                progress = value;
-                EnsureInitialized();
-                evaluator(state, Mathf.Clamp01(value));
-            }, 1f, duration);
-
-            tween.WithDefaults(options.SetEase(Ease.Linear), target);
-            tween.OnStart(() =>
-            {
-                completed = false;
-                EnsureInitialized();
-                evaluator(state, 0f);
-            });
-            tween.OnComplete(() =>
-            {
-                completed = true;
-                state.Restore();
-            });
-            tween.OnRewind(() =>
-            {
-                completed = false;
-                if (initialized) state.Restore();
-            });
-            tween.OnKill(() =>
-            {
-                if (!completed && initialized) state.Restore();
-            });
-            tween.Pause();
-            return tween;
+            return NormalizedTweenTimeline.Create(
+                target,
+                duration,
+                options.SetEase(Ease.Linear),
+                state.Initialize,
+                progress => evaluator(state, progress),
+                state.Restore,
+                state.Restore,
+                state.Restore,
+                state.Restore,
+                () => evaluator(state, 0f));
         }
 
         private static Camera RequireCamera(GameObject target)

@@ -126,6 +126,8 @@ Burst In starts all items at one origin and restores their authored positions, s
 
 Every recipe returns its active `TweenHandle` and accepts duration, stagger interval, and `TweenOptions` overrides. `LoadingDots` also accepts the pause between complete cycles. Strength scales the spatial distance and deformation without moving Burst In or Gather To away from their exact requested endpoint.
 
+The manual review catalog covers every `GridDiagonalDirection` and `GridSpiralDirection`, both checkerboard phases, center/corner/edge ripple origins, and a representative incomplete final row. It also exercises `PresetByName`, a custom `Animate` factory, UI and world spatial branches, and the automatic `120`-canvas-unit and `1.2`-world-unit Burst Out defaults. These are review configurations of the existing enum-driven API, not separate direction-specific methods.
+
 ## Validation and errors
 
 - Empty collections return an inactive `TweenHandle` and log a warning.
@@ -135,5 +137,7 @@ Every recipe returns its active `TweenHandle` and accepts duration, stagger inte
 - Building without first selecting a preset or custom factory is rejected.
 - Killing a preset-based stagger group follows normal `TweenHandle` semantics and does not restore arbitrary target state automatically.
 - Burst In, Burst Out, and Gather To restore their captured item states on interrupted kill and rewind. Normal Burst Out and Gather To completion intentionally leaves their hidden endpoint.
+
+The explicit owner is the root tween's single lifetime owner. Collection items are required secondary participants and must remain alive until the recipe finishes or is killed; destroying an item does not independently cancel the root. Spatial recipes write item position, scale, local rotation, and supported alpha, so callers should not overlap other writers on those channels.
 
 For replayable previews or pooled UI, capture the desired target state before playback and restore it before starting the next group.

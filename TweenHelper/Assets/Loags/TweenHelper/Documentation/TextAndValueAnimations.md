@@ -43,7 +43,9 @@ public sealed class ScorePresentation : MonoBehaviour
 | `TextScrambleReveal` | `0.9s` | Resolves deterministic substitute glyphs into the original source text. |
 | `ScoreIncrease` | `0.9s` | Counts upward while applying temporary scale and color feedback. |
 
-Character stagger defaults to `UISequenceDirection.Up`, an `18`-unit offset, and `0.025s` between character starts. Long labels compress their start offsets into the requested total duration. `TextWave` defaults to an upward `12`-unit wave and one sweep. `TextGlitch` and `TextScrambleReveal` accept a seed so capture, replay, and automated demos remain deterministic.
+Character stagger defaults to `UISequenceDirection.Up`, an `18`-unit offset, and `0.025s` between character starts. `Up`, `Down`, `Left`, and `Right` are supported by character stagger, wave, bounce, and emphasis operations. Long labels compress their start offsets into the requested total duration. `TextWave` defaults to an upward `12`-unit wave and one sweep. `TextGlitch` and `TextScrambleReveal` accept a seed so capture, replay, and automated demos remain deterministic.
+
+The manual review catalog contains all four direction configurations for each directional family. It also includes representative `TextMeshPro` world-space coverage for mesh displacement, vertex-color mutation, and scramble source-string mutation alongside the existing `TextMeshProUGUI` entries. World previews use world-unit amplitudes rather than canvas-sized distances.
 
 ## Builder composition
 

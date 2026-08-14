@@ -199,82 +199,42 @@ namespace LB.TweenHelper
             if (arcHeight.HasValue) ValidateFinite(arcHeight.Value, nameof(arcHeight));
             float strength = ResolveStrength(options);
             var state = new FeedbackState(target, local);
-            float progress = 0f;
-            bool completed = false;
-
-            var tween = DOTween.To(() => progress, value =>
-            {
-                progress = value;
-                state.Initialize(false, false, true);
-                float normalized = Mathf.Clamp01(value);
-                float travel = EvaluateEase(normalized, options.Ease ?? Ease.InOutCubic);
-                float resolvedHeight = (arcHeight ?? (state.IsUi ? 145f : 2f)) * strength;
-                Vector3 position = DestinationMotionUtility.EvaluateArc(state.BasePosition, destination, resolvedHeight, travel);
-                float scale = EvaluatePickupScale(normalized, strength);
-                float alpha = normalized <= 0.56f ? state.BaseAlpha : Mathf.LerpUnclamped(state.BaseAlpha, 0f, EvaluateEase((normalized - 0.56f) / 0.44f, Ease.InCubic));
-                float angle = EvaluateEase(normalized, Ease.InOutSine) * 180f * strength;
-                Quaternion rotationOffset = state.IsUi ? Quaternion.Euler(0f, 0f, angle) : Quaternion.Euler(0f, angle, 0f);
-                state.SetPickupPose(position, state.BaseScale * scale, rotationOffset, alpha);
-            }, 1f, duration);
-
-            ConfigureTween(tween, options, target);
-            tween.OnStart(() => state.Initialize(false, false, true));
-            tween.OnComplete(() =>
-            {
-                completed = true;
-                if (EndsAtStart(options)) state.RestoreAll();
-                else state.SetPickupEndpoint(destination);
-            });
-            tween.OnRewind(() =>
-            {
-                completed = false;
-                state.RestoreAll();
-            });
-            tween.OnKill(() =>
-            {
-                if (!completed) state.RestoreVisuals();
-            });
-            tween.Pause();
-            return tween;
+            return NormalizedTweenTimeline.Create(
+                target,
+                duration,
+                options.SetEase(Ease.Linear),
+                () => state.Initialize(false, false, true),
+                progress =>
+                {
+                    float travel = EvaluateEase(progress, options.Ease ?? Ease.InOutCubic);
+                    float resolvedHeight = (arcHeight ?? (state.IsUi ? 145f : 2f)) * strength;
+                    Vector3 position = DestinationMotionUtility.EvaluateArc(state.BasePosition, destination, resolvedHeight, travel);
+                    float scale = EvaluatePickupScale(progress, strength);
+                    float alpha = progress <= 0.56f ? state.BaseAlpha : Mathf.LerpUnclamped(state.BaseAlpha, 0f, EvaluateEase((progress - 0.56f) / 0.44f, Ease.InCubic));
+                    float angle = EvaluateEase(progress, Ease.InOutSine) * 180f * strength;
+                    Quaternion rotationOffset = state.IsUi ? Quaternion.Euler(0f, 0f, angle) : Quaternion.Euler(0f, angle, 0f);
+                    state.SetPickupPose(position, state.BaseScale * scale, rotationOffset, alpha);
+                },
+                () => state.SetPickupEndpoint(destination),
+                state.RestoreAll,
+                state.RestoreAll,
+                state.RestoreVisuals);
         }
 
         private static Tween CreateTransient(GameObject target, float duration, TweenOptions options, bool grounded, Action<FeedbackState, float> evaluator)
         {
             ValidateRequest(duration);
             var state = new FeedbackState(target, true);
-            float progress = 0f;
-            bool completed = false;
-
-            var tween = DOTween.To(() => progress, value =>
-            {
-                progress = value;
-                state.Initialize(grounded, true, false);
-                evaluator(state, Mathf.Clamp01(value));
-            }, 1f, duration);
-
-            ConfigureTween(tween, options, target);
-            tween.OnStart(() => state.Initialize(grounded, true, false));
-            tween.OnComplete(() =>
-            {
-                completed = true;
-                state.RestoreAll();
-            });
-            tween.OnRewind(() =>
-            {
-                completed = false;
-                state.RestoreAll();
-            });
-            tween.OnKill(() =>
-            {
-                if (!completed) state.RestoreAll();
-            });
-            tween.Pause();
-            return tween;
-        }
-
-        private static void ConfigureTween(Tween tween, TweenOptions options, GameObject target)
-        {
-            tween.WithDefaults(options.SetEase(Ease.Linear), target);
+            return NormalizedTweenTimeline.Create(
+                target,
+                duration,
+                options.SetEase(Ease.Linear),
+                () => state.Initialize(grounded, true, false),
+                progress => evaluator(state, progress),
+                state.RestoreAll,
+                state.RestoreAll,
+                state.RestoreAll,
+                state.RestoreAll);
         }
 
         private static Vector3 EvaluateDamageScale(float progress, float strength)
@@ -351,12 +311,6 @@ namespace LB.TweenHelper
         private static Vector3 ScaleMagnitude(Vector3 scale, float strength) => Vector3.one + (scale - Vector3.one) * strength;
         private static float Parabola(float progress) => 4f * Mathf.Clamp01(progress) * (1f - Mathf.Clamp01(progress));
         private static float EvaluateEase(float progress, Ease ease) => DOVirtual.EasedValue(0f, 1f, Mathf.Clamp01(progress), ease);
-
-        private static bool EndsAtStart(TweenOptions options)
-        {
-            int loops = options.Loops ?? 1;
-            return loops > 0 && options.LoopType == LoopType.Yoyo && loops % 2 == 0;
-        }
 
         private static float ResolveStrength(TweenOptions options)
         {

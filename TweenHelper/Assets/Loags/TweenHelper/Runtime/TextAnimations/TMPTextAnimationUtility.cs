@@ -179,50 +179,17 @@ namespace LB.TweenHelper
 
         private static Tween CreateTimeline(GameObject owner, float duration, TweenOptions options, Action initialize, Action<float> evaluate, Action complete, Action rewind, Action interruptedKill)
         {
-            float progress = 0f;
-            bool initialized = false;
-            bool completed = false;
-
-            void EnsureInitialized()
-            {
-                if (initialized) return;
-                initialize();
-                initialized = true;
-            }
-
-            void Start()
-            {
-                EnsureInitialized();
-                evaluate(0f);
-            }
-
-            var tween = DOTween.To(() => progress, value =>
-            {
-                progress = value;
-                EnsureInitialized();
-                evaluate(Mathf.Clamp01(value));
-            }, 1f, duration);
-
-            tween.WithDefaults(options.SetEase(Ease.Linear), owner);
-            tween.OnStart(Start);
-            tween.OnComplete(() =>
-            {
-                EnsureInitialized();
-                completed = true;
-                if (EndsAtStart(options)) rewind();
-                else complete();
-            });
-            tween.OnRewind(() =>
-            {
-                completed = false;
-                if (initialized) rewind();
-            });
-            tween.OnKill(() =>
-            {
-                if (!completed && initialized) interruptedKill?.Invoke();
-            });
-            tween.Pause();
-            return tween;
+            return NormalizedTweenTimeline.Create(
+                owner,
+                duration,
+                options.SetEase(Ease.Linear),
+                initialize,
+                evaluate,
+                complete,
+                rewind,
+                rewind,
+                interruptedKill,
+                () => evaluate(0f));
         }
 
         private static TMP_Text RequireText(GameObject target)
@@ -270,12 +237,6 @@ namespace LB.TweenHelper
             if (progress <= 0.16f) return EaseValue(progress / 0.16f, Ease.OutQuad);
             if (progress >= 0.76f) return 0f;
             return 1f - EaseValue((progress - 0.16f) / 0.6f, Ease.InQuad);
-        }
-
-        private static bool EndsAtStart(TweenOptions options)
-        {
-            int loops = options.Loops ?? 1;
-            return loops > 0 && options.LoopType == LoopType.Yoyo && loops % 2 == 0;
         }
 
         private static float ResolveStrength(TweenOptions options)

@@ -50,6 +50,8 @@ Every family is transient:
 - Restart and finite loops do not accumulate offsets.
 - Destroying the camera target kills the linked root through DOTween's normal link behavior.
 
+The camera GameObject is the operation's single lifetime owner. A `CameraFocusZoom` focus target is a required secondary participant and must remain alive until the operation finishes or is killed; destroying it does not independently own cancellation.
+
 During playback, field of view is clamped to Unity's valid `1..179` range and then restored exactly. Retain and kill an infinitely looped Breathing handle during teardown.
 
 Do not let a camera controller and a feedback tween write the same transform simultaneously. Prefer a dedicated camera feedback child or pause the competing writer for the duration of the effect.

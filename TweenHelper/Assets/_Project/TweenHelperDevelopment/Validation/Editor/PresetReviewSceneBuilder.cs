@@ -36,8 +36,12 @@ namespace LB.TweenHelper.Editor
                 bool sceneNeedsUISequencePreview = !sceneText.Contains("uiSequencePreviewRoot:");
                 bool sceneNeedsTextValuePreview = !sceneText.Contains("textValuePreviewRoot:");
                 bool sceneNeedsCameraFeedback = !sceneText.Contains("feedbackCamera:");
+                bool sceneNeedsCoveragePreview = !sceneText.Contains("incompleteGridPreviewGroup:") ||
+                                                 !sceneText.Contains("worldCollectionPreviewRoot:") ||
+                                                 !sceneText.Contains("drawerSequenceBackdrop:") ||
+                                                 !sceneText.Contains("worldTextValuePreviewRoot:");
                 bool sceneNeedsMaterial = !File.Exists(Path.GetFullPath(MaterialPath));
-                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsDestinationPreview && !sceneNeedsUISequencePreview && !sceneNeedsTextValuePreview && !sceneNeedsCameraFeedback && !sceneNeedsMaterial)
+                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsDestinationPreview && !sceneNeedsUISequencePreview && !sceneNeedsTextValuePreview && !sceneNeedsCameraFeedback && !sceneNeedsCoveragePreview && !sceneNeedsMaterial)
                 {
                     Material material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
                     if (material == null || !NeedsTransparentConfiguration(material)) return;
@@ -132,9 +136,13 @@ namespace LB.TweenHelper.Editor
             Assign(serializedController, "collectionPreviewRoot", collectionPreview.Root);
             Assign(serializedController, "listPreviewGroup", collectionPreview.ListGroup);
             Assign(serializedController, "gridPreviewGroup", collectionPreview.GridGroup);
+            Assign(serializedController, "incompleteGridPreviewGroup", collectionPreview.IncompleteGridGroup);
+            Assign(serializedController, "worldCollectionPreviewRoot", collectionPreview.WorldRoot);
             Assign(serializedController, "loadingDotsPreviewGroup", collectionPreview.LoadingDotsGroup);
             AssignArray(serializedController, "listTargets", collectionPreview.ListTargets);
             AssignArray(serializedController, "gridTargets", collectionPreview.GridTargets);
+            AssignArray(serializedController, "incompleteGridTargets", collectionPreview.IncompleteGridTargets);
+            AssignArray(serializedController, "worldCollectionTargets", collectionPreview.WorldTargets);
             AssignArray(serializedController, "loadingDotTargets", collectionPreview.LoadingDotTargets);
             Assign(serializedController, "destinationWorldRoot", destinationPreview.WorldRoot);
             Assign(serializedController, "destinationWorldTarget", destinationPreview.WorldTarget);
@@ -158,11 +166,14 @@ namespace LB.TweenHelper.Editor
             Assign(serializedController, "tabSequenceGroup", uiSequencePreview.TabGroup);
             Assign(serializedController, "tabSequenceOutgoing", uiSequencePreview.TabOutgoing);
             Assign(serializedController, "tabSequenceIncoming", uiSequencePreview.TabIncoming);
+            Assign(serializedController, "drawerSequenceBackdrop", uiSequencePreview.DrawerBackdrop);
             Assign(serializedController, "textValuePreviewRoot", textValuePreview.Root);
             Assign(serializedController, "typewriterText", textValuePreview.Typewriter);
             Assign(serializedController, "numberText", textValuePreview.Number);
             Assign(serializedController, "characterText", textValuePreview.Character);
             Assign(serializedController, "scoreText", textValuePreview.Score);
+            Assign(serializedController, "worldTextValuePreviewRoot", textValuePreview.WorldRoot);
+            Assign(serializedController, "worldCharacterText", textValuePreview.WorldCharacter);
             Assign(serializedController, "feedbackCamera", camera);
             Assign(serializedController, "cameraFocusTarget", worldTarget.transform);
             Assign(serializedController, "itemNameText", itemName);
@@ -313,6 +324,25 @@ namespace LB.TweenHelper.Editor
                 gridTargets[i] = CreateCollectionItem($"Grid Item {i + 1}", gridGroup.transform, (i + 1).ToString(), new Vector2((column - 1) * 112f, (1 - row) * 112f), new Vector2(86f, 86f));
             }
 
+            GameObject incompleteGridGroup = CreatePreviewGroup("Incomplete Grid Preview", root.transform);
+            var incompleteGridTargets = new GameObject[8];
+            for (int i = 0; i < incompleteGridTargets.Length; i++)
+            {
+                int row = i / 3;
+                int column = i % 3;
+                incompleteGridTargets[i] = CreateCollectionItem($"Incomplete Grid Item {i + 1}", incompleteGridGroup.transform, (i + 1).ToString(), new Vector2((column - 1) * 112f, (1 - row) * 112f), new Vector2(86f, 86f));
+            }
+
+            var worldRoot = new GameObject("World Collection Preview");
+            var worldTargets = new GameObject[6];
+            for (int i = 0; i < worldTargets.Length; i++)
+            {
+                int row = i / 3;
+                int column = i % 3;
+                worldTargets[i] = CreateWorldDestinationObject($"World Collection Item {i + 1}", PrimitiveType.Cube, worldRoot.transform, new Vector3((column - 1) * 1.55f, (0.5f - row) * 1.55f, 0f), 0.58f);
+                worldTargets[i].transform.localRotation = Quaternion.Euler(12f + row * 8f, 18f + column * 16f, 0f);
+            }
+
             GameObject loadingDotsGroup = CreatePreviewGroup("Loading Dots Preview", root.transform);
             var loadingDotTargets = new GameObject[3];
             for (int i = 0; i < loadingDotTargets.Length; i++)
@@ -329,9 +359,11 @@ namespace LB.TweenHelper.Editor
 
             listGroup.SetActive(false);
             gridGroup.SetActive(false);
+            incompleteGridGroup.SetActive(false);
+            worldRoot.SetActive(false);
             loadingDotsGroup.SetActive(false);
             root.SetActive(false);
-            return new CollectionPreview(root, listGroup, gridGroup, loadingDotsGroup, listTargets, gridTargets, loadingDotTargets);
+            return new CollectionPreview(root, listGroup, gridGroup, incompleteGridGroup, worldRoot, loadingDotsGroup, listTargets, gridTargets, incompleteGridTargets, worldTargets, loadingDotTargets);
         }
 
         private static DestinationPreview CreateDestinationPreview(Transform uiParent)
@@ -388,6 +420,9 @@ namespace LB.TweenHelper.Editor
         {
             GameObject root = CreatePreviewGroup("UI Sequence Preview", parent);
 
+            GameObject drawerBackdrop = CreateSequencePanel("Drawer Backdrop", root.transform, string.Empty, Vector2.zero, new Vector2(980f, 440f), new Color(0.01f, 0.02f, 0.04f, 0.72f), 1f);
+            drawerBackdrop.transform.SetAsFirstSibling();
+
             GameObject toast = CreateSequencePanel("Toast", root.transform, "SAVED SUCCESSFULLY", new Vector2(0f, 20f), new Vector2(460f, 92f), new Color(0.08f, 0.55f, 0.82f, 1f), 23f);
 
             GameObject modalGroup = CreatePreviewGroup("Modal Preview", root.transform);
@@ -420,8 +455,9 @@ namespace LB.TweenHelper.Editor
             tooltip.SetActive(false);
             dropdownPanel.SetActive(false);
             tabGroup.SetActive(false);
+            drawerBackdrop.SetActive(false);
             root.SetActive(false);
-            return new UISequencePreview(root, toast, modalGroup, modalBackdrop, modalPanel, modalControls, tooltip, dropdownPanel, dropdownEntries, tabGroup, tabOutgoing, tabIncoming);
+            return new UISequencePreview(root, toast, modalGroup, modalBackdrop, modalPanel, modalControls, tooltip, dropdownPanel, dropdownEntries, tabGroup, tabOutgoing, tabIncoming, drawerBackdrop);
         }
 
         private static TextValuePreview CreateTextValuePreview(Transform parent)
@@ -443,7 +479,21 @@ namespace LB.TweenHelper.Editor
             character.gameObject.SetActive(false);
             score.gameObject.SetActive(false);
             root.SetActive(false);
-            return new TextValuePreview(root, typewriter, number, character, score);
+
+            var worldRoot = new GameObject("World Text & Value Preview");
+            var worldTextObject = new GameObject("World Character Text", typeof(RectTransform), typeof(MeshRenderer), typeof(TextMeshPro));
+            worldTextObject.transform.SetParent(worldRoot.transform, false);
+            var worldCharacter = worldTextObject.GetComponent<TextMeshPro>();
+            worldCharacter.text = "WORLD TMP\n<color=#58BFFF>MESH SAFE</color>";
+            worldCharacter.fontSize = 3.2f;
+            worldCharacter.fontStyle = FontStyles.Bold;
+            worldCharacter.alignment = TextAlignmentOptions.Center;
+            worldCharacter.color = Color.white;
+            worldCharacter.textWrappingMode = TextWrappingModes.Normal;
+            worldCharacter.rectTransform.sizeDelta = new Vector2(8f, 3f);
+            worldCharacter.rectTransform.anchoredPosition3D = Vector3.zero;
+            worldRoot.SetActive(false);
+            return new TextValuePreview(root, typewriter, number, character, score, worldRoot, worldCharacter);
         }
 
         private static GameObject CreateSequencePanel(string name, Transform parent, string labelValue, Vector2 anchoredPosition, Vector2 size, Color color, float fontSize)
@@ -637,19 +687,27 @@ namespace LB.TweenHelper.Editor
             public readonly GameObject Root;
             public readonly GameObject ListGroup;
             public readonly GameObject GridGroup;
+            public readonly GameObject IncompleteGridGroup;
+            public readonly GameObject WorldRoot;
             public readonly GameObject LoadingDotsGroup;
             public readonly GameObject[] ListTargets;
             public readonly GameObject[] GridTargets;
+            public readonly GameObject[] IncompleteGridTargets;
+            public readonly GameObject[] WorldTargets;
             public readonly GameObject[] LoadingDotTargets;
 
-            public CollectionPreview(GameObject root, GameObject listGroup, GameObject gridGroup, GameObject loadingDotsGroup, GameObject[] listTargets, GameObject[] gridTargets, GameObject[] loadingDotTargets)
+            public CollectionPreview(GameObject root, GameObject listGroup, GameObject gridGroup, GameObject incompleteGridGroup, GameObject worldRoot, GameObject loadingDotsGroup, GameObject[] listTargets, GameObject[] gridTargets, GameObject[] incompleteGridTargets, GameObject[] worldTargets, GameObject[] loadingDotTargets)
             {
                 Root = root;
                 ListGroup = listGroup;
                 GridGroup = gridGroup;
+                IncompleteGridGroup = incompleteGridGroup;
+                WorldRoot = worldRoot;
                 LoadingDotsGroup = loadingDotsGroup;
                 ListTargets = listTargets;
                 GridTargets = gridTargets;
+                IncompleteGridTargets = incompleteGridTargets;
+                WorldTargets = worldTargets;
                 LoadingDotTargets = loadingDotTargets;
             }
         }
@@ -696,8 +754,9 @@ namespace LB.TweenHelper.Editor
             public readonly GameObject TabGroup;
             public readonly GameObject TabOutgoing;
             public readonly GameObject TabIncoming;
+            public readonly GameObject DrawerBackdrop;
 
-            public UISequencePreview(GameObject root, GameObject toast, GameObject modalGroup, GameObject modalBackdrop, GameObject modalPanel, GameObject[] modalControls, GameObject tooltip, GameObject dropdownPanel, GameObject[] dropdownEntries, GameObject tabGroup, GameObject tabOutgoing, GameObject tabIncoming)
+            public UISequencePreview(GameObject root, GameObject toast, GameObject modalGroup, GameObject modalBackdrop, GameObject modalPanel, GameObject[] modalControls, GameObject tooltip, GameObject dropdownPanel, GameObject[] dropdownEntries, GameObject tabGroup, GameObject tabOutgoing, GameObject tabIncoming, GameObject drawerBackdrop)
             {
                 Root = root;
                 Toast = toast;
@@ -711,6 +770,7 @@ namespace LB.TweenHelper.Editor
                 TabGroup = tabGroup;
                 TabOutgoing = tabOutgoing;
                 TabIncoming = tabIncoming;
+                DrawerBackdrop = drawerBackdrop;
             }
         }
 
@@ -721,14 +781,18 @@ namespace LB.TweenHelper.Editor
             public readonly TMP_Text Number;
             public readonly TMP_Text Character;
             public readonly TMP_Text Score;
+            public readonly GameObject WorldRoot;
+            public readonly TMP_Text WorldCharacter;
 
-            public TextValuePreview(GameObject root, TMP_Text typewriter, TMP_Text number, TMP_Text character, TMP_Text score)
+            public TextValuePreview(GameObject root, TMP_Text typewriter, TMP_Text number, TMP_Text character, TMP_Text score, GameObject worldRoot, TMP_Text worldCharacter)
             {
                 Root = root;
                 Typewriter = typewriter;
                 Number = number;
                 Character = character;
                 Score = score;
+                WorldRoot = worldRoot;
+                WorldCharacter = worldCharacter;
             }
         }
     }

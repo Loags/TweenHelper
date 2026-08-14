@@ -37,11 +37,14 @@ namespace LB.TweenHelper.Demo
             World,
             List,
             Grid,
+            IncompleteGrid,
+            WorldCollection,
             LoadingDots,
             DestinationWorld,
             DestinationUi,
             UISequence,
             TextValue,
+            WorldTextValue,
             CameraFeedback
         }
 
@@ -65,7 +68,9 @@ namespace LB.TweenHelper.Demo
             GridCheckerboard,
             CollectionBurstIn,
             CollectionBurstOut,
-            CollectionGatherTo
+            CollectionGatherTo,
+            StaggerPresetByName,
+            StaggerCustomAnimate
         }
 
         private enum DestinationReviewKind
@@ -161,6 +166,7 @@ namespace LB.TweenHelper.Demo
             public string Id;
             public string Name;
             public string Description;
+            public string VariantKey;
             public ReviewKind Kind;
             public ITweenPreset Preset;
             public PreviewKind Preview;
@@ -170,12 +176,23 @@ namespace LB.TweenHelper.Demo
             public UISequenceReviewKind UISequenceKind;
             public TextValueReviewKind TextValueKind;
             public CameraFeedbackReviewKind CameraFeedbackKind;
+            public UISequenceDirection Direction;
+            public GridDiagonalDirection DiagonalDirection;
+            public GridSpiralDirection SpiralDirection;
+            public DestinationPathInterpolation PathInterpolation = DestinationPathInterpolation.CatmullRom;
+            public int GridColumns = 3;
+            public int OriginIndex = -1;
+            public float SignedMagnitude = 1f;
+            public bool Inverted;
+            public bool UseDefaultDistance;
+            public bool UseBackdrop;
+            public bool ReverseDirection;
 
             public bool UsesUiTarget => Preview == PreviewKind.Ui;
-            public bool UsesCollectionPreview => Preview == PreviewKind.List || Preview == PreviewKind.Grid || Preview == PreviewKind.LoadingDots;
+            public bool UsesCollectionPreview => Preview == PreviewKind.List || Preview == PreviewKind.Grid || Preview == PreviewKind.IncompleteGrid || Preview == PreviewKind.WorldCollection || Preview == PreviewKind.LoadingDots;
             public bool UsesDestinationPreview => Preview == PreviewKind.DestinationWorld || Preview == PreviewKind.DestinationUi;
             public bool UsesUISequencePreview => Preview == PreviewKind.UISequence;
-            public bool UsesTextValuePreview => Preview == PreviewKind.TextValue;
+            public bool UsesTextValuePreview => Preview == PreviewKind.TextValue || Preview == PreviewKind.WorldTextValue;
             public bool UsesCameraFeedbackPreview => Preview == PreviewKind.CameraFeedback;
         }
 
@@ -308,9 +325,13 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private GameObject collectionPreviewRoot;
         [SerializeField] private GameObject listPreviewGroup;
         [SerializeField] private GameObject gridPreviewGroup;
+        [SerializeField] private GameObject incompleteGridPreviewGroup;
+        [SerializeField] private GameObject worldCollectionPreviewRoot;
         [SerializeField] private GameObject loadingDotsPreviewGroup;
         [SerializeField] private GameObject[] listTargets;
         [SerializeField] private GameObject[] gridTargets;
+        [SerializeField] private GameObject[] incompleteGridTargets;
+        [SerializeField] private GameObject[] worldCollectionTargets;
         [SerializeField] private GameObject[] loadingDotTargets;
 
         [Header("Destination Motion Preview")]
@@ -338,6 +359,7 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private GameObject tabSequenceGroup;
         [SerializeField] private GameObject tabSequenceOutgoing;
         [SerializeField] private GameObject tabSequenceIncoming;
+        [SerializeField] private GameObject drawerSequenceBackdrop;
 
         [Header("Text & Value Preview")]
         [SerializeField] private GameObject textValuePreviewRoot;
@@ -345,6 +367,8 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private TMP_Text numberText;
         [SerializeField] private TMP_Text characterText;
         [SerializeField] private TMP_Text scoreText;
+        [SerializeField] private GameObject worldTextValuePreviewRoot;
+        [SerializeField] private TMP_Text worldCharacterText;
 
         [Header("Camera Feedback Preview")]
         [SerializeField] private Camera feedbackCamera;
@@ -376,6 +400,8 @@ namespace LB.TweenHelper.Demo
         private TargetSnapshot _worldSnapshot;
         private TargetSnapshot[] _listSnapshots;
         private TargetSnapshot[] _gridSnapshots;
+        private TargetSnapshot[] _incompleteGridSnapshots;
+        private TargetSnapshot[] _worldCollectionSnapshots;
         private TargetSnapshot[] _loadingDotSnapshots;
         private TargetSnapshot _destinationWorldSnapshot;
         private TargetSnapshot _destinationUiSnapshot;
@@ -388,10 +414,12 @@ namespace LB.TweenHelper.Demo
         private TargetSnapshot[] _dropdownSequenceEntrySnapshots;
         private TargetSnapshot _tabSequenceOutgoingSnapshot;
         private TargetSnapshot _tabSequenceIncomingSnapshot;
+        private TargetSnapshot _drawerSequenceBackdropSnapshot;
         private TMPTextSnapshot _typewriterTextSnapshot;
         private TMPTextSnapshot _numberTextSnapshot;
         private TMPTextSnapshot _characterTextSnapshot;
         private TMPTextSnapshot _scoreTextSnapshot;
+        private TMPTextSnapshot _worldCharacterTextSnapshot;
         private CameraSnapshot _feedbackCameraSnapshot;
         private TweenHandle _activeTween;
         private Coroutine _delayedReplay;
@@ -406,6 +434,8 @@ namespace LB.TweenHelper.Demo
             _worldSnapshot = TargetSnapshot.Capture(worldTarget);
             _listSnapshots = CaptureTargets(listTargets);
             _gridSnapshots = CaptureTargets(gridTargets);
+            _incompleteGridSnapshots = CaptureTargets(incompleteGridTargets);
+            _worldCollectionSnapshots = CaptureTargets(worldCollectionTargets);
             _loadingDotSnapshots = CaptureTargets(loadingDotTargets);
             _destinationWorldSnapshot = TargetSnapshot.Capture(destinationWorldTarget);
             _destinationUiSnapshot = TargetSnapshot.Capture(destinationUiTarget);
@@ -418,10 +448,12 @@ namespace LB.TweenHelper.Demo
             _dropdownSequenceEntrySnapshots = CaptureTargets(dropdownSequenceEntries);
             _tabSequenceOutgoingSnapshot = TargetSnapshot.Capture(tabSequenceOutgoing);
             _tabSequenceIncomingSnapshot = TargetSnapshot.Capture(tabSequenceIncoming);
+            _drawerSequenceBackdropSnapshot = TargetSnapshot.Capture(drawerSequenceBackdrop);
             _typewriterTextSnapshot = TMPTextSnapshot.Capture(typewriterText);
             _numberTextSnapshot = TMPTextSnapshot.Capture(numberText);
             _characterTextSnapshot = TMPTextSnapshot.Capture(characterText);
             _scoreTextSnapshot = TMPTextSnapshot.Capture(scoreText);
+            _worldCharacterTextSnapshot = TMPTextSnapshot.Capture(worldCharacterText);
             _feedbackCameraSnapshot = CameraSnapshot.Capture(feedbackCamera);
             WireControls();
             BuildReviewItems();
@@ -560,6 +592,8 @@ namespace LB.TweenHelper.Demo
             AddCameraFeedback(CameraFeedbackReviewKind.FocusZoom, "Camera Focus Zoom", "Temporarily moves and aims toward the review target while narrowing the field of view.");
             AddCameraFeedback(CameraFeedbackReviewKind.Breathing, "Camera Breathing", "Plays one subtle finite position, rotation, and field-of-view breathing cycle.");
 
+            AddReviewCoverageItems();
+
             TweenPresetRegistry.Refresh();
             foreach (ITweenPreset preset in TweenPresetRegistry.Presets.OrderBy(item => item.PresetName, StringComparer.Ordinal))
             {
@@ -577,6 +611,153 @@ namespace LB.TweenHelper.Demo
             RebuildFilteredItems();
         }
 
+        private void AddReviewCoverageItems()
+        {
+            AddCollectionReviewCoverage();
+            AddDestinationReviewCoverage();
+            AddUISequenceReviewCoverage();
+            AddTextValueReviewCoverage();
+            AddFeedbackReviewCoverage();
+            AddCameraReviewCoverage();
+        }
+
+        private void AddCollectionReviewCoverage()
+        {
+            ReviewItem item = AddCollectionRecipe(CollectionReviewKind.GridDiagonalWave, "Starts at the top-right and reveals diagonals through the bottom-left.", PreviewKind.Grid, "TopRightToBottomLeft", "Grid Diagonal Wave - Top Right to Bottom Left");
+            item.DiagonalDirection = GridDiagonalDirection.TopRightToBottomLeft;
+            item = AddCollectionRecipe(CollectionReviewKind.GridDiagonalWave, "Starts at the bottom-left and reveals diagonals through the top-right.", PreviewKind.Grid, "BottomLeftToTopRight", "Grid Diagonal Wave - Bottom Left to Top Right");
+            item.DiagonalDirection = GridDiagonalDirection.BottomLeftToTopRight;
+            item = AddCollectionRecipe(CollectionReviewKind.GridDiagonalWave, "Starts at the bottom-right and reveals diagonals through the top-left.", PreviewKind.Grid, "BottomRightToTopLeft", "Grid Diagonal Wave - Bottom Right to Top Left");
+            item.DiagonalDirection = GridDiagonalDirection.BottomRightToTopLeft;
+
+            item = AddCollectionRecipe(CollectionReviewKind.GridSpiral, "Starts at the top-left, winds counter-clockwise around the outside, and finishes at the center.", PreviewKind.Grid, "OutsideInCounterClockwise", "Grid Spiral - Outside In Counter-Clockwise");
+            item.SpiralDirection = GridSpiralDirection.OutsideInCounterClockwise;
+            item = AddCollectionRecipe(CollectionReviewKind.GridSpiral, "Starts at the center, winds clockwise through expanding rings, and finishes at the outside edge.", PreviewKind.Grid, "InsideOutClockwise", "Grid Spiral - Inside Out Clockwise");
+            item.SpiralDirection = GridSpiralDirection.InsideOutClockwise;
+            item = AddCollectionRecipe(CollectionReviewKind.GridSpiral, "Starts at the center, winds counter-clockwise through expanding rings, and finishes at the outside edge.", PreviewKind.Grid, "InsideOutCounterClockwise", "Grid Spiral - Inside Out Counter-Clockwise");
+            item.SpiralDirection = GridSpiralDirection.InsideOutCounterClockwise;
+            item = AddCollectionRecipe(CollectionReviewKind.GridCheckerboard, "Pulses the opposite checkerboard cells first, then completes the second phase.", PreviewKind.Grid, "Inverted", "Grid Checkerboard - Inverted");
+            item.Inverted = true;
+
+            item = AddCollectionRecipe(CollectionReviewKind.GridRipple, "Pulses outward from the top-left corner origin.", PreviewKind.Grid, "CornerOrigin", "Grid Ripple - Corner Origin");
+            item.OriginIndex = 0;
+            item = AddCollectionRecipe(CollectionReviewKind.GridRipple, "Pulses outward from the top-center edge origin.", PreviewKind.Grid, "EdgeOrigin", "Grid Ripple - Edge Origin");
+            item.OriginIndex = 1;
+            AddStaggerVariant(CollectionReviewKind.StaggerPresetByName, "Resolves PulseScaleSoft dynamically by its registered preset name.", PreviewKind.List, "PresetByName", "Stagger - Preset By Name");
+            AddStaggerVariant(CollectionReviewKind.StaggerCustomAnimate, "Runs a custom alternating scale-and-rotation punch factory for every list item.", PreviewKind.List, "CustomAnimate", "Stagger - Custom Animate Factory");
+            AddCollectionRecipe(CollectionReviewKind.CollectionBurstIn, "Launches world-space objects from the shared origin into their authored positions.", PreviewKind.WorldCollection, "World", "Collection Burst In - World");
+            item = AddCollectionRecipe(CollectionReviewKind.CollectionBurstOut, "Scatters world-space objects using the automatic 1.2-unit default distance.", PreviewKind.WorldCollection, "World", "Collection Burst Out - World Default Distance");
+            item.UseDefaultDistance = true;
+            AddCollectionRecipe(CollectionReviewKind.CollectionGatherTo, "Gathers world-space objects into one exact destination while shrinking and fading.", PreviewKind.WorldCollection, "World", "Collection Gather To - World");
+            item = AddCollectionRecipe(CollectionReviewKind.CollectionBurstOut, "Scatters UI cells using the automatic 120-canvas-unit default distance.", PreviewKind.Grid, "DefaultDistanceUI", "Collection Burst Out - UI Default Distance");
+            item.UseDefaultDistance = true;
+            AddCollectionRecipe(CollectionReviewKind.GridDiagonalWave, "Traverses a three-column, eight-item grid and preserves the incomplete final row.", PreviewKind.IncompleteGrid, "IncompleteGrid", "Grid Diagonal Wave - Incomplete Grid");
+            AddCollectionRecipe(CollectionReviewKind.GridSpiral, "Traverses a three-column, eight-item spiral without skipping the incomplete final row.", PreviewKind.IncompleteGrid, "IncompleteGrid", "Grid Spiral - Incomplete Grid");
+        }
+
+        private void AddDestinationReviewCoverage()
+        {
+            ReviewItem item = AddDestinationMotion(DestinationReviewKind.PathThrough3D, "PathThrough 3D - Linear", "Traverses every world-space waypoint with straight linear segments and an exact final endpoint.", PreviewKind.DestinationWorld, "Linear");
+            item.PathInterpolation = DestinationPathInterpolation.Linear;
+            item = AddDestinationMotion(DestinationReviewKind.PathLocalThroughUi, "PathLocalThrough UI - Linear", "Traverses every anchored waypoint with straight linear segments and an exact final endpoint.", PreviewKind.DestinationUi, "Linear");
+            item.PathInterpolation = DestinationPathInterpolation.Linear;
+
+            item = AddDestinationMotion(DestinationReviewKind.ArcTo3D, "ArcTo 3D - Downward", "Uses a negative world-space height to arc downward before landing exactly.", PreviewKind.DestinationWorld, "Downward");
+            item.SignedMagnitude = -1f;
+            item = AddDestinationMotion(DestinationReviewKind.ArcLocalToUi, "ArcLocalTo UI - Downward", "Uses a negative anchored height to arc downward before landing exactly.", PreviewKind.DestinationUi, "Downward");
+            item.SignedMagnitude = -1f;
+            item = AddDestinationMotion(DestinationReviewKind.HopTo3D, "HopTo 3D - Downward", "Uses a negative world-space hop height while preserving exact landing and scale restoration.", PreviewKind.DestinationWorld, "Downward");
+            item.SignedMagnitude = -1f;
+            item = AddDestinationMotion(DestinationReviewKind.HopLocalToUi, "HopLocalTo UI - Downward", "Uses a negative anchored hop height while preserving exact landing and scale restoration.", PreviewKind.DestinationUi, "Downward");
+            item.SignedMagnitude = -1f;
+            item = AddDestinationMotion(DestinationReviewKind.MultiHopTo3D, "MultiHopTo 3D - Downward", "Runs three diminishing negative world-space hops before landing exactly.", PreviewKind.DestinationWorld, "Downward");
+            item.SignedMagnitude = -1f;
+            item = AddDestinationMotion(DestinationReviewKind.MultiHopLocalToUi, "MultiHopLocalTo UI - Downward", "Runs three diminishing negative anchored hops before landing exactly.", PreviewKind.DestinationUi, "Downward");
+            item.SignedMagnitude = -1f;
+            item = AddDestinationMotion(DestinationReviewKind.SpiralTo3D, "SpiralTo 3D - Reverse Winding", "Uses negative revolutions to reverse the world-space spiral winding.", PreviewKind.DestinationWorld, "ReverseWinding");
+            item.SignedMagnitude = -1f;
+            item = AddDestinationMotion(DestinationReviewKind.SpiralLocalToUi, "SpiralLocalTo UI - Reverse Winding", "Uses negative revolutions to reverse the anchored spiral winding.", PreviewKind.DestinationUi, "ReverseWinding");
+            item.SignedMagnitude = -1f;
+        }
+
+        private void AddUISequenceReviewCoverage()
+        {
+            AddUISequenceDirectionVariant(UISequenceReviewKind.ToastShow, UISequenceDirection.Down, "Begins above the authored position and travels down into view.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.ToastShow, UISequenceDirection.Left, "Begins to the right and travels left into view.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.ToastShow, UISequenceDirection.Right, "Begins to the left and travels right into view.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.ToastHide, UISequenceDirection.Down, "Anticipates before traveling down and fading out.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.ToastHide, UISequenceDirection.Left, "Anticipates before traveling left and fading out.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.ToastHide, UISequenceDirection.Right, "Anticipates before traveling right and fading out.");
+
+            AddUISequenceDirectionVariant(UISequenceReviewKind.TooltipShow, UISequenceDirection.Down, "Moves down, scales, and fades into its authored position.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.TooltipShow, UISequenceDirection.Left, "Moves left, scales, and fades into its authored position.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.TooltipShow, UISequenceDirection.Right, "Moves right, scales, and fades into its authored position.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.TooltipHide, UISequenceDirection.Down, "Moves down and fades out with restrained scale motion.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.TooltipHide, UISequenceDirection.Left, "Moves left and fades out with restrained scale motion.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.TooltipHide, UISequenceDirection.Right, "Moves right and fades out with restrained scale motion.");
+
+            AddUISequenceDirectionVariant(UISequenceReviewKind.TabSwitch, UISequenceDirection.Up, "Moves outgoing content up while incoming content arrives from below.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.TabSwitch, UISequenceDirection.Down, "Moves outgoing content down while incoming content arrives from above.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.TabSwitch, UISequenceDirection.Right, "Moves outgoing content right while incoming content arrives from the left.");
+
+            AddUISequenceDirectionVariant(UISequenceReviewKind.DrawerShow, UISequenceDirection.Up, "Enters from the top edge and settles on the authored drawer position.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.DrawerShow, UISequenceDirection.Down, "Enters from the bottom edge and settles on the authored drawer position.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.DrawerShow, UISequenceDirection.Right, "Enters from the right edge while fading in the optional backdrop.", true);
+            AddUISequenceDirectionVariant(UISequenceReviewKind.DrawerHide, UISequenceDirection.Up, "Exits through the top edge while fading out.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.DrawerHide, UISequenceDirection.Down, "Exits through the bottom edge while fading out.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.DrawerHide, UISequenceDirection.Right, "Exits through the right edge while dismissing the optional backdrop.", true);
+
+            AddUISequenceDirectionVariant(UISequenceReviewKind.PagePush, UISequenceDirection.Up, "Pushes the outgoing page up while the incoming page arrives from below.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.PagePush, UISequenceDirection.Down, "Pushes the outgoing page down while the incoming page arrives from above.");
+            AddUISequenceDirectionVariant(UISequenceReviewKind.PagePush, UISequenceDirection.Right, "Pushes the outgoing page right for the back-navigation review path.");
+        }
+
+        private void AddTextValueReviewCoverage()
+        {
+            AddTextDirectionVariants(TextValueReviewKind.TextCharacterStaggerIn, "Character Stagger In", "Reveals visible characters with directional movement, alpha, and scale from");
+            AddTextDirectionVariants(TextValueReviewKind.TextCharacterStaggerOut, "Character Stagger Out", "Hides visible characters in reverse order with directional movement toward");
+            AddTextDirectionVariants(TextValueReviewKind.TextWave, "Text Wave", "Sends a finite character wave toward");
+            AddTextDirectionVariants(TextValueReviewKind.TextCharacterBounce, "Character Bounce", "Sends a finite traveling character bounce toward");
+            AddTextDirectionVariants(TextValueReviewKind.TextEmphasis, "Text Emphasis", "Moves and emphasizes the selected character range toward");
+
+            AddTextValueAnimation(TextValueReviewKind.TextCharacterStaggerIn, "Reveals a world TextMesh Pro mesh with upward per-character displacement and exact restoration.", PreviewKind.WorldTextValue, UISequenceDirection.Up, "World", "World TMP Character Stagger In");
+            AddTextValueAnimation(TextValueReviewKind.TextColorSweep, "Sweeps world TextMesh Pro vertex colors and restores the exact mesh baseline.", PreviewKind.WorldTextValue, UISequenceDirection.Up, "World", "World TMP Color Sweep");
+            AddTextValueAnimation(TextValueReviewKind.TextScrambleReveal, "Resolves a world TextMesh Pro source string without damaging its final content.", PreviewKind.WorldTextValue, UISequenceDirection.Up, "World", "World TMP Scramble Reveal");
+        }
+
+        private void AddFeedbackReviewCoverage()
+        {
+            AddFeedbackSequence(FeedbackReviewKind.HealReceive, "Heal Receive UI", "Communicates UI healing with anchored lift, stretch, pulse, and a green flash.", PreviewKind.DestinationUi);
+            ReviewItem item = AddFeedbackSequence(FeedbackReviewKind.ShieldBlock, "Shield Block UI", "Covers the UI target branch with impact and recoil opposite the world review direction.", PreviewKind.DestinationUi);
+            item.ReverseDirection = true;
+            item = AddFeedbackSequence(FeedbackReviewKind.CriticalHit, "Critical Hit UI", "Covers the UI target branch with a reversed directional recoil and decaying aftershock.", PreviewKind.DestinationUi);
+            item.ReverseDirection = true;
+            AddFeedbackSequence(FeedbackReviewKind.CooldownReady, "Cooldown Ready 3D", "Announces a world-space ready ability with a relative flip, pop, lift, and cyan flash.", PreviewKind.DestinationWorld);
+            AddFeedbackSequence(FeedbackReviewKind.LevelUp, "Level Up 3D", "Celebrates world-space progression with lift, relative spin, staged pulses, and gold flash.", PreviewKind.DestinationWorld);
+            AddFeedbackSequence(FeedbackReviewKind.LowHealthWarning, "Low Health Warning 3D", "Plays one finite world-space double-beat warning cycle for caller-controlled looping.", PreviewKind.DestinationWorld);
+        }
+
+        private void AddCameraReviewCoverage()
+        {
+            ReviewItem item = AddCameraFeedback(CameraFeedbackReviewKind.FovKick, "Camera FOV Kick In", "Narrows the field of view quickly and restores the exact captured value.", "In");
+            item.SignedMagnitude = -1f;
+        }
+
+        private void AddUISequenceDirectionVariant(UISequenceReviewKind kind, UISequenceDirection direction, string description, bool useBackdrop = false)
+        {
+            AddUISequence(kind, description, direction, direction.ToString(), $"{(kind == UISequenceReviewKind.TabSwitch ? "Tab Switch" : SplitPascalCase(kind.ToString()))} {direction}", useBackdrop);
+        }
+
+        private void AddTextDirectionVariants(TextValueReviewKind kind, string operationName, string descriptionPrefix)
+        {
+            UISequenceDirection[] directions = { UISequenceDirection.Down, UISequenceDirection.Left, UISequenceDirection.Right };
+            for (int i = 0; i < directions.Length; i++)
+            {
+                UISequenceDirection direction = directions[i];
+                AddTextValueAnimation(kind, $"{descriptionPrefix} {direction.ToString().ToLowerInvariant()} and restores the exact text state.", PreviewKind.TextValue, direction, direction.ToString(), $"{operationName} {direction}");
+            }
+        }
+
         private void AddRecipe(string name, string description)
         {
             _allItems.Add(new ReviewItem
@@ -589,93 +770,123 @@ namespace LB.TweenHelper.Demo
             });
         }
 
-        private void AddCollectionRecipe(CollectionReviewKind kind, string description, PreviewKind preview)
+        private ReviewItem AddCollectionRecipe(CollectionReviewKind kind, string description, PreviewKind preview, string variantKey = null, string name = null)
         {
-            AddCollectionItem(kind, description, preview, ReviewKind.CollectionRecipe);
+            return AddCollectionItem(kind, description, preview, ReviewKind.CollectionRecipe, variantKey, name);
         }
 
-        private void AddStaggerVariant(CollectionReviewKind kind, string description, PreviewKind preview)
+        private ReviewItem AddStaggerVariant(CollectionReviewKind kind, string description, PreviewKind preview, string variantKey = null, string name = null)
         {
-            AddCollectionItem(kind, description, preview, ReviewKind.StaggerVariant);
+            return AddCollectionItem(kind, description, preview, ReviewKind.StaggerVariant, variantKey, name);
         }
 
-        private void AddCollectionItem(CollectionReviewKind kind, string description, PreviewKind preview, ReviewKind reviewKind)
+        private ReviewItem AddCollectionItem(CollectionReviewKind kind, string description, PreviewKind preview, ReviewKind reviewKind, string variantKey, string name)
         {
-            _allItems.Add(new ReviewItem
+            var item = new ReviewItem
             {
-                Id = "Collection:" + kind,
-                Name = kind.ToString(),
+                Id = BuildReviewId("Collection", kind.ToString(), variantKey),
+                Name = name ?? kind.ToString(),
                 Description = description,
+                VariantKey = variantKey,
                 Kind = reviewKind,
                 Preview = preview,
                 CollectionKind = kind
-            });
+            };
+            _allItems.Add(item);
+            return item;
         }
 
-        private void AddDestinationMotion(DestinationReviewKind kind, string name, string description, PreviewKind preview)
+        private ReviewItem AddDestinationMotion(DestinationReviewKind kind, string name, string description, PreviewKind preview, string variantKey = null)
         {
-            _allItems.Add(new ReviewItem
+            var item = new ReviewItem
             {
-                Id = "Destination:" + kind,
+                Id = BuildReviewId("Destination", kind.ToString(), variantKey),
                 Name = name,
                 Description = description,
+                VariantKey = variantKey,
                 Kind = ReviewKind.DestinationMotion,
                 Preview = preview,
                 DestinationKind = kind
-            });
+            };
+            _allItems.Add(item);
+            return item;
         }
 
-        private void AddFeedbackSequence(FeedbackReviewKind kind, string name, string description, PreviewKind preview)
+        private ReviewItem AddFeedbackSequence(FeedbackReviewKind kind, string name, string description, PreviewKind preview)
         {
             string variant = preview == PreviewKind.DestinationUi ? "UI" : "World";
-            _allItems.Add(new ReviewItem
+            var item = new ReviewItem
             {
                 Id = $"Feedback:{kind}:{variant}",
                 Name = name,
                 Description = description,
+                VariantKey = variant,
                 Kind = ReviewKind.FeedbackSequence,
                 Preview = preview,
                 FeedbackKind = kind
-            });
+            };
+            _allItems.Add(item);
+            return item;
         }
 
-        private void AddUISequence(UISequenceReviewKind kind, string description)
+        private ReviewItem AddUISequence(UISequenceReviewKind kind, string description, UISequenceDirection? direction = null, string variantKey = null, string name = null, bool useBackdrop = false)
         {
-            _allItems.Add(new ReviewItem
+            var item = new ReviewItem
             {
-                Id = "UISequence:" + kind,
-                Name = kind == UISequenceReviewKind.TabSwitch ? "Tab Switch" : SplitPascalCase(kind.ToString()),
+                Id = BuildReviewId("UISequence", kind.ToString(), variantKey),
+                Name = name ?? (kind == UISequenceReviewKind.TabSwitch ? "Tab Switch" : SplitPascalCase(kind.ToString())),
                 Description = description,
+                VariantKey = variantKey,
                 Kind = ReviewKind.UISequence,
                 Preview = PreviewKind.UISequence,
-                UISequenceKind = kind
-            });
+                UISequenceKind = kind,
+                Direction = direction ?? GetDefaultUISequenceDirection(kind),
+                UseBackdrop = useBackdrop
+            };
+            _allItems.Add(item);
+            return item;
         }
 
-        private void AddTextValueAnimation(TextValueReviewKind kind, string description)
+        private ReviewItem AddTextValueAnimation(TextValueReviewKind kind, string description, PreviewKind preview = PreviewKind.TextValue, UISequenceDirection direction = UISequenceDirection.Up, string variantKey = null, string name = null)
         {
-            _allItems.Add(new ReviewItem
+            var item = new ReviewItem
             {
-                Id = "TextValue:" + kind,
-                Name = SplitPascalCase(kind.ToString()),
+                Id = BuildReviewId("TextValue", kind.ToString(), variantKey),
+                Name = name ?? SplitPascalCase(kind.ToString()),
                 Description = description,
+                VariantKey = variantKey,
                 Kind = ReviewKind.TextValueAnimation,
-                Preview = PreviewKind.TextValue,
-                TextValueKind = kind
-            });
+                Preview = preview,
+                TextValueKind = kind,
+                Direction = direction
+            };
+            _allItems.Add(item);
+            return item;
         }
 
-        private void AddCameraFeedback(CameraFeedbackReviewKind kind, string name, string description)
+        private ReviewItem AddCameraFeedback(CameraFeedbackReviewKind kind, string name, string description, string variantKey = null)
         {
-            _allItems.Add(new ReviewItem
+            var item = new ReviewItem
             {
-                Id = "CameraFeedback:" + kind,
+                Id = BuildReviewId("CameraFeedback", kind.ToString(), variantKey),
                 Name = name,
                 Description = description,
+                VariantKey = variantKey,
                 Kind = ReviewKind.CameraFeedback,
                 Preview = PreviewKind.CameraFeedback,
                 CameraFeedbackKind = kind
-            });
+            };
+            _allItems.Add(item);
+            return item;
+        }
+
+        private static string BuildReviewId(string category, string semanticName, string variantKey)
+            => string.IsNullOrEmpty(variantKey) ? $"{category}:{semanticName}" : $"{category}:{semanticName}:{variantKey}";
+
+        private static UISequenceDirection GetDefaultUISequenceDirection(UISequenceReviewKind kind)
+        {
+            if (kind == UISequenceReviewKind.TabSwitch || kind == UISequenceReviewKind.DrawerShow || kind == UISequenceReviewKind.DrawerHide || kind == UISequenceReviewKind.PagePush) return UISequenceDirection.Left;
+            return UISequenceDirection.Up;
         }
 
         public void ReplayCurrent()
@@ -685,33 +896,33 @@ namespace LB.TweenHelper.Demo
             ResetTargets();
             if (CurrentItem.UsesCollectionPreview)
             {
-                _activeTween = PlayCollection(CurrentItem.CollectionKind);
+                _activeTween = PlayCollection(CurrentItem);
                 return;
             }
 
             if (CurrentItem.UsesDestinationPreview)
             {
                 _activeTween = CurrentItem.Kind == ReviewKind.FeedbackSequence
-                    ? PlayFeedbackSequence(CurrentItem.FeedbackKind)
-                    : PlayDestinationMotion(CurrentItem.DestinationKind);
+                    ? PlayFeedbackSequence(CurrentItem)
+                    : PlayDestinationMotion(CurrentItem);
                 return;
             }
 
             if (CurrentItem.UsesUISequencePreview)
             {
-                _activeTween = PlayUISequence(CurrentItem.UISequenceKind);
+                _activeTween = PlayUISequence(CurrentItem);
                 return;
             }
 
             if (CurrentItem.UsesTextValuePreview)
             {
-                _activeTween = PlayTextValueAnimation(CurrentItem.TextValueKind);
+                _activeTween = PlayTextValueAnimation(CurrentItem);
                 return;
             }
 
             if (CurrentItem.UsesCameraFeedbackPreview)
             {
-                _activeTween = PlayCameraFeedback(CurrentItem.CameraFeedbackKind);
+                _activeTween = PlayCameraFeedback(CurrentItem);
                 return;
             }
 
@@ -811,10 +1022,12 @@ namespace LB.TweenHelper.Demo
             uiTarget.SetActive(false);
             worldTarget.SetActive(false);
             collectionPreviewRoot.SetActive(false);
+            worldCollectionPreviewRoot.SetActive(false);
             destinationWorldRoot.SetActive(false);
             destinationUiRoot.SetActive(false);
             uiSequencePreviewRoot.SetActive(false);
             textValuePreviewRoot.SetActive(false);
+            worldTextValuePreviewRoot.SetActive(false);
             itemNameText.text = "No animations";
             descriptionText.text = "No animations currently match this review filter.";
             categoryText.text = "FILTER EMPTY";
@@ -902,56 +1115,81 @@ namespace LB.TweenHelper.Demo
             }
         }
 
-        private TweenHandle PlayCollection(CollectionReviewKind kind)
+        private TweenHandle PlayCollection(ReviewItem item)
         {
+            CollectionReviewKind kind = item.CollectionKind;
+            GameObject[] targets = GetCollectionTargets(item.Preview);
+            GameObject owner = GetCollectionOwner(item.Preview);
             switch (kind)
             {
                 case CollectionReviewKind.ListStaggerIn:
-                    return listTargets.ListStaggerIn(listPreviewGroup);
+                    return targets.ListStaggerIn(owner);
                 case CollectionReviewKind.ListStaggerOut:
-                    return listTargets.ListStaggerOut(listPreviewGroup);
+                    return targets.ListStaggerOut(owner);
                 case CollectionReviewKind.GridWave:
-                    return gridTargets.GridWave(gridPreviewGroup, 3);
+                    return targets.GridWave(owner, item.GridColumns);
                 case CollectionReviewKind.GridRipple:
-                    return gridTargets.GridRipple(gridPreviewGroup, 3);
+                    return targets.GridRipple(owner, item.GridColumns, item.OriginIndex);
                 case CollectionReviewKind.LoadingDots:
-                    return loadingDotTargets.LoadingDots(loadingDotsPreviewGroup);
+                    return targets.LoadingDots(owner);
                 case CollectionReviewKind.OrderFirstToLast:
-                    return PlayOrder(StaggerOrder.FirstToLast);
+                    return PlayOrder(targets, owner, StaggerOrder.FirstToLast);
                 case CollectionReviewKind.OrderLastToFirst:
-                    return PlayOrder(StaggerOrder.LastToFirst);
+                    return PlayOrder(targets, owner, StaggerOrder.LastToFirst);
                 case CollectionReviewKind.OrderFromCenter:
-                    return PlayOrder(StaggerOrder.FromCenter);
+                    return PlayOrder(targets, owner, StaggerOrder.FromCenter);
                 case CollectionReviewKind.OrderToCenter:
-                    return PlayOrder(StaggerOrder.ToCenter);
+                    return PlayOrder(targets, owner, StaggerOrder.ToCenter);
                 case CollectionReviewKind.OrderRandom:
-                    return PlayOrder(StaggerOrder.Random, 1729);
+                    return PlayOrder(targets, owner, StaggerOrder.Random, 1729);
                 case CollectionReviewKind.GridWaveRightToLeft:
-                    return gridTargets.GridWave(gridPreviewGroup, 3, GridWaveDirection.RightToLeft);
+                    return targets.GridWave(owner, item.GridColumns, GridWaveDirection.RightToLeft);
                 case CollectionReviewKind.GridWaveTopToBottom:
-                    return gridTargets.GridWave(gridPreviewGroup, 3, GridWaveDirection.TopToBottom);
+                    return targets.GridWave(owner, item.GridColumns, GridWaveDirection.TopToBottom);
                 case CollectionReviewKind.GridWaveBottomToTop:
-                    return gridTargets.GridWave(gridPreviewGroup, 3, GridWaveDirection.BottomToTop);
+                    return targets.GridWave(owner, item.GridColumns, GridWaveDirection.BottomToTop);
                 case CollectionReviewKind.GridDiagonalWave:
-                    return gridTargets.GridDiagonalWave(gridPreviewGroup, 3, GridDiagonalDirection.TopLeftToBottomRight, 0.34f, 0.085f);
+                    return targets.GridDiagonalWave(owner, item.GridColumns, item.DiagonalDirection, 0.34f, 0.085f);
                 case CollectionReviewKind.GridSpiral:
-                    return gridTargets.GridSpiral(gridPreviewGroup, 3, GridSpiralDirection.OutsideInClockwise, 0.32f, 0.07f);
+                    return targets.GridSpiral(owner, item.GridColumns, item.SpiralDirection, 0.32f, 0.07f);
                 case CollectionReviewKind.GridCheckerboard:
-                    return gridTargets.GridCheckerboard(gridPreviewGroup, 3, false, 0.4f, 0.2f);
+                    return targets.GridCheckerboard(owner, item.GridColumns, item.Inverted, 0.4f, 0.2f);
                 case CollectionReviewKind.CollectionBurstIn:
-                    return gridTargets.CollectionBurstIn(gridPreviewGroup, Vector3.zero, 0.58f, 0.055f);
+                    return targets.CollectionBurstIn(owner, Vector3.zero, 0.58f, 0.055f, item.Preview != PreviewKind.WorldCollection);
                 case CollectionReviewKind.CollectionBurstOut:
-                    return gridTargets.CollectionBurstOut(gridPreviewGroup, Vector3.zero, 170f, 0.52f, 0.045f);
+                {
+                    float? distance = item.UseDefaultDistance ? null : 170f;
+                    return targets.CollectionBurstOut(owner, Vector3.zero, distance, 0.52f, 0.045f, item.Preview != PreviewKind.WorldCollection);
+                }
                 case CollectionReviewKind.CollectionGatherTo:
-                    return gridTargets.CollectionGatherTo(gridPreviewGroup, Vector3.zero, 0.62f, 0.055f);
+                    return targets.CollectionGatherTo(owner, Vector3.zero, 0.62f, 0.055f, item.Preview != PreviewKind.WorldCollection);
+                case CollectionReviewKind.StaggerPresetByName:
+                    return targets.TweenStagger(owner)
+                        .PresetByName("PulseScaleSoft", 0.38f)
+                        .Order(StaggerOrder.FromCenter)
+                        .DelayBetween(0.12f)
+                        .Play();
+                case CollectionReviewKind.StaggerCustomAnimate:
+                    return targets.TweenStagger(owner)
+                        .Animate((target, index) =>
+                        {
+                            float direction = index % 2 == 0 ? 1f : -1f;
+                            var sequence = DOTween.Sequence();
+                            sequence.Join(target.transform.DOPunchScale(Vector3.one * 0.16f, 0.42f, 6, 0.55f));
+                            sequence.Join(target.transform.DOPunchRotation(new Vector3(0f, 0f, direction * 14f), 0.42f, 6, 0.55f));
+                            return sequence;
+                        })
+                        .Order(StaggerOrder.FirstToLast)
+                        .DelayBetween(0.1f)
+                        .Play();
                 default:
                     throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown collection review item.");
             }
         }
 
-        private TweenHandle PlayOrder(StaggerOrder order, int seed = 0)
+        private TweenHandle PlayOrder(GameObject[] targets, GameObject owner, StaggerOrder order, int seed = 0)
         {
-            return listTargets.TweenStagger(listPreviewGroup)
+            return targets.TweenStagger(owner)
                 .Preset<PulseScalePreset>(0.36f)
                 .Order(order)
                 .DelayBetween(0.14f)
@@ -959,13 +1197,40 @@ namespace LB.TweenHelper.Demo
                 .Play();
         }
 
-        private TweenHandle PlayDestinationMotion(DestinationReviewKind kind)
+        private GameObject[] GetCollectionTargets(PreviewKind preview)
         {
-            bool usesUi = CurrentItem.Preview == PreviewKind.DestinationUi;
+            switch (preview)
+            {
+                case PreviewKind.List: return listTargets;
+                case PreviewKind.Grid: return gridTargets;
+                case PreviewKind.IncompleteGrid: return incompleteGridTargets;
+                case PreviewKind.WorldCollection: return worldCollectionTargets;
+                case PreviewKind.LoadingDots: return loadingDotTargets;
+                default: throw new ArgumentOutOfRangeException(nameof(preview), preview, "Preview does not contain a collection fixture.");
+            }
+        }
+
+        private GameObject GetCollectionOwner(PreviewKind preview)
+        {
+            switch (preview)
+            {
+                case PreviewKind.List: return listPreviewGroup;
+                case PreviewKind.Grid: return gridPreviewGroup;
+                case PreviewKind.IncompleteGrid: return incompleteGridPreviewGroup;
+                case PreviewKind.WorldCollection: return worldCollectionPreviewRoot;
+                case PreviewKind.LoadingDots: return loadingDotsPreviewGroup;
+                default: throw new ArgumentOutOfRangeException(nameof(preview), preview, "Preview does not contain a collection owner.");
+            }
+        }
+
+        private TweenHandle PlayDestinationMotion(ReviewItem item)
+        {
+            DestinationReviewKind kind = item.DestinationKind;
+            bool usesUi = item.Preview == PreviewKind.DestinationUi;
             GameObject target = usesUi ? destinationUiTarget : destinationWorldTarget;
             Vector3 start = usesUi ? destinationUiStartMarker.anchoredPosition3D : destinationWorldStartMarker.position;
             Vector3 destination = usesUi ? destinationUiEndMarker.anchoredPosition3D : destinationWorldEndMarker.position;
-            float height = usesUi ? DestinationUiArcHeight : DestinationWorldArcHeight;
+            float height = (usesUi ? DestinationUiArcHeight : DestinationWorldArcHeight) * item.SignedMagnitude;
             target.transform.localScale = usesUi ? _destinationUiSnapshot.LocalScale : _destinationWorldSnapshot.LocalScale;
 
             if (usesUi) ((RectTransform)target.transform).anchoredPosition3D = start;
@@ -1000,25 +1265,26 @@ namespace LB.TweenHelper.Demo
                 case DestinationReviewKind.MagneticSnapLocalToUi:
                     return target.Tween().MagneticSnapLocalTo(destination, 1.25f, 42f, 32f).Play();
                 case DestinationReviewKind.PathThrough3D:
-                    return target.Tween().PathThrough(GetPathWaypoints(false, start, destination), DestinationPathInterpolation.CatmullRom, 1.65f).Play();
+                    return target.Tween().PathThrough(GetPathWaypoints(false, start, destination), item.PathInterpolation, 1.65f).Play();
                 case DestinationReviewKind.PathLocalThroughUi:
-                    return target.Tween().PathLocalThrough(GetPathWaypoints(true, start, destination), DestinationPathInterpolation.CatmullRom, 1.65f).Play();
+                    return target.Tween().PathLocalThrough(GetPathWaypoints(true, start, destination), item.PathInterpolation, 1.65f).Play();
                 case DestinationReviewKind.SpiralTo3D:
-                    return target.Tween().SpiralTo(destination, 1.1f, 1.75f, 1.65f).Play();
+                    return target.Tween().SpiralTo(destination, 1.1f, 1.75f * item.SignedMagnitude, 1.65f).Play();
                 case DestinationReviewKind.SpiralLocalToUi:
-                    return target.Tween().SpiralLocalTo(destination, 92f, 1.75f, 1.65f).Play();
+                    return target.Tween().SpiralLocalTo(destination, 92f, 1.75f * item.SignedMagnitude, 1.65f).Play();
                 case DestinationReviewKind.MultiHopTo3D:
-                    return target.Tween().MultiHopTo(destination, 2.1f, 3, 1.15f, 1.65f).Play();
+                    return target.Tween().MultiHopTo(destination, height, 3, 1.15f, 1.65f).Play();
                 case DestinationReviewKind.MultiHopLocalToUi:
-                    return target.Tween().MultiHopLocalTo(destination, 175f, 3, 1.15f, 1.65f).Play();
+                    return target.Tween().MultiHopLocalTo(destination, height, 3, 1.15f, 1.65f).Play();
                 default:
                     throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown destination-motion review item.");
             }
         }
 
-        private TweenHandle PlayFeedbackSequence(FeedbackReviewKind kind)
+        private TweenHandle PlayFeedbackSequence(ReviewItem item)
         {
-            bool usesUi = CurrentItem.Preview == PreviewKind.DestinationUi;
+            FeedbackReviewKind kind = item.FeedbackKind;
+            bool usesUi = item.Preview == PreviewKind.DestinationUi;
             GameObject target = usesUi ? destinationUiTarget : destinationWorldTarget;
             Vector3 start = usesUi ? destinationUiStartMarker.anchoredPosition3D : destinationWorldStartMarker.position;
             Vector3 destination = usesUi ? destinationUiEndMarker.anchoredPosition3D : destinationWorldEndMarker.position;
@@ -1045,9 +1311,9 @@ namespace LB.TweenHelper.Demo
                 case FeedbackReviewKind.HealReceive:
                     return target.HealReceive(1f);
                 case FeedbackReviewKind.ShieldBlock:
-                    return target.ShieldBlock(Vector3.right, 0.8f);
+                    return target.ShieldBlock(item.ReverseDirection ? Vector3.left : Vector3.right, 0.8f);
                 case FeedbackReviewKind.CriticalHit:
-                    return target.CriticalHit(new Vector3(1f, -0.2f, 0f), 0.9f);
+                    return target.CriticalHit(item.ReverseDirection ? new Vector3(-1f, 0.2f, 0f) : new Vector3(1f, -0.2f, 0f), 0.9f);
                 case FeedbackReviewKind.CooldownReady:
                     return target.CooldownReady(1f);
                 case FeedbackReviewKind.LevelUp:
@@ -1059,38 +1325,40 @@ namespace LB.TweenHelper.Demo
             }
         }
 
-        private TweenHandle PlayUISequence(UISequenceReviewKind kind)
+        private TweenHandle PlayUISequence(ReviewItem item)
         {
+            UISequenceReviewKind kind = item.UISequenceKind;
+            UISequenceDirection direction = item.Direction;
             switch (kind)
             {
                 case UISequenceReviewKind.ToastShow:
-                    return toastSequenceTarget.ToastShow(UISequenceDirection.Up, 70f, 0.56f);
+                    return toastSequenceTarget.ToastShow(direction, 70f, 0.56f);
                 case UISequenceReviewKind.ToastHide:
-                    return toastSequenceTarget.ToastHide(UISequenceDirection.Up, 70f, 0.42f);
+                    return toastSequenceTarget.ToastHide(direction, 70f, 0.42f);
                 case UISequenceReviewKind.ModalOpen:
                     return modalSequencePanel.ModalOpen(modalSequenceBackdrop, modalSequenceControls, 0.72f, 0.08f);
                 case UISequenceReviewKind.ModalClose:
                     return modalSequencePanel.ModalClose(modalSequenceBackdrop, modalSequenceControls, 0.62f, 0.08f);
                 case UISequenceReviewKind.TooltipShow:
-                    return tooltipSequenceTarget.TooltipShow(UISequenceDirection.Up, 24f, 0.4f);
+                    return tooltipSequenceTarget.TooltipShow(direction, 24f, 0.4f);
                 case UISequenceReviewKind.TooltipHide:
-                    return tooltipSequenceTarget.TooltipHide(UISequenceDirection.Up, 24f, 0.32f);
+                    return tooltipSequenceTarget.TooltipHide(direction, 24f, 0.32f);
                 case UISequenceReviewKind.DropdownOpen:
                     return dropdownSequencePanel.DropdownOpen(dropdownSequenceEntries, 0.58f, 0.065f);
                 case UISequenceReviewKind.DropdownClose:
                     return dropdownSequencePanel.DropdownClose(dropdownSequenceEntries, 0.48f, 0.065f);
                 case UISequenceReviewKind.TabSwitch:
-                    return tabSequenceOutgoing.TabSwitchTo(tabSequenceIncoming, UISequenceDirection.Left, 120f, 0.62f);
+                    return tabSequenceOutgoing.TabSwitchTo(tabSequenceIncoming, direction, 120f, 0.62f);
                 case UISequenceReviewKind.DrawerShow:
-                    return dropdownSequencePanel.DrawerShow(UISequenceDirection.Left, null, 420f, 0.68f);
+                    return dropdownSequencePanel.DrawerShow(direction, item.UseBackdrop ? drawerSequenceBackdrop : null, 420f, 0.68f);
                 case UISequenceReviewKind.DrawerHide:
-                    return dropdownSequencePanel.DrawerHide(UISequenceDirection.Left, null, 420f, 0.52f);
+                    return dropdownSequencePanel.DrawerHide(direction, item.UseBackdrop ? drawerSequenceBackdrop : null, 420f, 0.52f);
                 case UISequenceReviewKind.BottomSheetShow:
                     return modalSequencePanel.BottomSheetShow(modalSequenceBackdrop, 460f, 0.76f);
                 case UISequenceReviewKind.BottomSheetHide:
                     return modalSequencePanel.BottomSheetHide(modalSequenceBackdrop, 460f, 0.62f);
                 case UISequenceReviewKind.PagePush:
-                    return tabSequenceOutgoing.PagePushTo(tabSequenceIncoming, UISequenceDirection.Left, 640f, 0.72f);
+                    return tabSequenceOutgoing.PagePushTo(tabSequenceIncoming, direction, 640f, 0.72f);
                 case UISequenceReviewKind.PageCrossFade:
                     return tabSequenceOutgoing.PageCrossFadeTo(tabSequenceIncoming, 0.06f, 0.62f);
                 default:
@@ -1098,9 +1366,16 @@ namespace LB.TweenHelper.Demo
             }
         }
 
-        private TweenHandle PlayTextValueAnimation(TextValueReviewKind kind)
+        private TweenHandle PlayTextValueAnimation(ReviewItem item)
         {
-            ConfigureTextValuePreview(kind);
+            TextValueReviewKind kind = item.TextValueKind;
+            bool usesWorldText = item.Preview == PreviewKind.WorldTextValue;
+            TMP_Text characterTarget = usesWorldText ? worldCharacterText : characterText;
+            float characterDistance = usesWorldText ? 0.65f : 28f;
+            float waveAmplitude = usesWorldText ? 0.5f : 22f;
+            float bounceAmplitude = usesWorldText ? 0.55f : 24f;
+            float emphasisDistance = usesWorldText ? 0.35f : 12f;
+            ConfigureTextValuePreview(item);
             switch (kind)
             {
                 case TextValueReviewKind.TypewriterReveal:
@@ -1112,30 +1387,31 @@ namespace LB.TweenHelper.Demo
                 case TextValueReviewKind.NumberCountDown:
                     return numberText.NumberCountTo(1250d, 0d, "N0", 1.15f);
                 case TextValueReviewKind.TextCharacterStaggerIn:
-                    return characterText.TextCharacterStaggerIn(UISequenceDirection.Up, 28f, 0.045f, 1.05f);
+                    return characterTarget.TextCharacterStaggerIn(item.Direction, characterDistance, 0.045f, 1.05f);
                 case TextValueReviewKind.TextWave:
-                    return characterText.TextWave(UISequenceDirection.Up, 22f, 1, 1.25f);
+                    return characterTarget.TextWave(item.Direction, waveAmplitude, 1, 1.25f);
                 case TextValueReviewKind.ScoreIncrease:
                     return scoreText.ScoreIncrease(1200d, 1475d, "N0", 1.2f);
                 case TextValueReviewKind.TextCharacterStaggerOut:
-                    return characterText.TextCharacterStaggerOut(UISequenceDirection.Up, 30f, 0.045f, 1.05f);
+                    return characterTarget.TextCharacterStaggerOut(item.Direction, 30f, 0.045f, 1.05f);
                 case TextValueReviewKind.TextCharacterBounce:
-                    return characterText.TextCharacterBounce(UISequenceDirection.Up, 24f, 1.2f);
+                    return characterTarget.TextCharacterBounce(item.Direction, bounceAmplitude, 1.2f);
                 case TextValueReviewKind.TextColorSweep:
-                    return characterText.TextColorSweep(new Color(0.18f, 0.9f, 1f), 2.4f, 1.2f);
+                    return characterTarget.TextColorSweep(new Color(0.18f, 0.9f, 1f), 2.4f, 1.2f);
                 case TextValueReviewKind.TextGlitch:
-                    return characterText.TextGlitch(9f, 1729, 0.9f);
+                    return characterTarget.TextGlitch(9f, 1729, 0.9f);
                 case TextValueReviewKind.TextEmphasis:
-                    return characterText.TextEmphasis(UISequenceDirection.Up, 12f, 0, 9, new Color(1f, 0.7f, 0.12f), 0.9f);
+                    return characterTarget.TextEmphasis(item.Direction, emphasisDistance, 0, 9, new Color(1f, 0.7f, 0.12f), 0.9f);
                 case TextValueReviewKind.TextScrambleReveal:
-                    return characterText.TextScrambleReveal(1729, 1.35f);
+                    return characterTarget.TextScrambleReveal(1729, 1.35f);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown text/value review item.");
             }
         }
 
-        private TweenHandle PlayCameraFeedback(CameraFeedbackReviewKind kind)
+        private TweenHandle PlayCameraFeedback(ReviewItem item)
         {
+            CameraFeedbackReviewKind kind = item.CameraFeedbackKind;
             switch (kind)
             {
                 case CameraFeedbackReviewKind.Impact:
@@ -1145,7 +1421,7 @@ namespace LB.TweenHelper.Demo
                 case CameraFeedbackReviewKind.LandingImpact:
                     return feedbackCamera.CameraLandingImpact(0.32f, 4.5f, 0.78f);
                 case CameraFeedbackReviewKind.FovKick:
-                    return feedbackCamera.CameraFovKick(11f, 0.68f);
+                    return feedbackCamera.CameraFovKick(11f * item.SignedMagnitude, 0.68f);
                 case CameraFeedbackReviewKind.FocusZoom:
                     return feedbackCamera.CameraFocusZoom(cameraFocusTarget, 1.8f, 9f, 1.15f);
                 case CameraFeedbackReviewKind.Breathing:
@@ -1187,6 +1463,9 @@ namespace LB.TweenHelper.Demo
             KillTargetTweens(collectionPreviewRoot);
             KillTargets(listTargets);
             KillTargets(gridTargets);
+            KillTargets(incompleteGridTargets);
+            KillTargetTweens(worldCollectionPreviewRoot);
+            KillTargets(worldCollectionTargets);
             KillTargets(loadingDotTargets);
             KillTargetTweens(destinationWorldTarget);
             KillTargetTweens(destinationUiTarget);
@@ -1199,11 +1478,13 @@ namespace LB.TweenHelper.Demo
             KillTargets(dropdownSequenceEntries);
             KillTargetTweens(tabSequenceOutgoing);
             KillTargetTweens(tabSequenceIncoming);
-            KillTargetTweens(typewriterText.gameObject);
-            KillTargetTweens(numberText.gameObject);
-            KillTargetTweens(characterText.gameObject);
-            KillTargetTweens(scoreText.gameObject);
-            KillTargetTweens(feedbackCamera.gameObject);
+            KillTargetTweens(drawerSequenceBackdrop);
+            KillTargetTweens(typewriterText);
+            KillTargetTweens(numberText);
+            KillTargetTweens(characterText);
+            KillTargetTweens(scoreText);
+            KillTargetTweens(worldCharacterText);
+            KillTargetTweens(feedbackCamera);
         }
 
         private void ResetTargets()
@@ -1212,6 +1493,8 @@ namespace LB.TweenHelper.Demo
             _worldSnapshot.Apply(worldTarget);
             ApplySnapshots(listTargets, _listSnapshots);
             ApplySnapshots(gridTargets, _gridSnapshots);
+            ApplySnapshots(incompleteGridTargets, _incompleteGridSnapshots);
+            ApplySnapshots(worldCollectionTargets, _worldCollectionSnapshots);
             ApplySnapshots(loadingDotTargets, _loadingDotSnapshots);
             _destinationWorldSnapshot.Apply(destinationWorldTarget);
             _destinationUiSnapshot.Apply(destinationUiTarget);
@@ -1224,10 +1507,12 @@ namespace LB.TweenHelper.Demo
             ApplySnapshots(dropdownSequenceEntries, _dropdownSequenceEntrySnapshots);
             _tabSequenceOutgoingSnapshot.Apply(tabSequenceOutgoing);
             _tabSequenceIncomingSnapshot.Apply(tabSequenceIncoming);
+            _drawerSequenceBackdropSnapshot.Apply(drawerSequenceBackdrop);
             _typewriterTextSnapshot.Apply(typewriterText);
             _numberTextSnapshot.Apply(numberText);
             _characterTextSnapshot.Apply(characterText);
             _scoreTextSnapshot.Apply(scoreText);
+            _worldCharacterTextSnapshot.Apply(worldCharacterText);
             _feedbackCameraSnapshot.Apply(feedbackCamera);
         }
 
@@ -1235,23 +1520,27 @@ namespace LB.TweenHelper.Demo
         {
             uiTarget.SetActive(preview == PreviewKind.Ui);
             worldTarget.SetActive(preview == PreviewKind.World || preview == PreviewKind.CameraFeedback);
-            bool showCollection = preview == PreviewKind.List || preview == PreviewKind.Grid || preview == PreviewKind.LoadingDots;
+            bool showCollection = preview == PreviewKind.List || preview == PreviewKind.Grid || preview == PreviewKind.IncompleteGrid || preview == PreviewKind.LoadingDots;
             collectionPreviewRoot.SetActive(showCollection);
             listPreviewGroup.SetActive(preview == PreviewKind.List);
             gridPreviewGroup.SetActive(preview == PreviewKind.Grid);
+            incompleteGridPreviewGroup.SetActive(preview == PreviewKind.IncompleteGrid);
+            worldCollectionPreviewRoot.SetActive(preview == PreviewKind.WorldCollection);
             loadingDotsPreviewGroup.SetActive(preview == PreviewKind.LoadingDots);
             destinationWorldRoot.SetActive(preview == PreviewKind.DestinationWorld);
             destinationUiRoot.SetActive(preview == PreviewKind.DestinationUi);
             bool showUISequence = preview == PreviewKind.UISequence;
             uiSequencePreviewRoot.SetActive(showUISequence);
-            if (showUISequence) ConfigureUISequencePreview(CurrentItem.UISequenceKind);
+            if (showUISequence) ConfigureUISequencePreview(CurrentItem);
             bool showTextValue = preview == PreviewKind.TextValue;
             textValuePreviewRoot.SetActive(showTextValue);
-            if (showTextValue) ConfigureTextValuePreview(CurrentItem.TextValueKind);
+            worldTextValuePreviewRoot.SetActive(preview == PreviewKind.WorldTextValue);
+            if (CurrentItem.UsesTextValuePreview) ConfigureTextValuePreview(CurrentItem);
         }
 
-        private void ConfigureUISequencePreview(UISequenceReviewKind kind)
+        private void ConfigureUISequencePreview(ReviewItem item)
         {
+            UISequenceReviewKind kind = item.UISequenceKind;
             bool showToast = kind == UISequenceReviewKind.ToastShow || kind == UISequenceReviewKind.ToastHide;
             bool showModal = kind == UISequenceReviewKind.ModalOpen || kind == UISequenceReviewKind.ModalClose || kind == UISequenceReviewKind.BottomSheetShow || kind == UISequenceReviewKind.BottomSheetHide;
             bool showTooltip = kind == UISequenceReviewKind.TooltipShow || kind == UISequenceReviewKind.TooltipHide;
@@ -1262,10 +1551,13 @@ namespace LB.TweenHelper.Demo
             dropdownSequencePanel.SetActive(showDropdown);
             bool showPages = kind == UISequenceReviewKind.TabSwitch || kind == UISequenceReviewKind.PagePush || kind == UISequenceReviewKind.PageCrossFade;
             tabSequenceGroup.SetActive(showPages);
+            drawerSequenceBackdrop.SetActive((kind == UISequenceReviewKind.DrawerShow || kind == UISequenceReviewKind.DrawerHide) && item.UseBackdrop);
         }
 
-        private void ConfigureTextValuePreview(TextValueReviewKind kind)
+        private void ConfigureTextValuePreview(ReviewItem item)
         {
+            TextValueReviewKind kind = item.TextValueKind;
+            bool usesWorldText = item.Preview == PreviewKind.WorldTextValue;
             bool showTypewriter = kind == TextValueReviewKind.TypewriterReveal || kind == TextValueReviewKind.TypewriterHide;
             bool showNumber = kind == TextValueReviewKind.NumberCountUp || kind == TextValueReviewKind.NumberCountDown;
             bool showCharacter = kind == TextValueReviewKind.TextCharacterStaggerIn ||
@@ -1276,10 +1568,11 @@ namespace LB.TweenHelper.Demo
                                  kind == TextValueReviewKind.TextGlitch ||
                                  kind == TextValueReviewKind.TextEmphasis ||
                                  kind == TextValueReviewKind.TextScrambleReveal;
-            typewriterText.gameObject.SetActive(showTypewriter);
-            numberText.gameObject.SetActive(showNumber);
-            characterText.gameObject.SetActive(showCharacter);
-            scoreText.gameObject.SetActive(kind == TextValueReviewKind.ScoreIncrease);
+            typewriterText.gameObject.SetActive(!usesWorldText && showTypewriter);
+            numberText.gameObject.SetActive(!usesWorldText && showNumber);
+            characterText.gameObject.SetActive(!usesWorldText && showCharacter);
+            scoreText.gameObject.SetActive(!usesWorldText && kind == TextValueReviewKind.ScoreIncrease);
+            worldCharacterText.gameObject.SetActive(usesWorldText && showCharacter);
         }
 
         private void ConfigureDestinationGuides(ReviewItem item)
@@ -1292,18 +1585,19 @@ namespace LB.TweenHelper.Demo
             destinationWorldEndMarker.gameObject.SetActive(showMarkers && item.Preview == PreviewKind.DestinationWorld);
             destinationUiStartMarker.gameObject.SetActive(showMarkers && item.Preview == PreviewKind.DestinationUi);
             destinationUiEndMarker.gameObject.SetActive(showMarkers && item.Preview == PreviewKind.DestinationUi);
-            if (showPath) UpdateDestinationPath(isDestination ? item.DestinationKind : DestinationReviewKind.ArcTo3D);
+            if (showPath) UpdateDestinationPath(item);
             destinationWorldCurvedPath.SetActive(showPath && item.Preview == PreviewKind.DestinationWorld);
             destinationUiCurvedPath.SetActive(showPath && item.Preview == PreviewKind.DestinationUi);
         }
 
-        private void UpdateDestinationPath(DestinationReviewKind kind)
+        private void UpdateDestinationPath(ReviewItem item)
         {
-            bool usesUi = CurrentItem.Preview == PreviewKind.DestinationUi;
+            bool usesUi = item.Preview == PreviewKind.DestinationUi;
+            DestinationReviewKind kind = item.Kind == ReviewKind.DestinationMotion ? item.DestinationKind : DestinationReviewKind.ArcTo3D;
             Transform pathRoot = usesUi ? destinationUiCurvedPath.transform : destinationWorldCurvedPath.transform;
             Vector3 start = usesUi ? destinationUiStartMarker.anchoredPosition3D : destinationWorldStartMarker.position;
             Vector3 destination = usesUi ? destinationUiEndMarker.anchoredPosition3D : destinationWorldEndMarker.position;
-            float height = usesUi ? DestinationUiArcHeight : DestinationWorldArcHeight;
+            float height = (usesUi ? DestinationUiArcHeight : DestinationWorldArcHeight) * item.SignedMagnitude;
             GetBezierControls(usesUi, start, destination, out Vector3 controlA, out Vector3 controlB);
             Vector3[] waypoints = GetPathWaypoints(usesUi, start, destination);
 
@@ -1312,8 +1606,8 @@ namespace LB.TweenHelper.Demo
                 float progress = (i + 1f) / (pathRoot.childCount + 1f);
                 Vector3 point;
                 if (IsBezier(kind)) point = EvaluateBezier(start, controlA, controlB, destination, progress);
-                else if (IsPath(kind)) point = EvaluatePath(start, waypoints, progress);
-                else if (IsSpiral(kind)) point = EvaluateSpiral(start, destination, usesUi ? 92f : 1.1f, 1.75f, progress, usesUi);
+                else if (IsPath(kind)) point = EvaluatePath(start, waypoints, progress, item.PathInterpolation);
+                else if (IsSpiral(kind)) point = EvaluateSpiral(start, destination, usesUi ? 92f : 1.1f, 1.75f * item.SignedMagnitude, progress, usesUi);
                 else if (IsMultiHop(kind)) point = EvaluateMultiHop(start, destination, height, 3, 1.15f, progress);
                 else point = EvaluateArc(start, destination, height, progress);
                 if (usesUi) ((RectTransform)pathRoot.GetChild(i)).anchoredPosition3D = point;
@@ -1352,13 +1646,14 @@ namespace LB.TweenHelper.Demo
             return inverse * inverse * inverse * start + 3f * inverse * inverse * progress * controlA + 3f * inverse * progress * progress * controlB + progress * progress * progress * destination;
         }
 
-        private static Vector3 EvaluatePath(Vector3 start, Vector3[] waypoints, float progress)
+        private static Vector3 EvaluatePath(Vector3 start, Vector3[] waypoints, float progress, DestinationPathInterpolation interpolation)
         {
             float scaled = Mathf.Clamp01(progress) * waypoints.Length;
             int segment = Mathf.Min(Mathf.FloorToInt(scaled), waypoints.Length - 1);
             float localProgress = progress >= 1f ? 1f : scaled - segment;
             Vector3 pointA = segment == 0 ? start : waypoints[segment - 1];
             Vector3 pointB = waypoints[segment];
+            if (interpolation == DestinationPathInterpolation.Linear) return Vector3.LerpUnclamped(pointA, pointB, localProgress);
             Vector3 previous = segment <= 1 ? start : waypoints[segment - 2];
             Vector3 next = segment + 1 < waypoints.Length ? waypoints[segment + 1] : pointB;
             float square = localProgress * localProgress;
@@ -1428,7 +1723,7 @@ namespace LB.TweenHelper.Demo
             if (item.Kind == ReviewKind.DestinationMotion) return item.Preview == PreviewKind.DestinationUi ? "DESTINATION MOTION / UI" : "DESTINATION MOTION / 3D";
             if (item.Kind == ReviewKind.FeedbackSequence) return item.Preview == PreviewKind.DestinationUi ? "GAMEPLAY FEEDBACK / UI" : "GAMEPLAY FEEDBACK / 3D";
             if (item.Kind == ReviewKind.UISequence) return "PRODUCTION UI SEQUENCE";
-            if (item.Kind == ReviewKind.TextValueAnimation) return "TEXT & VALUE ANIMATION";
+            if (item.Kind == ReviewKind.TextValueAnimation) return item.Preview == PreviewKind.WorldTextValue ? "TEXT & VALUE ANIMATION / WORLD TMP" : "TEXT & VALUE ANIMATION / UI TMP";
             if (item.Kind == ReviewKind.CameraFeedback) return "CAMERA FEEDBACK";
             return item.UsesUiTarget ? "2D / UI PRESET" : "3D / WORLD PRESET";
         }
@@ -1476,6 +1771,12 @@ namespace LB.TweenHelper.Demo
 
             var renderer = target.GetComponent<Renderer>();
             if (renderer != null) DOTween.Kill(renderer, false);
+        }
+
+        private static void KillTargetTweens(Component target)
+        {
+            if (target == null) return;
+            KillTargetTweens(target.gameObject);
         }
     }
 }

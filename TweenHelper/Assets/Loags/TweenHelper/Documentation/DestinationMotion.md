@@ -83,6 +83,8 @@ Vector3[] path = { checkpointA, checkpointB, destination };
 token.Tween().PathThrough(path, DestinationPathInterpolation.CatmullRom, 1.2f).Play();
 ```
 
+The manual review catalog includes both `CatmullRom` and `Linear` interpolation for world and anchored paths. Its path guide evaluates the selected interpolation, so the reference dots match the active runtime configuration.
+
 ### Spiral
 
 Spiral motion advances toward the destination while a sinusoidal radial envelope opens and closes at the endpoints. World motion forms a three-dimensional spiral around the travel axis. `SpiralLocalTo` uses a visible XY-plane spiral for `RectTransform` targets, so it does not disturb authored anchored Z. A negative revolution count reverses winding direction.
@@ -90,6 +92,8 @@ Spiral motion advances toward the destination while a sinusoidal radial envelope
 ### Multi-hop
 
 Multi-hop advances continuously while applying the requested number of diminishing signed Y hops. `decay` controls how quickly successive hop heights reduce; zero keeps all hops at equal height. Positive height hops upward and negative height hops downward.
+
+Upward and downward Arc, Hop, and Multi-Hop paths are reviewed in both world and anchored space. Positive and negative Spiral revolution counts are also reviewed in both contexts, with the guide using the exact signed values of the selected entry.
 
 ## Builder composition and options
 

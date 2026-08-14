@@ -28,20 +28,13 @@ namespace LB.TweenHelper
             var states = new SpatialItemState[targets.Count];
             for (int i = 0; i < targets.Count; i++) states[i] = new SpatialItemState(targets[i], local, i, targets.Count);
 
-            float time = 0f;
-            bool initialized = false;
-            bool completed = false;
-
-            void EnsureInitialized()
+            void Initialize()
             {
-                if (initialized) return;
                 for (int i = 0; i < states.Length; i++) states[i].Initialize(animation, anchor, distance * strength, strength);
-                initialized = true;
             }
 
             void Evaluate(float value)
             {
-                EnsureInitialized();
                 for (int i = 0; i < states.Length; i++)
                 {
                     float progress = Mathf.Clamp01((value - i * interval) / duration);
@@ -49,35 +42,17 @@ namespace LB.TweenHelper
                 }
             }
 
-            var tween = DOTween.To(() => time, value =>
-            {
-                time = value;
-                Evaluate(value);
-            }, totalDuration, totalDuration);
-
-            tween.WithDefaults(options.SetEase(Ease.Linear), owner);
-            tween.OnStart(() =>
-            {
-                completed = false;
-                EnsureInitialized();
-                Evaluate(time);
-            });
-            tween.OnComplete(() =>
-            {
-                EnsureInitialized();
-                completed = true;
-                if (EndsAtStart(options)) Restore(states);
-                else Complete(states, animation);
-            });
-            tween.OnRewind(() =>
-            {
-                completed = false;
-                if (initialized) Restore(states);
-            });
-            tween.OnKill(() =>
-            {
-                if (!completed && initialized) Restore(states);
-            });
+            var tween = NormalizedTweenTimeline.Create(
+                owner,
+                totalDuration,
+                options.SetEase(Ease.Linear),
+                Initialize,
+                progress => Evaluate(progress * totalDuration),
+                () => Complete(states, animation),
+                () => Restore(states),
+                () => Restore(states),
+                () => Restore(states),
+                () => Evaluate(0f));
             tween.Play();
             return new TweenHandle(tween);
         }
@@ -90,12 +65,6 @@ namespace LB.TweenHelper
         private static void Restore(SpatialItemState[] states)
         {
             for (int i = 0; i < states.Length; i++) states[i].Restore();
-        }
-
-        private static bool EndsAtStart(TweenOptions options)
-        {
-            int loops = options.Loops ?? 1;
-            return loops > 0 && options.LoopType == LoopType.Yoyo && loops % 2 == 0;
         }
 
         private static float ResolveStrength(TweenOptions options)

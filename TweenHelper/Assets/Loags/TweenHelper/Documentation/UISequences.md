@@ -57,6 +57,8 @@ outgoingPage.PageCrossFadeTo(incomingPage);
 
 Distances use canvas units, normally pixels.
 
+Every supported direction is represented independently in the manual review catalog for Toast Show/Hide, Tooltip Show/Hide, Tab Switch, Drawer Show/Hide, and Page Push. The right-edge Drawer pair also covers the optional backdrop branch. These entries all call the same enum-driven methods; no direction-specific aliases are required.
+
 ## Families
 
 ### Toast
@@ -146,6 +148,8 @@ Modal controls, dropdown entries, and other supplied collections are copied imme
 - Restart and repeated playback reuse absolute cached endpoints without accumulating drift.
 - A finite even-count Yoyo ends on the invocation state.
 - Destroying the owner kills the linked root tween.
+
+The object on which the operation is invoked is the single linked lifetime owner. Backdrops, controls, entries, and incoming pages are required secondary participants and must remain alive for the operation's lifetime; their destruction does not independently cancel the root. Avoid simultaneous writers on any participant's anchored position, scale, rotation, or alpha unless the interruption and ownership handoff are coordinated explicitly.
 
 The helpers do not activate or deactivate GameObjects and do not change `interactable`, `blocksRaycasts`, focus, navigation, or selection. Manage those application states explicitly, commonly through callbacks.
 

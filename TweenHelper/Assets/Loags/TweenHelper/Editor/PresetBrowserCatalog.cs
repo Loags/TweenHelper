@@ -52,9 +52,9 @@ namespace LB.TweenHelper.Editor
 
             yield return PresetBrowserEntry.Collection(
                 "GridRipple",
-                "Pulses outward from the center of a grid.",
+                "Pulses outward from a centered or explicit origin index.",
                 "0.32s per item",
-                "items.GridRipple(owner, columns: 3);",
+                "items.GridRipple(owner, columns: 3, originIndex: -1);",
                 PresetBrowserEntryKind.CollectionRecipe,
                 PresetBrowserPreviewKind.Grid,
                 PresetBrowserCollectionKind.GridRipple,
@@ -90,9 +90,9 @@ namespace LB.TweenHelper.Editor
 
             yield return PresetBrowserEntry.Collection(
                 "GridDiagonalWave",
-                "Reveals grid diagonals from the top-left toward the bottom-right.",
+                "Reveals diagonals between any selected pair of opposite corners.",
                 "0.32s per item",
-                "items.GridDiagonalWave(owner, columns: 3);",
+                "items.GridDiagonalWave(owner, columns: 3, direction: GridDiagonalDirection.TopLeftToBottomRight);",
                 PresetBrowserEntryKind.CollectionRecipe,
                 PresetBrowserPreviewKind.Grid,
                 PresetBrowserCollectionKind.GridDiagonalWave,
@@ -100,9 +100,9 @@ namespace LB.TweenHelper.Editor
 
             yield return PresetBrowserEntry.Collection(
                 "GridSpiral",
-                "Reveals grid items in a clockwise outside-in spiral.",
+                "Reveals a clockwise or counter-clockwise spiral, outside-in or inside-out.",
                 "0.3s per item",
-                "items.GridSpiral(owner, columns: 3);",
+                "items.GridSpiral(owner, columns: 3, direction: GridSpiralDirection.OutsideInClockwise);",
                 PresetBrowserEntryKind.CollectionRecipe,
                 PresetBrowserPreviewKind.Grid,
                 PresetBrowserCollectionKind.GridSpiral,
@@ -110,9 +110,9 @@ namespace LB.TweenHelper.Editor
 
             yield return PresetBrowserEntry.Collection(
                 "GridCheckerboard",
-                "Pulses alternating checkerboard cells in two phases.",
+                "Pulses alternating checkerboard cells in two phases; inverted swaps the first phase.",
                 "0.34s per item",
-                "items.GridCheckerboard(owner, columns: 3);",
+                "items.GridCheckerboard(owner, columns: 3, inverted: false);",
                 PresetBrowserEntryKind.CollectionRecipe,
                 PresetBrowserPreviewKind.Grid,
                 PresetBrowserCollectionKind.GridCheckerboard,
@@ -130,7 +130,7 @@ namespace LB.TweenHelper.Editor
 
             yield return PresetBrowserEntry.Collection(
                 "CollectionBurstOut",
-                "Scatters items radially while shrinking and fading them.",
+                "Scatters items radially while shrinking and fading; omitted distance uses UI or world defaults.",
                 "0.42s per item",
                 "items.CollectionBurstOut(owner, origin);",
                 PresetBrowserEntryKind.CollectionRecipe,

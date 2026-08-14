@@ -113,3 +113,5 @@ Pickup fading supports `CanvasGroup`, `Graphic`, `TMP_Text`, `SpriteRenderer`, a
 - Destroying the target kills the linked root through DOTween's normal link behavior.
 
 Durations, destinations, optional arc height, impact directions, and strength must be finite. Duration must be greater than zero, and directional impact vectors cannot be zero.
+
+Each feedback operation has one linked owner and writes a coordinated subset of position, scale, local rotation, color, and alpha. Do not run competing tweens or gameplay systems on those same channels concurrently; sequence the handoff explicitly when interruption is intentional.

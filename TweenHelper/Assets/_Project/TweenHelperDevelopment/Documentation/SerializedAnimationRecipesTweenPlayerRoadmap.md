@@ -77,7 +77,7 @@ The following is planning context, not future proof:
 - `TweenBuilder` already provides sequential `Then`, parallel `With`, and `Delay` composition, along with callbacks and raw DOTween injection.
 - `TweenHandle` already provides pause, resume, kill, restart, rewind, complete, state queries, callbacks, and await support.
 - TweenHelper currently has 300 built-in code presets plus non-preset operation families for staggered collections, destination motion, gameplay feedback, production UI sequences, and TMP text/value animations.
-- The review scene currently contains 398 stable entries. The post-CLI audit must recount the then-current baseline and preserve all existing review IDs and results.
+- The review scene currently contains 474 stable entries: the preserved 398-entry validated baseline plus 76 Phase 1 coverage entries pending manual review. The post-CLI audit must recount the then-current baseline and preserve all existing review IDs and results.
 - `TweenPresetRegistry` supports runtime code-preset discovery, but it is not a sufficient serialized operation schema.
 - `UIAnimationStateCache` and several operation-specific utilities already define important baseline, restore, and kill behavior.
 - No public, versioned `TweenRecipe` asset or `TweenPlayer` component exists yet.

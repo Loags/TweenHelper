@@ -639,37 +639,15 @@ namespace LB.TweenHelper
 
         private static Tween CreateTimeline(GameObject owner, float duration, TweenOptions options, Action initialize, Action<float> evaluate, Action complete, Action rewind)
         {
-            float time = 0f;
-            bool initialized = false;
-
-            void EnsureInitialized()
-            {
-                if (initialized) return;
-                initialize();
-                initialized = true;
-            }
-
-            var tween = DOTween.To(() => time, value =>
-            {
-                time = value;
-                EnsureInitialized();
-                evaluate(value);
-            }, duration, duration);
-
-            tween.WithDefaults(options.SetEase(Ease.Linear), owner);
-            tween.OnStart(EnsureInitialized);
-            tween.OnComplete(() =>
-            {
-                EnsureInitialized();
-                if (EndsAtStart(options)) rewind();
-                else complete();
-            });
-            tween.OnRewind(() =>
-            {
-                if (initialized) rewind();
-            });
-            tween.Pause();
-            return tween;
+            return NormalizedTweenTimeline.Create(
+                owner,
+                duration,
+                options.SetEase(Ease.Linear),
+                initialize,
+                progress => evaluate(progress * duration),
+                complete,
+                rewind,
+                rewind);
         }
 
         private static void ApplyInterpolated(UISequenceState state, UISequencePose start, UISequencePose end, float positionProgress, float scaleProgress, float alphaProgress, float rotationProgress)
@@ -740,12 +718,6 @@ namespace LB.TweenHelper
 
         private static float EaseValue(float progress, Ease ease)
             => DOVirtual.EasedValue(0f, 1f, Mathf.Clamp01(progress), ease);
-
-        private static bool EndsAtStart(TweenOptions options)
-        {
-            int loops = options.Loops ?? 1;
-            return loops > 0 && options.LoopType == LoopType.Yoyo && loops % 2 == 0;
-        }
 
         private static float ResolveStrength(TweenOptions options)
         {
