@@ -604,7 +604,7 @@ namespace LB.TweenHelper.Demo
                     Description = preset.Description,
                     Kind = ReviewKind.Preset,
                     Preset = preset,
-                    Preview = UIPresetCompatibility.IsSuitable(preset) ? PreviewKind.Ui : PreviewKind.World
+                    Preview = PresetReviewCompatibility.IsSuitable(preset) ? PreviewKind.Ui : PreviewKind.World
                 });
             }
 
@@ -1084,7 +1084,7 @@ namespace LB.TweenHelper.Demo
         {
             if (preset == null || !preset.CanApplyTo(target)) return null;
             var builder = target.Tween();
-            float? strength = CurrentItem.UsesUiTarget ? UIPresetCompatibility.GetCanvasPreviewStrength(preset) : null;
+            float? strength = CurrentItem.UsesUiTarget ? PresetReviewCompatibility.GetCanvasPreviewStrength(preset) : null;
             if (strength.HasValue) builder.WithOptions(TweenOptions.WithStrength(strength.Value));
             return builder.Preset(preset).Play();
         }

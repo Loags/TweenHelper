@@ -6,24 +6,25 @@ using System.Reflection;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
 namespace LB.TweenHelper.Setup.Editor
 {
     public sealed class TweenHelperSetupWindow : EditorWindow
     {
-        private const string PackageVersion = "1.0.0";
+        private const string PackageVersion = "1.1.0";
         private const string SupportEmail = "Info@Loags.de";
         private const string DotweenUrl = "https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676";
         private const string DocumentationPath = "Assets/Loags/TweenHelper/Documentation/Installation.md";
         private const string UxmlPath = "Assets/Loags/TweenHelper/Editor/Setup/TweenHelperSetupWindow.uxml";
         private const string StylePath = "Assets/Loags/TweenHelper/Editor/Setup/TweenHelperSetupWindow.uss";
         private const string LogoPath = "Assets/Loags/TweenHelper/Editor/Setup/Branding/TweenHelperLogo-v2.png";
-        private const string MinimumDotweenPackageVersionText = "1.2.025";
-        private const string MinimumDotweenRuntimeVersionText = "1.3.030";
+        private const string ValidatedDotweenPackageVersionText = "1.2.825";
+        private const string ValidatedDotweenRuntimeVersionText = "1.3.030";
         private const int MaximumTagCount = 5;
 
-        private static readonly Version MinimumDotweenRuntimeVersion = new Version(1, 3, 30);
+        private static readonly Version ValidatedDotweenRuntimeVersion = new Version(1, 3, 30);
 
         private static readonly string[] AvailableTags =
         {
@@ -152,7 +153,7 @@ namespace LB.TweenHelper.Setup.Editor
         private void RefreshInstallationStatus()
         {
             SetStatus(_dotweenStatus, GetDotweenStatus());
-            SetStatus(_urpStatus, GetPackageStatus("com.unity.render-pipelines.universal", "URP is installed", "URP is not installed"));
+            SetStatus(_urpStatus, GetRenderPipelineStatus());
             SetStatus(_uguiStatus, GetPackageStatus("com.unity.ugui", "Unity UI is installed", "Unity UI is not installed"));
             bool hasTmpEssentials = AssetDatabase.FindAssets("t:TMP_Settings").Length > 0;
             SetStatus(_tmpStatus, new SetupStatus(hasTmpEssentials, hasTmpEssentials ? "TextMesh Pro essentials are available" : "Import TextMesh Pro Essential Resources"));
@@ -161,17 +162,30 @@ namespace LB.TweenHelper.Setup.Editor
         private static SetupStatus GetDotweenStatus()
         {
             Type dotweenType = Type.GetType("DG.Tweening.DOTween, DOTween");
-            if (dotweenType == null) return new SetupStatus(false, $"Install DOTween package {MinimumDotweenPackageVersionText} or newer");
+            if (dotweenType == null) return new SetupStatus(false, $"Install DOTween separately; validated package: {ValidatedDotweenPackageVersionText}");
 
             PropertyInfo versionProperty = dotweenType.GetProperty("Version", BindingFlags.Public | BindingFlags.Static);
             FieldInfo versionField = dotweenType.GetField("Version", BindingFlags.Public | BindingFlags.Static);
             string versionText = versionProperty?.GetValue(null) as string ?? versionField?.GetValue(null) as string;
-            bool versionValid = Version.TryParse(versionText, out Version version) && version >= MinimumDotweenRuntimeVersion;
+            bool versionValid = Version.TryParse(versionText, out Version version) && version >= ValidatedDotweenRuntimeVersion;
             Type modulesType = Type.GetType("DG.Tweening.DOTweenModuleUI, DOTween.Modules");
 
-            if (!versionValid) return new SetupStatus(false, $"DOTween runtime {versionText ?? "unknown"} is below {MinimumDotweenRuntimeVersionText} (package {MinimumDotweenPackageVersionText}+)");
+            if (!versionValid) return new SetupStatus(false, $"DOTween runtime {versionText ?? "unknown"} is older than tested runtime {ValidatedDotweenRuntimeVersionText}");
             if (modulesType == null) return new SetupStatus(false, $"DOTween {versionText} found; run Setup DOTween to generate modules");
-            return new SetupStatus(true, $"DOTween runtime {versionText} is ready (package {MinimumDotweenPackageVersionText}+)");
+            return new SetupStatus(true, $"DOTween runtime {versionText} is ready; validated package {ValidatedDotweenPackageVersionText}");
+        }
+
+        private static SetupStatus GetRenderPipelineStatus()
+        {
+            RenderPipelineAsset activePipeline = GraphicsSettings.currentRenderPipeline;
+            if (activePipeline == null) return new SetupStatus(true, "Built-in Render Pipeline is active and supported");
+            string pipelineName = activePipeline.GetType().Name;
+            if (pipelineName.IndexOf("Universal", StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                return new SetupStatus(true, "Universal Render Pipeline is active and supported");
+            }
+
+            return new SetupStatus(false, $"{pipelineName} is active; HDRP and custom pipelines are untested");
         }
 
         private static SetupStatus GetPackageStatus(string packageName, string installedMessage, string missingMessage)

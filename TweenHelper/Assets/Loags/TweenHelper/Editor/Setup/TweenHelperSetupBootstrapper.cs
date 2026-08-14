@@ -6,7 +6,7 @@ namespace LB.TweenHelper.Setup.Editor
     [InitializeOnLoad]
     internal static class TweenHelperSetupBootstrapper
     {
-        private const string PackageVersion = "1.0.0";
+        private const string PackageVersion = "1.1.0";
         private const string SessionKey = "LB.TweenHelper.Setup.AutoOpenScheduled";
 
         static TweenHelperSetupBootstrapper()

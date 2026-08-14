@@ -15,7 +15,7 @@
                 <ui:VisualElement class="section-heading-row">
                     <ui:VisualElement>
                         <ui:Label text="Installation" class="section-title" />
-                        <ui:Label text="Tween Helper targets URP and requires DOTween. These checks never modify your project automatically." class="section-description" />
+                        <ui:Label text="Tween Helper supports Built-in and URP and requires DOTween. These checks never modify your project automatically." class="section-description" />
                     </ui:VisualElement>
                     <ui:Button name="refresh-button" text="Refresh status" class="secondary-button" />
                 </ui:VisualElement>
@@ -27,7 +27,7 @@
                         <ui:Button name="dotween-button" text="Open Asset Store" class="link-button" />
                     </ui:VisualElement>
                     <ui:VisualElement class="status-card">
-                        <ui:Label text="Universal Render Pipeline" class="status-title" />
+                        <ui:Label text="Active Render Pipeline" class="status-title" />
                         <ui:Label name="urp-status" class="status-label" />
                         <ui:Button name="package-manager-button" text="Open Package Manager" class="link-button" />
                     </ui:VisualElement>
@@ -44,7 +44,7 @@
 
                 <ui:VisualElement class="steps-card">
                     <ui:Label text="Recommended setup" class="status-title" />
-                    <ui:Label text="1. Install DOTween Free package 1.2.025 or newer.\n2. Open Tools > Demigiant > DOTween Utility Panel and run Setup DOTween.\n3. Confirm URP, Unity UI, and TextMesh Pro essentials above.\n4. Open the preset browser and start with an included demo." class="steps-text" />
+                    <ui:Label text="1. Install DOTween Free separately (validated package: 1.2.825).\n2. Open Tools > Demigiant > DOTween Utility Panel and run Setup DOTween.\n3. Confirm the active pipeline, Unity UI, and TextMesh Pro essentials above.\n4. Open the preset browser or Animation Gallery." class="steps-text" />
                     <ui:VisualElement class="button-row">
                         <ui:Button name="documentation-button" text="Read installation guide" class="secondary-button" />
                         <ui:Button name="preset-browser-button" text="Open preset browser" class="primary-button" />
@@ -88,7 +88,7 @@
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <ui:Toggle name="do-not-show-again" label="Don’t show this window again for Tween Helper 1.0.0" class="dismiss-toggle" />
+            <ui:Toggle name="do-not-show-again" label="Don't show this window again for Tween Helper 1.1.0" class="dismiss-toggle" />
         </ui:ScrollView>
     </ui:VisualElement>
 </ui:UXML>

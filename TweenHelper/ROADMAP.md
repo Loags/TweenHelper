@@ -1,6 +1,10 @@
 # TweenHelper 1.0 Roadmap
 
+> **Historical engineering record only.** Do not use this file for current release identity, compatibility, licensing, samples, or submission copy. The active 1.1.0 roadmap establishes the Standard Unity Asset Store EULA, Unity 6000.5.2f1 and DOTween package 1.2.825/runtime 1.3.030 as the tested configuration, and the Animation Gallery as the sole shipped demo.
+
 Last updated: 2026-07-21
+
+> The active `release-v.1.1.0` documentation, shipped Animation Gallery, Publisher Portal, and future media work is tracked in [ReleaseV110DocumentationDemoPublisherRoadmap.md](Assets/_Project/TweenHelperDevelopment/Documentation/ReleaseV110DocumentationDemoPublisherRoadmap.md). That audit supersedes this file for release-copy and demo-planning decisions while preserving this document as the 1.0 engineering history.
 
 ## Objective
 
@@ -20,7 +24,7 @@ The post-CLI Serialized Animation Recipes and `TweenPlayer` feature has a separa
 - Distribution root: `Assets/Loags/TweenHelper`
 - Minimum Unity version: `2022.3.0f1`
 - Minimum DOTween version: `1.3.030`
-- License: MIT for TweenHelper-owned content
+- Historical license assumption: superseded. Current release uses the Standard Unity Asset Store EULA.
 - External dependency: DOTween, installed and licensed separately
 - Runtime namespace: `LB.TweenHelper`
 - Editor namespace: `LB.TweenHelper.Editor`
@@ -146,7 +150,7 @@ Status: implemented; final proofread remains.
 Implemented:
 
 - Offline README, installation, API, lifecycle, and preset documentation.
-- MIT license for TweenHelper-owned content.
+- Standard Unity Asset Store EULA for Tween Helper-owned content (supersedes the earlier MIT assumption).
 - `Third-Party Notices.txt` identifying DOTween, its publisher, separate acquisition, and separate license.
 - Required DOTween version and setup instructions.
 - Asset Store submission checklist and copy-ready listing dependency notice.
@@ -188,7 +192,7 @@ Applicable Submission Guideline checks:
 - [x] Offline documentation included.
 - [x] All custom Editor menu commands are under **Tools > TweenHelper**.
 - [x] All public types use publisher-owned namespaces.
-- [x] MIT license and DOTween third-party notice included.
+- [x] Standard Unity Asset Store EULA wording and DOTween third-party notice included for 1.1.0.
 - [x] DOTween requirement and limitation disclosed.
 - [x] Paths and package size are comfortably below limits.
 - [x] Run Asset Store Publishing Tools Validator against only the distribution root (35 passed checks).

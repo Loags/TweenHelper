@@ -8,9 +8,9 @@ namespace LB.TweenHelper.Editor
 {
     public static class DOTweenSetupValidator
     {
-        private const string MinimumPackageVersion = "1.2.025";
+        private const string ValidatedPackageVersion = "1.2.825";
 
-        private static readonly Version MinimumRuntimeVersion = new Version(1, 3, 30);
+        private static readonly Version ValidatedRuntimeVersion = new Version(1, 3, 30);
 
         [MenuItem("Tools/Tween Helper/Validate/DOTween Setup", false, 20)]
         public static void Validate()
@@ -33,7 +33,7 @@ namespace LB.TweenHelper.Editor
 
             if (Type.GetType("DG.Tweening.DOTween, DOTween") == null)
             {
-                errors.Add("DOTween.dll is not loaded. Install DOTween 1.2.025 or newer before using TweenHelper.");
+                errors.Add($"DOTween.dll is not loaded. Install DOTween separately. Tween Helper was validated with package {ValidatedPackageVersion}.");
             }
 
             if (Type.GetType("DG.Tweening.DOTweenModuleUI, DOTween.Modules") == null)
@@ -49,16 +49,16 @@ namespace LB.TweenHelper.Editor
             string version = DOTween.Version;
             if (!Version.TryParse(version, out Version parsedVersion))
             {
-                errors.Add($"DOTween runtime version '{version}' could not be parsed. Install DOTween package {MinimumPackageVersion} or newer.");
+                errors.Add($"DOTween runtime version '{version}' could not be parsed. The validated runtime is {ValidatedRuntimeVersion}.");
             }
-            else if (parsedVersion < MinimumRuntimeVersion)
+            else if (parsedVersion < ValidatedRuntimeVersion)
             {
-                errors.Add($"DOTween runtime {version} is older than the runtime included with supported package version {MinimumPackageVersion}.");
+                errors.Add($"DOTween runtime {version} is older than tested runtime {ValidatedRuntimeVersion} from package {ValidatedPackageVersion}.");
             }
 
             if (errors.Count == 0)
             {
-                message = $"DOTween runtime {version} is loaded and the required modules are available (package {MinimumPackageVersion}+).";
+                message = $"DOTween runtime {version} is loaded and the required modules are available. Tween Helper was validated with package {ValidatedPackageVersion}.";
                 if (notes.Count > 0) message += $"\n\n{string.Join("\n", notes)}";
                 return true;
             }

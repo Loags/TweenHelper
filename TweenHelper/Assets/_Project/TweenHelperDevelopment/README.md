@@ -3,11 +3,14 @@
 This folder contains repository-only validation assets and must not be included in the Asset Store `.unitypackage`.
 
 - `Tests` contains the EditMode and PlayMode suites plus the development-only runtime assembly access required by those tests.
-- `Validation` contains the reset-audit runner, preset integrity tools, and their development-only assembly wiring.
+- `Validation` contains the Animation Gallery audit runner, preset integrity tools, the internal 474-entry review scene, and their development-only assembly wiring.
 - `Documentation` contains internal release, pipeline, validation, and implementation roadmaps.
+- `Documentation/ReleaseV110DocumentationDemoPublisherRoadmap.md` tracks the implemented 1.1 documentation/gallery/Portal work plus the remaining release-candidate validation and deferred Recorder media production.
 - `Documentation/AnimationReviewCoverageAndExpansionRoadmap.md` tracks the planned 76-entry review-completeness pass and the staged animation-family expansion that follows it.
 
-To run a reset audit, open either shipped demo scene, add `Validation/Prefabs/AnimationResetAuditRunner.prefab`, enter Play Mode, and use the runner component's context menu for each audit mode. Reports are written beneath the project `Temp` folder.
+To run the gallery reset smoke audit, open the shipped `TweenHelperAnimationGallery.unity` scene, add `Validation/Prefabs/AnimationResetAuditRunner.prefab`, enter Play Mode, and use **Run Gallery Reset Audit** on the runner component. It plays and resets one representative from each gallery category.
+
+Run **Tools > Tween Helper Dev > Validate Animation Gallery Assets** to verify that the shipped scene and list-item prefab exist and that the catalog resolves 300 presets across all eight categories.
 
 For visual review, open `Validation/Scenes/TweenHelperPresetReview.unity` and enter Play Mode. The review now contains 474 entries: 300 presets, 13 UI recipes, 36 collection entries, 26 destination-motion entries, 22 gameplay-feedback entries, 39 production UI sequences, 31 text/value animations, and seven camera-feedback entries. Existing status keys are unchanged, so all 398 previously validated results remain preserved while only the 76 coverage additions appear under **NOT REVIEWED**. Marking an entry still advances and automatically plays the next item.
 

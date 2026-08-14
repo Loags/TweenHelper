@@ -1,48 +1,68 @@
-# Asset Store submission notes
+# Tween Helper Asset Store submission notes
 
-TweenHelper uses the standard Asset Store `.unitypackage` workflow. All distributable content is nested beneath the single root `Assets/Loags/TweenHelper`. The publisher name is **Loags**.
+Tween Helper uses the standard Asset Store package workflow. Select only `Assets/Loags/TweenHelper` for validation, export, and upload. The publisher name is **Loags** and support is **Info@Loags.de**.
 
-The development project contains DOTween, Asset Store Publishing Tools, automated tests, and the reset-audit harness outside that root. They are validation or external dependency content and must not be selected for the TweenHelper upload.
+## Release identity
 
-TweenHelper also uses the standard Unity UI (uGUI) and TextMesh Pro packages. The 3D demonstration materials use URP, but TweenHelper runtime code is render-pipeline independent. Preserve the appropriate Unity package dependency information during export and disclose the URP demo requirement in the listing.
+- Version: `1.1.0`, initial public release.
+- Category: Tools > Animation.
+- Regular price: $15 USD.
+- Planned launch promotion: maximum available discount, currently 50% for two weeks; reconfirm in Portal.
+- Tween Helper license: Standard Unity Asset Store EULA. Do not claim MIT licensing.
+- Developed and tested with Unity `6000.5.2f1`; lower Unity versions are untested.
+- Validated with DOTween package `1.2.825` / runtime `1.3.030`; older DOTween versions are untested.
+- Built-in and URP are supported; HDRP/custom pipelines are untested.
 
-## Required external dependency
+## Dependency
 
-TweenHelper requires **DOTween (HOTween v2)** version `1.2.025` or newer. DOTween is not redistributed with TweenHelper. Register DOTween as a required Asset Store dependency in the Publisher Portal and place this notice prominently in the listing:
+Register **DOTween (HOTween v2)** as a required Asset Store dependency. DOTween is installed and licensed separately and is not redistributed with Tween Helper.
 
-> Requires DOTween (HOTween v2) 1.2.025 or newer, available separately from Demigiant on the Unity Asset Store. DOTween is not included. See Third-Party Notices.txt in the package for license details.
+```text
+https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676
+```
 
-## Validation and upload
+## Package boundary
 
-1. Open **Tools > Asset Store > Validator**.
-2. Choose the standard asset-package validation type and validate only `Assets/Loags/TweenHelper`.
-3. Resolve every package-originated error or warning that applies to a code/tool asset.
-4. Open **Tools > Asset Store > Uploader** and select only `Assets/Loags/TweenHelper` as the package content root.
-5. Confirm the uploader preview contains no files from `Assets/Plugins/Demigiant`, `Packages`, `ProjectSettings`, `Library`, `Temp`, or unrelated project folders.
-6. Upload from a supported Unity Editor version and record the exact Editor and DOTween versions in the release notes.
+The upload must include the complete `Assets/Loags/TweenHelper` root and nothing outside it. In particular, exclude:
 
-### Static-variable Validator warning
+- `Assets/Plugins/Demigiant` and all DOTween files.
+- `Assets/_Project/TweenHelperDevelopment` tests, review scene, builders, roadmaps, Portal records, and validation tools.
+- `Assets/PublisherMedia` and repository-level `PublisherMedia` artwork/captures.
+- `Packages`, `ProjectSettings`, `Library`, `Temp`, Asset Store Publishing Tools, Recorder, and Unity Pipeline tooling.
 
-The Validator's static-variable check is intentionally conservative and reports types without proving whether their state is unsafe. TweenHelper resets all mutable runtime static state with `RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)`, including its settings cache, registry state, bootstrap state, and demo singleton references. This makes the runtime code compatible with Fast Enter Play Mode when domain reload is disabled. The demo's static family-order array is immutable.
+## Validation and upload sequence
+
+1. Confirm Unity is stopped, the gallery scene is saved, and the Console has no package-originated errors.
+2. Run **Tools > Tween Helper Dev > Validate Animation Gallery Assets**.
+3. Run the existing EditMode and PlayMode validation suites.
+4. Run Asset Store Publishing Tools Validator against only `Assets/Loags/TweenHelper`.
+5. Export the exact artifact from that root and inspect its content list.
+6. Import the artifact into a clean Unity project with the separately installed validated DOTween build.
+7. Open Setup & Support, Preset Browser, and `TweenHelperAnimationGallery.unity`.
+8. Exercise mouse selection, search/filter, contextual options, auto-play, Replay, Reset, Previous/Next, code copy, presentation mode, world preview, and camera preview at 1920×1080 and 1280×720.
+9. Verify the Built-in and URP presentation in clean projects.
+10. Confirm documentation links, changelog, Standard EULA wording, and third-party notice.
+11. Copy the exact 1.1.0 fields from `PublisherPortalReleaseNotes.md`, preview the rendered listing, and upload the exact tested artifact.
 
 ## Release checklist
 
-- The upload has one root folder: `Assets/Loags/TweenHelper`.
-- Runtime, Editor, Samples, and customer documentation are separated beneath that root.
-- Repository-only tests, reset auditing, preset integrity tools, and submission notes remain under `Assets/_Project/TweenHelperDevelopment` and are absent from the upload.
-- Every asset and folder has exactly one `.meta` file and no GUID is duplicated.
-- Customer-facing commands are under **Tools > Tween Helper**. Internal tests, catalog generation, and release validation are under **Tools > Tween Helper Dev** and remain outside the exported package folder.
-- All public code is contained in `LB.TweenHelper` namespaces.
-- DOTween binaries, modules, settings, documentation, and license files are absent from the upload.
-- Asset Store Publishing Tools is absent from the upload.
-- The package contains no executables, archives, generated libraries, project settings, temporary files, or unrelated dependencies.
-- Paths are below 150 characters and the artifact is below the Asset Store size limit.
-- Offline installation, API/lifecycle, and preset documentation is included.
-- Both demo scenes open, and all four reset-audit modes pass with DOTween `1.2.025` or newer.
-- EditMode and PlayMode suites pass against the exact exported content.
-- A clean project imports the exact `.unitypackage` without leaving files outside `Assets/Loags/TweenHelper`.
-- The Publisher Portal listing discloses the required DOTween version and separate license.
-- The listing's technical details disclose the URP-authored 3D demo and render-pipeline-independent runtime and 2D demo.
-- The Animation-category marketing media includes a video showing the animations in motion.
-- The Publisher Portal AI description accurately discloses any functional code or assets created or modified with AI assistance.
-- The Loags publisher profile has an active support email and maintained website.
+- [x] One customer package root: `Assets/Loags/TweenHelper`.
+- [x] Version and setup UI updated to `1.1.0`.
+- [x] Gallery is the only shipped demo and only scene in development Build Settings.
+- [x] Legacy 2D/3D scenes and scene-only setup/console code removed.
+- [x] Customer README, installation guide, sample guide, changelog, and third-party notice updated.
+- [x] Portal description, technical details, dependency, AI disclosure, reviewer note, keywords, and media brief updated.
+- [x] DOTween files, internal development assets, Portal media, and Recorder remain outside the upload root.
+- [ ] Run gallery asset validator after the final documentation import.
+- [ ] Run EditMode and PlayMode suites against the final working tree.
+- [ ] Run Asset Store Validator against the exact root.
+- [ ] Export and inspect the exact `.unitypackage`.
+- [ ] Clean-import and validate the exact artifact.
+- [ ] Capture replacement screenshots and both caption-only videos with Recorder `5.1.7`.
+- [ ] Reconfirm Portal media rules and maximum launch discount.
+- [ ] Preview and proofread the final Portal draft.
+- [ ] Submit for review.
+
+## AI disclosure record
+
+Codex and ChatGPT assisted selected functional code, refactoring, documentation, validation, and consistency review. The publisher reviews and tests all integrated work. There is no runtime AI, online AI call, or project/user data transmission.
