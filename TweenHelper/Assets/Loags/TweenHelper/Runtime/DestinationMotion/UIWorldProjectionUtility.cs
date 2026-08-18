@@ -180,9 +180,9 @@ namespace LB.TweenHelper
                     state.Set(evaluator(state, progress));
                 },
                 () => state.Set(state.End),
-                state.Restore,
-                state.Restore,
-                state.Restore);
+                () => state.Restore(),
+                () => state.Restore(),
+                () => state.Restore());
         }
 
         private static Vector3 EvaluatePath(IReadOnlyList<Vector3> points, DestinationPathInterpolation interpolation, float progress)
