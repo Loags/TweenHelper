@@ -147,7 +147,7 @@ Impact, recoil, landing, FOV kick, focus zoom, and one finite breathing cycle re
 
 ## Preset browser
 
-Open **Tools > Tween Helper > Preset Browser** to search and filter all registered presets and collection animations. Select an entry to inspect its metadata and fluent API example, then use **Preview** to play it on the isolated cube stage inside the browser. The preview never reads from or modifies the active scene.
+Open **Tools > Tween Helper > Preset Browser** to search and filter all registered presets and collection animations. Select an entry to inspect its metadata and fluent API example. Collection recipes with configurable diagonal direction, spiral direction, or checkerboard phase expose those options in the details panel; the preview and copied example update together. Use **Preview** to play the selected configuration on the isolated cube stage inside the browser. The preview never reads from or modifies the active scene.
 
 ## Support
 
@@ -184,4 +184,4 @@ No settings asset is required. TweenHelper uses safe in-memory defaults when `Re
 
 Tween Helper is distributed under the Standard Unity Asset Store EULA.
 
-DOTween is installed separately, is not included with Tween Helper, and is governed by its own license. See `Third-Party Notices.txt`.
+DOTween is installed and licensed separately and is not included with Tween Helper. Tween Helper-owned content is governed by the Standard Unity Asset Store EULA.

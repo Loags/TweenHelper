@@ -115,3 +115,35 @@ Pickup fading supports `CanvasGroup`, `Graphic`, `TMP_Text`, `SpriteRenderer`, a
 Durations, destinations, optional arc height, impact directions, and strength must be finite. Duration must be greater than zero, and directional impact vectors cannot be zero.
 
 Each feedback operation has one linked owner and writes a coordinated subset of position, scale, local rotation, color, and alpha. Do not run competing tweens or gameplay systems on those same channels concurrently; sequence the handoff explicitly when interruption is intentional.
+
+## Animation Gallery
+
+Open **Gameplay Feedback** to compare all eleven operation families. Contextual target and impact-direction controls update both the isolated fixture and the displayed C# call.
+
+## Gameplay-state families
+
+The semantic state layer adds `AbilityCharging`, `AbilityReady`, `DodgeRoll`, `StunStart`, `StunEnd`, `BuffApplied`, `DebuffApplied`, `ResourceDepleted`, `ResourceRecovered`, and `ObjectiveUnlocked`. Existing feedback primitives are reused for equivalent semantics; charging, dodge, and stun use dedicated motion.
+
+```csharp
+abilityIcon.AbilityCharging(options: TweenOptions.WithLoops(-1));
+player.DodgeRoll();
+statusIcon.DebuffApplied();
+objectiveBadge.ObjectiveUnlocked();
+```
+
+`PickupCollectToUI` combines the projection bridge with pickup punch, arc, shrink, and fade behavior:
+
+```csharp
+pickupProxy.PickupCollectToUI(drop.position, inventorySlot, worldCamera: gameplayCamera);
+```
+
+## Sequence macros and progress hooks
+
+`CriticalHitSequence`, `RewardRevealSequence`, `WarningLoopSequence`, and `CutsceneUIEntranceSequence` are reusable composed timelines. Warning Loop is one finite cycle so callers choose root looping explicitly.
+
+```csharp
+TweenHandle handle = target.RewardRevealSequence()
+    .OnProgress(0.6f, SpawnRewardParticles);
+```
+
+`OnProgress` invokes once when the handle crosses a normalized fraction. Set `everyLoop: true` to invoke once per root loop. All macros retain the normal target-linked kill, rewind, option, and await behavior. The gallery exposes the three target-agnostic macros and all ten gameplay-state operations.

@@ -45,8 +45,6 @@ public sealed class ScorePresentation : MonoBehaviour
 
 Character stagger defaults to `UISequenceDirection.Up`, an `18`-unit offset, and `0.025s` between character starts. `Up`, `Down`, `Left`, and `Right` are supported by character stagger, wave, bounce, and emphasis operations. Long labels compress their start offsets into the requested total duration. `TextWave` defaults to an upward `12`-unit wave and one sweep. `TextGlitch` and `TextScrambleReveal` accept a seed so capture, replay, and automated demos remain deterministic.
 
-The manual review catalog contains all four direction configurations for each directional family. It also includes representative `TextMeshPro` world-space coverage for mesh displacement, vertex-color mutation, and scramble source-string mutation alongside the existing `TextMeshProUGUI` entries. World previews use world-unit amplitudes rather than canvas-sized distances.
-
 ## Builder composition
 
 Every operation is also available on `TweenBuilder`:
@@ -121,3 +119,26 @@ TweenHandle handle = label.TextWave(
 ```
 
 Retain and kill infinite handles during owner teardown.
+
+## Animation Gallery
+
+Open **Text & Values** to compare thirteen curated examples for the twelve public operation families. Count-up and count-down are shown separately; directional and target-context controls update the preview and C# call.
+
+## Progress fills and sliders
+
+The value binding API uses normalized `0..1` values for both `Image.fillAmount` and `Slider.normalizedValue`, preserving each Slider's authored `minValue` and `maxValue`.
+
+```csharp
+healthFill.FillDrain(0.35f);
+manaSlider.FillCharge(0.9f);
+objectiveFill.FillAndText(0.2f, 0.75f, objectiveLabel, "P0");
+healthFill.FillAlertPulse(0.2f);
+
+panel.Tween()
+    .FillFromTo(0f, 1f)
+    .Then()
+    .ValueFillTo(0.5f, percentageLabel)
+    .Play();
+```
+
+`FillTo` captures the current normalized value. `FillFromTo` uses explicit endpoints. `ValueFillTo` and `FillAndText` update an optional TMP label on the same timeline. Drain and Charge add temporary impact/overshoot feedback; Alert Pulse changes no value and only activates at or below its threshold. Completion keeps the requested value while restoring transient visuals. Interrupted kill and rewind restore the invocation value, text, transform, and supported color.

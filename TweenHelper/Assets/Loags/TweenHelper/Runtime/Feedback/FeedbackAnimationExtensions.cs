@@ -76,5 +76,11 @@ namespace LB.TweenHelper
 
         public static TweenHandle PickupCollectLocalTo(this GameObject target, Vector3 destination, float? arcHeight = null, float? duration = null, TweenOptions options = default)
             => target.Tween().WithOptions(options).PickupCollectLocalTo(destination, arcHeight, duration).Play();
+
+        public static TweenHandle PickupCollectToUI(this Component component, Vector3 worldSource, RectTransform uiTarget, float? arcHeight = null, float? duration = null, Camera worldCamera = null, bool lockDestination = true, TweenOptions options = default)
+            => PickupCollectToUI(component.gameObject, worldSource, uiTarget, arcHeight, duration, worldCamera, lockDestination, options);
+
+        public static TweenHandle PickupCollectToUI(this GameObject target, Vector3 worldSource, RectTransform uiTarget, float? arcHeight = null, float? duration = null, Camera worldCamera = null, bool lockDestination = true, TweenOptions options = default)
+            => target.Tween().WithOptions(options).PickupCollectToUI(worldSource, uiTarget, arcHeight, duration, worldCamera, lockDestination).Play();
     }
 }

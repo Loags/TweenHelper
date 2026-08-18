@@ -38,10 +38,10 @@ Open `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes/TweenHelperAnima
 
 Use the mouse to select a category and animation. The selection auto-plays after resetting the fixture. Use Replay, Reset, Previous, and Next for repeatable comparison; preset search and family filters cover all 300 presets. Contextual options update both the preview and the displayed C# call.
 
-The gallery is designed for 16:9 presentation and validated at `1920×1080` and `1280×720`. It uses dedicated world and camera preview rigs and does not require the Input System.
+The gallery is designed for 16:9 presentation and validated at `1920×1080`. It uses dedicated world and camera preview rigs and does not require the Input System.
 
 ## Support
 
-Open **Tools > Tween Helper > Setup & Support** to prepare a bug report, feature request, documentation question, or other support email to `Info@Loags.de`. The form opens your default email client with editable content; it never sends a message automatically.
+Open **Tools > Tween Helper > Setup & Support** to prepare a bug report, feature request, documentation question, or other support email. The form opens your default email client with editable content; it never sends a message automatically.
 
 Optional environment fields are unchecked by default. The form does not collect project names, scenes, assets, logs, files, or machine identifiers.

@@ -119,6 +119,55 @@ namespace LB.TweenHelper
                 .Play();
         }
 
+        public static TweenHandle GridConcentricIn(this IEnumerable<GameObject> targets, GameObject owner, int columns, float duration = 0.32f, float interval = 0.07f, TweenOptions options = default)
+        {
+            ValidateColumns(columns);
+            List<GameObject> snapshot = Snapshot(targets);
+            int rows = GetRowCount(snapshot.Count, columns);
+            float maximum = GetMaximumConcentricDistance(snapshot.Count, columns, rows);
+            return snapshot.TweenStagger(owner).Preset<PopInFadePreset>(duration, options)
+                .DelayBy((_, index) => (maximum - GetConcentricDistance(index, columns, rows)) * interval).Play();
+        }
+
+        public static TweenHandle GridConcentricOut(this IEnumerable<GameObject> targets, GameObject owner, int columns, float duration = 0.28f, float interval = 0.06f, TweenOptions options = default)
+        {
+            ValidateColumns(columns);
+            List<GameObject> snapshot = Snapshot(targets);
+            int rows = GetRowCount(snapshot.Count, columns);
+            return snapshot.TweenStagger(owner).Preset<PopOutFadePreset>(duration, options)
+                .DelayBy((_, index) => GetConcentricDistance(index, columns, rows) * interval).Play();
+        }
+
+        public static TweenHandle GridQuadrantSweep(this IEnumerable<GameObject> targets, GameObject owner, int columns, GridQuadrantSweepDirection direction = GridQuadrantSweepDirection.ClockwiseFromTopLeft, float duration = 0.32f, float quadrantInterval = 0.13f, TweenOptions options = default)
+        {
+            ValidateColumns(columns);
+            List<GameObject> snapshot = Snapshot(targets);
+            int rows = GetRowCount(snapshot.Count, columns);
+            return snapshot.TweenStagger(owner).Preset<PopInFadePreset>(duration, options)
+                .DelayBy((_, index) => GetQuadrantRank(index, columns, rows, direction) * quadrantInterval).Play();
+        }
+
+        public static TweenHandle ListAccordion(this IEnumerable<GameObject> targets, GameObject owner, float duration = 0.44f, float interval = 0.045f, bool local = true, TweenOptions options = default)
+            => CollectionTopologyUtility.CreateSpatial(Snapshot(targets), owner, CollectionTopologyAnimation.Accordion, Vector3.zero, 0f, duration, interval, local, options);
+
+        public static TweenHandle CollectionOrbitIn(this IEnumerable<GameObject> targets, GameObject owner, Vector3 center, float? radius = null, float duration = 0.62f, float interval = 0.035f, bool local = true, TweenOptions options = default)
+        {
+            List<GameObject> snapshot = Snapshot(targets);
+            return CollectionTopologyUtility.CreateSpatial(snapshot, owner, CollectionTopologyAnimation.OrbitIn, center, ResolveSpatialDistance(snapshot, radius, local), duration, interval, local, options);
+        }
+
+        public static TweenHandle CollectionOrbitOut(this IEnumerable<GameObject> targets, GameObject owner, Vector3 center, float? radius = null, float duration = 0.56f, float interval = 0.03f, bool local = true, TweenOptions options = default)
+        {
+            List<GameObject> snapshot = Snapshot(targets);
+            return CollectionTopologyUtility.CreateSpatial(snapshot, owner, CollectionTopologyAnimation.OrbitOut, center, ResolveSpatialDistance(snapshot, radius, local), duration, interval, local, options);
+        }
+
+        public static TweenHandle LoadingRing(this IEnumerable<GameObject> targets, GameObject owner, float amplitude = 10f, float cycleDuration = 0.9f, bool local = true, TweenOptions options = default)
+            => CollectionTopologyUtility.CreateLoading(Snapshot(targets), owner, CollectionTopologyAnimation.LoadingRing, amplitude, cycleDuration, local, options);
+
+        public static TweenHandle LoadingRibbon(this IEnumerable<GameObject> targets, GameObject owner, float amplitude = 16f, float cycleDuration = 1.1f, bool local = true, TweenOptions options = default)
+            => CollectionTopologyUtility.CreateLoading(Snapshot(targets), owner, CollectionTopologyAnimation.LoadingRibbon, amplitude, cycleDuration, local, options);
+
         public static TweenHandle ListStaggerIn(this IEnumerable<Component> targets, GameObject owner, float duration = 0.32f, float interval = 0.06f, TweenOptions options = default)
             => TweenStaggerExtensions.ToGameObjects(targets).ListStaggerIn(owner, duration, interval, options);
 
@@ -152,6 +201,30 @@ namespace LB.TweenHelper
         public static TweenHandle LoadingDots(this IEnumerable<Component> targets, GameObject owner, float duration = 0.25f, float interval = 0.12f, float loopPause = 0.2f, TweenOptions options = default)
             => TweenStaggerExtensions.ToGameObjects(targets).LoadingDots(owner, duration, interval, loopPause, options);
 
+        public static TweenHandle GridConcentricIn(this IEnumerable<Component> targets, GameObject owner, int columns, float duration = 0.32f, float interval = 0.07f, TweenOptions options = default)
+            => TweenStaggerExtensions.ToGameObjects(targets).GridConcentricIn(owner, columns, duration, interval, options);
+
+        public static TweenHandle GridConcentricOut(this IEnumerable<Component> targets, GameObject owner, int columns, float duration = 0.28f, float interval = 0.06f, TweenOptions options = default)
+            => TweenStaggerExtensions.ToGameObjects(targets).GridConcentricOut(owner, columns, duration, interval, options);
+
+        public static TweenHandle GridQuadrantSweep(this IEnumerable<Component> targets, GameObject owner, int columns, GridQuadrantSweepDirection direction = GridQuadrantSweepDirection.ClockwiseFromTopLeft, float duration = 0.32f, float quadrantInterval = 0.13f, TweenOptions options = default)
+            => TweenStaggerExtensions.ToGameObjects(targets).GridQuadrantSweep(owner, columns, direction, duration, quadrantInterval, options);
+
+        public static TweenHandle ListAccordion(this IEnumerable<Component> targets, GameObject owner, float duration = 0.44f, float interval = 0.045f, bool local = true, TweenOptions options = default)
+            => TweenStaggerExtensions.ToGameObjects(targets).ListAccordion(owner, duration, interval, local, options);
+
+        public static TweenHandle CollectionOrbitIn(this IEnumerable<Component> targets, GameObject owner, Vector3 center, float? radius = null, float duration = 0.62f, float interval = 0.035f, bool local = true, TweenOptions options = default)
+            => TweenStaggerExtensions.ToGameObjects(targets).CollectionOrbitIn(owner, center, radius, duration, interval, local, options);
+
+        public static TweenHandle CollectionOrbitOut(this IEnumerable<Component> targets, GameObject owner, Vector3 center, float? radius = null, float duration = 0.56f, float interval = 0.03f, bool local = true, TweenOptions options = default)
+            => TweenStaggerExtensions.ToGameObjects(targets).CollectionOrbitOut(owner, center, radius, duration, interval, local, options);
+
+        public static TweenHandle LoadingRing(this IEnumerable<Component> targets, GameObject owner, float amplitude = 10f, float cycleDuration = 0.9f, bool local = true, TweenOptions options = default)
+            => TweenStaggerExtensions.ToGameObjects(targets).LoadingRing(owner, amplitude, cycleDuration, local, options);
+
+        public static TweenHandle LoadingRibbon(this IEnumerable<Component> targets, GameObject owner, float amplitude = 16f, float cycleDuration = 1.1f, bool local = true, TweenOptions options = default)
+            => TweenStaggerExtensions.ToGameObjects(targets).LoadingRibbon(owner, amplitude, cycleDuration, local, options);
+
         private static int GetWaveStep(int index, int count, int columns, int rows, GridWaveDirection direction)
         {
             int row = index / columns;
@@ -175,6 +248,37 @@ namespace LB.TweenHelper
         {
             int origin = ((rows - 1) / 2) * columns + (columns - 1) / 2;
             return Mathf.Min(origin, count - 1);
+        }
+
+        private static float GetConcentricDistance(int index, int columns, int rows)
+        {
+            float row = index / columns;
+            float column = index % columns;
+            float centerRow = (rows - 1) * 0.5f;
+            float centerColumn = (columns - 1) * 0.5f;
+            return Mathf.Max(Mathf.Abs(row - centerRow), Mathf.Abs(column - centerColumn));
+        }
+
+        private static float GetMaximumConcentricDistance(int count, int columns, int rows)
+        {
+            float maximum = 0f;
+            for (int i = 0; i < count; i++) maximum = Mathf.Max(maximum, GetConcentricDistance(i, columns, rows));
+            return maximum;
+        }
+
+        private static int GetQuadrantRank(int index, int columns, int rows, GridQuadrantSweepDirection direction)
+        {
+            bool bottom = index / columns >= rows * 0.5f;
+            bool right = index % columns >= columns * 0.5f;
+            int quadrant = !bottom && !right ? 0 : !bottom ? 1 : right ? 2 : 3;
+            switch (direction)
+            {
+                case GridQuadrantSweepDirection.ClockwiseFromTopLeft: return quadrant;
+                case GridQuadrantSweepDirection.ClockwiseFromTopRight: return (quadrant + 3) % 4;
+                case GridQuadrantSweepDirection.CounterClockwiseFromTopLeft: return (4 - quadrant) % 4;
+                case GridQuadrantSweepDirection.CounterClockwiseFromTopRight: return (5 - quadrant) % 4;
+                default: throw new ArgumentOutOfRangeException(nameof(direction), direction, "Unknown quadrant sweep direction.");
+            }
         }
 
         private static List<GameObject> Snapshot(IEnumerable<GameObject> targets)

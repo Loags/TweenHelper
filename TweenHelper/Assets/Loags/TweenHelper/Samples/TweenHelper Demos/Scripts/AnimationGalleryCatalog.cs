@@ -77,6 +77,14 @@ namespace LB.TweenHelper.Demo
         GridDiagonalWave,
         GridSpiral,
         GridCheckerboard,
+        GridConcentricIn,
+        GridConcentricOut,
+        GridQuadrantSweep,
+        ListAccordion,
+        CollectionOrbitIn,
+        CollectionOrbitOut,
+        LoadingRing,
+        LoadingRibbon,
         CollectionBurstIn,
         CollectionBurstOut,
         CollectionGatherTo,
@@ -88,17 +96,35 @@ namespace LB.TweenHelper.Demo
         PathThrough,
         SpiralTo,
         MultiHopTo,
+        ArcToUI,
+        HopToUI,
+        BezierToUI,
+        PathThroughUI,
         ErrorReject,
         DamageHit,
         SuccessConfirm,
         RewardReveal,
         PickupCollect,
+        PickupCollectToUI,
         HealReceive,
         ShieldBlock,
         CriticalHit,
         CooldownReady,
         LevelUp,
         LowHealthWarning,
+        AbilityCharging,
+        AbilityReady,
+        DodgeRoll,
+        StunStart,
+        StunEnd,
+        BuffApplied,
+        DebuffApplied,
+        ResourceDepleted,
+        ResourceRecovered,
+        ObjectiveUnlocked,
+        CriticalHitSequence,
+        RewardRevealSequence,
+        WarningLoopSequence,
         ToastShow,
         ToastHide,
         ModalOpen,
@@ -114,6 +140,7 @@ namespace LB.TweenHelper.Demo
         BottomSheetHide,
         PagePush,
         PageCrossFade,
+        CutsceneUIEntranceSequence,
         TypewriterReveal,
         TypewriterHide,
         NumberCountUp,
@@ -132,7 +159,9 @@ namespace LB.TweenHelper.Demo
         CameraLandingImpact,
         CameraFovKick,
         CameraFocusZoom,
-        CameraBreathing
+        CameraBreathing,
+        CameraRackFocus,
+        CollectLandingCameraKick
     }
 
     public sealed class AnimationGalleryOptionDescriptor
@@ -301,6 +330,22 @@ namespace LB.TweenHelper.Demo
                     return "items.CollectionBurstOut(owner, origin);";
                 case AnimationGalleryOperation.CollectionGatherTo:
                     return "items.CollectionGatherTo(owner, destination);";
+                case AnimationGalleryOperation.GridConcentricIn:
+                    return "items.GridConcentricIn(owner, columns: 3);";
+                case AnimationGalleryOperation.GridConcentricOut:
+                    return "items.GridConcentricOut(owner, columns: 3);";
+                case AnimationGalleryOperation.GridQuadrantSweep:
+                    return "items.GridQuadrantSweep(owner, columns: 3);";
+                case AnimationGalleryOperation.ListAccordion:
+                    return "items.ListAccordion(owner);";
+                case AnimationGalleryOperation.CollectionOrbitIn:
+                    return "items.CollectionOrbitIn(owner, center);";
+                case AnimationGalleryOperation.CollectionOrbitOut:
+                    return "items.CollectionOrbitOut(owner, center);";
+                case AnimationGalleryOperation.LoadingRing:
+                    return "items.LoadingRing(owner);";
+                case AnimationGalleryOperation.LoadingRibbon:
+                    return "items.LoadingRibbon(owner);";
                 case AnimationGalleryOperation.ArcTo:
                     return $"target.Tween().Arc{localSuffix}To(destination, {Signed(configuration, world ? "2.1f" : "175f")}).Play();";
                 case AnimationGalleryOperation.BezierTo:
@@ -317,12 +362,24 @@ namespace LB.TweenHelper.Demo
                     return $"target.Tween().Spiral{localSuffix}To(destination, radius: {Signed(configuration, world ? "1.1f" : "92f")}).Play();";
                 case AnimationGalleryOperation.MultiHopTo:
                     return $"target.Tween().MultiHop{localSuffix}To(destination, hopHeight: {Signed(configuration, world ? "2.1f" : "175f")}, hopCount: 3).Play();";
+                case AnimationGalleryOperation.ArcToUI:
+                    return "pickup.Tween().ArcToUI(worldSource, uiTarget, 145f).Play();";
+                case AnimationGalleryOperation.HopToUI:
+                    return "pickup.Tween().HopToUI(worldSource, uiTarget, 145f).Play();";
+                case AnimationGalleryOperation.BezierToUI:
+                    return "pickup.Tween().BezierToUI(worldSource, controlA, controlB, uiTarget).Play();";
+                case AnimationGalleryOperation.PathThroughUI:
+                    return "pickup.Tween().PathThroughUI(worldSource, worldWaypoints, uiTarget).Play();";
                 case AnimationGalleryOperation.ShieldBlock:
                     return $"target.ShieldBlock(Vector3.{(configuration.GetIndex(AnimationGalleryOptionKind.ImpactDirection) == 0 ? "right" : "left")});";
                 case AnimationGalleryOperation.CriticalHit:
                     return $"target.CriticalHit(Vector3.{(configuration.GetIndex(AnimationGalleryOptionKind.ImpactDirection) == 0 ? "right" : "left")});";
+                case AnimationGalleryOperation.CriticalHitSequence:
+                    return $"target.CriticalHitSequence(Vector3.{(configuration.GetIndex(AnimationGalleryOptionKind.ImpactDirection) == 0 ? "right" : "left")});";
                 case AnimationGalleryOperation.PickupCollect:
                     return world ? "target.PickupCollectTo(destination);" : "target.PickupCollectLocalTo(destination);";
+                case AnimationGalleryOperation.PickupCollectToUI:
+                    return "pickup.PickupCollectToUI(worldSource, uiTarget);";
                 case AnimationGalleryOperation.ToastShow:
                 case AnimationGalleryOperation.ToastHide:
                 case AnimationGalleryOperation.TooltipShow:
@@ -342,6 +399,8 @@ namespace LB.TweenHelper.Demo
                     return $"text.{entry.Operation}(UISequenceDirection.{direction});";
                 case AnimationGalleryOperation.CameraFovKick:
                     return configuration.GetIndex(AnimationGalleryOptionKind.MotionVariant) == 0 ? "camera.CameraFovKick(11f);" : "camera.CameraFovKick(-11f);";
+                case AnimationGalleryOperation.CameraRackFocus:
+                    return "camera.CameraRackFocus(focusTarget);";
                 default:
                     return GetSimpleSnippet(entry.Operation);
             }
@@ -373,6 +432,18 @@ namespace LB.TweenHelper.Demo
                 case AnimationGalleryOperation.CooldownReady:
                 case AnimationGalleryOperation.LevelUp:
                 case AnimationGalleryOperation.LowHealthWarning:
+                case AnimationGalleryOperation.AbilityCharging:
+                case AnimationGalleryOperation.AbilityReady:
+                case AnimationGalleryOperation.DodgeRoll:
+                case AnimationGalleryOperation.StunStart:
+                case AnimationGalleryOperation.StunEnd:
+                case AnimationGalleryOperation.BuffApplied:
+                case AnimationGalleryOperation.DebuffApplied:
+                case AnimationGalleryOperation.ResourceDepleted:
+                case AnimationGalleryOperation.ResourceRecovered:
+                case AnimationGalleryOperation.ObjectiveUnlocked:
+                case AnimationGalleryOperation.RewardRevealSequence:
+                case AnimationGalleryOperation.WarningLoopSequence:
                     return $"target.{operation}();";
                 case AnimationGalleryOperation.ModalOpen:
                     return "panel.ModalOpen(backdrop, controls);";
@@ -388,6 +459,8 @@ namespace LB.TweenHelper.Demo
                     return "panel.BottomSheetHide(backdrop);";
                 case AnimationGalleryOperation.PageCrossFade:
                     return "outgoing.PageCrossFadeTo(incoming);";
+                case AnimationGalleryOperation.CutsceneUIEntranceSequence:
+                    return "target.CutsceneUIEntranceSequence();";
                 case AnimationGalleryOperation.TypewriterReveal:
                 case AnimationGalleryOperation.TypewriterHide:
                 case AnimationGalleryOperation.TextColorSweep:
@@ -405,6 +478,7 @@ namespace LB.TweenHelper.Demo
                 case AnimationGalleryOperation.CameraLandingImpact:
                 case AnimationGalleryOperation.CameraFocusZoom:
                 case AnimationGalleryOperation.CameraBreathing:
+                case AnimationGalleryOperation.CollectLandingCameraKick:
                     return $"camera.{operation}();";
                 default:
                     return string.Empty;
@@ -439,6 +513,14 @@ namespace LB.TweenHelper.Demo
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.GridDiagonalWave, AnimationGalleryFixture.Grid, "Reveal a grid along a chosen diagonal.", "Collection", DiagonalPattern);
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.GridSpiral, AnimationGalleryFixture.Grid, "Reveal a grid using a configurable spiral.", "Collection", SpiralPattern);
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.GridCheckerboard, AnimationGalleryFixture.Grid, "Animate alternating checkerboard cells.", "Collection", Phase);
+            Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.GridConcentricIn, AnimationGalleryFixture.Grid, "Collapse concentric grid rings toward the center.", "Collection");
+            Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.GridConcentricOut, AnimationGalleryFixture.Grid, "Expand concentric grid rings from the center.", "Collection");
+            Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.GridQuadrantSweep, AnimationGalleryFixture.Grid, "Reveal grid quadrants in a clockwise sweep.", "Collection");
+            Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.ListAccordion, AnimationGalleryFixture.List, "Unfold a compressed list into its authored layout.", "Collection");
+            Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.CollectionOrbitIn, AnimationGalleryFixture.Grid, "Spiral a collection inward from a shared orbit.", "Collection");
+            Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.CollectionOrbitOut, AnimationGalleryFixture.Grid, "Spiral a collection outward to a shared orbit.", "Collection");
+            Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.LoadingRing, AnimationGalleryFixture.LoadingDots, "Cycle a pulse around a loading ring.", "Collection");
+            Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.LoadingRibbon, AnimationGalleryFixture.LoadingDots, "Run a traveling ribbon wave across loading items.", "Collection");
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.CollectionBurstIn, AnimationGalleryFixture.Grid, "Move every item from a shared origin into place.", "Collection");
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.CollectionBurstOut, AnimationGalleryFixture.Grid, "Scatter every item away from a shared origin.", "Collection");
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.CollectionGatherTo, AnimationGalleryFixture.Grid, "Gather every item into one destination.", "Collection");
@@ -454,6 +536,10 @@ namespace LB.TweenHelper.Demo
             Add(entries, AnimationGalleryCategory.DestinationMotion, AnimationGalleryOperation.PathThrough, AnimationGalleryFixture.Destination, "Travel through authored waypoints with chosen interpolation.", "Transform / UI", TargetContext, Interpolation);
             Add(entries, AnimationGalleryCategory.DestinationMotion, AnimationGalleryOperation.SpiralTo, AnimationGalleryFixture.Destination, "Close a clockwise or counter-clockwise spiral at the destination.", "Transform / UI", TargetContext, MotionVariant);
             Add(entries, AnimationGalleryCategory.DestinationMotion, AnimationGalleryOperation.MultiHopTo, AnimationGalleryFixture.Destination, "Land after three diminishing hops.", "Transform / UI", TargetContext, MotionVariant);
+            Add(entries, AnimationGalleryCategory.DestinationMotion, AnimationGalleryOperation.ArcToUI, AnimationGalleryFixture.Destination, "Project a world source and arc into a UI anchor.", "World to UI");
+            Add(entries, AnimationGalleryCategory.DestinationMotion, AnimationGalleryOperation.HopToUI, AnimationGalleryFixture.Destination, "Project a world source and hop into a UI anchor.", "World to UI");
+            Add(entries, AnimationGalleryCategory.DestinationMotion, AnimationGalleryOperation.BezierToUI, AnimationGalleryFixture.Destination, "Project a world Bezier path into a UI anchor.", "World to UI");
+            Add(entries, AnimationGalleryCategory.DestinationMotion, AnimationGalleryOperation.PathThroughUI, AnimationGalleryFixture.Destination, "Project world landmarks into a UI path.", "World to UI");
         }
 
         private static void AddGameplayFeedback(ICollection<AnimationGalleryEntry> entries)
@@ -463,12 +549,26 @@ namespace LB.TweenHelper.Demo
             Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.SuccessConfirm, AnimationGalleryFixture.Feedback, "Confirm success with a readable positive beat.", "Transform / UI", TargetContext);
             Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.RewardReveal, AnimationGalleryFixture.Feedback, "Reveal a reward with anticipation and settle.", "Transform / UI", TargetContext);
             Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.PickupCollect, AnimationGalleryFixture.Feedback, "Collect an item into a destination.", "Transform / UI", TargetContext);
+            Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.PickupCollectToUI, AnimationGalleryFixture.Feedback, "Collect a projected world pickup into a UI anchor.", "World to UI");
             Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.HealReceive, AnimationGalleryFixture.Feedback, "Show a restorative heal response.", "Transform / UI", TargetContext);
             Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.ShieldBlock, AnimationGalleryFixture.Feedback, "Block an impact from a selected direction.", "Transform / UI", TargetContext, ImpactDirection);
             Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.CriticalHit, AnimationGalleryFixture.Feedback, "Emphasize a high-damage directional impact.", "Transform / UI", TargetContext, ImpactDirection);
             Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.CooldownReady, AnimationGalleryFixture.Feedback, "Signal that an action is ready again.", "Transform / UI", TargetContext);
             Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.LevelUp, AnimationGalleryFixture.Feedback, "Celebrate progression with a layered reveal.", "Transform / UI", TargetContext);
             Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.LowHealthWarning, AnimationGalleryFixture.Feedback, "Play one finite low-health warning cycle.", "Transform / UI", TargetContext);
+            Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.AbilityCharging, AnimationGalleryFixture.Feedback, "Build anticipation while an ability charges.", "Transform / UI", TargetContext);
+            Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.AbilityReady, AnimationGalleryFixture.Feedback, "Signal that an ability is ready.", "Transform / UI", TargetContext);
+            Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.DodgeRoll, AnimationGalleryFixture.Feedback, "Communicate a fast evasive roll.", "Transform / UI", TargetContext);
+            Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.StunStart, AnimationGalleryFixture.Feedback, "Enter a stunned state with wobble and drop.", "Transform / UI", TargetContext);
+            Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.StunEnd, AnimationGalleryFixture.Feedback, "Recover from stun with a clean rebound.", "Transform / UI", TargetContext);
+            Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.BuffApplied, AnimationGalleryFixture.Feedback, "Apply positive status feedback.", "Transform / UI", TargetContext);
+            Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.DebuffApplied, AnimationGalleryFixture.Feedback, "Apply negative status feedback.", "Transform / UI", TargetContext);
+            Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.ResourceDepleted, AnimationGalleryFixture.Feedback, "Warn that a resource has been depleted.", "Transform / UI", TargetContext);
+            Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.ResourceRecovered, AnimationGalleryFixture.Feedback, "Confirm that a resource recovered.", "Transform / UI", TargetContext);
+            Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.ObjectiveUnlocked, AnimationGalleryFixture.Feedback, "Celebrate an unlocked objective.", "Transform / UI", TargetContext);
+            Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.CriticalHitSequence, AnimationGalleryFixture.Feedback, "Play the reusable critical-hit macro.", "Transform / UI", TargetContext, ImpactDirection);
+            Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.RewardRevealSequence, AnimationGalleryFixture.Feedback, "Play the reusable reward-reveal macro.", "Transform / UI", TargetContext);
+            Add(entries, AnimationGalleryCategory.GameplayFeedback, AnimationGalleryOperation.WarningLoopSequence, AnimationGalleryFixture.Feedback, "Play one reusable warning-loop cycle.", "Transform / UI", TargetContext);
         }
 
         private static void AddUISequences(ICollection<AnimationGalleryEntry> entries)
@@ -488,6 +588,7 @@ namespace LB.TweenHelper.Demo
             Add(entries, AnimationGalleryCategory.UISequences, AnimationGalleryOperation.BottomSheetHide, AnimationGalleryFixture.UISequence, "Hide a bottom sheet and backdrop.", "UI");
             Add(entries, AnimationGalleryCategory.UISequences, AnimationGalleryOperation.PagePush, AnimationGalleryFixture.UISequence, "Push from one page to another.", "UI", Direction);
             Add(entries, AnimationGalleryCategory.UISequences, AnimationGalleryOperation.PageCrossFade, AnimationGalleryFixture.UISequence, "Cross-fade between pages.", "UI");
+            Add(entries, AnimationGalleryCategory.UISequences, AnimationGalleryOperation.CutsceneUIEntranceSequence, AnimationGalleryFixture.UISequence, "Play a reusable cutscene UI entrance macro.", "UI");
         }
 
         private static void AddTextAndValues(ICollection<AnimationGalleryEntry> entries)
@@ -515,6 +616,8 @@ namespace LB.TweenHelper.Demo
             Add(entries, AnimationGalleryCategory.CameraFeedback, AnimationGalleryOperation.CameraFovKick, AnimationGalleryFixture.Camera, "Kick field of view outward or inward.", "Camera", MotionVariant);
             Add(entries, AnimationGalleryCategory.CameraFeedback, AnimationGalleryOperation.CameraFocusZoom, AnimationGalleryFixture.Camera, "Move and zoom toward an authored focus target.", "Camera");
             Add(entries, AnimationGalleryCategory.CameraFeedback, AnimationGalleryOperation.CameraBreathing, AnimationGalleryFixture.Camera, "Play one finite breathing preview cycle.", "Camera");
+            Add(entries, AnimationGalleryCategory.CameraFeedback, AnimationGalleryOperation.CameraRackFocus, AnimationGalleryFixture.Camera, "Shift aim and field of view toward a focus target.", "Camera");
+            Add(entries, AnimationGalleryCategory.CameraFeedback, AnimationGalleryOperation.CollectLandingCameraKick, AnimationGalleryFixture.Camera, "Add a small pickup-collection landing kick.", "Camera");
         }
 
         private static void AddOperations(ICollection<AnimationGalleryEntry> entries, AnimationGalleryCategory category,

@@ -83,8 +83,6 @@ Vector3[] path = { checkpointA, checkpointB, destination };
 token.Tween().PathThrough(path, DestinationPathInterpolation.CatmullRom, 1.2f).Play();
 ```
 
-The manual review catalog includes both `CatmullRom` and `Linear` interpolation for world and anchored paths. Its path guide evaluates the selected interpolation, so the reference dots match the active runtime configuration.
-
 ### Spiral
 
 Spiral motion advances toward the destination while a sinusoidal radial envelope opens and closes at the endpoints. World motion forms a three-dimensional spiral around the travel axis. `SpiralLocalTo` uses a visible XY-plane spiral for `RectTransform` targets, so it does not disturb authored anchored Z. A negative revolution count reverses winding direction.
@@ -133,3 +131,23 @@ panelRect.anchoredPosition3D = closedPosition;
 ```
 
 Destinations, waypoints, controls, duration, height, radius, revolutions, decay, pullback, and overshoot must be finite. Duration must be greater than zero; radius, decay, pullback, and overshoot cannot be negative; hop count must be positive. Signed arc, hop, multi-hop heights, and signed spiral revolutions are supported intentionally.
+
+## Animation Gallery
+
+Open **Destination Motion** to compare twelve motion families. Contextual controls switch world/local targets, signed variants, and path interpolation while the preview and C# call stay synchronized.
+
+## World-to-UI projection
+
+`ArcToUI`, `HopToUI`, `BezierToUI`, and `PathThroughUI` bridge a world source point to a `RectTransform` destination. A `RectTransform` animation target is treated as a UI pickup proxy and starts at the projected world point. An ordinary transform starts at the supplied world point and converges visually on the UI anchor at its captured camera depth.
+
+```csharp
+pickupIcon.Tween()
+    .ArcToUI(droppedItem.position, inventorySlot, 145f, worldCamera: gameplayCamera)
+    .Play();
+
+worldPickup.Tween()
+    .HopToUI(worldPickup.transform.position, counterAnchor, 2f, worldCamera: gameplayCamera)
+    .Play();
+```
+
+The camera resolution order is explicit camera, destination canvas `worldCamera`, then `Camera.main`. Overlay and camera-space canvases are supported. `lockDestination: true` snapshots the UI endpoint when the step starts; set it to `false` when the animation should follow a moving UI anchor. Interrupted kill and rewind restore the invocation position and temporary deformation.

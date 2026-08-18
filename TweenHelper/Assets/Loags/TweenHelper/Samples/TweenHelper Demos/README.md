@@ -15,6 +15,6 @@ The gallery is the package's single public demo. It provides mouse-driven access
 
 Selecting an animation resets its fixture and auto-plays it. Replay, Reset, Previous, and Next support repeatable comparison. Contextual controls expose relevant options such as direction, order, grid traversal, interpolation, target context, impact direction, and backdrop behavior. The C# panel updates from the same configuration and can copy the displayed call.
 
-The scene is designed for 16:9 desktop and capture use and is validated at `1920×1080` and `1280×720`. Presentation mode hides navigation and details when a clean preview is needed. The gallery does not require the Input System or keyboard/gamepad navigation.
+The scene is designed for 16:9 desktop and capture use and is validated at `1920×1080`. Presentation mode hides navigation and details when a clean preview is needed. The gallery does not require the Input System or keyboard/gamepad navigation.
 
 The Built-in Render Pipeline and URP are supported. HDRP and custom render pipelines have not been tested.

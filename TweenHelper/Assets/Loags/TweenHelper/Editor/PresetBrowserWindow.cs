@@ -22,6 +22,7 @@ namespace LB.TweenHelper.Editor
         private readonly List<PresetBrowserEntry> _visibleEntries = new List<PresetBrowserEntry>();
         private readonly List<string> _categories = new List<string> { AllAnimations, Presets, Collections };
         private readonly List<string> _families = new List<string>();
+        private readonly Dictionary<PresetBrowserCollectionKind, int> _collectionOptionSelections = new Dictionary<PresetBrowserCollectionKind, int>();
         private readonly PresetBrowserPreview _preview = new PresetBrowserPreview();
 
         private ToolbarSearchField _searchField;
@@ -42,6 +43,9 @@ namespace LB.TweenHelper.Editor
         private VisualElement _intensityRow;
         private VisualElement _directionRow;
         private VisualElement _axisRow;
+        private VisualElement _collectionOptionCard;
+        private Label _collectionOptionLabel;
+        private PopupField<string> _collectionOptionPopup;
         private TextField _exampleField;
         private Button _copyButton;
         private Button _previewButton;
@@ -227,6 +231,18 @@ namespace LB.TweenHelper.Editor
             _durationValue = AddMetadataRow(metadata, "Duration", out _);
             panel.Add(metadata);
 
+            _collectionOptionCard = new VisualElement();
+            _collectionOptionCard.AddToClassList("browser-option-card");
+            _collectionOptionLabel = new Label();
+            _collectionOptionLabel.AddToClassList("browser-field-title");
+            _collectionOptionPopup = new PopupField<string>(new List<string> { "Default" }, 0);
+            _collectionOptionPopup.AddToClassList("browser-option-popup");
+            _collectionOptionPopup.RegisterValueChangedCallback(OnCollectionOptionChanged);
+            _collectionOptionCard.Add(_collectionOptionLabel);
+            _collectionOptionCard.Add(_collectionOptionPopup);
+            _collectionOptionCard.style.display = DisplayStyle.None;
+            panel.Add(_collectionOptionCard);
+
             var exampleHeading = new Label("Fluent API");
             exampleHeading.AddToClassList("browser-field-title");
             panel.Add(exampleHeading);
@@ -394,7 +410,8 @@ namespace LB.TweenHelper.Editor
             SetOptionalMetadata(_directionRow, _directionValue, entry.Direction);
             SetOptionalMetadata(_axisRow, _axisValue, entry.AxisOrPlane);
             _durationValue.text = entry.Duration;
-            _exampleField.SetValueWithoutNotify(entry.Example);
+            ConfigureCollectionOptions(entry);
+            RefreshConfiguredEntry();
             _copyButton.SetEnabled(true);
             _previewButton.SetEnabled(true);
             ResetPreviewForSelection();
@@ -412,6 +429,7 @@ namespace LB.TweenHelper.Editor
             SetOptionalMetadata(_intensityRow, _intensityValue, string.Empty);
             SetOptionalMetadata(_directionRow, _directionValue, string.Empty);
             SetOptionalMetadata(_axisRow, _axisValue, string.Empty);
+            _collectionOptionCard.style.display = DisplayStyle.None;
             _exampleField.SetValueWithoutNotify(string.Empty);
             _copyButton.SetEnabled(false);
             _previewButton.SetEnabled(false);
@@ -422,7 +440,7 @@ namespace LB.TweenHelper.Editor
 
         private void ResetPreviewForSelection()
         {
-            _preview.SetEntry(_selectedEntry);
+            _preview.SetEntry(_selectedEntry, GetSelectedCollectionOption());
             _wasPlaying = false;
             if (_previewButton == null || _previewStatus == null) return;
             _previewButton.text = "Preview";
@@ -457,8 +475,107 @@ namespace LB.TweenHelper.Editor
         private void CopyExample()
         {
             if (_selectedEntry == null) return;
-            EditorGUIUtility.systemCopyBuffer = _selectedEntry.Example;
+            EditorGUIUtility.systemCopyBuffer = _exampleField.value;
             ShowNotification(new GUIContent("Example copied"));
+        }
+
+        private void ConfigureCollectionOptions(PresetBrowserEntry entry)
+        {
+            List<string> choices = GetCollectionOptionChoices(entry.CollectionKind);
+            bool visible = choices.Count > 0;
+            _collectionOptionCard.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            if (!visible) return;
+
+            _collectionOptionLabel.text = GetCollectionOptionLabel(entry.CollectionKind);
+            _collectionOptionPopup.choices = choices;
+            int selectedIndex = _collectionOptionSelections.TryGetValue(entry.CollectionKind, out int rememberedIndex) ? rememberedIndex : 0;
+            selectedIndex = Mathf.Clamp(selectedIndex, 0, choices.Count - 1);
+            _collectionOptionPopup.SetValueWithoutNotify(choices[selectedIndex]);
+        }
+
+        private void OnCollectionOptionChanged(ChangeEvent<string> changeEvent)
+        {
+            if (_selectedEntry == null) return;
+            int selectedIndex = _collectionOptionPopup.choices.IndexOf(changeEvent.newValue);
+            _collectionOptionSelections[_selectedEntry.CollectionKind] = Mathf.Max(selectedIndex, 0);
+            RefreshConfiguredEntry();
+            ResetPreviewForSelection();
+        }
+
+        private void RefreshConfiguredEntry()
+        {
+            if (_selectedEntry == null) return;
+            int optionIndex = GetSelectedCollectionOption();
+            SetOptionalMetadata(_directionRow, _directionValue, GetConfiguredDirection(_selectedEntry, optionIndex));
+            _exampleField.SetValueWithoutNotify(GetConfiguredExample(_selectedEntry, optionIndex));
+        }
+
+        private int GetSelectedCollectionOption()
+        {
+            if (_selectedEntry == null) return 0;
+            return _collectionOptionSelections.TryGetValue(_selectedEntry.CollectionKind, out int selectedIndex) ? selectedIndex : 0;
+        }
+
+        private static string GetCollectionOptionLabel(PresetBrowserCollectionKind kind)
+        {
+            switch (kind)
+            {
+                case PresetBrowserCollectionKind.GridDiagonalWave:
+                case PresetBrowserCollectionKind.GridSpiral:
+                    return "Direction";
+                case PresetBrowserCollectionKind.GridCheckerboard:
+                    return "Phase";
+                default:
+                    return string.Empty;
+            }
+        }
+
+        private static List<string> GetCollectionOptionChoices(PresetBrowserCollectionKind kind)
+        {
+            switch (kind)
+            {
+                case PresetBrowserCollectionKind.GridDiagonalWave:
+                    return new List<string>
+                    {
+                        "Top-left to bottom-right",
+                        "Top-right to bottom-left",
+                        "Bottom-left to top-right",
+                        "Bottom-right to top-left"
+                    };
+                case PresetBrowserCollectionKind.GridSpiral:
+                    return new List<string>
+                    {
+                        "Outside in, clockwise",
+                        "Outside in, counter-clockwise",
+                        "Inside out, clockwise",
+                        "Inside out, counter-clockwise"
+                    };
+                case PresetBrowserCollectionKind.GridCheckerboard:
+                    return new List<string> { "Normal", "Inverted" };
+                default:
+                    return new List<string>();
+            }
+        }
+
+        private static string GetConfiguredDirection(PresetBrowserEntry entry, int optionIndex)
+        {
+            List<string> choices = GetCollectionOptionChoices(entry.CollectionKind);
+            return choices.Count == 0 ? entry.Direction : choices[Mathf.Clamp(optionIndex, 0, choices.Count - 1)];
+        }
+
+        private static string GetConfiguredExample(PresetBrowserEntry entry, int optionIndex)
+        {
+            switch (entry.CollectionKind)
+            {
+                case PresetBrowserCollectionKind.GridDiagonalWave:
+                    return $"items.GridDiagonalWave(owner, columns: 3, direction: GridDiagonalDirection.{(GridDiagonalDirection)Mathf.Clamp(optionIndex, 0, 3)});";
+                case PresetBrowserCollectionKind.GridSpiral:
+                    return $"items.GridSpiral(owner, columns: 3, direction: GridSpiralDirection.{(GridSpiralDirection)Mathf.Clamp(optionIndex, 0, 3)});";
+                case PresetBrowserCollectionKind.GridCheckerboard:
+                    return optionIndex == 0 ? "items.GridCheckerboard(owner, columns: 3);" : "items.GridCheckerboard(owner, columns: 3, inverted: true);";
+                default:
+                    return entry.Example;
+            }
         }
 
         private void OnEditorUpdate()

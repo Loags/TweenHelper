@@ -11,13 +11,13 @@ namespace LB.TweenHelper
             => UIHover(component.gameObject, duration, hoverColor, options);
 
         public static TweenHandle UIHover(this GameObject target, float? duration = null, Color? hoverColor = null, TweenOptions options = default)
-            => CreateHoverTween(target, duration ?? 0.16f, 1.08f, hoverColor, options);
+            => CreateHoverTween(target, duration ?? 0.16f, 1.08f, 0.34f, hoverColor, options);
 
         public static TweenHandle UIHoverSoft(this Component component, float? duration = null, Color? hoverColor = null, TweenOptions options = default)
             => UIHoverSoft(component.gameObject, duration, hoverColor, options);
 
         public static TweenHandle UIHoverSoft(this GameObject target, float? duration = null, Color? hoverColor = null, TweenOptions options = default)
-            => CreateHoverTween(target, duration ?? 0.2f, 1.04f, hoverColor, options);
+            => CreateHoverTween(target, duration ?? 0.2f, 1.04f, 0.22f, hoverColor, options);
 
         public static TweenHandle UIPress(this Component component, float? duration = null, Color? pressedColor = null, TweenOptions options = default)
             => UIPress(component.gameObject, duration, pressedColor, options);
@@ -120,7 +120,7 @@ namespace LB.TweenHelper
             return builder.Play();
         }
 
-        private static TweenHandle CreateHoverTween(GameObject target, float duration, float scaleMultiplier, Color? hoverColor, TweenOptions options)
+        private static TweenHandle CreateHoverTween(GameObject target, float duration, float scaleMultiplier, float tintStrength, Color? hoverColor, TweenOptions options)
         {
             var cache = UIAnimationStateCache.GetOrCreate(target);
             var builder = new TweenBuilder(target)
@@ -129,7 +129,7 @@ namespace LB.TweenHelper
 
             if (cache.HasColor)
             {
-                builder.With().WithOptions(options).Color(hoverColor ?? ResolveHoverColor(cache.BaseColor), duration);
+                builder.With().WithOptions(options).Color(hoverColor ?? ResolveHoverColor(cache.BaseColor, tintStrength), duration);
             }
 
             return builder.Play();
@@ -170,9 +170,9 @@ namespace LB.TweenHelper
             return builder.Play();
         }
 
-        private static Color ResolveHoverColor(Color baseColor)
+        private static Color ResolveHoverColor(Color baseColor, float tintStrength)
         {
-            var hoverColor = Color.Lerp(baseColor, Color.white, 0.18f);
+            var hoverColor = Color.Lerp(baseColor, Color.white, tintStrength);
             hoverColor.a = baseColor.a;
             return hoverColor;
         }

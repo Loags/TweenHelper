@@ -138,5 +138,34 @@ namespace LB.TweenHelper
             AddStep(options => DestinationMotionUtility.CreateMultiHop(_gameObject, destination, height, hopCount, decay, ResolveDuration(duration, options), options, true), applyBuilderOptions: false);
             return this;
         }
+
+        /// <summary>Projects a world source into UI space and arcs the target to a RectTransform destination.</summary>
+        public TweenBuilder ArcToUI(Vector3 worldSource, RectTransform uiTarget, float height, float? duration = null, Camera worldCamera = null, bool lockDestination = true)
+        {
+            AddStep(options => UIWorldProjectionUtility.CreateArc(_gameObject, worldSource, uiTarget, height, ResolveDuration(duration, options), worldCamera, lockDestination, options), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Projects a world source into UI space and hops the target to a RectTransform destination.</summary>
+        public TweenBuilder HopToUI(Vector3 worldSource, RectTransform uiTarget, float height, float? duration = null, Camera worldCamera = null, bool lockDestination = true)
+        {
+            AddStep(options => UIWorldProjectionUtility.CreateHop(_gameObject, worldSource, uiTarget, height, ResolveDuration(duration, options), worldCamera, lockDestination, options), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Projects a world source and controls into UI space and follows a cubic Bezier path to a RectTransform destination.</summary>
+        public TweenBuilder BezierToUI(Vector3 worldSource, Vector3 controlA, Vector3 controlB, RectTransform uiTarget, float? duration = null, Camera worldCamera = null, bool lockDestination = true)
+        {
+            AddStep(options => UIWorldProjectionUtility.CreateBezier(_gameObject, worldSource, controlA, controlB, uiTarget, ResolveDuration(duration, options), worldCamera, lockDestination, options), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Projects world landmarks into UI space and follows them to a RectTransform destination.</summary>
+        public TweenBuilder PathThroughUI(Vector3 worldSource, IEnumerable<Vector3> worldWaypoints, RectTransform uiTarget, DestinationPathInterpolation interpolation = DestinationPathInterpolation.CatmullRom, float? duration = null, Camera worldCamera = null, bool lockDestination = true)
+        {
+            IReadOnlyList<Vector3> snapshot = UIWorldProjectionUtility.SnapshotWorldPoints(worldWaypoints);
+            AddStep(options => UIWorldProjectionUtility.CreatePathThrough(_gameObject, worldSource, snapshot, uiTarget, interpolation, ResolveDuration(duration, options), worldCamera, lockDestination, options), applyBuilderOptions: false);
+            return this;
+        }
     }
 }

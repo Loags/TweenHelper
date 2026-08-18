@@ -57,8 +57,6 @@ outgoingPage.PageCrossFadeTo(incomingPage);
 
 Distances use canvas units, normally pixels.
 
-Every supported direction is represented independently in the manual review catalog for Toast Show/Hide, Tooltip Show/Hide, Tab Switch, Drawer Show/Hide, and Page Push. The right-edge Drawer pair also covers the optional backdrop branch. These entries all call the same enum-driven methods; no direction-specific aliases are required.
-
 ## Families
 
 ### Toast
@@ -159,5 +157,19 @@ panel.ModalClose(backdrop, controls)
     {
         panel.SetActive(false);
         backdrop.SetActive(false);
-    });
+});
 ```
+
+## Animation Gallery
+
+Open **UI Sequences** to compare all fifteen operations. Direction and optional-backdrop controls update both the preview and the displayed C# call.
+
+## Cutscene entrance macro
+
+`CutsceneUIEntranceSequence` combines an upward UI entrance with reward emphasis on a required `RectTransform` target.
+
+```csharp
+titleCard.CutsceneUIEntranceSequence();
+```
+
+It is also available as a builder step and appears in the UI Sequences gallery.

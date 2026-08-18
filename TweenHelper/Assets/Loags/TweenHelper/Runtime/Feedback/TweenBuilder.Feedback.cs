@@ -88,6 +88,13 @@ namespace LB.TweenHelper
             return this;
         }
 
+        /// <summary>Projects a world pickup into UI space, arcs it to a RectTransform anchor, then shrinks and fades it.</summary>
+        public TweenBuilder PickupCollectToUI(Vector3 worldSource, RectTransform uiTarget, float? arcHeight = null, float? duration = null, Camera worldCamera = null, bool lockDestination = true)
+        {
+            AddStep(options => UIWorldProjectionUtility.CreatePickup(_gameObject, worldSource, uiTarget, arcHeight, ResolveFeedbackDuration(duration, options, 0.92f), worldCamera, lockDestination, options), applyBuilderOptions: false);
+            return this;
+        }
+
         private static float ResolveFeedbackDuration(float? duration, TweenOptions options, float fallback) => duration ?? options.Duration ?? fallback;
     }
 }

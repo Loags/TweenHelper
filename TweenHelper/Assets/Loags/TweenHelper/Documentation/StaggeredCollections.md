@@ -126,8 +126,6 @@ Burst In starts all items at one origin and restores their authored positions, s
 
 Every recipe returns its active `TweenHandle` and accepts duration, stagger interval, and `TweenOptions` overrides. `LoadingDots` also accepts the pause between complete cycles. Strength scales the spatial distance and deformation without moving Burst In or Gather To away from their exact requested endpoint.
 
-The manual review catalog covers every `GridDiagonalDirection` and `GridSpiralDirection`, both checkerboard phases, center/corner/edge ripple origins, and a representative incomplete final row. It also exercises `PresetByName`, a custom `Animate` factory, UI and world spatial branches, and the automatic `120`-canvas-unit and `1.2`-world-unit Burst Out defaults. These are review configurations of the existing enum-driven API, not separate direction-specific methods.
-
 ## Validation and errors
 
 - Empty collections return an inactive `TweenHandle` and log a warning.
@@ -141,3 +139,24 @@ The manual review catalog covers every `GridDiagonalDirection` and `GridSpiralDi
 The explicit owner is the root tween's single lifetime owner. Collection items are required secondary participants and must remain alive until the recipe finishes or is killed; destroying an item does not independently cancel the root. Spatial recipes write item position, scale, local rotation, and supported alpha, so callers should not overlap other writers on those channels.
 
 For replayable previews or pooled UI, capture the desired target state before playback and restore it before starting the next group.
+
+## Animation Gallery
+
+Open the **Collections** category to compare all eleven recipes and change order, wave direction, diagonal, spiral, and checkerboard options while the matching C# call updates live.
+
+## Expanded topology recipes
+
+```csharp
+grid.GridConcentricIn(owner, columns: 4);
+grid.GridConcentricOut(owner, columns: 4);
+grid.GridQuadrantSweep(owner, columns: 4);
+list.ListAccordion(owner);
+items.CollectionOrbitIn(owner, center);
+items.CollectionOrbitOut(owner, center);
+ring.LoadingRing(owner);
+strip.LoadingRibbon(owner);
+```
+
+Concentric In schedules outer rings toward the center; Concentric Out reverses that topology. Quadrant Sweep supports clockwise and counter-clockwise corner starts through `GridQuadrantSweepDirection`. Accordion unfolds captured list positions from their shared center. Orbit In restores authored endpoints after a spiral entrance, while Orbit Out finishes at its faded orbit endpoint. Loading Ring and Ribbon are infinite root loops and restore all captured item state when killed.
+
+The gallery now contains nineteen collection recipes, including all eight topology additions.

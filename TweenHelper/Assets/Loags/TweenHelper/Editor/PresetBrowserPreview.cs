@@ -24,6 +24,7 @@ namespace LB.TweenHelper.Editor
         private Material _groundMaterial;
         private Tween _activeTween;
         private PresetBrowserEntry _entry;
+        private int _collectionOptionIndex;
         private double _lastUpdateTime;
         private float _elapsedTime;
         private float _playbackDuration;
@@ -31,9 +32,10 @@ namespace LB.TweenHelper.Editor
 
         public bool IsPlaying => _isPlaying && _activeTween != null && _activeTween.IsActive();
 
-        public void SetEntry(PresetBrowserEntry entry)
+        public void SetEntry(PresetBrowserEntry entry, int collectionOptionIndex = 0)
         {
             _entry = entry;
+            _collectionOptionIndex = collectionOptionIndex;
             RebuildStage();
         }
 
@@ -215,11 +217,11 @@ namespace LB.TweenHelper.Editor
                 case PresetBrowserCollectionKind.GridWaveBottomToTop:
                     return _collectionTargets.GridWave(_stageRoot, 3, GridWaveDirection.BottomToTop, options: options);
                 case PresetBrowserCollectionKind.GridDiagonalWave:
-                    return _collectionTargets.GridDiagonalWave(_stageRoot, 3, options: options);
+                    return _collectionTargets.GridDiagonalWave(_stageRoot, 3, (GridDiagonalDirection)Mathf.Clamp(_collectionOptionIndex, 0, 3), options: options);
                 case PresetBrowserCollectionKind.GridSpiral:
-                    return _collectionTargets.GridSpiral(_stageRoot, 3, options: options);
+                    return _collectionTargets.GridSpiral(_stageRoot, 3, (GridSpiralDirection)Mathf.Clamp(_collectionOptionIndex, 0, 3), options: options);
                 case PresetBrowserCollectionKind.GridCheckerboard:
-                    return _collectionTargets.GridCheckerboard(_stageRoot, 3, options: options);
+                    return _collectionTargets.GridCheckerboard(_stageRoot, 3, _collectionOptionIndex == 1, options: options);
                 case PresetBrowserCollectionKind.CollectionBurstIn:
                     return _collectionTargets.CollectionBurstIn(_stageRoot, Vector3.zero, options: options);
                 case PresetBrowserCollectionKind.CollectionBurstOut:

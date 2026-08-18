@@ -1,6 +1,6 @@
 # Tween Helper Asset Store submission notes
 
-Tween Helper uses the standard Asset Store package workflow. Select only `Assets/Loags/TweenHelper` for validation, export, and upload. The publisher name is **Loags** and support is **Info@Loags.de**.
+Tween Helper uses the standard Asset Store package workflow. Select only `Assets/Loags/TweenHelper` for validation, export, and upload. The publisher name is **Loags**. The support address is used only by the in-Editor Setup & Support workflow and is not copied into Portal fields or customer documentation.
 
 ## Release identity
 
@@ -27,7 +27,7 @@ The upload must include the complete `Assets/Loags/TweenHelper` root and nothing
 
 - `Assets/Plugins/Demigiant` and all DOTween files.
 - `Assets/_Project/TweenHelperDevelopment` tests, review scene, builders, roadmaps, Portal records, and validation tools.
-- `Assets/PublisherMedia` and repository-level `PublisherMedia` artwork/captures.
+- Repository-level `PublisherMedia` artwork/captures.
 - `Packages`, `ProjectSettings`, `Library`, `Temp`, Asset Store Publishing Tools, Recorder, and Unity Pipeline tooling.
 
 ## Validation and upload sequence
@@ -39,9 +39,9 @@ The upload must include the complete `Assets/Loags/TweenHelper` root and nothing
 5. Export the exact artifact from that root and inspect its content list.
 6. Import the artifact into a clean Unity project with the separately installed validated DOTween build.
 7. Open Setup & Support, Preset Browser, and `TweenHelperAnimationGallery.unity`.
-8. Exercise mouse selection, search/filter, contextual options, auto-play, Replay, Reset, Previous/Next, code copy, presentation mode, world preview, and camera preview at 1920×1080 and 1280×720.
+8. Exercise mouse selection, search/filter, contextual options, auto-play, Replay, Reset, Previous/Next, code copy, presentation mode, world preview, and camera preview at 1920×1080.
 9. Verify the Built-in and URP presentation in clean projects.
-10. Confirm documentation links, changelog, Standard EULA wording, and third-party notice.
+10. Confirm documentation links, changelog, Standard EULA wording, and the separately installed DOTween dependency statement.
 11. Copy the exact 1.1.0 fields from `PublisherPortalReleaseNotes.md`, preview the rendered listing, and upload the exact tested artifact.
 
 ## Release checklist
@@ -50,11 +50,11 @@ The upload must include the complete `Assets/Loags/TweenHelper` root and nothing
 - [x] Version and setup UI updated to `1.1.0`.
 - [x] Gallery is the only shipped demo and only scene in development Build Settings.
 - [x] Legacy 2D/3D scenes and scene-only setup/console code removed.
-- [x] Customer README, installation guide, sample guide, changelog, and third-party notice updated.
+- [x] Customer README, installation guide, sample guide, and changelog updated; no third-party notice is shipped because the package redistributes no third-party content requiring attribution.
 - [x] Portal description, technical details, dependency, AI disclosure, reviewer note, keywords, and media brief updated.
 - [x] DOTween files, internal development assets, Portal media, and Recorder remain outside the upload root.
-- [ ] Run gallery asset validator after the final documentation import.
-- [ ] Run EditMode and PlayMode suites against the final working tree.
+- [x] Run gallery asset validator after the final documentation import (377 entries across eight categories).
+- [x] Run EditMode and PlayMode suites against the final working tree (25/25 EditMode, 8/8 PlayMode).
 - [ ] Run Asset Store Validator against the exact root.
 - [ ] Export and inspect the exact `.unitypackage`.
 - [ ] Clean-import and validate the exact artifact.

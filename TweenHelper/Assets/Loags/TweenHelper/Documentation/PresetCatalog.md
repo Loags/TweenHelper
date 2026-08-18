@@ -462,3 +462,16 @@ The catalog is checked for duplicate, empty, and unconstructible preset registra
 | `ZigZag` | 1s | One-shot | GameObject | Alternating diagonal zig-zag movement | `target.Tween().Preset<ZigZagPreset>().Play();` |
 | `ZigZagHard` | 0.8s | One-shot | GameObject | Hard alternating diagonal movement | `target.Tween().Preset<ZigZagHardPreset>().Play();` |
 | `ZigZagSoft` | 1.2s | One-shot | GameObject | Soft alternating diagonal movement | `target.Tween().Preset<ZigZagSoftPreset>().Play();` |
+
+## Semantic operation index (non-preset)
+
+The v1 roadmap additions are composable builder/direct operations rather than registered `ITweenPreset` entries, so the 300-preset registry remains stable.
+
+| Domain | Operations |
+| --- | --- |
+| World to UI | `ArcToUI`, `HopToUI`, `BezierToUI`, `PathThroughUI`, `PickupCollectToUI` |
+| Progress | `FillTo`, `FillFromTo`, `ValueFillTo`, `FillDrain`, `FillCharge`, `FillAlertPulse`, `FillAndText` |
+| Gameplay state | `AbilityCharging`, `AbilityReady`, `DodgeRoll`, `StunStart`, `StunEnd`, `BuffApplied`, `DebuffApplied`, `ResourceDepleted`, `ResourceRecovered`, `ObjectiveUnlocked` |
+| Collections | `GridConcentricIn`, `GridConcentricOut`, `GridQuadrantSweep`, `ListAccordion`, `CollectionOrbitIn`, `CollectionOrbitOut`, `LoadingRing`, `LoadingRibbon` |
+| Macros and camera | `CriticalHitSequence`, `RewardRevealSequence`, `WarningLoopSequence`, `CutsceneUIEntranceSequence`, `CameraRackFocus`, `CollectLandingCameraKick` |
+| Engine properties | `AudioVolumeTo`, `AudioPitchTo`, `LightIntensityTo`, `LightColorTo`, `ParticleEmissionRateTo`, `MaterialFloatTo`, `MaterialColorTo`, `TorchFlicker`, `ScannerPulse` |

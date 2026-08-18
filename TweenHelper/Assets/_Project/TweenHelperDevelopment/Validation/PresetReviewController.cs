@@ -25,9 +25,13 @@ namespace LB.TweenHelper.Demo
             StaggerVariant,
             DestinationMotion,
             FeedbackSequence,
+            GameplayState,
+            SequenceMacro,
             UISequence,
             TextValueAnimation,
+            ProgressAnimation,
             CameraFeedback,
+            EngineProperty,
             Preset
         }
 
@@ -42,10 +46,13 @@ namespace LB.TweenHelper.Demo
             LoadingDots,
             DestinationWorld,
             DestinationUi,
+            WorldToUi,
             UISequence,
             TextValue,
             WorldTextValue,
-            CameraFeedback
+            Progress,
+            CameraFeedback,
+            EngineProperty
         }
 
         private enum CollectionReviewKind
@@ -69,6 +76,14 @@ namespace LB.TweenHelper.Demo
             CollectionBurstIn,
             CollectionBurstOut,
             CollectionGatherTo,
+            GridConcentricIn,
+            GridConcentricOut,
+            GridQuadrantSweep,
+            ListAccordion,
+            CollectionOrbitIn,
+            CollectionOrbitOut,
+            LoadingRing,
+            LoadingRibbon,
             StaggerPresetByName,
             StaggerCustomAnimate
         }
@@ -90,7 +105,11 @@ namespace LB.TweenHelper.Demo
             SpiralTo3D,
             SpiralLocalToUi,
             MultiHopTo3D,
-            MultiHopLocalToUi
+            MultiHopLocalToUi,
+            ArcToUiProjected,
+            HopToUiProjected,
+            BezierToUiProjected,
+            PathThroughUiProjected
         }
 
         private enum FeedbackReviewKind
@@ -105,7 +124,26 @@ namespace LB.TweenHelper.Demo
             CriticalHit,
             CooldownReady,
             LevelUp,
-            LowHealthWarning
+            LowHealthWarning,
+            PickupCollectToUi,
+            AbilityCharging,
+            AbilityReady,
+            DodgeRoll,
+            StunStart,
+            StunEnd,
+            BuffApplied,
+            DebuffApplied,
+            ResourceDepleted,
+            ResourceRecovered,
+            ObjectiveUnlocked
+        }
+
+        private enum SequenceMacroReviewKind
+        {
+            CriticalHit,
+            RewardReveal,
+            WarningLoop,
+            CutsceneUiEntrance
         }
 
         private enum UISequenceReviewKind
@@ -151,7 +189,41 @@ namespace LB.TweenHelper.Demo
             LandingImpact,
             FovKick,
             FocusZoom,
-            Breathing
+            Breathing,
+            RackFocus,
+            CollectLandingKick
+        }
+
+        private enum ProgressReviewKind
+        {
+            ImageFillTo,
+            SliderFillTo,
+            ImageFillFromTo,
+            SliderFillFromTo,
+            ImageValueFillTo,
+            SliderValueFillTo,
+            ImageFillDrain,
+            SliderFillDrain,
+            ImageFillCharge,
+            SliderFillCharge,
+            ImageFillAlertPulse,
+            SliderFillAlertPulse,
+            ImageFillAndText,
+            SliderFillAndText,
+            ProgressHook
+        }
+
+        private enum EnginePropertyReviewKind
+        {
+            AudioVolume,
+            AudioPitch,
+            LightIntensity,
+            LightColor,
+            ParticleEmissionRate,
+            MaterialFloat,
+            MaterialColor,
+            TorchFlicker,
+            ScannerPulse
         }
 
         private enum ReviewFilter
@@ -173,9 +245,12 @@ namespace LB.TweenHelper.Demo
             public CollectionReviewKind CollectionKind;
             public DestinationReviewKind DestinationKind;
             public FeedbackReviewKind FeedbackKind;
+            public SequenceMacroReviewKind SequenceMacroKind;
             public UISequenceReviewKind UISequenceKind;
             public TextValueReviewKind TextValueKind;
+            public ProgressReviewKind ProgressKind;
             public CameraFeedbackReviewKind CameraFeedbackKind;
+            public EnginePropertyReviewKind EnginePropertyKind;
             public UISequenceDirection Direction;
             public GridDiagonalDirection DiagonalDirection;
             public GridSpiralDirection SpiralDirection;
@@ -190,10 +265,12 @@ namespace LB.TweenHelper.Demo
 
             public bool UsesUiTarget => Preview == PreviewKind.Ui;
             public bool UsesCollectionPreview => Preview == PreviewKind.List || Preview == PreviewKind.Grid || Preview == PreviewKind.IncompleteGrid || Preview == PreviewKind.WorldCollection || Preview == PreviewKind.LoadingDots;
-            public bool UsesDestinationPreview => Preview == PreviewKind.DestinationWorld || Preview == PreviewKind.DestinationUi;
+            public bool UsesDestinationPreview => Preview == PreviewKind.DestinationWorld || Preview == PreviewKind.DestinationUi || Preview == PreviewKind.WorldToUi;
             public bool UsesUISequencePreview => Preview == PreviewKind.UISequence;
             public bool UsesTextValuePreview => Preview == PreviewKind.TextValue || Preview == PreviewKind.WorldTextValue;
+            public bool UsesProgressPreview => Preview == PreviewKind.Progress;
             public bool UsesCameraFeedbackPreview => Preview == PreviewKind.CameraFeedback;
+            public bool UsesEnginePropertyPreview => Preview == PreviewKind.EngineProperty;
         }
 
         private readonly struct TargetSnapshot
@@ -316,6 +393,7 @@ namespace LB.TweenHelper.Demo
         private static readonly Color UnreviewedColor = new Color(0.48f, 0.55f, 0.68f);
         private static readonly Color FailedColor = new Color(1f, 0.29f, 0.34f);
         private static readonly Color PassedColor = new Color(0.2f, 0.85f, 0.53f);
+        private static readonly Color ReviewBlueColor = new Color(0.1f, 0.58f, 0.95f);
 
         [Header("Preview Targets")]
         [SerializeField] private GameObject uiTarget;
@@ -370,9 +448,27 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private GameObject worldTextValuePreviewRoot;
         [SerializeField] private TMP_Text worldCharacterText;
 
+        [Header("Progress Preview")]
+        [SerializeField] private GameObject progressPreviewRoot;
+        [SerializeField] private GameObject progressImageGroup;
+        [SerializeField] private Image progressImage;
+        [SerializeField] private Slider progressSlider;
+        [SerializeField] private TMP_Text progressValueText;
+        [SerializeField] private TMP_Text progressEventText;
+
         [Header("Camera Feedback Preview")]
         [SerializeField] private Camera feedbackCamera;
         [SerializeField] private Transform cameraFocusTarget;
+
+        [Header("Engine Property Preview")]
+        [SerializeField] private GameObject enginePropertyPreviewRoot;
+        [SerializeField] private GameObject enginePropertyWorldRoot;
+        [SerializeField] private AudioSource engineAudioSource;
+        [SerializeField] private Light engineLight;
+        [SerializeField] private ParticleSystem engineParticles;
+        [SerializeField] private Renderer engineRenderer;
+        [SerializeField] private Image enginePropertyMeter;
+        [SerializeField] private TMP_Text enginePropertyValueText;
 
         [Header("Information")]
         [SerializeField] private TMP_Text itemNameText;
@@ -421,6 +517,17 @@ namespace LB.TweenHelper.Demo
         private TMPTextSnapshot _scoreTextSnapshot;
         private TMPTextSnapshot _worldCharacterTextSnapshot;
         private CameraSnapshot _feedbackCameraSnapshot;
+        private TargetSnapshot _progressImageSnapshot;
+        private TargetSnapshot _progressSliderSnapshot;
+        private float _progressImageFill;
+        private float _progressSliderValue;
+        private Color _progressImageColor;
+        private float _engineAudioVolume;
+        private float _engineAudioPitch;
+        private float _engineLightIntensity;
+        private Color _engineLightColor;
+        private float _engineParticleEmissionRate;
+        private TargetSnapshot _engineRendererSnapshot;
         private TweenHandle _activeTween;
         private Coroutine _delayedReplay;
         private ReviewFilter _activeFilter;
@@ -455,6 +562,17 @@ namespace LB.TweenHelper.Demo
             _scoreTextSnapshot = TMPTextSnapshot.Capture(scoreText);
             _worldCharacterTextSnapshot = TMPTextSnapshot.Capture(worldCharacterText);
             _feedbackCameraSnapshot = CameraSnapshot.Capture(feedbackCamera);
+            _progressImageSnapshot = TargetSnapshot.Capture(progressImage.gameObject);
+            _progressSliderSnapshot = TargetSnapshot.Capture(progressSlider.gameObject);
+            _progressImageFill = progressImage.fillAmount;
+            _progressSliderValue = progressSlider.normalizedValue;
+            _progressImageColor = progressImage.color;
+            _engineAudioVolume = engineAudioSource.volume;
+            _engineAudioPitch = engineAudioSource.pitch;
+            _engineLightIntensity = engineLight.intensity;
+            _engineLightColor = engineLight.color;
+            _engineParticleEmissionRate = engineParticles.emission.rateOverTimeMultiplier;
+            _engineRendererSnapshot = TargetSnapshot.Capture(engineRenderer.gameObject);
             WireControls();
             BuildReviewItems();
             ShowCurrentItem();
@@ -472,6 +590,12 @@ namespace LB.TweenHelper.Demo
             if (Input.GetKeyDown(KeyCode.C)) MarkPassed();
         }
 #endif
+
+        private void LateUpdate()
+        {
+            if (progressPreviewRoot.activeSelf && _items.Count > 0) UpdateProgressReadout(CurrentItem.ProgressKind);
+            if (enginePropertyPreviewRoot.activeSelf && _items.Count > 0) UpdateEnginePropertyReadout(CurrentItem.EnginePropertyKind);
+        }
 
         private void WireControls()
         {
@@ -520,6 +644,14 @@ namespace LB.TweenHelper.Demo
             AddCollectionRecipe(CollectionReviewKind.CollectionBurstIn, "Launches every grid item from the collection center into its authored position.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.CollectionBurstOut, "Scatters grid items away from the collection center while shrinking and fading them.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.CollectionGatherTo, "Gathers every grid item into one destination while shrinking and fading them.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.GridConcentricIn, "Reveals grid rings from the outside toward the center.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.GridConcentricOut, "Dismisses grid rings from the center toward the outside.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.GridQuadrantSweep, "Sweeps the four grid quadrants clockwise from the top-left.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.ListAccordion, "Expands list items from a collapsed accordion stack.", PreviewKind.List);
+            AddCollectionRecipe(CollectionReviewKind.CollectionOrbitIn, "Orbits collection items inward before settling on their authored positions.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.CollectionOrbitOut, "Orbits collection items outward while shrinking and fading.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.LoadingRing, "Loops a circular loading displacement across grid items.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.LoadingRibbon, "Loops a traveling ribbon displacement across list items.", PreviewKind.List);
 
             AddDestinationMotion(DestinationReviewKind.ArcTo3D, "ArcTo 3D", "Moves through a signed world-space Y arc and lands exactly at the destination.", PreviewKind.DestinationWorld);
             AddDestinationMotion(DestinationReviewKind.ArcLocalToUi, "ArcLocalTo UI", "Moves an anchored UI target through a signed local Y arc.", PreviewKind.DestinationUi);
@@ -537,6 +669,10 @@ namespace LB.TweenHelper.Demo
             AddDestinationMotion(DestinationReviewKind.SpiralLocalToUi, "SpiralLocalTo UI", "Progresses through a closing anchored spiral and lands on the exact destination.", PreviewKind.DestinationUi);
             AddDestinationMotion(DestinationReviewKind.MultiHopTo3D, "MultiHopTo 3D", "Advances through three diminishing world-space hops before landing exactly.", PreviewKind.DestinationWorld);
             AddDestinationMotion(DestinationReviewKind.MultiHopLocalToUi, "MultiHopLocalTo UI", "Advances through three diminishing anchored hops before landing exactly.", PreviewKind.DestinationUi);
+            AddDestinationMotion(DestinationReviewKind.ArcToUiProjected, "ArcToUI", "Projects a world-space source into the review canvas and arcs into a live UI destination.", PreviewKind.WorldToUi);
+            AddDestinationMotion(DestinationReviewKind.HopToUiProjected, "HopToUI", "Projects a world-space source into UI space, adds hop squash, and lands exactly on the UI destination.", PreviewKind.WorldToUi);
+            AddDestinationMotion(DestinationReviewKind.BezierToUiProjected, "BezierToUI", "Projects world-space controls into the canvas and follows them into the UI destination.", PreviewKind.WorldToUi);
+            AddDestinationMotion(DestinationReviewKind.PathThroughUiProjected, "PathThroughUI", "Projects world landmarks into a canvas path and finishes on the locked UI destination.", PreviewKind.WorldToUi);
 
             AddFeedbackSequence(FeedbackReviewKind.ErrorReject, "ErrorReject 3D", "Rejects an action with a sharp shake, tilt, and red flash before restoring the exact baseline.", PreviewKind.DestinationWorld);
             AddFeedbackSequence(FeedbackReviewKind.ErrorReject, "ErrorReject UI", "Rejects a UI action with an anchored shake, tilt, and red flash before restoring the exact baseline.", PreviewKind.DestinationUi);
@@ -554,6 +690,23 @@ namespace LB.TweenHelper.Demo
             AddFeedbackSequence(FeedbackReviewKind.CooldownReady, "Cooldown Ready UI", "Announces a ready ability with a relative flip, pop, lift, and cyan flash.", PreviewKind.DestinationUi);
             AddFeedbackSequence(FeedbackReviewKind.LevelUp, "Level Up UI", "Celebrates progression with lift, a relative spin, staged pulses, and gold flash.", PreviewKind.DestinationUi);
             AddFeedbackSequence(FeedbackReviewKind.LowHealthWarning, "Low Health Warning UI", "Plays one finite double-beat warning cycle suitable for caller-controlled looping.", PreviewKind.DestinationUi);
+            AddFeedbackSequence(FeedbackReviewKind.PickupCollectToUi, "PickupCollectToUI", "Projects a world pickup into the canvas, then arcs, shrinks, and fades it into the UI destination.", PreviewKind.WorldToUi);
+
+            AddGameplayState(FeedbackReviewKind.AbilityCharging, "Ability Charging", "Builds anticipation with a rising pulse and charged accent.", PreviewKind.DestinationUi);
+            AddGameplayState(FeedbackReviewKind.AbilityReady, "Ability Ready", "Confirms readiness with a crisp pop, lift, and cyan flash.", PreviewKind.DestinationUi);
+            AddGameplayState(FeedbackReviewKind.DodgeRoll, "Dodge Roll", "Compresses, rotates, and returns the target through a finite evasive roll.", PreviewKind.DestinationWorld);
+            AddGameplayState(FeedbackReviewKind.StunStart, "Stun Start", "Introduces a staggered tilt, squash, and stun-color flash.", PreviewKind.DestinationWorld);
+            AddGameplayState(FeedbackReviewKind.StunEnd, "Stun End", "Releases the stunned state with a recovering stretch and settle.", PreviewKind.DestinationWorld);
+            AddGameplayState(FeedbackReviewKind.BuffApplied, "Buff Applied", "Lifts and pulses the target with a positive status accent.", PreviewKind.DestinationUi);
+            AddGameplayState(FeedbackReviewKind.DebuffApplied, "Debuff Applied", "Drops and shakes the target with a negative status accent.", PreviewKind.DestinationUi);
+            AddGameplayState(FeedbackReviewKind.ResourceDepleted, "Resource Depleted", "Collapses and fades the target to communicate an exhausted resource.", PreviewKind.DestinationUi);
+            AddGameplayState(FeedbackReviewKind.ResourceRecovered, "Resource Recovered", "Restores the target with a rising scale pulse and recovery flash.", PreviewKind.DestinationUi);
+            AddGameplayState(FeedbackReviewKind.ObjectiveUnlocked, "Objective Unlocked", "Celebrates a newly available objective with lift, spin, and a gold accent.", PreviewKind.DestinationWorld);
+
+            AddSequenceMacro(SequenceMacroReviewKind.CriticalHit, "Critical Hit Sequence", "Runs the reusable critical-hit macro with directional impact and aftershock.", PreviewKind.DestinationWorld);
+            AddSequenceMacro(SequenceMacroReviewKind.RewardReveal, "Reward Reveal Sequence", "Runs the reusable reward-reveal macro with anticipation and celebration.", PreviewKind.DestinationWorld);
+            AddSequenceMacro(SequenceMacroReviewKind.WarningLoop, "Warning Loop Sequence", "Plays one finite warning-loop macro cycle for caller-controlled repetition.", PreviewKind.DestinationUi);
+            AddSequenceMacro(SequenceMacroReviewKind.CutsceneUiEntrance, "Cutscene UI Entrance Sequence", "Introduces a cutscene UI element with a composed cinematic entrance.", PreviewKind.DestinationUi);
 
             AddUISequence(UISequenceReviewKind.ToastShow, "Slides, fades, overshoots, and settles a toast on its exact authored state.");
             AddUISequence(UISequenceReviewKind.ToastHide, "Anticipates before sliding and fading a toast out of view.");
@@ -585,12 +738,40 @@ namespace LB.TweenHelper.Demo
             AddTextValueAnimation(TextValueReviewKind.TextEmphasis, "Temporarily lifts, scales, and colors a selected visible-character range.");
             AddTextValueAnimation(TextValueReviewKind.TextScrambleReveal, "Resolves deterministic substitute glyphs into the untouched rich-text source string.");
 
+            AddProgressAnimation(ProgressReviewKind.ImageFillTo, "Image Fill To", "Animates Image.fillAmount from its current normalized value to 85%.");
+            AddProgressAnimation(ProgressReviewKind.SliderFillTo, "Slider Fill To", "Animates Slider.normalizedValue from its current value to 85%.");
+            AddProgressAnimation(ProgressReviewKind.ImageFillFromTo, "Image Fill From To", "Sets an explicit 15% image-fill start and animates to 82%.");
+            AddProgressAnimation(ProgressReviewKind.SliderFillFromTo, "Slider Fill From To", "Sets an explicit 15% slider start and animates to 82%.");
+            AddProgressAnimation(ProgressReviewKind.ImageValueFillTo, "Image Value Fill To", "Keeps an Image fill and formatted percentage text synchronized.");
+            AddProgressAnimation(ProgressReviewKind.SliderValueFillTo, "Slider Value Fill To", "Keeps a Slider value and formatted percentage text synchronized.");
+            AddProgressAnimation(ProgressReviewKind.ImageFillDrain, "Image Fill Drain", "Drains an Image fill quickly with impact motion and a red accent.");
+            AddProgressAnimation(ProgressReviewKind.SliderFillDrain, "Slider Fill Drain", "Drains a Slider quickly with impact motion and a red accent.");
+            AddProgressAnimation(ProgressReviewKind.ImageFillCharge, "Image Fill Charge", "Charges an Image fill with an overshoot-and-settle pulse.");
+            AddProgressAnimation(ProgressReviewKind.SliderFillCharge, "Slider Fill Charge", "Charges a Slider with an overshoot-and-settle pulse.");
+            AddProgressAnimation(ProgressReviewKind.ImageFillAlertPulse, "Image Fill Alert Pulse", "Plays the finite critical-threshold warning on a low Image fill.");
+            AddProgressAnimation(ProgressReviewKind.SliderFillAlertPulse, "Slider Fill Alert Pulse", "Plays the finite critical-threshold warning on a low Slider value.");
+            AddProgressAnimation(ProgressReviewKind.ImageFillAndText, "Image Fill And Text", "Animates an Image fill and paired percentage on one timeline.");
+            AddProgressAnimation(ProgressReviewKind.SliderFillAndText, "Slider Fill And Text", "Animates a Slider and paired percentage on one timeline.");
+            AddProgressAnimation(ProgressReviewKind.ProgressHook, "On Progress Hook", "Fires a visible callback once when the fill timeline crosses 50%.");
+
             AddCameraFeedback(CameraFeedbackReviewKind.Impact, "Camera Impact", "Applies a sharp deterministic position and rotation impact before restoring the exact camera pose.");
             AddCameraFeedback(CameraFeedbackReviewKind.Recoil, "Camera Recoil", "Kicks the camera backward and upward, adds a small aftershock, and settles exactly.");
             AddCameraFeedback(CameraFeedbackReviewKind.LandingImpact, "Camera Landing Impact", "Combines a downward bump, roll aftershock, and field-of-view kick for a heavy landing.");
             AddCameraFeedback(CameraFeedbackReviewKind.FovKick, "Camera FOV Kick", "Widens the field of view quickly and restores the exact captured value.");
             AddCameraFeedback(CameraFeedbackReviewKind.FocusZoom, "Camera Focus Zoom", "Temporarily moves and aims toward the review target while narrowing the field of view.");
             AddCameraFeedback(CameraFeedbackReviewKind.Breathing, "Camera Breathing", "Plays one subtle finite position, rotation, and field-of-view breathing cycle.");
+            AddCameraFeedback(CameraFeedbackReviewKind.RackFocus, "Camera Rack Focus", "Shifts aim and field of view toward the gameplay focus target, then restores the camera.");
+            AddCameraFeedback(CameraFeedbackReviewKind.CollectLandingKick, "Collect Landing Camera Kick", "Adds the short camera micro-kick intended for pickup-to-UI completion.");
+
+            AddEngineProperty(EnginePropertyReviewKind.AudioVolume, "Audio Volume To", "Animates AudioSource.volume and mirrors the live value in the preview meter.");
+            AddEngineProperty(EnginePropertyReviewKind.AudioPitch, "Audio Pitch To", "Animates AudioSource.pitch and mirrors the live value in the preview meter.");
+            AddEngineProperty(EnginePropertyReviewKind.LightIntensity, "Light Intensity To", "Animates a point light's intensity while the preview meter tracks it.");
+            AddEngineProperty(EnginePropertyReviewKind.LightColor, "Light Color To", "Transitions a point light from warm amber to cyan.");
+            AddEngineProperty(EnginePropertyReviewKind.ParticleEmissionRate, "Particle Emission Rate To", "Raises ParticleSystem emission while the live rate is displayed.");
+            AddEngineProperty(EnginePropertyReviewKind.MaterialFloat, "Material Float To", "Animates the renderer material-block smoothness scalar without cloning its material.");
+            AddEngineProperty(EnginePropertyReviewKind.MaterialColor, "Material Color To", "Animates the renderer material-block base color without mutating the shared material.");
+            AddEngineProperty(EnginePropertyReviewKind.TorchFlicker, "Torch Flicker", "Plays a finite layered light-intensity flicker and restores its baseline.");
+            AddEngineProperty(EnginePropertyReviewKind.ScannerPulse, "Scanner Pulse", "Pulses light intensity and color through a targeting-style cyan accent.");
 
             AddReviewCoverageItems();
 
@@ -814,7 +995,7 @@ namespace LB.TweenHelper.Demo
 
         private ReviewItem AddFeedbackSequence(FeedbackReviewKind kind, string name, string description, PreviewKind preview)
         {
-            string variant = preview == PreviewKind.DestinationUi ? "UI" : "World";
+            string variant = preview == PreviewKind.DestinationUi ? "UI" : preview == PreviewKind.WorldToUi ? "WorldToUI" : "World";
             var item = new ReviewItem
             {
                 Id = $"Feedback:{kind}:{variant}",
@@ -824,6 +1005,29 @@ namespace LB.TweenHelper.Demo
                 Kind = ReviewKind.FeedbackSequence,
                 Preview = preview,
                 FeedbackKind = kind
+            };
+            _allItems.Add(item);
+            return item;
+        }
+
+        private ReviewItem AddGameplayState(FeedbackReviewKind kind, string name, string description, PreviewKind preview)
+        {
+            ReviewItem item = AddFeedbackSequence(kind, name, description, preview);
+            item.Kind = ReviewKind.GameplayState;
+            item.Id = BuildReviewId("GameplayState", kind.ToString(), preview.ToString());
+            return item;
+        }
+
+        private ReviewItem AddSequenceMacro(SequenceMacroReviewKind kind, string name, string description, PreviewKind preview)
+        {
+            var item = new ReviewItem
+            {
+                Id = BuildReviewId("SequenceMacro", kind.ToString(), preview.ToString()),
+                Name = name,
+                Description = description,
+                Kind = ReviewKind.SequenceMacro,
+                Preview = preview,
+                SequenceMacroKind = kind
             };
             _allItems.Add(item);
             return item;
@@ -864,6 +1068,21 @@ namespace LB.TweenHelper.Demo
             return item;
         }
 
+        private ReviewItem AddProgressAnimation(ProgressReviewKind kind, string name, string description)
+        {
+            var item = new ReviewItem
+            {
+                Id = BuildReviewId("Progress", kind.ToString(), null),
+                Name = name,
+                Description = description,
+                Kind = ReviewKind.ProgressAnimation,
+                Preview = PreviewKind.Progress,
+                ProgressKind = kind
+            };
+            _allItems.Add(item);
+            return item;
+        }
+
         private ReviewItem AddCameraFeedback(CameraFeedbackReviewKind kind, string name, string description, string variantKey = null)
         {
             var item = new ReviewItem
@@ -875,6 +1094,21 @@ namespace LB.TweenHelper.Demo
                 Kind = ReviewKind.CameraFeedback,
                 Preview = PreviewKind.CameraFeedback,
                 CameraFeedbackKind = kind
+            };
+            _allItems.Add(item);
+            return item;
+        }
+
+        private ReviewItem AddEngineProperty(EnginePropertyReviewKind kind, string name, string description)
+        {
+            var item = new ReviewItem
+            {
+                Id = BuildReviewId("EngineProperty", kind.ToString(), null),
+                Name = name,
+                Description = description,
+                Kind = ReviewKind.EngineProperty,
+                Preview = PreviewKind.EngineProperty,
+                EnginePropertyKind = kind
             };
             _allItems.Add(item);
             return item;
@@ -902,9 +1136,9 @@ namespace LB.TweenHelper.Demo
 
             if (CurrentItem.UsesDestinationPreview)
             {
-                _activeTween = CurrentItem.Kind == ReviewKind.FeedbackSequence
-                    ? PlayFeedbackSequence(CurrentItem)
-                    : PlayDestinationMotion(CurrentItem);
+                if (CurrentItem.Kind == ReviewKind.DestinationMotion) _activeTween = PlayDestinationMotion(CurrentItem);
+                else if (CurrentItem.Kind == ReviewKind.SequenceMacro) _activeTween = PlaySequenceMacro(CurrentItem);
+                else _activeTween = PlayFeedbackSequence(CurrentItem);
                 return;
             }
 
@@ -920,9 +1154,21 @@ namespace LB.TweenHelper.Demo
                 return;
             }
 
+            if (CurrentItem.UsesProgressPreview)
+            {
+                _activeTween = PlayProgressAnimation(CurrentItem);
+                return;
+            }
+
             if (CurrentItem.UsesCameraFeedbackPreview)
             {
                 _activeTween = PlayCameraFeedback(CurrentItem);
+                return;
+            }
+
+            if (CurrentItem.UsesEnginePropertyPreview)
+            {
+                _activeTween = PlayEngineProperty(CurrentItem);
                 return;
             }
 
@@ -1028,6 +1274,9 @@ namespace LB.TweenHelper.Demo
             uiSequencePreviewRoot.SetActive(false);
             textValuePreviewRoot.SetActive(false);
             worldTextValuePreviewRoot.SetActive(false);
+            progressPreviewRoot.SetActive(false);
+            enginePropertyPreviewRoot.SetActive(false);
+            enginePropertyWorldRoot.SetActive(false);
             itemNameText.text = "No animations";
             descriptionText.text = "No animations currently match this review filter.";
             categoryText.text = "FILTER EMPTY";
@@ -1163,6 +1412,22 @@ namespace LB.TweenHelper.Demo
                 }
                 case CollectionReviewKind.CollectionGatherTo:
                     return targets.CollectionGatherTo(owner, Vector3.zero, 0.62f, 0.055f, item.Preview != PreviewKind.WorldCollection);
+                case CollectionReviewKind.GridConcentricIn:
+                    return targets.GridConcentricIn(owner, item.GridColumns, 0.34f, 0.085f);
+                case CollectionReviewKind.GridConcentricOut:
+                    return targets.GridConcentricOut(owner, item.GridColumns, 0.32f, 0.075f);
+                case CollectionReviewKind.GridQuadrantSweep:
+                    return targets.GridQuadrantSweep(owner, item.GridColumns, GridQuadrantSweepDirection.ClockwiseFromTopLeft, 0.34f, 0.16f);
+                case CollectionReviewKind.ListAccordion:
+                    return targets.ListAccordion(owner, 0.5f, 0.055f);
+                case CollectionReviewKind.CollectionOrbitIn:
+                    return targets.CollectionOrbitIn(owner, Vector3.zero, null, 0.72f, 0.045f);
+                case CollectionReviewKind.CollectionOrbitOut:
+                    return targets.CollectionOrbitOut(owner, Vector3.zero, null, 0.68f, 0.04f);
+                case CollectionReviewKind.LoadingRing:
+                    return targets.LoadingRing(owner, 18f, 1.1f);
+                case CollectionReviewKind.LoadingRibbon:
+                    return targets.LoadingRibbon(owner, 22f, 1.2f);
                 case CollectionReviewKind.StaggerPresetByName:
                     return targets.TweenStagger(owner)
                         .PresetByName("PulseScaleSoft", 0.38f)
@@ -1226,12 +1491,38 @@ namespace LB.TweenHelper.Demo
         private TweenHandle PlayDestinationMotion(ReviewItem item)
         {
             DestinationReviewKind kind = item.DestinationKind;
-            bool usesUi = item.Preview == PreviewKind.DestinationUi;
+            bool usesProjectedUi = item.Preview == PreviewKind.WorldToUi;
+            bool usesUi = item.Preview == PreviewKind.DestinationUi || usesProjectedUi;
             GameObject target = usesUi ? destinationUiTarget : destinationWorldTarget;
-            Vector3 start = usesUi ? destinationUiStartMarker.anchoredPosition3D : destinationWorldStartMarker.position;
+            Vector3 start = usesProjectedUi ? destinationWorldStartMarker.position : usesUi ? destinationUiStartMarker.anchoredPosition3D : destinationWorldStartMarker.position;
             Vector3 destination = usesUi ? destinationUiEndMarker.anchoredPosition3D : destinationWorldEndMarker.position;
             float height = (usesUi ? DestinationUiArcHeight : DestinationWorldArcHeight) * item.SignedMagnitude;
             target.transform.localScale = usesUi ? _destinationUiSnapshot.LocalScale : _destinationWorldSnapshot.LocalScale;
+
+            if (usesProjectedUi)
+            {
+                Vector3 controlA = start + new Vector3(-0.7f, 2.4f, 0f);
+                Vector3 controlB = start + new Vector3(1.8f, 1.2f, 0f);
+                Vector3[] waypoints =
+                {
+                    start + new Vector3(-0.9f, 1.9f, 0f),
+                    start + new Vector3(1.3f, 2.5f, 0f),
+                    start + new Vector3(2.4f, 0.7f, 0f)
+                };
+                switch (kind)
+                {
+                    case DestinationReviewKind.ArcToUiProjected:
+                        return target.Tween().ArcToUI(start, destinationUiEndMarker, DestinationUiArcHeight, 1.45f, feedbackCamera).Play();
+                    case DestinationReviewKind.HopToUiProjected:
+                        return target.Tween().HopToUI(start, destinationUiEndMarker, DestinationUiArcHeight, 1.5f, feedbackCamera).Play();
+                    case DestinationReviewKind.BezierToUiProjected:
+                        return target.Tween().BezierToUI(start, controlA, controlB, destinationUiEndMarker, 1.55f, feedbackCamera).Play();
+                    case DestinationReviewKind.PathThroughUiProjected:
+                        return target.Tween().PathThroughUI(start, waypoints, destinationUiEndMarker, item.PathInterpolation, 1.7f, feedbackCamera).Play();
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown world-to-UI destination review item.");
+                }
+            }
 
             if (usesUi) ((RectTransform)target.transform).anchoredPosition3D = start;
             else target.transform.position = start;
@@ -1284,13 +1575,15 @@ namespace LB.TweenHelper.Demo
         private TweenHandle PlayFeedbackSequence(ReviewItem item)
         {
             FeedbackReviewKind kind = item.FeedbackKind;
-            bool usesUi = item.Preview == PreviewKind.DestinationUi;
+            bool usesProjectedUi = item.Preview == PreviewKind.WorldToUi;
+            bool usesUi = item.Preview == PreviewKind.DestinationUi || usesProjectedUi;
             GameObject target = usesUi ? destinationUiTarget : destinationWorldTarget;
-            Vector3 start = usesUi ? destinationUiStartMarker.anchoredPosition3D : destinationWorldStartMarker.position;
+            Vector3 start = usesProjectedUi ? destinationWorldStartMarker.position : usesUi ? destinationUiStartMarker.anchoredPosition3D : destinationWorldStartMarker.position;
             Vector3 destination = usesUi ? destinationUiEndMarker.anchoredPosition3D : destinationWorldEndMarker.position;
             Vector3 previewPosition = kind == FeedbackReviewKind.PickupCollect ? start : Vector3.Lerp(start, destination, 0.5f);
             target.transform.localScale = usesUi ? _destinationUiSnapshot.LocalScale : _destinationWorldSnapshot.LocalScale;
 
+            if (usesProjectedUi) return target.PickupCollectToUI(start, destinationUiEndMarker, DestinationUiArcHeight, 1.45f, feedbackCamera);
             if (usesUi) ((RectTransform)target.transform).anchoredPosition3D = previewPosition;
             else target.transform.position = previewPosition;
 
@@ -1320,8 +1613,54 @@ namespace LB.TweenHelper.Demo
                     return target.LevelUp(1.35f);
                 case FeedbackReviewKind.LowHealthWarning:
                     return target.LowHealthWarning(1.1f);
+                case FeedbackReviewKind.AbilityCharging:
+                    return target.AbilityCharging(1.35f);
+                case FeedbackReviewKind.AbilityReady:
+                    return target.AbilityReady(1f);
+                case FeedbackReviewKind.DodgeRoll:
+                    return target.DodgeRoll(1.1f);
+                case FeedbackReviewKind.StunStart:
+                    return target.StunStart(0.95f);
+                case FeedbackReviewKind.StunEnd:
+                    return target.StunEnd(0.9f);
+                case FeedbackReviewKind.BuffApplied:
+                    return target.BuffApplied(1f);
+                case FeedbackReviewKind.DebuffApplied:
+                    return target.DebuffApplied(1f);
+                case FeedbackReviewKind.ResourceDepleted:
+                    return target.ResourceDepleted(1f);
+                case FeedbackReviewKind.ResourceRecovered:
+                    return target.ResourceRecovered(1f);
+                case FeedbackReviewKind.ObjectiveUnlocked:
+                    return target.ObjectiveUnlocked(1.25f);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown feedback review item.");
+            }
+        }
+
+        private TweenHandle PlaySequenceMacro(ReviewItem item)
+        {
+            bool usesUi = item.Preview == PreviewKind.DestinationUi;
+            GameObject target = usesUi ? destinationUiTarget : destinationWorldTarget;
+            Vector3 previewPosition = usesUi
+                ? Vector3.Lerp(destinationUiStartMarker.anchoredPosition3D, destinationUiEndMarker.anchoredPosition3D, 0.5f)
+                : Vector3.Lerp(destinationWorldStartMarker.position, destinationWorldEndMarker.position, 0.5f);
+            target.transform.localScale = usesUi ? _destinationUiSnapshot.LocalScale : _destinationWorldSnapshot.LocalScale;
+            if (usesUi) ((RectTransform)target.transform).anchoredPosition3D = previewPosition;
+            else target.transform.position = previewPosition;
+
+            switch (item.SequenceMacroKind)
+            {
+                case SequenceMacroReviewKind.CriticalHit:
+                    return target.CriticalHitSequence(new Vector3(1f, -0.2f, 0f), 1.05f);
+                case SequenceMacroReviewKind.RewardReveal:
+                    return target.RewardRevealSequence(1.4f);
+                case SequenceMacroReviewKind.WarningLoop:
+                    return target.WarningLoopSequence(1.2f);
+                case SequenceMacroReviewKind.CutsceneUiEntrance:
+                    return target.CutsceneUIEntranceSequence(1.35f);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(item.SequenceMacroKind), item.SequenceMacroKind, "Unknown sequence-macro review item.");
             }
         }
 
@@ -1409,6 +1748,52 @@ namespace LB.TweenHelper.Demo
             }
         }
 
+        private TweenHandle PlayProgressAnimation(ReviewItem item)
+        {
+            progressEventText.text = item.ProgressKind == ProgressReviewKind.ProgressHook ? "WAITING FOR 50%" : string.Empty;
+            switch (item.ProgressKind)
+            {
+                case ProgressReviewKind.ImageFillTo:
+                    return progressImage.FillTo(0.85f, 1.15f);
+                case ProgressReviewKind.SliderFillTo:
+                    return progressSlider.FillTo(0.85f, 1.15f);
+                case ProgressReviewKind.ImageFillFromTo:
+                    return progressImage.FillFromTo(0.15f, 0.82f, 1.15f);
+                case ProgressReviewKind.SliderFillFromTo:
+                    return progressSlider.FillFromTo(0.15f, 0.82f, 1.15f);
+                case ProgressReviewKind.ImageValueFillTo:
+                    return progressImage.ValueFillTo(0.92f, progressValueText, "P0", 1.2f);
+                case ProgressReviewKind.SliderValueFillTo:
+                    return progressSlider.ValueFillTo(0.92f, progressValueText, "P0", 1.2f);
+                case ProgressReviewKind.ImageFillDrain:
+                    return progressImage.FillDrain(0.12f, 0.8f);
+                case ProgressReviewKind.SliderFillDrain:
+                    return progressSlider.FillDrain(0.12f, 0.8f);
+                case ProgressReviewKind.ImageFillCharge:
+                    return progressImage.FillCharge(0.92f, 1.15f);
+                case ProgressReviewKind.SliderFillCharge:
+                    return progressSlider.FillCharge(0.92f, 1.15f);
+                case ProgressReviewKind.ImageFillAlertPulse:
+                    return progressImage.FillAlertPulse(0.3f, 1.15f);
+                case ProgressReviewKind.SliderFillAlertPulse:
+                    return progressSlider.FillAlertPulse(0.3f, 1.15f);
+                case ProgressReviewKind.ImageFillAndText:
+                    return progressImage.FillAndText(0.08f, 0.9f, progressValueText, "P0", 1.25f);
+                case ProgressReviewKind.SliderFillAndText:
+                    return progressSlider.FillAndText(0.08f, 0.9f, progressValueText, "P0", 1.25f);
+                case ProgressReviewKind.ProgressHook:
+                    return progressImage.FillFromTo(0.08f, 0.94f, 1.35f).OnProgress(0.5f, () => progressEventText.text = "50% HOOK FIRED");
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(item.ProgressKind), item.ProgressKind, "Unknown progress review item.");
+            }
+        }
+
+        private void UpdateProgressReadout(ProgressReviewKind kind)
+        {
+            float value = UsesSliderProgress(kind) ? progressSlider.normalizedValue : progressImage.fillAmount;
+            progressValueText.text = value.ToString("P0");
+        }
+
         private TweenHandle PlayCameraFeedback(ReviewItem item)
         {
             CameraFeedbackReviewKind kind = item.CameraFeedbackKind;
@@ -1426,9 +1811,100 @@ namespace LB.TweenHelper.Demo
                     return feedbackCamera.CameraFocusZoom(cameraFocusTarget, 1.8f, 9f, 1.15f);
                 case CameraFeedbackReviewKind.Breathing:
                     return feedbackCamera.CameraBreathing(0.06f, 0.55f, 0.75f, 3.2f);
+                case CameraFeedbackReviewKind.RackFocus:
+                    return feedbackCamera.CameraRackFocus(cameraFocusTarget, 7f, 1.25f);
+                case CameraFeedbackReviewKind.CollectLandingKick:
+                    return feedbackCamera.CollectLandingCameraKick(0.72f);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(kind), kind, "Unknown camera-feedback review item.");
             }
+        }
+
+        private TweenHandle PlayEngineProperty(ReviewItem item)
+        {
+            switch (item.EnginePropertyKind)
+            {
+                case EnginePropertyReviewKind.AudioVolume:
+                    return engineAudioSource.AudioVolumeTo(0.95f, 1.2f);
+                case EnginePropertyReviewKind.AudioPitch:
+                    return engineAudioSource.AudioPitchTo(1.6f, 1.2f);
+                case EnginePropertyReviewKind.LightIntensity:
+                    return engineLight.LightIntensityTo(3.2f, 1.2f);
+                case EnginePropertyReviewKind.LightColor:
+                    return engineLight.LightColorTo(new Color(0.1f, 0.9f, 1f), 1.2f);
+                case EnginePropertyReviewKind.ParticleEmissionRate:
+                    return engineParticles.ParticleEmissionRateTo(32f, 1.3f);
+                case EnginePropertyReviewKind.MaterialFloat:
+                    return engineRenderer.MaterialFloatTo("_Smoothness", 0.95f, 1.2f);
+                case EnginePropertyReviewKind.MaterialColor:
+                    return engineRenderer.MaterialColorTo("_BaseColor", new Color(1f, 0.22f, 0.65f, 1f), 1.2f);
+                case EnginePropertyReviewKind.TorchFlicker:
+                    return engineLight.TorchFlicker(0.42f, 2.2f);
+                case EnginePropertyReviewKind.ScannerPulse:
+                    return engineLight.ScannerPulse(new Color(0.05f, 1f, 0.92f), 2f, 1.4f);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(item.EnginePropertyKind), item.EnginePropertyKind, "Unknown engine-property review item.");
+            }
+        }
+
+        private void UpdateEnginePropertyReadout(EnginePropertyReviewKind kind)
+        {
+            float normalized;
+            string value;
+            Color color = ReviewBlueColor;
+            switch (kind)
+            {
+                case EnginePropertyReviewKind.AudioVolume:
+                    normalized = engineAudioSource.volume;
+                    value = $"VOLUME  {engineAudioSource.volume:0.00}";
+                    break;
+                case EnginePropertyReviewKind.AudioPitch:
+                    normalized = Mathf.InverseLerp(-3f, 3f, engineAudioSource.pitch);
+                    value = $"PITCH  {engineAudioSource.pitch:0.00}";
+                    break;
+                case EnginePropertyReviewKind.LightIntensity:
+                case EnginePropertyReviewKind.TorchFlicker:
+                    normalized = Mathf.InverseLerp(0f, 3.5f, engineLight.intensity);
+                    value = $"INTENSITY  {engineLight.intensity:0.00}";
+                    color = engineLight.color;
+                    break;
+                case EnginePropertyReviewKind.LightColor:
+                case EnginePropertyReviewKind.ScannerPulse:
+                    normalized = Mathf.InverseLerp(0f, 3.5f, engineLight.intensity);
+                    value = $"LIGHT  #{ColorUtility.ToHtmlStringRGB(engineLight.color)}";
+                    color = engineLight.color;
+                    break;
+                case EnginePropertyReviewKind.ParticleEmissionRate:
+                    normalized = Mathf.InverseLerp(0f, 32f, engineParticles.emission.rateOverTimeMultiplier);
+                    value = $"EMISSION  {engineParticles.emission.rateOverTimeMultiplier:0.0}/s";
+                    break;
+                case EnginePropertyReviewKind.MaterialFloat:
+                {
+                    var block = new MaterialPropertyBlock();
+                    engineRenderer.GetPropertyBlock(block);
+                    float smoothness = block.isEmpty ? engineRenderer.sharedMaterial.GetFloat("_Smoothness") : block.GetFloat("_Smoothness");
+                    normalized = smoothness;
+                    value = $"SMOOTHNESS  {smoothness:0.00}";
+                    break;
+                }
+                case EnginePropertyReviewKind.MaterialColor:
+                {
+                    var block = new MaterialPropertyBlock();
+                    engineRenderer.GetPropertyBlock(block);
+                    color = block.isEmpty ? engineRenderer.sharedMaterial.GetColor("_BaseColor") : block.GetColor("_BaseColor");
+                    normalized = 1f;
+                    value = $"BASE COLOR  #{ColorUtility.ToHtmlStringRGB(color)}";
+                    break;
+                }
+                default:
+                    normalized = 0f;
+                    value = string.Empty;
+                    break;
+            }
+
+            enginePropertyMeter.fillAmount = Mathf.Clamp01(normalized);
+            enginePropertyMeter.color = color;
+            enginePropertyValueText.text = value;
         }
 
         private void ScheduleDelayedReplay()
@@ -1484,7 +1960,13 @@ namespace LB.TweenHelper.Demo
             KillTargetTweens(characterText);
             KillTargetTweens(scoreText);
             KillTargetTweens(worldCharacterText);
+            KillTargetTweens(progressImage);
+            KillTargetTweens(progressSlider);
             KillTargetTweens(feedbackCamera);
+            KillTargetTweens(engineAudioSource);
+            KillTargetTweens(engineLight);
+            KillTargetTweens(engineParticles);
+            KillTargetTweens(engineRenderer);
         }
 
         private void ResetTargets()
@@ -1513,7 +1995,21 @@ namespace LB.TweenHelper.Demo
             _characterTextSnapshot.Apply(characterText);
             _scoreTextSnapshot.Apply(scoreText);
             _worldCharacterTextSnapshot.Apply(worldCharacterText);
+            progressImage.fillAmount = _progressImageFill;
+            progressSlider.normalizedValue = _progressSliderValue;
+            _progressImageSnapshot.Apply(progressImage.gameObject);
+            _progressSliderSnapshot.Apply(progressSlider.gameObject);
+            progressImage.color = _progressImageColor;
+            progressValueText.text = _progressImageFill.ToString("P0");
+            progressEventText.text = string.Empty;
             _feedbackCameraSnapshot.Apply(feedbackCamera);
+            engineAudioSource.volume = _engineAudioVolume;
+            engineAudioSource.pitch = _engineAudioPitch;
+            engineLight.intensity = _engineLightIntensity;
+            engineLight.color = _engineLightColor;
+            ParticleSystem.EmissionModule emission = engineParticles.emission;
+            emission.rateOverTimeMultiplier = _engineParticleEmissionRate;
+            _engineRendererSnapshot.Apply(engineRenderer.gameObject);
         }
 
         private void ApplyPreviewVisibility(PreviewKind preview)
@@ -1527,8 +2023,11 @@ namespace LB.TweenHelper.Demo
             incompleteGridPreviewGroup.SetActive(preview == PreviewKind.IncompleteGrid);
             worldCollectionPreviewRoot.SetActive(preview == PreviewKind.WorldCollection);
             loadingDotsPreviewGroup.SetActive(preview == PreviewKind.LoadingDots);
-            destinationWorldRoot.SetActive(preview == PreviewKind.DestinationWorld);
-            destinationUiRoot.SetActive(preview == PreviewKind.DestinationUi);
+            bool showWorldToUi = preview == PreviewKind.WorldToUi;
+            destinationWorldRoot.SetActive(preview == PreviewKind.DestinationWorld || showWorldToUi);
+            destinationUiRoot.SetActive(preview == PreviewKind.DestinationUi || showWorldToUi);
+            destinationWorldTarget.SetActive(preview == PreviewKind.DestinationWorld);
+            destinationUiTarget.SetActive(preview == PreviewKind.DestinationUi || showWorldToUi);
             bool showUISequence = preview == PreviewKind.UISequence;
             uiSequencePreviewRoot.SetActive(showUISequence);
             if (showUISequence) ConfigureUISequencePreview(CurrentItem);
@@ -1536,6 +2035,36 @@ namespace LB.TweenHelper.Demo
             textValuePreviewRoot.SetActive(showTextValue);
             worldTextValuePreviewRoot.SetActive(preview == PreviewKind.WorldTextValue);
             if (CurrentItem.UsesTextValuePreview) ConfigureTextValuePreview(CurrentItem);
+            progressPreviewRoot.SetActive(preview == PreviewKind.Progress);
+            if (CurrentItem.UsesProgressPreview) ConfigureProgressPreview(CurrentItem.ProgressKind);
+            bool showEngineProperty = preview == PreviewKind.EngineProperty;
+            enginePropertyPreviewRoot.SetActive(showEngineProperty);
+            enginePropertyWorldRoot.SetActive(showEngineProperty);
+            if (showEngineProperty)
+            {
+                engineParticles.Play(true);
+                UpdateEnginePropertyReadout(CurrentItem.EnginePropertyKind);
+            }
+        }
+
+        private void ConfigureProgressPreview(ProgressReviewKind kind)
+        {
+            bool usesSlider = UsesSliderProgress(kind);
+            progressImageGroup.SetActive(!usesSlider);
+            progressSlider.gameObject.SetActive(usesSlider);
+            progressValueText.text = (usesSlider ? progressSlider.normalizedValue : progressImage.fillAmount).ToString("P0");
+            progressEventText.text = kind == ProgressReviewKind.ProgressHook ? "REPLAY TO TEST CALLBACK" : string.Empty;
+        }
+
+        private static bool UsesSliderProgress(ProgressReviewKind kind)
+        {
+            return kind == ProgressReviewKind.SliderFillTo ||
+                   kind == ProgressReviewKind.SliderFillFromTo ||
+                   kind == ProgressReviewKind.SliderValueFillTo ||
+                   kind == ProgressReviewKind.SliderFillDrain ||
+                   kind == ProgressReviewKind.SliderFillCharge ||
+                   kind == ProgressReviewKind.SliderFillAlertPulse ||
+                   kind == ProgressReviewKind.SliderFillAndText;
         }
 
         private void ConfigureUISequencePreview(ReviewItem item)
@@ -1578,13 +2107,14 @@ namespace LB.TweenHelper.Demo
         private void ConfigureDestinationGuides(ReviewItem item)
         {
             bool isDestination = item.Kind == ReviewKind.DestinationMotion;
-            bool isPickup = item.Kind == ReviewKind.FeedbackSequence && item.FeedbackKind == FeedbackReviewKind.PickupCollect;
+            bool isPickup = item.Kind == ReviewKind.FeedbackSequence && (item.FeedbackKind == FeedbackReviewKind.PickupCollect || item.FeedbackKind == FeedbackReviewKind.PickupCollectToUi);
+            bool isWorldToUi = item.Preview == PreviewKind.WorldToUi;
             bool showMarkers = isDestination || isPickup;
-            bool showPath = isPickup || (isDestination && UsesCurvedPath(item.DestinationKind));
-            destinationWorldStartMarker.gameObject.SetActive(showMarkers && item.Preview == PreviewKind.DestinationWorld);
+            bool showPath = !isWorldToUi && (isPickup || (isDestination && UsesCurvedPath(item.DestinationKind)));
+            destinationWorldStartMarker.gameObject.SetActive(showMarkers && (item.Preview == PreviewKind.DestinationWorld || isWorldToUi));
             destinationWorldEndMarker.gameObject.SetActive(showMarkers && item.Preview == PreviewKind.DestinationWorld);
             destinationUiStartMarker.gameObject.SetActive(showMarkers && item.Preview == PreviewKind.DestinationUi);
-            destinationUiEndMarker.gameObject.SetActive(showMarkers && item.Preview == PreviewKind.DestinationUi);
+            destinationUiEndMarker.gameObject.SetActive(showMarkers && (item.Preview == PreviewKind.DestinationUi || isWorldToUi));
             if (showPath) UpdateDestinationPath(item);
             destinationWorldCurvedPath.SetActive(showPath && item.Preview == PreviewKind.DestinationWorld);
             destinationUiCurvedPath.SetActive(showPath && item.Preview == PreviewKind.DestinationUi);
@@ -1720,11 +2250,15 @@ namespace LB.TweenHelper.Demo
             if (item.Kind == ReviewKind.UiRecipe) return "UI RECIPE";
             if (item.Kind == ReviewKind.CollectionRecipe) return "COLLECTION RECIPE";
             if (item.Kind == ReviewKind.StaggerVariant) return "STAGGER VARIANT";
-            if (item.Kind == ReviewKind.DestinationMotion) return item.Preview == PreviewKind.DestinationUi ? "DESTINATION MOTION / UI" : "DESTINATION MOTION / 3D";
-            if (item.Kind == ReviewKind.FeedbackSequence) return item.Preview == PreviewKind.DestinationUi ? "GAMEPLAY FEEDBACK / UI" : "GAMEPLAY FEEDBACK / 3D";
+            if (item.Kind == ReviewKind.DestinationMotion) return item.Preview == PreviewKind.WorldToUi ? "DESTINATION MOTION / WORLD TO UI" : item.Preview == PreviewKind.DestinationUi ? "DESTINATION MOTION / UI" : "DESTINATION MOTION / 3D";
+            if (item.Kind == ReviewKind.FeedbackSequence) return item.Preview == PreviewKind.WorldToUi ? "GAMEPLAY FEEDBACK / WORLD TO UI" : item.Preview == PreviewKind.DestinationUi ? "GAMEPLAY FEEDBACK / UI" : "GAMEPLAY FEEDBACK / 3D";
+            if (item.Kind == ReviewKind.GameplayState) return item.Preview == PreviewKind.DestinationUi ? "GAMEPLAY STATE / UI" : "GAMEPLAY STATE / 3D";
+            if (item.Kind == ReviewKind.SequenceMacro) return item.Preview == PreviewKind.DestinationUi ? "SEQUENCE MACRO / UI" : "SEQUENCE MACRO / 3D";
             if (item.Kind == ReviewKind.UISequence) return "PRODUCTION UI SEQUENCE";
             if (item.Kind == ReviewKind.TextValueAnimation) return item.Preview == PreviewKind.WorldTextValue ? "TEXT & VALUE ANIMATION / WORLD TMP" : "TEXT & VALUE ANIMATION / UI TMP";
+            if (item.Kind == ReviewKind.ProgressAnimation) return "PROGRESS & VALUE ANIMATION";
             if (item.Kind == ReviewKind.CameraFeedback) return "CAMERA FEEDBACK";
+            if (item.Kind == ReviewKind.EngineProperty) return "ENGINE PROPERTY ANIMATION";
             return item.UsesUiTarget ? "2D / UI PRESET" : "3D / WORLD PRESET";
         }
 

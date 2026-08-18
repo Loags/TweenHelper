@@ -11,6 +11,8 @@ TweenBuilder CameraLandingImpact(float dropDistance = 0.22f, float fieldOfViewKi
 TweenBuilder CameraFovKick(float fieldOfViewDelta = 8f, float? duration = null);
 TweenBuilder CameraFocusZoom(Transform focusTarget, float distance = 1.2f, float fieldOfViewDelta = 7f, float? duration = null);
 TweenBuilder CameraBreathing(float positionAmplitude = 0.035f, float rotationAmplitude = 0.3f, float fieldOfViewAmplitude = 0.45f, float? duration = null);
+TweenBuilder CameraRackFocus(Transform focusTarget, float fieldOfViewDelta = 5f, float? duration = null);
+TweenBuilder CollectLandingCameraKick(float? duration = null);
 ```
 
 Each operation is also available directly on `Camera` and `GameObject`. The target GameObject must contain a `Camera` component on the same object.
@@ -35,6 +37,8 @@ TweenHandle handle = gameplayCamera.gameObject.Tween()
 - `CameraFovKick` performs a fast lens kick and settle without moving the camera.
 - `CameraFocusZoom` temporarily moves and aims toward a focus target while narrowing field of view. The focus position is captured when the builder step begins.
 - `CameraBreathing` provides one subtle, finite position, rotation, and lens cycle suitable for root looping.
+- `CameraRackFocus` temporarily shifts aim and field of view toward a required focus target without moving the camera.
+- `CollectLandingCameraKick` applies a restrained collection-completion landing impulse.
 
 Default durations are `0.38s`, `0.48s`, `0.55s`, `0.42s`, `0.82s`, and `2.8s` respectively. FOV channels are visually meaningful on perspective cameras; transform channels still work on orthographic cameras.
 
@@ -55,3 +59,7 @@ The camera GameObject is the operation's single lifetime owner. A `CameraFocusZo
 During playback, field of view is clamped to Unity's valid `1..179` range and then restored exactly. Retain and kill an infinitely looped Breathing handle during teardown.
 
 Do not let a camera controller and a feedback tween write the same transform simultaneously. Prefer a dedicated camera feedback child or pause the competing writer for the duration of the effect.
+
+## Animation Gallery
+
+Open **Camera Feedback** to compare all eight operations on the dedicated preview camera. The gallery presentation camera remains stationary, including while inward and outward field-of-view variants play.

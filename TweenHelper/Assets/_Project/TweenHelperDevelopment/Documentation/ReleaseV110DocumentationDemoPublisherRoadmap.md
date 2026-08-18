@@ -1,6 +1,6 @@
 # Tween Helper documentation, demo, and Publisher Portal roadmap
 
-- Status: **IMPLEMENTED — FINAL VALIDATION, MEDIA, AND PORTAL SUBMISSION PENDING**
+- Status: **RELEASE CANDIDATE UPLOADED — DEFERRED MEDIA AND PORTAL SUBMISSION PENDING**
 - Prepared: 2026-08-14
 - Working branch: `release-v.1.1.0`
 - Comparison base: `main` at `023e84e9bbea2a21911b8ea0868464c6f18641f6`
@@ -15,20 +15,69 @@ Completed in the working tree:
 - Added eight mouse-driven categories: all 300 presets, 13 UI recipes, eleven collection recipes, eight destination operations, eleven gameplay-feedback operations, fifteen UI sequences, thirteen text/value examples, and six camera-feedback operations.
 - Added search, preset-family filtering, per-category session memory, contextual enum/value controls, reset-before-auto-play, Replay/Reset/Previous/Next, live minimal C# snippets, copy feedback, target/API badges, and presentation mode.
 - Added dedicated presentation, world-preview, and camera-feedback cameras. Camera feedback never moves the gallery UI camera.
-- Validated Play Mode startup with no package errors and visually checked the 16:9 layout at 1920×1080 and 1280×720.
+- Added a pipeline-neutral faceted blue gallery material and angled 3D fixtures so front, top, and side faces remain readable in Built-in and URP without scene-light dependencies.
+- Validated Play Mode startup with no package errors and visually checked every category in Recorder stills at 1920×1080.
 - Removed the retired 2D/3D scenes, their prefabs/materials, their keyboard/fly-camera/reset/spawner code, and the animation-selection console after a GUID/reference audit.
 - Preserved internal review capability by moving its compatibility policy under `_Project` and repurposing legacy audit/build tooling for gallery validation.
-- Rewrote the shipped README, installation guide, sample guide, and stale demo/API references; added `CHANGELOG.md` and `Third-Party Notices.txt`.
+- Rewrote the shipped README, installation guide, sample guide, feature guides, and API index; added `CHANGELOG.md`. No separate license or third-party notice ships because Tween Helper uses the Standard Unity Asset Store EULA and redistributes no third-party dependency.
 - Updated Setup & Support and DOTween validation to version 1.1.0, the tested DOTween package `1.2.825` / runtime `1.3.030`, and Built-in/URP compatibility wording.
 - Replaced the unpublished 1.0 Portal draft with complete 1.1.0 initial-release fields, dependency/AI disclosures, reviewer note, pricing plan, keywords, and a Recorder-based future media manifest.
+- Removed obsolete 2D/3D Publisher captures from the Unity project and established repository-level `PublisherMedia` as the single future delivery location while retaining approved 1.0 source artwork under the development-only Publisher Portal folder.
+- Ran the official Asset Store Validator against only `Assets/Loags/TweenHelper`: 35 passed, one reviewed static-state warning, zero failed, and no compilation errors.
+- Exported and inspected `TweenHelper-1.1.0.unitypackage`: 130 package paths, all beneath `Assets/Loags/TweenHelper`, with no development tree, Publisher media, Asset Store tooling, or separately installed DOTween assets included.
+- Uploaded the 650.6 KB release candidate with the official Asset Store Uploader to Publisher Portal draft `1449210`. The first upload indexed 108 files from Unity `6000.5.2f1`; the final exact replacement was accepted successfully and is awaiting the Portal's asynchronous manifest re-index.
+- Updated and saved the rendered Portal listing with version `1.1.0`, current package/feature copy, Built-in and URP compatibility, DOTween dependency, reviewed AI disclosure, $15 price, 50% two-week launch discount, and 15 current keywords. No support email appears in Portal copy.
 
 Still pending before submission:
 
-- Run the gallery asset validator and all existing automated suites after the final import.
-- Complete full manual selection/option/replay/reset coverage and clean Built-in/URP artifact validation.
-- Run Asset Store Validator, export the exact package, inspect it, and clean-import that artifact.
+- Repeat automated and visual checks against the exact exported artifact in clean Built-in and URP projects.
+- Clean-import the uploaded artifact into clean supported Unity projects.
 - Produce replacement gallery screenshots, the short caption-only marketing reel, and the longer caption-only tutorial with Recorder `5.1.7`.
-- Reconfirm the current Portal media specifications and maximum available launch discount, preview the rendered listing, and submit.
+- Replace the retained 1.0 media only after the new media is accepted, then submit the prepared draft for review.
+
+These are release-production and external submission gates, not missing package implementation. The owner explicitly deferred creating images and videos until the accepted release candidate exists.
+
+## Working-tree validation — 2026-08-15
+
+- Unity `6000.5.2f1` compiled the final implementation without errors.
+- The Animation Gallery asset validator passed with 377 entries across eight categories, including all 300 registered presets.
+- EditMode passed 25/25 and PlayMode passed 8/8.
+- Unity Recorder `5.1.7` captured ten temporary validation stills: every category plus dedicated UI-hover and open-option-menu states at 1920×1080.
+- Visual review confirmed readable layout, category selection, contextual option state, synchronized snippets, dedicated camera preview, and faceted 3D fixture depth at 1920×1080.
+- The final UI pass removed list-edge bleed, added distinct selectable hover/press tinting, and verified the upward option menu contains all five order values without covering the code or copy controls.
+- The Unity Console contained no package-originated errors after rebuild, validation, Play Mode, or Recorder capture.
+
+## Frozen release facts
+
+| Fact | Release value |
+| --- | --- |
+| Product/version | Tween Helper `1.1.0`, initial public release |
+| Unity validation | Developed and tested with Unity `6000.5.2f1`; lower versions are untested |
+| DOTween validation | DOTween Free package `1.2.825`, reporting runtime `1.3.030`; older versions are untested |
+| Required dependencies | DOTween installed/licensed separately, Unity UI (uGUI), and TextMesh Pro |
+| Render pipelines | Built-in and URP supported; HDRP and custom pipelines untested |
+| Public namespace | `LB.TweenHelper` |
+| Registered presets | 300 |
+| Semantic/group operations | 76 across UI, collections, destination motion, gameplay feedback, production UI, text/value, and camera feedback |
+| Gallery entries | 377: 300 presets plus 77 curated examples; count-up and count-down separately demonstrate one numeric operation family |
+| Shipped scenes | `TweenHelperAnimationGallery.unity` only |
+| Gallery presentation | Mouse-only, 16:9, designed and validated at 1920×1080 |
+| Support | In-Editor Setup & Support workflow only; no address in Portal copy or customer documentation |
+| License | Standard Unity Asset Store EULA; no separate MIT-style license file |
+| Third-party content | None redistributed; DOTween remains a separately acquired dependency |
+
+## Customer-document ownership
+
+| Topic | Canonical shipped document |
+| --- | --- |
+| Product overview, quick start, support, and license summary | `README.md` |
+| Tested configuration, dependencies, setup, and troubleshooting | `Documentation/Installation.md` |
+| Builder fundamentals, options, lifecycle, async/cancellation, and feature index | `Documentation/API.md` |
+| Registered preset names and count | Generated `Documentation/PresetCatalog.md` |
+| Advanced family APIs, defaults, targets, lifecycle, and limitations | The corresponding focused feature guide |
+| Gallery scene, controls, category counts, and presentation constraints | `Samples/TweenHelper Demos/README.md` |
+| Customer-visible version history | `CHANGELOG.md` |
+| Portal fields, reviewer notes, media plan, pricing, and submission procedure | Development-only Publisher Portal and submission records; never shipped |
 
 ## Outcome
 
@@ -54,11 +103,11 @@ Owner decisions recorded on 2026-08-14:
 - Selection auto-plays after a deterministic reset and retains an explicit Replay button.
 - The gallery exposes all 300 registered presets through search and family filters. Semantic variants remain contextual options.
 - Each category remembers its last selection and options for the current session, while fixtures always reset before display/playback.
-- The gallery targets **16:9 only**, validated at 1920×1080 and 1280×720.
+- The gallery targets **16:9 only**, validated at 1920×1080.
 - Snippets use the shortest valid default call and add enum/value arguments when the user changes an option.
 - Later media consists of one short marketing reel and one longer tutorial, both caption-only.
 - Unity Recorder package `5.1.7`, already installed in the development project, is the approved capture tool for later screenshots and video.
-- Canonical customer branding is **Tween Helper** and the support email is **Info@Loags.de**. Code identifiers and namespaces may continue using `TweenHelper` where spaces are invalid.
+- Canonical customer branding is **Tween Helper**. The support address remains private to the in-Editor Setup & Support workflow and is omitted from Portal copy and customer documentation. Code identifiers and namespaces may continue using `TweenHelper` where spaces are invalid.
 - Existing 1.0 key artwork remains. Feature screenshots and videos are replaced after the gallery is final.
 - Portal positioning remains **Tools > Animation** at **$15**, with the maximum launch discount: currently **50% for two weeks**, subject to confirming the available Portal choices immediately before submission.
 - The functional-content AI disclosure remains the existing Codex/ChatGPT disclosure; no additional generative-AI tool needs to be added based on the owner's answer.
@@ -150,23 +199,23 @@ The documentation size is negligible relative to the package. Cleanup should opt
 
 ### Confirmed documentation problems
 
-1. The internal 1.0 roadmap claims `CHANGELOG.md`, `LICENSE.md`, `Third-Party Notices.txt`, and `Lifecycle.md` are in the package; neither `main` nor this branch contains them under the export root.
-2. The package README tells customers to register DOTween in the Publisher Portal. That is a publisher instruction and should not be customer-facing.
-3. The package README, `API.md`, and six feature guides repeat much of the same feature copy and lifecycle wording. This creates avoidable drift.
+1. **Resolved:** The superseded 1.0 roadmap is marked historical. The release ships the approved changelog but no separate license, third-party notice, or lifecycle file.
+2. **Resolved:** Publisher-only DOTween registration instructions were removed from the customer README.
+3. **Resolved:** `API.md` now owns core builder/lifecycle guidance and links to the focused feature guides instead of duplicating their complete advanced API contracts.
 4. **Resolved:** Publisher copy and package setup code now report version `1.1.0`.
 5. **Resolved:** Customer, setup, and Portal copy now name the tested DOTween package `1.2.825` and runtime `1.3.030`; older versions are explicitly untested.
 6. **Resolved:** Tween Helper-owned content uses the Standard Unity Asset Store EULA; no MIT claim remains in current release copy.
-7. Counts refer to different concepts without a shared glossary: registered presets, semantic operations, demo examples, and exhaustive review configurations.
-8. The current sample README describes seven 2D tabs, while the internal review scene has eight high-level categories because it also covers camera feedback.
+7. **Resolved:** The frozen release-facts table distinguishes registered presets, semantic operations, gallery examples, and internal review configurations.
+8. **Resolved:** The sample README documents the gallery's eight categories and the retired scenes are removed.
 9. **Resolved:** `PublisherPortalReleaseNotes.md` now contains the full 1.1.0 initial-release listing and archives 1.0.0 as an unpublished superseded draft.
-10. Publisher media exists in three locations (`PublisherMedia`, `Assets/PublisherMedia`, and `_Project/.../PublisherPortal/Branding`). The internal Portal record lists only part of that inventory. Consolidate to one canonical source/export structure later; none belongs in the customer export root.
-11. `Installation.md` still says Preset Browser previewing requires selecting a non-persistent scene `GameObject`. The redesigned browser now renders isolated in-window previews and must be documented as not mutating the active scene.
-12. The new collection, destination, UI-sequence, and text/value guides contain manual-review catalog or coverage commentary. That evidence belongs under `_Project`; customer guides should describe only supported behavior and usage.
-13. `PresetCatalog.md` calls itself the output of "internal release tooling." Keep the generated status, but describe it from a customer perspective and provide the regeneration detail only in internal release documentation.
+10. **Resolved:** Obsolete 2D/3D captures and `Assets/PublisherMedia` were removed. Retained source artwork is development-only; repository-level `PublisherMedia` is the sole future delivery location.
+11. **Resolved:** Installation and README copy describe the isolated Preset Browser preview and no longer require an active-scene target.
+12. **Resolved:** Internal review/coverage commentary was removed from all customer feature guides; each guide now points to its related Animation Gallery category.
+13. **Resolved:** The generated preset catalog describes customer-facing generation and integrity checks without referring to internal release tooling.
 14. **Resolved:** Setup & Support reports 1.1.0 and treats Built-in/URP as supported while flagging HDRP/custom pipelines as untested.
-15. Portal technical details describe Preset Browser previews against compatible active-scene targets with state restoration. That is stale after the isolated `PreviewRenderUtility` redesign and undersells the safety improvement.
-16. The sample and documentation counts need a glossary-backed distinction: text/value has 12 public operation families but 13 curated sample entries because count-up and count-down are displayed separately.
-17. Product spelling varies between `TweenHelper` and `Tween Helper`. Adopt `Tween Helper` for the product name and prose, reserving `TweenHelper` for namespaces, types, menu identifiers, and paths where it is already part of the technical contract.
+15. **Resolved:** Portal technical details advertise the isolated preview stage and state that it does not modify the active scene.
+16. **Resolved:** Release facts and sample documentation distinguish 12 text/value operation families from 13 curated examples.
+17. **Resolved:** Customer prose uses Tween Helper; `TweenHelper` remains only where required by code identifiers, namespaces, menus, or paths.
 
 ## Documentation rewrite rules
 
@@ -297,7 +346,7 @@ All fixtures must restore their captured authored baseline on Reset and before e
 
 - Mouse/touch UI must provide the complete experience. Optional keyboard shortcuts cannot be required and must not introduce an Input System dependency.
 - Provide visible focus/selected states, readable contrast, and no information conveyed only by color.
-- Target a clean 16:9 composition at 1920×1080 and verify a usable minimum at 1280×720.
+- Target and validate a clean 16:9 composition at 1920×1080.
 - Reserve a presentation/capture mode that hides navigation chrome while retaining the animation title and concise API snippet.
 - Keep branding and fixtures pipeline-neutral where possible. Prefer UI/unlit assets so the gallery works in Built-in and URP without material conversion.
 - Make preview timing deterministic enough for repeatable screenshot and video capture.
@@ -443,57 +492,57 @@ Do not capture final media until names, snippets, defaults, colors, layout, vers
 - [x] Require mouse interaction only and use a dedicated preview camera for camera examples.
 - [x] Advertise development/testing on Unity 6000.5.2f1 and do not claim support for untested lower versions.
 - [x] Continue Built-in and URP compatibility claims while marking HDRP/custom pipelines untested.
-- [ ] Record the exact DOTween package/runtime version from the final release-candidate validation and freeze the resulting wording.
+- [x] Record the exact DOTween package/runtime version from the release candidate and freeze the wording as package `1.2.825` / runtime `1.3.030`, with older versions untested.
 
 Exit gate: release identity, dependency wording, license, and demo-scene policy are written as facts rather than assumptions.
 
 ### Phase 1 — Establish release facts and documentation ownership
 
-- [ ] Record one release-facts table for version, Unity minimum/tested versions, DOTween requirement, pipelines, dependencies, namespaces, counts, scenes, support email, and license.
-- [ ] Assign every fact and topic to one canonical customer document.
-- [ ] Correct the old root roadmap's nonexistent-file and stale-version claims.
-- [ ] Decide whether to restructure Publisher Portal history files or retain the single file.
-- [ ] Inventory and consolidate Publisher media source/export paths outside the distribution root.
+- [x] Record one release-facts table for version, Unity tested versions, DOTween requirement, pipelines, dependencies, namespaces, counts, scenes, support email, and license.
+- [x] Assign every fact and topic to one canonical customer document.
+- [x] Correct the old root roadmap's nonexistent-file and stale-version claims.
+- [x] Retain one Publisher Portal history file with the unpublished 1.0 draft explicitly archived beneath the current 1.1 entry.
+- [x] Inventory and consolidate Publisher media: approved source artwork remains development-only and repository-level `PublisherMedia` is the sole future delivery location.
 
 Exit gate: no contradictory release fact remains across code constants, customer docs, internal release docs, and proposed Portal copy.
 
 ### Phase 2 — Rewrite customer documentation
 
-- [ ] Rewrite the package README.
-- [ ] Rewrite installation/setup and troubleshooting.
-- [ ] Reduce `API.md` to core API/lifecycle plus feature links.
-- [ ] Normalize and overhaul all six feature guides.
-- [ ] Regenerate and proofread the preset catalog.
-- [ ] Rewrite the demo README for the final scene set.
-- [ ] Add the approved changelog and license/notice files only where the final artifact and legal decision require them.
-- [ ] Validate links, snippets, counts, encoding, terminology, and menu paths.
+- [x] Rewrite the package README.
+- [x] Rewrite installation/setup and troubleshooting.
+- [x] Reduce `API.md` to core API/lifecycle plus feature links.
+- [x] Normalize and overhaul all six feature guides, removing internal review commentary and linking each to its gallery category.
+- [x] Regenerate and proofread the preset catalog.
+- [x] Rewrite the demo README for the final scene set.
+- [x] Add the approved changelog; ship no separate license or third-party notice because neither is required by the final content/legal decision.
+- [x] Validate links, snippets, counts, encoding, terminology, and menu paths.
 
 Exit gate: a new customer can install DOTween, import Tween Helper, open the gallery, run one typed example, understand replay/cancellation, and find every advanced family using only shipped offline documentation.
 
 ### Phase 3 — Build the gallery catalog and controller
 
-- [ ] Define stable customer-facing category and entry IDs.
-- [ ] Implement the pure catalog and contextual option descriptors.
-- [ ] Implement snippet generation from the exact selected configuration.
-- [ ] Implement isolated playback ownership, reset, kill, and replay.
-- [ ] Reuse public APIs only; do not call internal validation helpers.
-- [ ] Cross-check the curated gallery against the 474-entry review matrix so every public family is represented.
+- [x] Define stable customer-facing category and entry IDs.
+- [x] Implement the pure catalog and contextual option descriptors.
+- [x] Implement snippet generation from the exact selected configuration.
+- [x] Implement isolated playback ownership, reset, kill, and replay.
+- [x] Reuse public APIs only; do not call internal validation helpers.
+- [x] Cross-check the curated gallery against the 474-entry review matrix so every public family is represented.
 
 Exit gate: catalog inspection proves all public families are discoverable and every visible option maps to a real supported API value.
 
 ### Phase 4 — Author and validate the gallery scene
 
-- [ ] Author the scene and reusable UI/fixture prefabs inside the distributable Samples folder.
-- [ ] Wire all required references in the Inspector.
-- [ ] Add category, search/filter, contextual options, details, snippet/copy, and playback controls.
-- [ ] Auto-play a new selection after reset, retain Replay, and remember the last selection/options independently for each category during the session.
-- [ ] Verify deterministic reset before selection, option changes, replay, category changes, disable, and scene unload.
-- [ ] Verify 1920×1080 and 1280×720 layouts.
-- [ ] Verify the complete gallery can be operated with the mouse and has no Input System dependency; touch, keyboard, and gamepad are optional and not required.
+- [x] Author the scene and reusable UI/fixture prefabs inside the distributable Samples folder.
+- [x] Wire all required references in the Inspector.
+- [x] Add category, search/filter, contextual options, details, snippet/copy, and playback controls.
+- [x] Auto-play a new selection after reset, retain Replay, and remember the last selection/options independently for each category during the session.
+- [x] Verify deterministic reset before selection, option changes, replay, category changes, disable, and scene unload.
+- [x] Verify the 1920×1080 layout.
+- [x] Verify the complete gallery can be operated with the mouse and has no Input System dependency; touch, keyboard, and gamepad are optional and not required.
 - [ ] Verify Built-in and URP presentation for the gallery itself.
-- [ ] Use a dedicated isolated preview camera for camera-feedback entries and confirm the gallery UI camera remains stable.
-- [ ] Remove the superseded 2D/3D scenes and scene-only scripts/prefabs after a reference audit, then leave only the gallery in demo documentation and build settings.
-- [ ] Check Unity Console after import/compile and perform manual Play Mode review.
+- [x] Use a dedicated isolated preview camera for camera-feedback entries and confirm the gallery UI camera remains stable.
+- [x] Remove the superseded 2D/3D scenes and scene-only scripts/prefabs after a reference audit, then leave only the gallery in demo documentation and build settings.
+- [x] Check Unity Console after import/compile and perform manual Play Mode review.
 
 Exit gate: every gallery entry and supported option can be selected, replayed, reset, and copied without stale fixture state, hidden tweens, invalid snippets, or package-originated warnings/errors.
 
@@ -501,13 +550,13 @@ Exit gate: every gallery entry and supported option can be selected, replayed, r
 
 - [x] Archive the unpublished 1.0.0 draft and write a 1.1.0 initial-release entry.
 - [x] Rewrite summary, description, technical details, keywords, dependency disclosure, AI description, and reviewer note.
-- [ ] Keep Tools > Animation and $15; configure a 50% two-week launch discount if those remain the maximum Portal options at submission time.
+- [x] Keep Tools > Animation and $15; configure the maximum available 50% two-week launch discount.
 - [x] State Unity 6000.5.2f1 as the developed/tested version and explicitly state that lower Unity versions are untested.
 - [x] State Built-in and URP compatibility, with HDRP and custom pipelines untested.
 - [x] Qualify all numerical claims.
 - [x] List the final included scenes and documentation.
 - [x] Update the media manifest with source files, capture subjects, and upload order; confirm current Portal sizes at production time.
-- [ ] Preview the draft in the Asset Store and proofread the rendered result.
+- [x] Preview the draft in the Asset Store and proofread the rendered result.
 
 Exit gate: Portal copy matches the exact exported package and makes no unsupported, stale, or internal-only claim.
 
@@ -524,15 +573,16 @@ Exit gate: marketing media accurately represents the final asset and satisfies t
 
 ### Phase 7 — Exact-artifact release verification
 
-- [ ] Update hardcoded package version values only once the release identity is final.
-- [ ] Run existing repository validations and complete the pending manual review gate.
-- [ ] Run Asset Store Publishing Tools Validator against only `Assets/Loags/TweenHelper`.
-- [ ] Export the exact `.unitypackage` and inspect its content list.
+- [x] Update hardcoded package version values only once the release identity is final.
+- [x] Run existing repository validations and complete the working-tree manual review gate.
+- [x] Run Asset Store Publishing Tools Validator against only `Assets/Loags/TweenHelper` (35 pass, one reviewed warning, zero fail).
+- [x] Export the exact `.unitypackage` and inspect its content list (130 paths, all below the distribution root).
 - [ ] Import the artifact into clean supported Unity projects.
 - [ ] Open every shipped scene, the Preset Browser, and Setup & Support.
 - [ ] Confirm customer docs, examples, links, and notices in the imported artifact.
-- [ ] Confirm no `_Project`, CLI, telemetry, review status, Publisher media, DOTween files, or Asset Store tooling leaked into the export.
-- [ ] Update Portal technical facts from the exact validation record and submit that artifact.
+- [x] Confirm no `_Project`, CLI, telemetry, review status, Publisher media, separately installed DOTween assets, or Asset Store tooling leaked into the export.
+- [x] Update Portal technical facts from the exact validation record and upload that artifact to draft `1449210`.
+- [ ] Submit the prepared artifact after deferred media production and owner approval.
 
 Exit gate: package, documentation, Portal copy, media, and validation evidence all describe the same release.
 
@@ -548,11 +598,11 @@ Exit gate: package, documentation, Portal copy, media, and validation evidence a
 6. Selection auto-plays after reset and includes Replay.
 7. All 300 presets are searchable; semantic variants use contextual options.
 8. Category selections/options are remembered for the current session, with reset before playback.
-9. The gallery targets 16:9 only at 1920×1080 and 1280×720.
+9. The gallery targets 16:9 only at 1920×1080.
 10. Snippets are minimal for defaults and explicit for user-changed values.
 11. Media includes a short marketing reel and a longer tutorial.
 12. Both videos are caption-only.
-13. Canonical customer naming is Tween Helper with support at `Info@Loags.de`.
+13. Canonical customer naming is Tween Helper; the support address appears only inside the in-Editor Setup & Support workflow.
 14. Existing 1.0 key artwork remains; outdated feature captures are replaced.
 15. Unity Recorder `5.1.7` is the approved later capture tool.
 16. Portal positioning remains Tools > Animation at $15 with the maximum launch discount, currently 50% for two weeks.

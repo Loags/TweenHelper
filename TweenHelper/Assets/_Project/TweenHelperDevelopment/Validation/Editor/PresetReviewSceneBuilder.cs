@@ -35,13 +35,15 @@ namespace LB.TweenHelper.Editor
                 bool sceneNeedsDestinationPreview = !sceneText.Contains("destinationWorldRoot:");
                 bool sceneNeedsUISequencePreview = !sceneText.Contains("uiSequencePreviewRoot:");
                 bool sceneNeedsTextValuePreview = !sceneText.Contains("textValuePreviewRoot:");
+                bool sceneNeedsProgressPreview = !sceneText.Contains("progressPreviewRoot:");
                 bool sceneNeedsCameraFeedback = !sceneText.Contains("feedbackCamera:");
+                bool sceneNeedsEnginePropertyPreview = !sceneText.Contains("enginePropertyPreviewRoot:");
                 bool sceneNeedsCoveragePreview = !sceneText.Contains("incompleteGridPreviewGroup:") ||
                                                  !sceneText.Contains("worldCollectionPreviewRoot:") ||
                                                  !sceneText.Contains("drawerSequenceBackdrop:") ||
                                                  !sceneText.Contains("worldTextValuePreviewRoot:");
                 bool sceneNeedsMaterial = !File.Exists(Path.GetFullPath(MaterialPath));
-                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsDestinationPreview && !sceneNeedsUISequencePreview && !sceneNeedsTextValuePreview && !sceneNeedsCameraFeedback && !sceneNeedsCoveragePreview && !sceneNeedsMaterial)
+                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsDestinationPreview && !sceneNeedsUISequencePreview && !sceneNeedsTextValuePreview && !sceneNeedsProgressPreview && !sceneNeedsCameraFeedback && !sceneNeedsEnginePropertyPreview && !sceneNeedsCoveragePreview && !sceneNeedsMaterial)
                 {
                     Material material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
                     if (material == null || !NeedsTransparentConfiguration(material)) return;
@@ -107,6 +109,8 @@ namespace LB.TweenHelper.Editor
             DestinationPreview destinationPreview = CreateDestinationPreview(previewFrame);
             UISequencePreview uiSequencePreview = CreateUISequencePreview(previewFrame);
             TextValuePreview textValuePreview = CreateTextValuePreview(previewFrame);
+            ProgressPreview progressPreview = CreateProgressPreview(previewFrame);
+            EnginePropertyPreview enginePropertyPreview = CreateEnginePropertyPreview(previewFrame);
 
             Button failed = CreateButton("Mark Wrong", canvas.transform, "[X]  WRONG / NEEDS WORK", new Color(0.42f, 0.16f, 0.2f));
             SetRect((RectTransform)failed.transform, new Vector2(0.015f, 0.3f), new Vector2(0.18f, 0.63f), Vector2.zero, Vector2.zero);
@@ -174,8 +178,22 @@ namespace LB.TweenHelper.Editor
             Assign(serializedController, "scoreText", textValuePreview.Score);
             Assign(serializedController, "worldTextValuePreviewRoot", textValuePreview.WorldRoot);
             Assign(serializedController, "worldCharacterText", textValuePreview.WorldCharacter);
+            Assign(serializedController, "progressPreviewRoot", progressPreview.Root);
+            Assign(serializedController, "progressImageGroup", progressPreview.ImageGroup);
+            Assign(serializedController, "progressImage", progressPreview.Image);
+            Assign(serializedController, "progressSlider", progressPreview.Slider);
+            Assign(serializedController, "progressValueText", progressPreview.ValueText);
+            Assign(serializedController, "progressEventText", progressPreview.EventText);
             Assign(serializedController, "feedbackCamera", camera);
             Assign(serializedController, "cameraFocusTarget", worldTarget.transform);
+            Assign(serializedController, "enginePropertyPreviewRoot", enginePropertyPreview.Root);
+            Assign(serializedController, "enginePropertyWorldRoot", enginePropertyPreview.WorldRoot);
+            Assign(serializedController, "engineAudioSource", enginePropertyPreview.AudioSource);
+            Assign(serializedController, "engineLight", enginePropertyPreview.Light);
+            Assign(serializedController, "engineParticles", enginePropertyPreview.Particles);
+            Assign(serializedController, "engineRenderer", enginePropertyPreview.Renderer);
+            Assign(serializedController, "enginePropertyMeter", enginePropertyPreview.Meter);
+            Assign(serializedController, "enginePropertyValueText", enginePropertyPreview.ValueText);
             Assign(serializedController, "itemNameText", itemName);
             Assign(serializedController, "descriptionText", description);
             Assign(serializedController, "categoryText", category);
@@ -496,6 +514,132 @@ namespace LB.TweenHelper.Editor
             return new TextValuePreview(root, typewriter, number, character, score, worldRoot, worldCharacter);
         }
 
+        private static ProgressPreview CreateProgressPreview(Transform parent)
+        {
+            GameObject root = CreatePreviewGroup("Progress Preview", parent);
+            TMP_Text heading = CreateText("Progress Heading", root.transform, "NORMALIZED VALUE", 20f, FontStyles.Bold, TextAlignmentOptions.Center);
+            heading.color = MutedTextColor;
+            SetRect(heading.rectTransform, new Vector2(0.18f, 0.73f), new Vector2(0.82f, 0.9f), Vector2.zero, Vector2.zero);
+
+            GameObject imageGroup = CreatePreviewGroup("Image Fill Preview", root.transform);
+            RectTransform imageFrame = CreatePanel("Image Fill Background", imageGroup.transform, new Color(0.07f, 0.12f, 0.2f, 1f));
+            imageFrame.anchorMin = imageFrame.anchorMax = new Vector2(0.5f, 0.5f);
+            imageFrame.anchoredPosition = new Vector2(0f, 25f);
+            imageFrame.sizeDelta = new Vector2(650f, 82f);
+            var imageObject = new GameObject("Image Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            imageObject.transform.SetParent(imageFrame, false);
+            var imageRect = (RectTransform)imageObject.transform;
+            SetRect(imageRect, Vector2.zero, Vector2.one, new Vector2(8f, 8f), new Vector2(-8f, -8f));
+            var image = imageObject.GetComponent<Image>();
+            image.color = BlueColor;
+            image.type = Image.Type.Filled;
+            image.fillMethod = Image.FillMethod.Horizontal;
+            image.fillOrigin = (int)Image.OriginHorizontal.Left;
+            image.fillAmount = 0.18f;
+
+            var sliderObject = new GameObject("Slider Fill Preview", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Slider));
+            sliderObject.transform.SetParent(root.transform, false);
+            var sliderRect = (RectTransform)sliderObject.transform;
+            sliderRect.anchorMin = sliderRect.anchorMax = new Vector2(0.5f, 0.5f);
+            sliderRect.anchoredPosition = new Vector2(0f, 25f);
+            sliderRect.sizeDelta = new Vector2(650f, 82f);
+            var sliderBackground = sliderObject.GetComponent<Image>();
+            sliderBackground.color = new Color(0.07f, 0.12f, 0.2f, 1f);
+
+            var fillAreaObject = new GameObject("Fill Area", typeof(RectTransform));
+            fillAreaObject.transform.SetParent(sliderObject.transform, false);
+            var fillArea = (RectTransform)fillAreaObject.transform;
+            SetRect(fillArea, Vector2.zero, Vector2.one, new Vector2(8f, 8f), new Vector2(-8f, -8f));
+            var sliderFillObject = new GameObject("Fill", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            sliderFillObject.transform.SetParent(fillArea, false);
+            var sliderFillRect = (RectTransform)sliderFillObject.transform;
+            SetRect(sliderFillRect, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
+            sliderFillObject.GetComponent<Image>().color = BlueColor;
+
+            var slider = sliderObject.GetComponent<Slider>();
+            slider.targetGraphic = sliderBackground;
+            slider.fillRect = sliderFillRect;
+            slider.direction = Slider.Direction.LeftToRight;
+            slider.minValue = 20f;
+            slider.maxValue = 120f;
+            slider.value = 42f;
+
+            TMP_Text valueText = CreateText("Progress Value", root.transform, "18%", 62f, FontStyles.Bold, TextAlignmentOptions.Center);
+            SetRect(valueText.rectTransform, new Vector2(0.25f, 0.18f), new Vector2(0.75f, 0.46f), Vector2.zero, Vector2.zero);
+            TMP_Text eventText = CreateText("Progress Event", root.transform, string.Empty, 18f, FontStyles.Bold, TextAlignmentOptions.Center);
+            eventText.color = new Color(1f, 0.78f, 0.22f, 1f);
+            SetRect(eventText.rectTransform, new Vector2(0.18f, 0.05f), new Vector2(0.82f, 0.2f), Vector2.zero, Vector2.zero);
+
+            sliderObject.SetActive(false);
+            root.SetActive(false);
+            return new ProgressPreview(root, imageGroup, image, slider, valueText, eventText);
+        }
+
+        private static EnginePropertyPreview CreateEnginePropertyPreview(Transform parent)
+        {
+            GameObject root = CreatePreviewGroup("Engine Property Preview", parent);
+            RectTransform meterFrame = CreatePanel("Property Meter Background", root.transform, new Color(0.07f, 0.12f, 0.2f, 0.94f));
+            meterFrame.anchorMin = meterFrame.anchorMax = new Vector2(0.5f, 0.5f);
+            meterFrame.anchoredPosition = new Vector2(0f, -142f);
+            meterFrame.sizeDelta = new Vector2(620f, 54f);
+            var meterObject = new GameObject("Property Meter", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            meterObject.transform.SetParent(meterFrame, false);
+            var meterRect = (RectTransform)meterObject.transform;
+            SetRect(meterRect, Vector2.zero, Vector2.one, new Vector2(6f, 6f), new Vector2(-6f, -6f));
+            var meter = meterObject.GetComponent<Image>();
+            meter.color = BlueColor;
+            meter.type = Image.Type.Filled;
+            meter.fillMethod = Image.FillMethod.Horizontal;
+            meter.fillOrigin = (int)Image.OriginHorizontal.Left;
+            meter.fillAmount = 0.25f;
+
+            TMP_Text valueText = CreateText("Property Value", root.transform, string.Empty, 21f, FontStyles.Bold, TextAlignmentOptions.Center);
+            valueText.color = Color.white;
+            SetRect(valueText.rectTransform, new Vector2(0.2f, 0.02f), new Vector2(0.8f, 0.18f), Vector2.zero, Vector2.zero);
+
+            var worldRoot = new GameObject("Engine Property World Preview");
+            GameObject visual = CreateWorldDestinationObject("Property Renderer", PrimitiveType.Sphere, worldRoot.transform, new Vector3(0f, 0.5f, 0f), 1.35f);
+            Renderer renderer = visual.GetComponent<Renderer>();
+
+            var audioObject = new GameObject("Property Audio Source", typeof(AudioSource));
+            audioObject.transform.SetParent(worldRoot.transform, false);
+            AudioSource audioSource = audioObject.GetComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            audioSource.volume = 0.25f;
+            audioSource.pitch = 0.75f;
+
+            var lightObject = new GameObject("Property Point Light", typeof(Light));
+            lightObject.transform.SetParent(worldRoot.transform, false);
+            lightObject.transform.localPosition = new Vector3(0f, 1.8f, -2.2f);
+            Light light = lightObject.GetComponent<Light>();
+            light.type = LightType.Point;
+            light.range = 8f;
+            light.intensity = 0.65f;
+            light.color = new Color(1f, 0.56f, 0.2f, 1f);
+
+            var particleObject = new GameObject("Property Particles", typeof(ParticleSystem));
+            particleObject.transform.SetParent(worldRoot.transform, false);
+            particleObject.transform.localPosition = new Vector3(0f, -1.3f, -0.5f);
+            ParticleSystem particles = particleObject.GetComponent<ParticleSystem>();
+            ParticleSystem.MainModule main = particles.main;
+            main.loop = true;
+            main.startLifetime = 1.3f;
+            main.startSpeed = 1.25f;
+            main.startSize = 0.18f;
+            main.startColor = new Color(0.15f, 0.82f, 1f, 0.9f);
+            main.simulationSpace = ParticleSystemSimulationSpace.Local;
+            ParticleSystem.EmissionModule emission = particles.emission;
+            emission.rateOverTimeMultiplier = 8f;
+            ParticleSystem.ShapeModule shape = particles.shape;
+            shape.shapeType = ParticleSystemShapeType.Cone;
+            shape.angle = 18f;
+            shape.radius = 0.35f;
+
+            root.SetActive(false);
+            worldRoot.SetActive(false);
+            return new EnginePropertyPreview(root, worldRoot, audioSource, light, particles, renderer, meter, valueText);
+        }
+
         private static GameObject CreateSequencePanel(string name, Transform parent, string labelValue, Vector2 anchoredPosition, Vector2 size, Color color, float fontSize)
         {
             var panel = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(CanvasGroup));
@@ -793,6 +937,50 @@ namespace LB.TweenHelper.Editor
                 Score = score;
                 WorldRoot = worldRoot;
                 WorldCharacter = worldCharacter;
+            }
+        }
+
+        private readonly struct ProgressPreview
+        {
+            public readonly GameObject Root;
+            public readonly GameObject ImageGroup;
+            public readonly Image Image;
+            public readonly Slider Slider;
+            public readonly TMP_Text ValueText;
+            public readonly TMP_Text EventText;
+
+            public ProgressPreview(GameObject root, GameObject imageGroup, Image image, Slider slider, TMP_Text valueText, TMP_Text eventText)
+            {
+                Root = root;
+                ImageGroup = imageGroup;
+                Image = image;
+                Slider = slider;
+                ValueText = valueText;
+                EventText = eventText;
+            }
+        }
+
+        private readonly struct EnginePropertyPreview
+        {
+            public readonly GameObject Root;
+            public readonly GameObject WorldRoot;
+            public readonly AudioSource AudioSource;
+            public readonly Light Light;
+            public readonly ParticleSystem Particles;
+            public readonly Renderer Renderer;
+            public readonly Image Meter;
+            public readonly TMP_Text ValueText;
+
+            public EnginePropertyPreview(GameObject root, GameObject worldRoot, AudioSource audioSource, Light light, ParticleSystem particles, Renderer renderer, Image meter, TMP_Text valueText)
+            {
+                Root = root;
+                WorldRoot = worldRoot;
+                AudioSource = audioSource;
+                Light = light;
+                Particles = particles;
+                Renderer = renderer;
+                Meter = meter;
+                ValueText = valueText;
             }
         }
     }

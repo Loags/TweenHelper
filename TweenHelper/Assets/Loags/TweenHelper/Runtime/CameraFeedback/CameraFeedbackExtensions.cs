@@ -40,5 +40,11 @@ namespace LB.TweenHelper
 
         public static TweenHandle CameraBreathing(this GameObject target, float positionAmplitude = 0.035f, float rotationAmplitude = 0.3f, float fieldOfViewAmplitude = 0.45f, float? duration = null, TweenOptions options = default)
             => target.Tween().WithOptions(options).CameraBreathing(positionAmplitude, rotationAmplitude, fieldOfViewAmplitude, duration).Play();
+
+        public static TweenHandle CameraRackFocus(this Camera camera, Transform focusTarget, float fieldOfViewDelta = 5f, float? duration = null, TweenOptions options = default)
+            => camera.gameObject.Tween().WithOptions(options).CameraRackFocus(focusTarget, fieldOfViewDelta, duration).Play();
+
+        public static TweenHandle CollectLandingCameraKick(this Camera camera, float? duration = null, TweenOptions options = default)
+            => camera.gameObject.Tween().WithOptions(options).CollectLandingCameraKick(duration).Play();
     }
 }

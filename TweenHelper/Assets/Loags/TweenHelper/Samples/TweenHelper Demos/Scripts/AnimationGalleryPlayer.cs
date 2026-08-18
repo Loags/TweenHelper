@@ -188,6 +188,22 @@ namespace LB.TweenHelper.Demo
                     return gridTargets.CollectionBurstOut(gridOwner, Vector3.zero);
                 case AnimationGalleryOperation.CollectionGatherTo:
                     return gridTargets.CollectionGatherTo(gridOwner, Vector3.zero);
+                case AnimationGalleryOperation.GridConcentricIn:
+                    return gridTargets.GridConcentricIn(gridOwner, 3);
+                case AnimationGalleryOperation.GridConcentricOut:
+                    return gridTargets.GridConcentricOut(gridOwner, 3);
+                case AnimationGalleryOperation.GridQuadrantSweep:
+                    return gridTargets.GridQuadrantSweep(gridOwner, 3);
+                case AnimationGalleryOperation.ListAccordion:
+                    return listTargets.ListAccordion(listOwner);
+                case AnimationGalleryOperation.CollectionOrbitIn:
+                    return gridTargets.CollectionOrbitIn(gridOwner, Vector3.zero);
+                case AnimationGalleryOperation.CollectionOrbitOut:
+                    return gridTargets.CollectionOrbitOut(gridOwner, Vector3.zero);
+                case AnimationGalleryOperation.LoadingRing:
+                    return loadingDotTargets.LoadingRing(loadingDotsOwner);
+                case AnimationGalleryOperation.LoadingRibbon:
+                    return loadingDotTargets.LoadingRibbon(loadingDotsOwner);
                 default: throw new ArgumentOutOfRangeException();
             }
         }
@@ -218,6 +234,16 @@ namespace LB.TweenHelper.Demo
                     return world ? target.Tween().PathThrough(waypoints, interpolation).Play() : target.Tween().PathLocalThrough(waypoints, interpolation).Play();
                 case AnimationGalleryOperation.SpiralTo: return world ? target.Tween().SpiralTo(destination, 1.1f * sign).Play() : target.Tween().SpiralLocalTo(destination, 92f * sign).Play();
                 case AnimationGalleryOperation.MultiHopTo: return world ? target.Tween().MultiHopTo(destination, height, 3).Play() : target.Tween().MultiHopLocalTo(destination, height, 3).Play();
+                case AnimationGalleryOperation.ArcToUI:
+                    return destinationUiTarget.Tween().ArcToUI(destinationWorldStart.position, destinationUiEnd, 145f).Play();
+                case AnimationGalleryOperation.HopToUI:
+                    return destinationUiTarget.Tween().HopToUI(destinationWorldStart.position, destinationUiEnd, 145f).Play();
+                case AnimationGalleryOperation.BezierToUI:
+                    GetBezierControls(true, destinationWorldStart.position, destinationWorldEnd.position, out Vector3 worldControlA, out Vector3 worldControlB);
+                    return destinationUiTarget.Tween().BezierToUI(destinationWorldStart.position, worldControlA, worldControlB, destinationUiEnd).Play();
+                case AnimationGalleryOperation.PathThroughUI:
+                    Vector3[] worldWaypoints = GetWaypoints(true, destinationWorldStart.position, destinationWorldEnd.position);
+                    return destinationUiTarget.Tween().PathThroughUI(destinationWorldStart.position, worldWaypoints, destinationUiEnd).Play();
                 default: throw new ArgumentOutOfRangeException();
             }
         }
@@ -243,12 +269,27 @@ namespace LB.TweenHelper.Demo
                     if (world) target.transform.position = start;
                     else ((RectTransform)target.transform).anchoredPosition3D = start;
                     return world ? target.PickupCollectTo(destination) : target.PickupCollectLocalTo(destination);
+                case AnimationGalleryOperation.PickupCollectToUI:
+                    return destinationUiTarget.PickupCollectToUI(destinationWorldStart.position, destinationUiEnd);
                 case AnimationGalleryOperation.HealReceive: return target.HealReceive();
                 case AnimationGalleryOperation.ShieldBlock: return target.ShieldBlock(reverse ? Vector3.left : Vector3.right);
                 case AnimationGalleryOperation.CriticalHit: return target.CriticalHit(reverse ? Vector3.left : Vector3.right);
                 case AnimationGalleryOperation.CooldownReady: return target.CooldownReady();
                 case AnimationGalleryOperation.LevelUp: return target.LevelUp();
                 case AnimationGalleryOperation.LowHealthWarning: return target.LowHealthWarning();
+                case AnimationGalleryOperation.AbilityCharging: return target.AbilityCharging();
+                case AnimationGalleryOperation.AbilityReady: return target.AbilityReady();
+                case AnimationGalleryOperation.DodgeRoll: return target.DodgeRoll();
+                case AnimationGalleryOperation.StunStart: return target.StunStart();
+                case AnimationGalleryOperation.StunEnd: return target.StunEnd();
+                case AnimationGalleryOperation.BuffApplied: return target.BuffApplied();
+                case AnimationGalleryOperation.DebuffApplied: return target.DebuffApplied();
+                case AnimationGalleryOperation.ResourceDepleted: return target.ResourceDepleted();
+                case AnimationGalleryOperation.ResourceRecovered: return target.ResourceRecovered();
+                case AnimationGalleryOperation.ObjectiveUnlocked: return target.ObjectiveUnlocked();
+                case AnimationGalleryOperation.CriticalHitSequence: return target.CriticalHitSequence(reverse ? Vector3.left : Vector3.right);
+                case AnimationGalleryOperation.RewardRevealSequence: return target.RewardRevealSequence();
+                case AnimationGalleryOperation.WarningLoopSequence: return target.WarningLoopSequence();
                 default: throw new ArgumentOutOfRangeException();
             }
         }
@@ -274,6 +315,7 @@ namespace LB.TweenHelper.Demo
                 case AnimationGalleryOperation.BottomSheetHide: return modalPanel.BottomSheetHide(modalBackdrop);
                 case AnimationGalleryOperation.PagePush: return tabOutgoing.PagePushTo(tabIncoming, direction);
                 case AnimationGalleryOperation.PageCrossFade: return tabOutgoing.PageCrossFadeTo(tabIncoming);
+                case AnimationGalleryOperation.CutsceneUIEntranceSequence: return toastTarget.CutsceneUIEntranceSequence();
                 default: throw new ArgumentOutOfRangeException();
             }
         }
@@ -313,6 +355,8 @@ namespace LB.TweenHelper.Demo
                 case AnimationGalleryOperation.CameraFovKick: return previewCamera.CameraFovKick(configuration.GetIndex(AnimationGalleryOptionKind.MotionVariant) == 1 ? -11f : 11f);
                 case AnimationGalleryOperation.CameraFocusZoom: return previewCamera.CameraFocusZoom(cameraFocusTarget);
                 case AnimationGalleryOperation.CameraBreathing: return previewCamera.CameraBreathing(duration: 3.2f);
+                case AnimationGalleryOperation.CameraRackFocus: return previewCamera.CameraRackFocus(cameraFocusTarget);
+                case AnimationGalleryOperation.CollectLandingCameraKick: return previewCamera.CollectLandingCameraKick();
                 default: throw new ArgumentOutOfRangeException();
             }
         }

@@ -4,10 +4,9 @@ Internal record only. Do not include this file in the customer package. Keep the
 
 ## 1.1.0 — initial public release
 
-- Portal state: Ready for release-candidate validation; not yet submitted.
+- Portal state: Release candidate uploaded to draft `1449210` and listing saved; not yet submitted.
 - Product name: Tween Helper
 - Publisher: Loags
-- Support: Info@Loags.de
 - Category: Tools > Animation
 - Regular price: $15 USD
 - Launch promotion: maximum Portal discount, planned as 50% for two weeks. Reconfirm the allowed discount immediately before submission.
@@ -112,7 +111,7 @@ Editor tools:
 Included sample:
 - TweenHelperAnimationGallery.unity
 - Mouse-only navigation; no Input System dependency
-- Validated 16:9 layouts at 1920×1080 and 1280×720
+- Validated the 16:9 layout at 1920×1080
 - Dedicated presentation, world-preview, and camera-feedback cameras
 
 Render pipelines:
@@ -126,10 +125,9 @@ Documentation:
 - API examples
 - Focused collection, destination, feedback, UI, text/value, and camera guides
 - Generated 300-preset catalog
-- Third-party notice
+- DOTween dependency and licensing statement in the README and installation guide
 
 Runtime AI or online services: none
-Support: Info@Loags.de
 ```
 
 ### Keywords
@@ -180,7 +178,7 @@ Tween Helper 1.1.0 is the product's initial public release; the version number i
 
 ### Media manifest — production intentionally pending
 
-Retain the existing 1.0 key artwork. Do not upload the obsolete 2D/3D showcase screenshots or draft video because those scenes no longer ship.
+Retain the existing 1.0 artwork and Portal media until accepted replacements exist. Do not delete the current Portal media during release preparation; replace obsolete 2D/3D captures and the draft video only when the new gallery media is ready.
 
 Canonical retained source artwork:
 
@@ -188,7 +186,9 @@ Canonical retained source artwork:
 Assets/_Project/TweenHelperDevelopment/PublisherPortal/Branding/TweenHelperLogo.png
 Assets/_Project/TweenHelperDevelopment/PublisherPortal/Branding/TweenHelperKeyVisual.png
 Assets/_Project/TweenHelperDevelopment/PublisherPortal/Branding/TweenHelperFeatureOverview.png
+Assets/_Project/TweenHelperDevelopment/PublisherPortal/Branding/TweenHelperFeatureOverviewCover-1950x1300.png
 Assets/_Project/TweenHelperDevelopment/PublisherPortal/Branding/TweenHelperSetupAndSupport.png
+Assets/_Project/TweenHelperDevelopment/PublisherPortal/Branding/TweenHelperSetupWindowKeyImage.png
 ```
 
 Future captures use Unity Recorder `5.1.7` from the accepted release-candidate gallery:
@@ -204,7 +204,7 @@ Future captures use Unity Recorder `5.1.7` from the accepted release-candidate g
 9. Short caption-only marketing reel.
 10. Longer caption-only setup and feature tutorial.
 
-Confirm current Portal image/video dimensions and limits immediately before export. Store final delivery files beneath the repository-level `PublisherMedia` directory, never beneath `Assets/Loags/TweenHelper`.
+Confirm current Portal image/video dimensions and limits immediately before export. Store final delivery files beneath the repository-level `PublisherMedia` directory described by its README, never anywhere under the Unity project's `Assets` directory.
 
 ## 1.0.0 — archived unpublished draft
 

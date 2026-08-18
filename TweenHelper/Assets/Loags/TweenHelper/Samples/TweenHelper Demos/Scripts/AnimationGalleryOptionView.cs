@@ -19,6 +19,9 @@ namespace LB.TweenHelper.Demo
             dropdown.onValueChanged.RemoveListener(Changed);
             dropdown.ClearOptions();
             dropdown.AddOptions(new System.Collections.Generic.List<string>(descriptor.Values));
+            Vector2 templateSize = dropdown.template.sizeDelta;
+            templateSize.y = Mathf.Min(220f, descriptor.Values.Count * 34f + 42f);
+            dropdown.template.sizeDelta = templateSize;
             dropdown.SetValueWithoutNotify(selectedIndex);
             _onChanged = onChanged;
             dropdown.onValueChanged.AddListener(Changed);

@@ -197,7 +197,7 @@ namespace LB.TweenHelper.Editor
         private static void BuildFixtures(RectTransform parent, RenderTexture worldTexture, RenderTexture cameraTexture, out FixtureBindings bindings)
         {
             bindings = new FixtureBindings();
-            bindings.UiTarget = CreatePanel("UI Preview Target", parent, Accent).gameObject;
+            bindings.UiTarget = CreateCompositePanel("UI Preview Target", parent, Accent).gameObject;
             Center((RectTransform)bindings.UiTarget.transform, new Vector2(230f, 150f), Vector2.zero);
             AddCenteredLabel(bindings.UiTarget.transform, "UI TARGET", 21f);
 
@@ -239,28 +239,28 @@ namespace LB.TweenHelper.Editor
         private static void BuildUISequenceFixture(FixtureBindings bindings)
         {
             Transform parent = bindings.UISequenceRoot.transform;
-            bindings.ToastTarget = CreatePanel("Toast", parent, Accent).gameObject;
+            bindings.ToastTarget = CreateCompositePanel("Toast", parent, Accent).gameObject;
             Place((RectTransform)bindings.ToastTarget.transform, new Vector2(0f, 155f), new Vector2(360f, 70f));
             AddCenteredLabel(bindings.ToastTarget.transform, "Saved successfully", 18f);
-            bindings.TooltipTarget = CreatePanel("Tooltip", parent, PanelLight).gameObject;
+            bindings.TooltipTarget = CreateCompositePanel("Tooltip", parent, PanelLight).gameObject;
             Place((RectTransform)bindings.TooltipTarget.transform, new Vector2(-340f, 0f), new Vector2(260f, 90f));
             AddCenteredLabel(bindings.TooltipTarget.transform, "Helpful tooltip", 17f);
             bindings.ModalBackdrop = CreatePanel("Modal Backdrop", parent, new Color(0f, 0f, 0f, 0.48f)).gameObject;
             Place((RectTransform)bindings.ModalBackdrop.transform, new Vector2(0f, -5f), new Vector2(520f, 270f));
-            bindings.ModalPanel = CreatePanel("Modal Panel", bindings.ModalBackdrop.transform, PanelLight).gameObject;
-            Center((RectTransform)bindings.ModalPanel.transform, new Vector2(390f, 210f), Vector2.zero);
+            bindings.ModalPanel = CreateCompositePanel("Modal Panel", parent, PanelLight).gameObject;
+            Place((RectTransform)bindings.ModalPanel.transform, new Vector2(0f, -5f), new Vector2(390f, 210f));
             AddCenteredLabel(bindings.ModalPanel.transform, "MODAL", 23f);
             bindings.ModalControls = BuildCards(bindings.ModalPanel.transform, 3, 3, new Vector2(92f, 42f));
-            bindings.DropdownPanel = CreatePanel("Dropdown Panel", parent, PanelLight).gameObject;
+            bindings.DropdownPanel = CreateCompositePanel("Dropdown Panel", parent, PanelLight).gameObject;
             Place((RectTransform)bindings.DropdownPanel.transform, new Vector2(350f, -35f), new Vector2(260f, 260f));
             bindings.DropdownEntries = BuildCards(bindings.DropdownPanel.transform, 3, 1, new Vector2(210f, 46f));
             bindings.DrawerBackdrop = CreatePanel("Drawer Backdrop", parent, new Color(0f, 0f, 0f, 0.35f)).gameObject;
             Stretch((RectTransform)bindings.DrawerBackdrop.transform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
             bindings.DrawerBackdrop.transform.SetAsFirstSibling();
-            bindings.TabOutgoing = CreatePanel("Outgoing Page", parent, new Color(0.16f, 0.35f, 0.58f, 1f)).gameObject;
+            bindings.TabOutgoing = CreateCompositePanel("Outgoing Page", parent, new Color(0.16f, 0.35f, 0.58f, 1f)).gameObject;
             Place((RectTransform)bindings.TabOutgoing.transform, new Vector2(-210f, -160f), new Vector2(300f, 90f));
             AddCenteredLabel(bindings.TabOutgoing.transform, "OUTGOING", 17f);
-            bindings.TabIncoming = CreatePanel("Incoming Page", parent, new Color(0.18f, 0.64f, 0.46f, 1f)).gameObject;
+            bindings.TabIncoming = CreateCompositePanel("Incoming Page", parent, new Color(0.18f, 0.64f, 0.46f, 1f)).gameObject;
             Place((RectTransform)bindings.TabIncoming.transform, new Vector2(210f, -160f), new Vector2(300f, 90f));
             AddCenteredLabel(bindings.TabIncoming.transform, "INCOMING", 17f);
         }
@@ -283,7 +283,7 @@ namespace LB.TweenHelper.Editor
             Place(start, new Vector2(-330f, -105f), new Vector2(34f, 34f));
             end = CreatePanel("Destination Marker", parent, new Color(1f, 0.53f, 0.2f, 1f));
             Place(end, new Vector2(330f, 105f), new Vector2(34f, 34f));
-            target = CreatePanel(world ? "Destination World Target" : "Destination UI Target", parent, Accent).gameObject;
+            target = CreateCompositePanel(world ? "Destination World Target" : "Destination UI Target", parent, Accent).gameObject;
             Place((RectTransform)target.transform, start.anchoredPosition, new Vector2(94f, 94f));
             AddCenteredLabel(target.transform, world ? "3D" : "UI", 18f);
         }
@@ -314,6 +314,7 @@ namespace LB.TweenHelper.Editor
             camera.backgroundColor = new Color(0.025f, 0.04f, 0.07f);
             camera.targetTexture = texture;
             target = CreatePrimitive("World Preview Target", PrimitiveType.Cube, rig.transform, material);
+            target.transform.localRotation = Quaternion.Euler(-12f, 28f, 0f);
             target.transform.localScale = new Vector3(2.2f, 2.2f, 0.6f);
             GameObject floor = CreatePrimitive("Reference Floor", PrimitiveType.Cube, rig.transform, material);
             floor.transform.localPosition = new Vector3(0f, -2.2f, 1f);
@@ -334,6 +335,7 @@ namespace LB.TweenHelper.Editor
             camera.targetTexture = texture;
             camera.fieldOfView = 48f;
             GameObject hero = CreatePrimitive("Camera Focus Target", PrimitiveType.Cube, rig.transform, material);
+            hero.transform.localRotation = Quaternion.Euler(-12f, 28f, 0f);
             hero.transform.localScale = new Vector3(2f, 2f, 0.7f);
             focusTarget = hero.transform;
             for (int i = -3; i <= 3; i++)
@@ -437,6 +439,7 @@ namespace LB.TweenHelper.Editor
             GameObject root = new GameObject("AnimationGalleryListItem", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image), typeof(Button), typeof(LayoutElement), typeof(AnimationGalleryListItem));
             Image background = root.GetComponent<Image>();
             background.color = PanelLight;
+            ConfigureSelectable(root.GetComponent<Button>());
             root.GetComponent<LayoutElement>().preferredHeight = 66f;
             TMP_Text name = CreateText("Name", root.transform, "Animation Name", 17f, FontStyles.Bold, TextPrimary, TextAlignmentOptions.Left);
             Stretch(name.rectTransform, Vector2.zero, new Vector2(1f, 0.62f), new Vector2(16f, 0f), new Vector2(-10f, 0f));
@@ -461,7 +464,7 @@ namespace LB.TweenHelper.Editor
             RectTransform root = CreateRect(name, parent);
             TMP_Text label = CreateText("Label", root, "Option", 13f, FontStyles.Bold, TextSecondary, TextAlignmentOptions.Left);
             Stretch(label.rectTransform, Vector2.zero, new Vector2(0.3f, 1f), new Vector2(0f, 0f), new Vector2(-8f, 0f));
-            Dropdown dropdown = CreateDropdown("Values", root, new[] { "Default" });
+            Dropdown dropdown = CreateDropdown("Values", root, new[] { "Default" }, true);
             Stretch((RectTransform)dropdown.transform, new Vector2(0.31f, 0f), Vector2.one, Vector2.zero, Vector2.zero);
             AnimationGalleryOptionView view = root.gameObject.AddComponent<AnimationGalleryOptionView>();
             SetObject(view, "labelText", label);
@@ -475,8 +478,7 @@ namespace LB.TweenHelper.Editor
             ScrollRect scroll = root.gameObject.AddComponent<ScrollRect>();
             RectTransform viewport = CreateRect("Viewport", root);
             Stretch(viewport, Vector2.zero, Vector2.one, new Vector2(4f, 4f), new Vector2(-4f, -4f));
-            viewport.gameObject.AddComponent<Image>().color = Color.white;
-            viewport.gameObject.AddComponent<Mask>().showMaskGraphic = false;
+            viewport.gameObject.AddComponent<RectMask2D>();
             RectTransform content = CreateRect("Content", viewport);
             Stretch(content, new Vector2(0f, 1f), Vector2.one, Vector2.zero, Vector2.zero);
             content.pivot = new Vector2(0.5f, 1f);
@@ -512,7 +514,7 @@ namespace LB.TweenHelper.Editor
             return input;
         }
 
-        private static Dropdown CreateDropdown(string name, Transform parent, IReadOnlyList<string> options)
+        private static Dropdown CreateDropdown(string name, Transform parent, IReadOnlyList<string> options, bool expandUpward = false)
         {
             RectTransform root = CreatePanel(name, parent, PanelLight);
             Dropdown dropdown = root.gameObject.AddComponent<Dropdown>();
@@ -522,17 +524,22 @@ namespace LB.TweenHelper.Editor
             Text arrow = CreateLegacyText("Arrow", root, "v", font, 17, TextAnchor.MiddleCenter, Accent);
             Stretch(arrow.rectTransform, new Vector2(1f, 0f), Vector2.one, new Vector2(-32f, 0f), Vector2.zero);
             RectTransform template = CreatePanel("Template", root, Panel).GetComponent<RectTransform>();
-            Stretch(template, new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, -220f), Vector2.zero);
+            if (expandUpward) Stretch(template, new Vector2(0f, 1f), Vector2.one, Vector2.zero, new Vector2(0f, 220f));
+            else Stretch(template, Vector2.zero, new Vector2(1f, 0f), new Vector2(0f, -220f), Vector2.zero);
             ScrollRect scroll = template.gameObject.AddComponent<ScrollRect>();
             RectTransform viewport = CreateRect("Viewport", template);
             Stretch(viewport, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero);
-            viewport.gameObject.AddComponent<Image>().color = Color.white;
-            viewport.gameObject.AddComponent<Mask>().showMaskGraphic = false;
+            viewport.gameObject.AddComponent<RectMask2D>();
             RectTransform content = CreateRect("Content", viewport);
             Stretch(content, new Vector2(0f, 1f), Vector2.one, Vector2.zero, Vector2.zero);
             content.pivot = new Vector2(0.5f, 1f);
+            content.sizeDelta = new Vector2(0f, 34f);
             Toggle item = CreatePanel("Item", content, PanelLight).gameObject.AddComponent<Toggle>();
             RectTransform itemRect = (RectTransform)item.transform;
+            itemRect.anchorMin = new Vector2(0f, 1f);
+            itemRect.anchorMax = Vector2.one;
+            itemRect.pivot = new Vector2(0.5f, 1f);
+            itemRect.anchoredPosition = Vector2.zero;
             itemRect.sizeDelta = new Vector2(0f, 34f);
             Image checkmark = CreatePanel("Item Checkmark", item.transform, Accent).GetComponent<Image>();
             Stretch(checkmark.rectTransform, Vector2.zero, new Vector2(0f, 1f), new Vector2(6f, 6f), new Vector2(12f, -6f));
@@ -540,10 +547,12 @@ namespace LB.TweenHelper.Editor
             Stretch(itemLabel.rectTransform, Vector2.zero, Vector2.one, new Vector2(20f, 0f), new Vector2(-6f, 0f));
             item.targetGraphic = item.GetComponent<Image>();
             item.graphic = checkmark;
+            ConfigureSelectable(item);
             scroll.viewport = viewport;
             scroll.content = content;
             scroll.horizontal = false;
             dropdown.targetGraphic = root.GetComponent<Image>();
+            ConfigureSelectable(dropdown);
             dropdown.template = template;
             dropdown.captionText = label;
             dropdown.itemText = itemLabel;
@@ -565,15 +574,23 @@ namespace LB.TweenHelper.Editor
             RectTransform root = CreatePanel(name, parent, PanelLight);
             Button button = root.gameObject.AddComponent<Button>();
             button.targetGraphic = root.GetComponent<Image>();
-            ColorBlock colors = button.colors;
-            colors.normalColor = Color.white;
-            colors.highlightedColor = new Color(0.82f, 0.92f, 1f);
-            colors.pressedColor = new Color(0.55f, 0.82f, 1f);
-            colors.disabledColor = new Color(0.25f, 0.36f, 0.5f, 1f);
-            button.colors = colors;
+            ConfigureSelectable(button);
             labelText = CreateText("Label", root, label, 16f, FontStyles.Bold, TextPrimary, TextAlignmentOptions.Center);
             Stretch(labelText.rectTransform, Vector2.zero, Vector2.one, new Vector2(8f, 4f), new Vector2(-8f, -4f));
             return button;
+        }
+
+        private static void ConfigureSelectable(Selectable selectable)
+        {
+            selectable.transition = Selectable.Transition.ColorTint;
+            ColorBlock colors = selectable.colors;
+            colors.normalColor = Color.white;
+            colors.highlightedColor = new Color(0.68f, 0.9f, 1f, 1f);
+            colors.pressedColor = new Color(0.5f, 0.78f, 1f, 1f);
+            colors.selectedColor = new Color(0.68f, 0.9f, 1f, 1f);
+            colors.disabledColor = new Color(0.25f, 0.36f, 0.5f, 1f);
+            colors.fadeDuration = 0.08f;
+            selectable.colors = colors;
         }
 
         private static TMP_Text CreateBadge(string name, Transform parent, string value)
@@ -601,7 +618,7 @@ namespace LB.TweenHelper.Editor
             {
                 int row = i / columns;
                 int column = i % columns;
-                targets[i] = CreatePanel($"Item {i + 1}", parent, i % 2 == 0 ? Accent : new Color(0.34f, 0.52f, 0.95f, 1f)).gameObject;
+                targets[i] = CreateCompositePanel($"Item {i + 1}", parent, i % 2 == 0 ? Accent : new Color(0.34f, 0.52f, 0.95f, 1f)).gameObject;
                 Vector2 position = new Vector2((column - (columns - 1) * 0.5f) * spacingX, ((rows - 1) * 0.5f - row) * spacingY);
                 Place((RectTransform)targets[i].transform, position, cellSize);
                 AddCenteredLabel(targets[i].transform, (i + 1).ToString(), 16f);
@@ -636,6 +653,13 @@ namespace LB.TweenHelper.Editor
             RectTransform rect = CreateRect(name, parent);
             Image image = rect.gameObject.AddComponent<Image>();
             image.color = color;
+            return rect;
+        }
+
+        private static RectTransform CreateCompositePanel(string name, Transform parent, Color color)
+        {
+            RectTransform rect = CreatePanel(name, parent, color);
+            rect.gameObject.AddComponent<CanvasGroup>();
             return rect;
         }
 
@@ -699,8 +723,10 @@ namespace LB.TweenHelper.Editor
         {
             Material material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
             if (material != null) return material;
-            material = new Material(Shader.Find("Tween Helper/Gallery Unlit"));
-            material.color = Accent;
+            material = new Material(Shader.Find("Tween Helper/Gallery Faceted"));
+            material.color = new Color(0.08f, 0.5f, 0.92f, 1f);
+            material.SetColor("_ShadowColor", new Color(0.018f, 0.105f, 0.28f, 1f));
+            material.SetColor("_HighlightColor", new Color(0.3f, 0.86f, 1f, 1f));
             AssetDatabase.CreateAsset(material, MaterialPath);
             return material;
         }

@@ -46,6 +46,20 @@ namespace LB.TweenHelper
             return this;
         }
 
+        /// <summary>Temporarily shifts aim and field of view toward a focus target, then restores the captured camera state.</summary>
+        public TweenBuilder CameraRackFocus(Transform focusTarget, float fieldOfViewDelta = 5f, float? duration = null)
+        {
+            AddStep(options => CameraMicroFeedbackUtility.CreateRackFocus(_gameObject, focusTarget, fieldOfViewDelta, ResolveCameraFeedbackDuration(duration, options, 1.05f), options), applyBuilderOptions: false);
+            return this;
+        }
+
+        /// <summary>Applies a small collection-completion landing kick.</summary>
+        public TweenBuilder CollectLandingCameraKick(float? duration = null)
+        {
+            AddStep(options => CameraFeedbackUtility.CreateLandingImpact(_gameObject, 0.07f, 1.1f, ResolveCameraFeedbackDuration(duration, options, 0.28f), options), applyBuilderOptions: false);
+            return this;
+        }
+
         private static float ResolveCameraFeedbackDuration(float? duration, TweenOptions options, float fallback) => duration ?? options.Duration ?? fallback;
     }
 }
