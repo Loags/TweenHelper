@@ -515,7 +515,7 @@ namespace LB.TweenHelper.Editor
             label.text = text;
             label.fontSize = fontSize;
             label.alignment = TextAlignmentOptions.Center;
-            label.enableWordWrapping = false;
+            label.textWrappingMode = TextWrappingModes.NoWrap;
             label.raycastTarget = false;
             label.color = Color.white;
             return label;
@@ -531,7 +531,7 @@ namespace LB.TweenHelper.Editor
             label.text = text;
             label.fontSize = fontSize;
             label.alignment = TextAlignmentOptions.Center;
-            label.enableWordWrapping = false;
+            label.textWrappingMode = TextWrappingModes.NoWrap;
             label.color = Color.white;
             label.rectTransform.sizeDelta = new Vector2(width, 2f);
             label.ForceMeshUpdate();

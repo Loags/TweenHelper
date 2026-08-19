@@ -1,10 +1,12 @@
 # Tween Helper Asset Store Submission Runbook
 
-Status: **replacement release candidate required**
+Status: **validated replacement candidate ready; Portal version is pending review**
 
 Updated: 2026-08-19
 
-The Publisher Portal draft `1449210` contains an older 1.1.0 artifact. Do not submit it. The runtime, Preset Browser, internal review scene, Unity Pipeline development package, and documentation changed after that upload. Replace the artifact only after every gate in this runbook applies to the same committed revision.
+Publisher Portal version `1449210` is currently `pendingReview` with an older 1.1.0 artifact. The runtime, Preset Browser, internal review scene, Unity Pipeline development package, and documentation changed after that upload. The authenticated upload endpoint rejected the validated replacement on 2026-08-19 because no draft package version exists. Do not withdraw the pending review without an explicit publisher decision; upload the replacement only after the Portal exposes a draft again.
+
+Current validated candidate: `TweenHelper-1.1.0-2026-08-19-r2.unitypackage` (`719613` bytes, SHA-256 `9B09173460DE82F4C7DE17F34D647B268876CAA92C5E635786D93632A7119223`).
 
 ## Release identity
 
@@ -81,12 +83,12 @@ Treat Portal dimensions, codecs, file-size limits, keyword limits, accepted Edit
 - [x] DOTween dependency and separate licensing are disclosed.
 - [x] Unity Pipeline/MCP and local developer telemetry remain outside the customer package.
 - [ ] Resolve the 11 current review entries marked Needs Work.
-- [ ] Run final tests and validators against the committed revision.
+- [x] Run final tests and validators against the committed revision.
 - [ ] Validate Built-in and URP with the exact artifact.
-- [ ] Export, inspect, and clean-import the replacement artifact.
+- [x] Export, inspect, and clean-import the replacement artifact with DOTween installed separately.
 - [ ] Capture replacement screenshots and the required animation demonstration video.
 - [ ] Reconfirm current Portal rules and launch discount controls.
-- [ ] Replace draft `1449210`, preview the rendered listing, and submit.
+- [ ] Obtain a draft version, replace `1449210`, preview the rendered listing, and submit.
 
 ## AI disclosure record
 

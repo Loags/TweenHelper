@@ -4,9 +4,11 @@ Internal publishing record; exclude it from the customer package.
 
 Updated: 2026-08-19
 
-Portal draft: `1449210` — **artifact replacement required before submission**
+Portal version: `1449210` — **currently `pendingReview`; replacement upload blocked until a draft exists**
 
-The draft is still unpublished, so version `1.1.0` remains the intentional initial public release. The previously uploaded candidate predates the current runtime, 446-entry Preset Browser, rebuilt 527-entry review scene, and documentation. Replace it after exact-artifact validation; do not submit the stale upload.
+Version `1.1.0` remains the intentional initial public release. The submitted candidate predates the current runtime, 446-entry Preset Browser, rebuilt 527-entry review scene, and documentation. On 2026-08-19 the authenticated Asset Store upload endpoint rejected its replacement with `No draft package version found to upload data to.` Do not withdraw the pending review without an explicit publisher decision; replace the artifact only after the Portal provides a draft version again.
+
+Validated replacement artifact: `TweenHelper-1.1.0-2026-08-19-r2.unitypackage` (`719613` bytes, SHA-256 `9B09173460DE82F4C7DE17F34D647B268876CAA92C5E635786D93632A7119223`).
 
 ## Release settings
 
@@ -235,10 +237,10 @@ Use Unity Recorder `5.1.7` and capture only from the accepted exact artifact. Co
 - [x] DOTween dependency, compatibility, AI disclosure, and reviewer note rewritten.
 - [x] Expanded catalog counts verified from live assemblies.
 - [ ] Resolve the 11 current internal review entries marked Needs Work.
-- [ ] Run final tests and validators against the committed revision.
-- [ ] Export, inspect, and clean-import the replacement artifact.
+- [x] Run final tests and validators against the committed revision.
+- [x] Export, inspect, and clean-import the replacement artifact.
 - [ ] Capture final screenshots and the required animation demonstration video.
-- [ ] Replace the artifact and obsolete media in draft `1449210`.
+- [ ] Obtain a draft version, then replace the artifact and obsolete media for `1449210`.
 - [ ] Preview the rendered listing and submit for review.
 
 ## Archived 1.0.0 draft
