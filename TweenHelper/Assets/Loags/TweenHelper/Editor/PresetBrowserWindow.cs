@@ -11,8 +11,6 @@ namespace LB.TweenHelper.Editor
     public sealed class PresetBrowserWindow : EditorWindow
     {
         private const string AllAnimations = "All animations";
-        private const string Presets = "Presets";
-        private const string Collections = "Collections";
         private const string AllFamilies = "All families";
         private const string SetupStylePath = "Assets/Loags/TweenHelper/Editor/Setup/TweenHelperSetupWindow.uss";
         private const string BrowserStylePath = "Assets/Loags/TweenHelper/Editor/PresetBrowserWindow.uss";
@@ -20,7 +18,7 @@ namespace LB.TweenHelper.Editor
 
         private readonly List<PresetBrowserEntry> _entries = new List<PresetBrowserEntry>();
         private readonly List<PresetBrowserEntry> _visibleEntries = new List<PresetBrowserEntry>();
-        private readonly List<string> _categories = new List<string> { AllAnimations, Presets, Collections };
+        private readonly List<string> _categories = new List<string> { AllAnimations };
         private readonly List<string> _families = new List<string>();
         private readonly Dictionary<PresetBrowserCollectionKind, int> _collectionOptionSelections = new Dictionary<PresetBrowserCollectionKind, int>();
         private readonly PresetBrowserPreview _preview = new PresetBrowserPreview();
@@ -119,7 +117,7 @@ namespace LB.TweenHelper.Editor
             copy.AddToClassList("browser-hero-copy");
             var title = new Label("Preset Browser");
             title.AddToClassList("browser-title");
-            var subtitle = new Label("Explore every registered preset and collection animation without touching the active scene.");
+            var subtitle = new Label("Explore every preset, recipe, and high-level animation without touching the active scene.");
             subtitle.AddToClassList("browser-subtitle");
             copy.Add(title);
             copy.Add(subtitle);
@@ -268,7 +266,7 @@ namespace LB.TweenHelper.Editor
             eyebrow.AddToClassList("browser-preview-eyebrow");
             var title = new Label("Isolated preview stage");
             title.AddToClassList("section-title");
-            var description = new Label("The preview uses temporary cubes and never reads from or modifies the active scene.");
+            var description = new Label("The preview uses temporary target-specific fixtures and never reads from or modifies the active scene.");
             description.AddToClassList("browser-entry-description");
             panel.Add(eyebrow);
             panel.Add(title);
@@ -317,10 +315,10 @@ namespace LB.TweenHelper.Editor
             if (index < 0 || index >= _visibleEntries.Count) return;
             PresetBrowserEntry entry = _visibleEntries[index];
             row.Q<Label>("entry-name").text = entry.Name;
-            row.Q<Label>("entry-metadata").text = entry.IsCollection ? entry.Category : entry.Family;
+            row.Q<Label>("entry-metadata").text = string.IsNullOrEmpty(entry.Family) ? entry.Category : entry.Family;
             Label badge = row.Q<Label>("entry-badge");
             badge.text = entry.Badge;
-            badge.EnableInClassList("browser-list-badge-collection", entry.IsCollection);
+            badge.EnableInClassList("browser-list-badge-collection", !entry.IsPreset);
             row.tooltip = entry.Description;
         }
 
@@ -335,11 +333,27 @@ namespace LB.TweenHelper.Editor
             string selectedId = _selectedEntry?.Id;
             _entries.Clear();
             _entries.AddRange(PresetBrowserCatalog.Build());
-            int presetCount = _entries.Count(entry => !entry.IsCollection);
-            int collectionCount = _entries.Count - presetCount;
-            _catalogCount.text = $"{presetCount} presets  /  {collectionCount} collections";
+            int presetCount = _entries.Count(entry => entry.IsPreset);
+            int additionalCount = _entries.Count - presetCount;
+            _catalogCount.text = $"{presetCount} presets  /  {additionalCount} additional animations";
+            RefreshCategoryChoices();
             RefreshFamilyChoices();
             ApplyFilters(selectedId);
+        }
+
+        private void RefreshCategoryChoices()
+        {
+            if (_categoryPopup == null) return;
+            string previous = _categoryPopup.value;
+            _categories.Clear();
+            _categories.Add(AllAnimations);
+            _categories.AddRange(_entries
+                .Select(entry => entry.Category)
+                .Where(category => !string.IsNullOrEmpty(category))
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(category => category, StringComparer.Ordinal));
+            _categoryPopup.choices = new List<string>(_categories);
+            _categoryPopup.SetValueWithoutNotify(_categories.Contains(previous) ? previous : AllAnimations);
         }
 
         private void RefreshFamilyChoices()
@@ -373,7 +387,9 @@ namespace LB.TweenHelper.Editor
                 (family == AllFamilies || string.Equals(entry.Family, family, StringComparison.Ordinal)) &&
                 (string.IsNullOrEmpty(search) ||
                  entry.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                 entry.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)));
+                 entry.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                 entry.Category.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                 entry.Family.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)));
 
             _listView.itemsSource = _visibleEntries;
             _listView.Rebuild();
@@ -394,14 +410,14 @@ namespace LB.TweenHelper.Editor
 
         private static bool MatchesCategory(PresetBrowserEntry entry, string category)
         {
-            return category == AllAnimations || category == Presets && !entry.IsCollection || category == Collections && entry.IsCollection;
+            return category == AllAnimations || string.Equals(entry.Category, category, StringComparison.Ordinal);
         }
 
         private void SelectEntry(PresetBrowserEntry entry)
         {
             _selectedEntry = entry;
             _entryBadge.text = entry.Badge;
-            _entryBadge.EnableInClassList("browser-entry-badge-collection", entry.IsCollection);
+            _entryBadge.EnableInClassList("browser-entry-badge-collection", !entry.IsPreset);
             _entryName.text = entry.Name;
             _entryDescription.text = entry.Description;
             _categoryValue.text = entry.Category;
