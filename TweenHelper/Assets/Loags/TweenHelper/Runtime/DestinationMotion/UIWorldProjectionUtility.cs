@@ -34,7 +34,7 @@ namespace LB.TweenHelper
                 value =>
                 {
                     state.RefreshDestination();
-                    float travel = EaseValue(value, options.Ease ?? Ease.InOutCubic);
+                    float travel = EvaluateHopTravel(value, options.Ease ?? Ease.InOutCubic);
                     state.Set(DestinationMotionUtility.EvaluateArc(state.Start, state.End, height * strength, travel));
                     target.transform.localScale = Vector3.Scale(invocationScale, EvaluateHopScale(value, strength));
                 },
@@ -215,12 +215,22 @@ namespace LB.TweenHelper
 
         private static Vector3 EvaluateHopScale(float progress, float strength)
         {
-            Vector3 anticipation = Vector3.one + (new Vector3(1.08f, 0.84f, 1.08f) - Vector3.one) * strength;
-            Vector3 landing = Vector3.one + (new Vector3(1.12f, 0.76f, 1.12f) - Vector3.one) * strength;
-            if (progress <= 0.12f) return Vector3.LerpUnclamped(Vector3.one, anticipation, EaseValue(progress / 0.12f, Ease.InQuad));
-            if (progress <= 0.82f) return Vector3.LerpUnclamped(anticipation, Vector3.one, EaseValue((progress - 0.12f) / 0.7f, Ease.OutBack));
-            if (progress <= 0.9f) return Vector3.LerpUnclamped(Vector3.one, landing, EaseValue((progress - 0.82f) / 0.08f, Ease.OutQuad));
-            return Vector3.LerpUnclamped(landing, Vector3.one, EaseValue((progress - 0.9f) / 0.1f, Ease.OutBack));
+            Vector3 anticipation = Vector3.one + (new Vector3(1.13f, 0.78f, 1.13f) - Vector3.one) * strength;
+            Vector3 launch = Vector3.one + (new Vector3(0.94f, 1.12f, 0.94f) - Vector3.one) * strength;
+            Vector3 landing = Vector3.one + (new Vector3(1.16f, 0.72f, 1.16f) - Vector3.one) * strength;
+            if (progress <= 0.08f) return Vector3.LerpUnclamped(Vector3.one, anticipation, EaseValue(progress / 0.08f, Ease.OutQuad));
+            if (progress <= 0.16f) return Vector3.LerpUnclamped(anticipation, launch, EaseValue((progress - 0.08f) / 0.08f, Ease.InOutCubic));
+            if (progress <= 0.3f) return Vector3.LerpUnclamped(launch, Vector3.one, EaseValue((progress - 0.16f) / 0.14f, Ease.OutBack));
+            if (progress < 0.82f) return Vector3.one;
+            if (progress <= 0.89f) return Vector3.LerpUnclamped(Vector3.one, landing, EaseValue((progress - 0.82f) / 0.07f, Ease.OutQuad));
+            return Vector3.LerpUnclamped(landing, Vector3.one, EaseValue((progress - 0.89f) / 0.11f, Ease.OutBack));
+        }
+
+        private static float EvaluateHopTravel(float progress, Ease ease)
+        {
+            if (progress <= 0.14f) return 0f;
+            if (progress >= 0.82f) return 1f;
+            return EaseValue((progress - 0.14f) / 0.68f, ease);
         }
 
         private static float ResolveStrength(TweenOptions options)

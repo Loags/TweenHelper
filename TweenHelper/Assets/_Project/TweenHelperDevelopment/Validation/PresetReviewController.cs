@@ -11,6 +11,8 @@ namespace LB.TweenHelper.Demo
 {
     public class PresetReviewController : MonoBehaviour
     {
+        [SerializeField, HideInInspector] private int reviewSceneVersion;
+
         private enum ReviewStatus
         {
             Unreviewed,
@@ -748,8 +750,8 @@ namespace LB.TweenHelper.Demo
             AddProgressAnimation(ProgressReviewKind.SliderFillDrain, "Slider Fill Drain", "Drains a Slider quickly with impact motion and a red accent.");
             AddProgressAnimation(ProgressReviewKind.ImageFillCharge, "Image Fill Charge", "Charges an Image fill with an overshoot-and-settle pulse.");
             AddProgressAnimation(ProgressReviewKind.SliderFillCharge, "Slider Fill Charge", "Charges a Slider with an overshoot-and-settle pulse.");
-            AddProgressAnimation(ProgressReviewKind.ImageFillAlertPulse, "Image Fill Alert Pulse", "Plays the finite critical-threshold warning on a low Image fill.");
-            AddProgressAnimation(ProgressReviewKind.SliderFillAlertPulse, "Slider Fill Alert Pulse", "Plays the finite critical-threshold warning on a low Slider value.");
+            AddProgressAnimation(ProgressReviewKind.ImageFillAlertPulse, "Image Fill Alert Pulse", "Keeps the low Image fill fixed while playing a finite critical-threshold color and scale warning.");
+            AddProgressAnimation(ProgressReviewKind.SliderFillAlertPulse, "Slider Fill Alert Pulse", "Keeps the low Slider value fixed while playing a finite critical-threshold color and scale warning.");
             AddProgressAnimation(ProgressReviewKind.ImageFillAndText, "Image Fill And Text", "Animates an Image fill and paired percentage on one timeline.");
             AddProgressAnimation(ProgressReviewKind.SliderFillAndText, "Slider Fill And Text", "Animates a Slider and paired percentage on one timeline.");
             AddProgressAnimation(ProgressReviewKind.ProgressHook, "On Progress Hook", "Fires a visible callback once when the fill timeline crosses 50%.");
@@ -1839,7 +1841,9 @@ namespace LB.TweenHelper.Demo
                 case EnginePropertyReviewKind.MaterialColor:
                     return engineRenderer.MaterialColorTo("_BaseColor", new Color(1f, 0.22f, 0.65f, 1f), 1.2f);
                 case EnginePropertyReviewKind.TorchFlicker:
-                    return engineLight.TorchFlicker(0.42f, 2.2f);
+                    engineLight.intensity = 2.1f;
+                    engineLight.color = new Color(1f, 0.38f, 0.08f);
+                    return engineLight.TorchFlicker(0.72f, 2.8f);
                 case EnginePropertyReviewKind.ScannerPulse:
                     return engineLight.ScannerPulse(new Color(0.05f, 1f, 0.92f), 2f, 1.4f);
                 default:
@@ -1859,7 +1863,7 @@ namespace LB.TweenHelper.Demo
                     value = $"VOLUME  {engineAudioSource.volume:0.00}";
                     break;
                 case EnginePropertyReviewKind.AudioPitch:
-                    normalized = Mathf.InverseLerp(-3f, 3f, engineAudioSource.pitch);
+                    normalized = Mathf.InverseLerp(0.5f, 2f, engineAudioSource.pitch);
                     value = $"PITCH  {engineAudioSource.pitch:0.00}";
                     break;
                 case EnginePropertyReviewKind.LightIntensity:

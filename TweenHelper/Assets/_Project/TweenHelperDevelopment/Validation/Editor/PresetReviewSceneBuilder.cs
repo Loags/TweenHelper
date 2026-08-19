@@ -15,6 +15,7 @@ namespace LB.TweenHelper.Editor
         private const string SceneFolder = "Assets/_Project/TweenHelperDevelopment/Validation/Scenes";
         private const string ScenePath = SceneFolder + "/TweenHelperPresetReview.unity";
         private const string MaterialPath = SceneFolder + "/TweenHelperPresetReviewMaterial.mat";
+        private const int ReviewSceneVersion = 2;
         private static readonly Color BackgroundColor = new Color(0.025f, 0.04f, 0.08f);
         private static readonly Color PanelColor = new Color(0.055f, 0.08f, 0.14f, 0.94f);
         private static readonly Color BlueColor = new Color(0.1f, 0.58f, 0.95f);
@@ -38,12 +39,13 @@ namespace LB.TweenHelper.Editor
                 bool sceneNeedsProgressPreview = !sceneText.Contains("progressPreviewRoot:");
                 bool sceneNeedsCameraFeedback = !sceneText.Contains("feedbackCamera:");
                 bool sceneNeedsEnginePropertyPreview = !sceneText.Contains("enginePropertyPreviewRoot:");
+                bool sceneNeedsVisualRefresh = !sceneText.Contains($"reviewSceneVersion: {ReviewSceneVersion}");
                 bool sceneNeedsCoveragePreview = !sceneText.Contains("incompleteGridPreviewGroup:") ||
                                                  !sceneText.Contains("worldCollectionPreviewRoot:") ||
                                                  !sceneText.Contains("drawerSequenceBackdrop:") ||
                                                  !sceneText.Contains("worldTextValuePreviewRoot:");
                 bool sceneNeedsMaterial = !File.Exists(Path.GetFullPath(MaterialPath));
-                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsDestinationPreview && !sceneNeedsUISequencePreview && !sceneNeedsTextValuePreview && !sceneNeedsProgressPreview && !sceneNeedsCameraFeedback && !sceneNeedsEnginePropertyPreview && !sceneNeedsCoveragePreview && !sceneNeedsMaterial)
+                if (!sceneNeedsFilters && !sceneNeedsCollectionPreview && !sceneNeedsDestinationPreview && !sceneNeedsUISequencePreview && !sceneNeedsTextValuePreview && !sceneNeedsProgressPreview && !sceneNeedsCameraFeedback && !sceneNeedsEnginePropertyPreview && !sceneNeedsVisualRefresh && !sceneNeedsCoveragePreview && !sceneNeedsMaterial)
                 {
                     Material material = AssetDatabase.LoadAssetAtPath<Material>(MaterialPath);
                     if (material == null || !NeedsTransparentConfiguration(material)) return;
@@ -208,6 +210,7 @@ namespace LB.TweenHelper.Editor
             Assign(serializedController, "allFilterToggle", allFilter);
             Assign(serializedController, "unreviewedFilterToggle", unreviewedFilter);
             Assign(serializedController, "failedFilterToggle", failedFilter);
+            serializedController.FindProperty("reviewSceneVersion").intValue = ReviewSceneVersion;
             serializedController.ApplyModifiedPropertiesWithoutUndo();
 
             camera.transform.LookAt(worldTarget.transform);
@@ -531,6 +534,7 @@ namespace LB.TweenHelper.Editor
             var imageRect = (RectTransform)imageObject.transform;
             SetRect(imageRect, Vector2.zero, Vector2.one, new Vector2(8f, 8f), new Vector2(-8f, -8f));
             var image = imageObject.GetComponent<Image>();
+            image.sprite = GetFillSprite();
             image.color = BlueColor;
             image.type = Image.Type.Filled;
             image.fillMethod = Image.FillMethod.Horizontal;
@@ -564,8 +568,10 @@ namespace LB.TweenHelper.Editor
             slider.maxValue = 120f;
             slider.value = 42f;
 
-            TMP_Text valueText = CreateText("Progress Value", root.transform, "18%", 62f, FontStyles.Bold, TextAlignmentOptions.Center);
-            SetRect(valueText.rectTransform, new Vector2(0.25f, 0.18f), new Vector2(0.75f, 0.46f), Vector2.zero, Vector2.zero);
+            TMP_Text valueText = CreateText("Progress Value", root.transform, "18%", 38f, FontStyles.Bold, TextAlignmentOptions.Center);
+            valueText.rectTransform.anchorMin = valueText.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+            valueText.rectTransform.anchoredPosition = new Vector2(0f, 25f);
+            valueText.rectTransform.sizeDelta = new Vector2(400f, 82f);
             TMP_Text eventText = CreateText("Progress Event", root.transform, string.Empty, 18f, FontStyles.Bold, TextAlignmentOptions.Center);
             eventText.color = new Color(1f, 0.78f, 0.22f, 1f);
             SetRect(eventText.rectTransform, new Vector2(0.18f, 0.05f), new Vector2(0.82f, 0.2f), Vector2.zero, Vector2.zero);
@@ -587,6 +593,7 @@ namespace LB.TweenHelper.Editor
             var meterRect = (RectTransform)meterObject.transform;
             SetRect(meterRect, Vector2.zero, Vector2.one, new Vector2(6f, 6f), new Vector2(-6f, -6f));
             var meter = meterObject.GetComponent<Image>();
+            meter.sprite = GetFillSprite();
             meter.color = BlueColor;
             meter.type = Image.Type.Filled;
             meter.fillMethod = Image.FillMethod.Horizontal;
@@ -740,6 +747,13 @@ namespace LB.TweenHelper.Editor
             panel.transform.SetParent(parent, false);
             panel.GetComponent<Image>().color = color;
             return (RectTransform)panel.transform;
+        }
+
+        private static Sprite GetFillSprite()
+        {
+            Sprite sprite = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UISprite.psd");
+            if (sprite == null) throw new System.InvalidOperationException("Unity's built-in UI sprite could not be loaded for the preset review fill previews.");
+            return sprite;
         }
 
         private static TMP_Text CreateText(string name, Transform parent, string value, float size, FontStyles style, TextAlignmentOptions alignment)
