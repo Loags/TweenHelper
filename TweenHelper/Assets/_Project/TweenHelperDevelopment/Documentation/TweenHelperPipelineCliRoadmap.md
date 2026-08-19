@@ -1,8 +1,10 @@
 # TweenHelper Pipeline CLI roadmap
 
 - Status: Simplified repository prototype with default-on local developer telemetry
-- Last reviewed: 2026-08-13
+- Last reviewed: 2026-08-19
 - Scope: the smallest useful TweenHelper-specific command surface on Unity Pipeline
+
+Current development dependency: `com.unity.pipeline` `0.5.0-exp.1`. Unity MCP/Pipeline connectivity was restored and verified against Unity `6000.5.2f1` on 2026-08-19. This package and the repository-only adapter remain outside `Assets/Loags/TweenHelper` and are not customer dependencies or marketed features.
 
 ## Review outcome
 

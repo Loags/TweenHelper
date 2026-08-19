@@ -1,8 +1,10 @@
 # TweenHelper Pipeline CLI developer telemetry
 
 - Status: MVP implemented and validated
-- Last reviewed: 2026-08-13
+- Last reviewed: 2026-08-19
 - Parent: [TweenHelperPipelineCliRoadmap.md](TweenHelperPipelineCliRoadmap.md)
+
+The development project currently uses Unity Pipeline `0.5.0-exp.1`; MCP connectivity was verified on Unity `6000.5.2f1`. Telemetry remains local, repository-only, and absent from the customer artifact.
 
 ## Goal
 

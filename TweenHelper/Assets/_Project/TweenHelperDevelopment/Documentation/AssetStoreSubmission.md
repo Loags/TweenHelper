@@ -1,68 +1,93 @@
-# Tween Helper Asset Store submission notes
+# Tween Helper Asset Store Submission Runbook
 
-Tween Helper uses the standard Asset Store package workflow. Select only `Assets/Loags/TweenHelper` for validation, export, and upload. The publisher name is **Loags**. The support address is used only by the in-Editor Setup & Support workflow and is not copied into Portal fields or customer documentation.
+Status: **replacement release candidate required**
+
+Updated: 2026-08-19
+
+The Publisher Portal draft `1449210` contains an older 1.1.0 artifact. Do not submit it. The runtime, Preset Browser, internal review scene, Unity Pipeline development package, and documentation changed after that upload. Replace the artifact only after every gate in this runbook applies to the same committed revision.
 
 ## Release identity
 
-- Version: `1.1.0`, initial public release.
-- Category: Tools > Animation.
-- Regular price: $15 USD.
-- Planned launch promotion: maximum available discount, currently 50% for two weeks; reconfirm in Portal.
-- Tween Helper license: Standard Unity Asset Store EULA. Do not claim MIT licensing.
-- Developed and tested with Unity `6000.5.2f1`; lower Unity versions are untested.
-- Validated with DOTween package `1.2.825` / runtime `1.3.030`; older DOTween versions are untested.
-- Built-in and URP are supported; HDRP/custom pipelines are untested.
+| Field | Value |
+| --- | --- |
+| Product | Tween Helper |
+| Version | `1.1.0`, initial public release |
+| Publisher | Loags |
+| Category | Tools > Animation |
+| Regular price | $15 USD |
+| Planned launch discount | 50% for two weeks; reconfirm in Portal |
+| License | Standard Unity Asset Store EULA |
+| Unity validation | `6000.5.2f1`; lower versions untested |
+| DOTween validation | Package `1.2.825`, runtime `1.3.030`; older versions untested |
+| Pipelines | Built-in and URP supported; HDRP/custom pipelines untested |
 
-## Dependency
+## Current catalog facts
 
-Register **DOTween (HOTween v2)** as a required Asset Store dependency. DOTween is installed and licensed separately and is not redistributed with Tween Helper.
+- 300 registered presets.
+- 446 Preset Browser entries: 300 presets plus 146 semantic/component previews.
+- 406 shipped Animation Gallery entries across eight categories.
+- 527 development-only review configurations with stable, unique IDs.
 
-```text
-https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676
-```
+Never market the 527 review configurations as presets. When a number appears in Portal copy, name the surface it counts.
+
+## Required dependency
+
+Register [DOTween (HOTween v2)](https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676) as a required Asset Store dependency. DOTween is acquired, installed, configured, and licensed separately; it is not redistributed with Tween Helper.
 
 ## Package boundary
 
-The upload must include the complete `Assets/Loags/TweenHelper` root and nothing outside it. In particular, exclude:
+Validate, export, and upload `Assets/Loags/TweenHelper` only. Exclude:
 
-- `Assets/Plugins/Demigiant` and all DOTween files.
-- `Assets/_Project/TweenHelperDevelopment` tests, review scene, builders, roadmaps, Portal records, and validation tools.
-- Repository-level `PublisherMedia` artwork/captures.
-- `Packages`, `ProjectSettings`, `Library`, `Temp`, Asset Store Publishing Tools, Recorder, and Unity Pipeline tooling.
+- `Assets/Plugins/Demigiant` and every DOTween file.
+- `Assets/_Project/TweenHelperDevelopment`, including tests, review scenes, roadmaps, Portal records, CLI adapters, and validation tools.
+- `Packages`, `ProjectSettings`, `Library`, `Temp`, `Logs`, and `UserSettings`.
+- Unity Pipeline/MCP, telemetry, Asset Store Publishing Tools, Recorder, and their package data.
+- Repository or project-root `PublisherMedia` files.
+- Generated IDE projects and local build output.
 
-## Validation and upload sequence
+## Current Unity guideline checks
 
-1. Confirm Unity is stopped, the gallery scene is saved, and the Console has no package-originated errors.
-2. Run **Tools > Tween Helper Dev > Validate Animation Gallery Assets**.
-3. Run the existing EditMode and PlayMode validation suites.
-4. Run Asset Store Publishing Tools Validator against only `Assets/Loags/TweenHelper`.
-5. Export the exact artifact from that root and inspect its content list.
-6. Import the artifact into a clean Unity project with the separately installed validated DOTween build.
-7. Open Setup & Support, Preset Browser, and `TweenHelperAnimationGallery.unity`.
-8. Exercise mouse selection, search/filter, contextual options, auto-play, Replay, Reset, Previous/Next, code copy, presentation mode, world preview, and camera preview at 1920×1080.
-9. Verify the Built-in and URP presentation in clean projects.
-10. Confirm documentation links, changelog, Standard EULA wording, and the separately installed DOTween dependency statement.
-11. Copy the exact 1.1.0 fields from `PublisherPortalReleaseNotes.md`, preview the rendered listing, and upload the exact tested artifact.
+Recheck the official [Asset Store Submission Guidelines](https://assetstore.unity.com/publishing/submission-guidelines) before upload. The revision dated 2026-05-20 requires applicable submissions to provide one organized root, comprehensive code/setup documentation, disclosed dependencies, a demo scene for Animation-category content, a marketing video demonstrating included animations, and no package-originated warnings/errors after setup. Functional AI-assisted content must be disclosed in the Portal AI field.
 
-## Release checklist
+Because the artifact is produced with Unity `6000.5.2f1` (Unity 6.5), verify the exact artifact in URP before submission; the current guideline requires Unity 6.5-or-newer submissions to support URP or HDRP.
+
+Treat Portal dimensions, codecs, file-size limits, keyword limits, accepted Editor versions, render-pipeline rules, and discount controls as volatile. Confirm them in the live Portal instead of copying an old limit into the package.
+
+## Replacement artifact sequence
+
+1. Commit and push the final source/documentation revision.
+2. Refresh Unity `6000.5.2f1`; confirm compilation and a clean Console after DOTween setup.
+3. Run EditMode and PlayMode suites.
+4. Run gallery, review-coverage, lifecycle, and relevant Preset Browser validators.
+5. Exercise representative world-to-UI, progress, macro, camera, audio, light, particle, renderer, and UI-sequence previews.
+6. Verify Built-in and URP presentation.
+7. Run Asset Store Publishing Tools Validator against `Assets/Loags/TweenHelper` only.
+8. Export `TweenHelper-1.1.0.unitypackage` from that exact root.
+9. Inspect the artifact path manifest and compare it to the committed source revision.
+10. Import the exact artifact into clean supported projects with DOTween installed separately and **Setup DOTween** completed.
+11. Open Setup & Support, the 446-entry Preset Browser, and `TweenHelperAnimationGallery.unity`.
+12. Verify all shipped documentation links and copyable examples from the imported artifact.
+13. Capture final marketing media from the accepted artifact.
+14. Update Portal fields from `PublisherPortalReleaseNotes.md`, register DOTween, preview the listing, and upload the replacement artifact.
+15. Submit only after the Portal manifest, media, description, dependency, AI disclosure, and reviewer note match the exact artifact.
+
+## Final checklist
 
 - [x] One customer package root: `Assets/Loags/TweenHelper`.
-- [x] Version and setup UI updated to `1.1.0`.
-- [x] Gallery is the only shipped demo and only scene in development Build Settings.
-- [x] Legacy 2D/3D scenes and scene-only setup/console code removed.
-- [x] Customer README, installation guide, sample guide, and changelog updated; no third-party notice is shipped because the package redistributes no third-party content requiring attribution.
-- [x] Portal description, technical details, dependency, AI disclosure, reviewer note, keywords, and media brief updated.
-- [x] DOTween files, internal development assets, Portal media, and Recorder remain outside the upload root.
-- [x] Run gallery asset validator after the final documentation import (377 entries across eight categories).
-- [x] Run EditMode and PlayMode suites against the final working tree (25/25 EditMode, 8/8 PlayMode).
-- [ ] Run Asset Store Validator against the exact root.
-- [ ] Export and inspect the exact `.unitypackage`.
-- [ ] Clean-import and validate the exact artifact.
-- [ ] Capture replacement screenshots and both caption-only videos with Recorder `5.1.7`.
-- [ ] Reconfirm Portal media rules and maximum launch discount.
-- [ ] Preview and proofread the final Portal draft.
-- [ ] Submit for review.
+- [x] Version, setup UI, and documentation identify `1.1.0` as the initial public release.
+- [x] The Animation Gallery is the only shipped demo scene.
+- [x] Customer documentation covers installation, core API, all shipped families, lifecycle, browser, gallery, and licensing.
+- [x] Portal copy and reviewer notes have been rewritten for the expanded runtime and preview surface.
+- [x] DOTween dependency and separate licensing are disclosed.
+- [x] Unity Pipeline/MCP and local developer telemetry remain outside the customer package.
+- [ ] Resolve the 11 current review entries marked Needs Work.
+- [ ] Run final tests and validators against the committed revision.
+- [ ] Validate Built-in and URP with the exact artifact.
+- [ ] Export, inspect, and clean-import the replacement artifact.
+- [ ] Capture replacement screenshots and the required animation demonstration video.
+- [ ] Reconfirm current Portal rules and launch discount controls.
+- [ ] Replace draft `1449210`, preview the rendered listing, and submit.
 
 ## AI disclosure record
 
-Codex and ChatGPT assisted selected functional code, refactoring, documentation, validation, and consistency review. The publisher reviews and tests all integrated work. There is no runtime AI, online AI call, or project/user data transmission.
+OpenAI Codex and ChatGPT assisted selected functional code, refactoring, documentation, validation design, and consistency review. The publisher reviews, integrates, and tests the work. Tween Helper contains no runtime AI, MCP connection, online AI call, or customer/project data transmission.

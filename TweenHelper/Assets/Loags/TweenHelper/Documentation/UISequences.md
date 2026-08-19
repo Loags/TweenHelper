@@ -162,7 +162,9 @@ panel.ModalClose(backdrop, controls)
 
 ## Animation Gallery
 
-Open **UI Sequences** to compare all fifteen operations. Direction and optional-backdrop controls update both the preview and the displayed C# call.
+Open **UI Sequences** to compare fifteen production UI operations plus the Cutscene UI Entrance macro. Direction and optional-backdrop controls update both the preview and the displayed C# call.
+
+The Editor Preset Browser authors only the participants required by the selected sequence. Backdrops, controls, entries, and incoming content are created when needed; unrelated proxy objects remain absent. Proxy depth, sorting, Graphic color, and parent `CanvasGroup` alpha stay synchronized so the isolated preview matches the operation rather than producing overlapping or stale UI.
 
 ## Cutscene entrance macro
 

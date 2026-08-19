@@ -40,7 +40,7 @@ TweenHandle handle = gameplayCamera.gameObject.Tween()
 - `CameraRackFocus` temporarily shifts aim and field of view toward a required focus target without moving the camera.
 - `CollectLandingCameraKick` applies a restrained collection-completion landing impulse.
 
-Default durations are `0.38s`, `0.48s`, `0.55s`, `0.42s`, `0.82s`, and `2.8s` respectively. FOV channels are visually meaningful on perspective cameras; transform channels still work on orthographic cameras.
+Default durations are `0.38s`, `0.48s`, `0.55s`, `0.42s`, `0.82s`, `2.8s`, `1.05s`, and `0.28s` in API order. FOV channels are visually meaningful on perspective cameras; transform channels still work on orthographic cameras.
 
 ## Options and lifecycle
 

@@ -2,7 +2,7 @@
 
 ## Document status
 
-- Planning state: **IMPLEMENTED — 106 LIFECYCLE-AFFECTED REVIEWS PENDING MANUAL REVALIDATION**
+- Planning state: **IMPLEMENTED — SUPERSEDED COUNTS UPDATED FOR THE 527-ENTRY REVIEW MATRIX**
 - Prepared: 2026-08-13
 - Audited branch: `release-v.1.1.0`
 - Audited commit: `1f30463`
@@ -12,6 +12,15 @@
 - Review-catalog impact: no entries or IDs added by this refactor; the 106 affected entries are intentionally reset to `Needs Work` after validation
 
 This document is the implementation tracker for the lifecycle refactor. The implementation phases are complete; visual acceptance remains with the manual review pass described in the final handoff.
+
+### Post-implementation checkpoint — 2026-08-19
+
+- The review matrix has expanded from the historical 474-entry checkpoint to 527 stable, unique IDs.
+- The latest runtime snapshot reports all 527 entries reviewed: 516 Correct and 11 Needs Work.
+- The Preset Browser now contains 446 isolated previews and the shipped Animation Gallery contains 406 entries.
+- The review scene was rebuilt at version 2 with visible filled-Image/property-meter fixtures and expanded progress/engine-property coverage.
+- Unity MCP connectivity is restored; Play Mode sampling and Console inspection completed with zero errors.
+- The original 106-ID lifecycle manifest remains a historical migration boundary, not the complete current review workload.
 
 ### Implementation checkpoint — 2026-08-13
 
@@ -844,4 +853,4 @@ Implementation handoff — 2026-08-13:
 - Review status reset: the final catalog-backed manifest contains exactly 106 existing IDs. The final guarded pass changed zero and confirmed all 106 already at `Needs Work`; non-catalog keys are absent and unaffected keys were not written.
 - Public signature comparison result: no existing public/protected signature line changed in the five migrated runtime utilities; the new helper type is internal.
 - Known remaining risks: visual equivalence and subjective timing feel still require the requested manual review; secondary-target destruction and concurrent writers remain documented caller responsibilities.
-- Suggested next task: open `TweenHelperPresetReview`, select `NEEDS WORK`, and manually validate the 106 affected entries.
+- Suggested next task: open `TweenHelperPresetReview`, select **NEEDS WORK**, resolve the current 11 entries, and rerun the lifecycle/coverage validators before exporting the replacement release artifact.

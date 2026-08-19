@@ -146,6 +146,20 @@ namespace LB.TweenHelper.Editor
                 }
             }
 
+            builder.AppendLine();
+            builder.AppendLine("## Semantic operation index (non-preset)");
+            builder.AppendLine();
+            builder.AppendLine("The 1.1 roadmap additions are composable builder/direct operations rather than registered `ITweenPreset` entries, so the 300-preset registry remains stable. They are discoverable alongside the presets in the 446-entry Preset Browser.");
+            builder.AppendLine();
+            builder.AppendLine("| Domain | Operations |");
+            builder.AppendLine("| --- | --- |");
+            builder.AppendLine("| World to UI | `ArcToUI`, `HopToUI`, `BezierToUI`, `PathThroughUI`, `PickupCollectToUI` |");
+            builder.AppendLine("| Progress | `FillTo`, `FillFromTo`, `ValueFillTo`, `FillDrain`, `FillCharge`, `FillAlertPulse`, `FillAndText`, `OnProgress` |");
+            builder.AppendLine("| Gameplay state | `AbilityCharging`, `AbilityReady`, `DodgeRoll`, `StunStart`, `StunEnd`, `BuffApplied`, `DebuffApplied`, `ResourceDepleted`, `ResourceRecovered`, `ObjectiveUnlocked` |");
+            builder.AppendLine("| Collections | `GridConcentricIn`, `GridConcentricOut`, `GridQuadrantSweep`, `ListAccordion`, `CollectionOrbitIn`, `CollectionOrbitOut`, `LoadingRing`, `LoadingRibbon` |");
+            builder.AppendLine("| Macros and camera | `CriticalHitSequence`, `RewardRevealSequence`, `WarningLoopSequence`, `CutsceneUIEntranceSequence`, `CameraRackFocus`, `CollectLandingCameraKick` |");
+            builder.AppendLine("| Engine properties | `AudioVolumeTo`, `AudioPitchTo`, `LightIntensityTo`, `LightColorTo`, `ParticleEmissionRateTo`, `MaterialFloatTo`, `MaterialColorTo`, `TorchFlicker`, `ScannerPulse` |");
+
             return builder.ToString();
         }
 

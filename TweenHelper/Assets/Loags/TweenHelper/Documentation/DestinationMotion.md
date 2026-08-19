@@ -64,7 +64,7 @@ panel.Tween().BezierLocalTo(destination, controlA, controlB, 1f).Play();
 
 ### Hop
 
-Hop briefly anticipates with its visual bottom anchored, releases the squash during takeoff, travels through a signed arc, and compresses downward from the top on landing. The landing recovery keeps the same bottom anchor fixed while restoring the scale captured when the tween is built. `height` controls the path without separate soft or hard variants. Killing during the anticipation, flight, or landing restores the captured scale and removes the temporary grounding offset.
+Hop briefly anticipates with its visual bottom anchored, releases through a short launch stretch, travels through a signed arc, and compresses downward from the top only after arrival. The anticipation completes before travel begins; the destination is reached before landing squash starts. Landing recovery keeps the same bottom anchor fixed while restoring the scale captured when the tween is built. `height` controls the path without separate soft or hard variants. Killing during anticipation, flight, or landing restores the captured scale and removes the temporary grounding offset.
 
 ### Spring
 
@@ -150,4 +150,4 @@ worldPickup.Tween()
     .Play();
 ```
 
-The camera resolution order is explicit camera, destination canvas `worldCamera`, then `Camera.main`. Overlay and camera-space canvases are supported. `lockDestination: true` snapshots the UI endpoint when the step starts; set it to `false` when the animation should follow a moving UI anchor. Interrupted kill and rewind restore the invocation position and temporary deformation.
+The camera resolution order is explicit camera, destination canvas `worldCamera`, then `Camera.main`. Overlay and camera-space canvases are supported. `lockDestination: true` snapshots the UI endpoint when the step starts; set it to `false` when the animation should follow a moving UI anchor. Hop-to-UI reserves its opening phase for anticipation, travels after takeoff, reaches the resolved UI endpoint before the landing phase, and then restores scale. Interrupted kill and rewind restore the invocation position and temporary deformation.

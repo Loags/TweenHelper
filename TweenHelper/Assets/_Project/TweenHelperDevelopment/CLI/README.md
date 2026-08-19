@@ -1,5 +1,7 @@
 # TweenHelper Pipeline CLI prototype
 
+Development dependency: Unity Pipeline `0.5.0-exp.1`, verified with Unity `6000.5.2f1` on 2026-08-19. This adapter is repository-only and is not included with or required by the customer package.
+
 This repository-only Editor integration intentionally exposes one product command and one developer diagnostic command:
 
 - `tween_helper_catalog` lists TweenHelper's built-in presets with optional `query`, `family`, `offset`, and `limit` arguments.

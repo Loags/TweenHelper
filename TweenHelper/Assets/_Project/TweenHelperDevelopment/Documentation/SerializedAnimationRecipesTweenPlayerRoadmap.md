@@ -3,7 +3,8 @@
 - Status: **WAITING FOR CLI FOUNDATION — DO NOT IMPLEMENT**
 - Created: 2026-08-12
 - Scope: Versioned animation recipe assets, explicit target bindings, runtime playback through `TweenPlayer`, Editor authoring and preview, agent-safe Unity Pipeline authoring, documentation, and validation
-- Likely release class: Backward-compatible feature release; provisionally `1.1.0`, to be confirmed after the post-CLI review
+- Likely release class: Backward-compatible feature release after `1.1.0`; exact version remains undecided
+- Last reviewed: 2026-08-19
 
 > [!CAUTION]
 > Do not begin production implementation from this document while the wait gate below is closed. The CLI prototype files or partially completed CLI phases are not sufficient. After the CLI foundation is accepted, first audit the implemented code, revise this roadmap against facts, design the recipe-specific agent commands, and validate the revised roadmap. Only then may this document move to **READY FOR IMPLEMENTATION**.
@@ -77,7 +78,7 @@ The following is planning context, not future proof:
 - `TweenBuilder` already provides sequential `Then`, parallel `With`, and `Delay` composition, along with callbacks and raw DOTween injection.
 - `TweenHandle` already provides pause, resume, kill, restart, rewind, complete, state queries, callbacks, and await support.
 - TweenHelper currently has 300 built-in code presets plus non-preset operation families for staggered collections, destination motion, gameplay feedback, production UI sequences, and TMP text/value animations.
-- The review scene currently contains 474 stable entries: the preserved 398-entry validated baseline plus 76 Phase 1 coverage entries pending manual review. The post-CLI audit must recount the then-current baseline and preserve all existing review IDs and results.
+- The review scene currently contains 527 stable, unique entries. The post-CLI audit must recount the then-current baseline and preserve every existing review ID and result; the historical 398/474 checkpoints are no longer the active count.
 - `TweenPresetRegistry` supports runtime code-preset discovery, but it is not a sufficient serialized operation schema.
 - `UIAnimationStateCache` and several operation-specific utilities already define important baseline, restore, and kill behavior.
 - No public, versioned `TweenRecipe` asset or `TweenPlayer` component exists yet.
@@ -480,6 +481,6 @@ When the CLI foundation is reported complete, the next task must not be “imple
 - `Assets/Loags/TweenHelper/Runtime/Core/UIAnimationStateCache.cs`
 - `Assets/Loags/TweenHelper/Editor/PresetBrowserPreview.cs`
 - `Assets/Loags/TweenHelper/Documentation/API.md`
-- `Assets/Loags/TweenHelper/Documentation/Lifecycle.md`
+- `Assets/Loags/TweenHelper/Documentation/API.md#tween-lifecycle`
 - operation-family documentation under `Assets/Loags/TweenHelper/Documentation`
 - review tooling under `Assets/_Project/TweenHelperDevelopment/Validation`

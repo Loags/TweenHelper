@@ -118,7 +118,7 @@ Each feedback operation has one linked owner and writes a coordinated subset of 
 
 ## Animation Gallery
 
-Open **Gameplay Feedback** to compare all eleven operation families. Contextual target and impact-direction controls update both the isolated fixture and the displayed C# call.
+Open **Gameplay Feedback** to compare 25 curated feedback, state, collection, and macro examples. Contextual target and impact-direction controls update both the isolated fixture and the displayed C# call.
 
 ## Gameplay-state families
 

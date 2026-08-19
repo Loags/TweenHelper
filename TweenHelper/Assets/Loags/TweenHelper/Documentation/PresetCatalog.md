@@ -465,12 +465,12 @@ The catalog is checked for duplicate, empty, and unconstructible preset registra
 
 ## Semantic operation index (non-preset)
 
-The v1 roadmap additions are composable builder/direct operations rather than registered `ITweenPreset` entries, so the 300-preset registry remains stable.
+The 1.1 roadmap additions are composable builder/direct operations rather than registered `ITweenPreset` entries, so the 300-preset registry remains stable. They are discoverable alongside the presets in the 446-entry Preset Browser.
 
 | Domain | Operations |
 | --- | --- |
 | World to UI | `ArcToUI`, `HopToUI`, `BezierToUI`, `PathThroughUI`, `PickupCollectToUI` |
-| Progress | `FillTo`, `FillFromTo`, `ValueFillTo`, `FillDrain`, `FillCharge`, `FillAlertPulse`, `FillAndText` |
+| Progress | `FillTo`, `FillFromTo`, `ValueFillTo`, `FillDrain`, `FillCharge`, `FillAlertPulse`, `FillAndText`, `OnProgress` |
 | Gameplay state | `AbilityCharging`, `AbilityReady`, `DodgeRoll`, `StunStart`, `StunEnd`, `BuffApplied`, `DebuffApplied`, `ResourceDepleted`, `ResourceRecovered`, `ObjectiveUnlocked` |
 | Collections | `GridConcentricIn`, `GridConcentricOut`, `GridQuadrantSweep`, `ListAccordion`, `CollectionOrbitIn`, `CollectionOrbitOut`, `LoadingRing`, `LoadingRibbon` |
 | Macros and camera | `CriticalHitSequence`, `RewardRevealSequence`, `WarningLoopSequence`, `CutsceneUIEntranceSequence`, `CameraRackFocus`, `CollectLandingCameraKick` |

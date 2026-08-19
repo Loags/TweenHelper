@@ -1,8 +1,14 @@
 # TweenHelper Animation Lifecycle Refactor — Planning Handoff
 
+Status: **superseded by the implemented lifecycle plan and retained for design history**
+
+Current reference: [TweenHelperAnimationLifecycleRefactorImplementationPlan.md](TweenHelperAnimationLifecycleRefactorImplementationPlan.md)
+
+Reviewed: 2026-08-19
+
 ## Purpose of this document
 
-This is context for a future agent that will **plan**, but not immediately implement, a refactor and cleanup roadmap for TweenHelper's advanced animation families.
+This was the planning handoff for the lifecycle refactor that has since been implemented. Do not use its historical counts or future-tense instructions as current release facts; use it only for the original constraints and design rationale.
 
 The intended outcome of that future planning task is to determine whether repeated lifecycle and normalized-timeline code should be consolidated into internal compositional utilities while preserving all existing public APIs, visual behavior, review IDs, completion semantics, and cancellation semantics.
 
@@ -22,7 +28,7 @@ TweenHelper is a Unity animation helper built on DOTween. It currently contains:
 - Camera-feedback sequences.
 - A review scene that plays each catalog entry individually and stores review status by stable ID.
 
-At the completion of the most recent large implementation, the review catalog contained 398 entries:
+At this historical planning checkpoint, the review catalog contained 398 entries:
 
 - 300 presets
 - 13 UI recipes
@@ -33,7 +39,7 @@ At the completion of the most recent large implementation, the review catalog co
 - 13 text/value animations
 - 6 camera-feedback entries
 
-The user subsequently reported that the new animations look good. A future agent should inspect the persisted review data rather than assuming the exact current reviewed/unreviewed count.
+The current review scene contains 527 stable, unique IDs. Always inspect the current controller and persisted review state rather than treating this historical 398-entry baseline as active.
 
 ## Most recently added advanced animation pack
 
@@ -408,4 +414,3 @@ The existing direction is sound:
 - Prefer internal composition over a shared inheritance hierarchy.
 - Treat owner cleanup and visual reset as separate policies.
 - Expand review coverage for meaningful configurations without multiplying redundant public methods.
-

@@ -22,7 +22,7 @@ namespace LB.TweenHelper.Editor
         private const string StatusKeyPrefix = "TweenHelper.PresetReview.Status.";
         private const int NeedsWorkStatus = 1;
         private const int ExpectedAffectedReviewCount = 106;
-        private const int ExpectedReviewCount = 474;
+        private const int ExpectedReviewCount = 527;
 
         static AnimationLifecycleRefactorValidation()
         {
@@ -107,7 +107,7 @@ namespace LB.TweenHelper.Editor
                 HashSet<string> ids = BuildAffectedReviewIds();
                 Require(ids.Count == ExpectedAffectedReviewCount, $"actual={ids.Count}");
             });
-            RunCase(results, "Every affected review ID exists in the 474-entry catalog", ValidateAffectedReviewIds);
+            RunCase(results, $"Every affected review ID exists in the {ExpectedReviewCount}-entry catalog", ValidateAffectedReviewIds);
 
             DOTween.Kill(root, false);
             UnityEngine.Object.DestroyImmediate(root);

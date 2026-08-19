@@ -1,19 +1,49 @@
-# TweenHelper development assets
+# Tween Helper development assets
 
-This folder contains repository-only validation assets and must not be included in the Asset Store `.unitypackage`.
+This folder is repository-only. Never include it in the Asset Store `.unitypackage`; the distributable root is `Assets/Loags/TweenHelper` only.
 
-- `Tests` contains the EditMode and PlayMode suites plus the development-only runtime assembly access required by those tests.
-- `Validation` contains the Animation Gallery audit runner, preset integrity tools, the internal 474-entry review scene, and their development-only assembly wiring.
-- `Documentation` contains internal release, pipeline, validation, and implementation roadmaps.
-- `Documentation/ReleaseV110DocumentationDemoPublisherRoadmap.md` tracks the implemented 1.1 documentation/gallery/Portal work plus the remaining release-candidate validation and deferred Recorder media production.
-- `Documentation/AnimationReviewCoverageAndExpansionRoadmap.md` tracks the planned 76-entry review-completeness pass and the staged animation-family expansion that follows it.
+## Contents
 
-To run the gallery reset smoke audit, open the shipped `TweenHelperAnimationGallery.unity` scene, add `Validation/Prefabs/AnimationResetAuditRunner.prefab`, enter Play Mode, and use **Run Gallery Reset Audit** on the runner component. It plays and resets one representative from each gallery category.
+- `Tests` contains EditMode and PlayMode validation assemblies.
+- `Validation` contains gallery audits, preset integrity tools, lifecycle/coverage validators, and the internal review scene.
+- `Documentation` contains release, publishing, Pipeline/CLI, telemetry, validation, and future-feature roadmaps.
+- `CLI` contains the development-only Unity Pipeline command adapter and local telemetry documentation.
+- Publisher Portal source records and branding remain development-only.
 
-Run **Tools > Tween Helper Dev > Validate Animation Gallery Assets** to verify that the shipped scene and list-item prefab exist and that the catalog resolves 300 presets across all eight categories.
+## Current catalog surfaces
 
-For visual review, open `Validation/Scenes/TweenHelperPresetReview.unity` and enter Play Mode. The review now contains 474 entries: 300 presets, 13 UI recipes, 36 collection entries, 26 destination-motion entries, 22 gameplay-feedback entries, 39 production UI sequences, 31 text/value animations, and seven camera-feedback entries. Existing status keys are unchanged, so all 398 previously validated results remain preserved while only the 76 coverage additions appear under **NOT REVIEWED**. Marking an entry still advances and automatically plays the next item.
+| Surface | Count | Purpose |
+| --- | ---: | --- |
+| Registered preset registry | 300 | Stable customer preset API |
+| Preset Browser | 446 | Customer Editor discovery and isolated previews |
+| Animation Gallery | 406 | Shipped capture-friendly runtime examples |
+| Preset Review scene | 527 | Exhaustive development-only visual configurations |
 
-The coverage additions exercise every visible direction and traversal enum, linear path interpolation, signed destination variants, alternate UI/world branches, dynamic and custom stagger execution, incomplete-grid topology, automatic spatial defaults, the drawer backdrop branch, and representative world-space TextMesh Pro behavior. Run **Tools > Tween Helper Dev > Validate Animation Review Coverage** for the non-destructive catalog, fixture, and playback smoke validation; it does not change manual review statuses.
+The review catalog contains 527 unique IDs:
 
-Run **Tools > Tween Helper Dev > Validate Animation Lifecycle Refactor** for the lifecycle-kernel regression covering lazy capture, interrupted and forced completion, nested cleanup, partial-state preservation, finite Yoyo behavior, and spatial direct-play behavior. After a lifecycle implementation changes, **Mark Lifecycle Refactor Reviews As Needs Work** resets only the 106 affected camera, gameplay-feedback, text/value, production-UI, and spatial-recipe review IDs; every preset, UI recipe, destination, and preset-stagger status remains untouched.
+- 300 presets
+- 13 UI recipes
+- 34 collection recipes
+- 10 stagger variants
+- 30 destination-motion configurations
+- 23 feedback sequences
+- 10 gameplay-state configurations
+- 39 production UI sequences
+- 31 text/value configurations
+- 15 progress configurations
+- 4 sequence macros
+- 9 camera-feedback configurations
+- 9 engine-property configurations
+
+## Validation entry points
+
+- **Tools > Tween Helper Dev > Validate Animation Gallery Assets** verifies the shipped gallery scene, catalog, and required assets.
+- **Tools > Tween Helper Dev > Validate Animation Review Coverage** verifies review identity, fixtures, variants, and smoke playback without changing manual statuses.
+- **Tools > Tween Helper Dev > Validate Animation Lifecycle Refactor** checks lazy capture, completion, interruption, rewind, Yoyo, cleanup, and spatial playback behavior.
+- `Validation/Scenes/TweenHelperPresetReview.unity` is the manual visual acceptance surface.
+
+The review scene was rebuilt at scene version 2 so filled Images and property meters use a visible UI sprite, progress text overlays the bar, and the expanded world-to-UI/progress/engine fixtures are testable. A 2026-08-19 Play Mode sample confirmed all Image progress values and text update correctly; the Unity Console reported zero errors afterward.
+
+## Publishing boundary
+
+The uploaded 1.1.0 draft predates the latest runtime, browser, scene, package-tooling, and documentation changes. Treat it as superseded. Follow `Documentation/AssetStoreSubmission.md` and `Documentation/ReleaseV110DocumentationDemoPublisherRoadmap.md` to validate, export, clean-import, refresh media, and replace the draft.

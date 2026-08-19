@@ -1,12 +1,17 @@
-# TweenHelper Implementation Roadmap (v1.0)
+# Tween Helper 1.1 Expansion — Implementation Record
+
+Status: **implemented and integrated; final release-artifact validation pending**
+
+Last verified: 2026-08-19
 
 ## Changelog
 
+- 2026-08-19 — Rebuilt the 527-entry review scene, corrected filled-Image and meter fixtures, retimed Hop-to-UI anticipation/landing, and validated all 446 Preset Browser previews plus live progress samples.
 - 2026-08-18 — Implemented Epics A-H: world-to-UI projection, progress/value binding, gameplay states, collection topologies, sequence macros and hooks, camera/ambient helpers, engine-property wrappers, gallery catalog coverage, and documentation indexing.
 
-This document is the definitive execution plan for extending TweenHelper toward broad game-development coverage while avoiding redundant animations.
+This document records the delivered 1.1 expansion and preserves the original epic design decisions. Sections that retain planning language describe the accepted implementation specification, not unfinished runtime work.
 
-## 1) Objective
+## 1) Delivered objective
 
 Deliver a production-oriented animation system that covers the major missing gameplay and UI animation gaps:
 
@@ -115,8 +120,11 @@ Use these files as integration anchors:
 
 ### Validation policy
 
-- No mandatory runtime/scene tests in this roadmap.
-- Minimal validation: compile-time friendliness, API consistency, and gallery wiring.
+- Compile the runtime, demo, Editor, and validation assemblies after code changes.
+- Validate the 446-entry Preset Browser catalog, 406-entry Animation Gallery catalog, and 527-entry internal review catalog as distinct surfaces.
+- Use runtime samples for lifecycle-sensitive behavior such as world-to-UI timing, progress fill/text synchronization, ambient properties, callbacks, and interruption.
+- Inspect the Unity Console after compilation and Play Mode validation.
+- Repeat Asset Store Validator, clean import, and exact-artifact checks before submission.
 
 ---
 
@@ -129,7 +137,7 @@ Enable direct animation from world-space positions to UI-space (`RectTransform`)
 #### Why now
 This is the strongest missing gameplay capability after current destination and feedback families.
 
-#### Planned additions
+#### Implemented additions
 
 1. Core conversion utility
    - Add a new utility in destination motion module (name convention: `UIWorldProjectionUtility`).
@@ -170,7 +178,7 @@ This is the strongest missing gameplay capability after current destination and 
 #### Goal
 Create production-ready progress-bar and metric-based animation families.
 
-#### Planned additions
+#### Implemented additions
 
 1. Runtime value binding
    - Add value binding utility for:
@@ -210,7 +218,7 @@ Create production-ready progress-bar and metric-based animation families.
 #### Goal
 Add missing semantic effects for battle/state loops that currently require project-specific animation scripts.
 
-#### Planned additions
+#### Implemented additions
 
 - `AbilityCharging`
 - `AbilityReady`
@@ -239,7 +247,7 @@ Add missing semantic effects for battle/state loops that currently require proje
 #### Goal
 Add non-redundant collection patterns beyond wave/ripple/spiral/burst family.
 
-#### Planned additions
+#### Implemented additions
 
 - `GridConcentricIn` / `GridConcentricOut`
 - `GridQuadrantSweep`
@@ -265,7 +273,7 @@ Add non-redundant collection patterns beyond wave/ripple/spiral/burst family.
 #### Goal
 Introduce reusable behavior composition so agents can combine families safely.
 
-#### Planned additions
+#### Implemented additions
 
 - Macro-like sequence presets for:
   - “Critical Hit sequence”
@@ -286,7 +294,7 @@ Introduce reusable behavior composition so agents can combine families safely.
 #### Goal
 Strengthen camera + atmosphere without duplicating shake-only category.
 
-#### Planned additions
+#### Implemented additions
 
 - `CameraRackFocus` or focus-shift helper
 - `CollectLandingCameraKick` (micro kick paired with pickup-to-UI completion)
@@ -304,7 +312,7 @@ Strengthen camera + atmosphere without duplicating shake-only category.
 #### Goal
 Add safe support for frequent non-transform property animations.
 
-#### Planned additions
+#### Implemented additions
 
 - `AudioSource` volume/pitch wrapper
 - `Light` intensity/color wrapper
@@ -321,7 +329,7 @@ Add safe support for frequent non-transform property animations.
 #### Goal
 Stabilize what was added, and keep future agents efficient.
 
-#### Planned additions
+#### Implemented additions
 
 - Update:
   - `Documentation/API.md`
@@ -336,7 +344,7 @@ Stabilize what was added, and keep future agents efficient.
 
 ---
 
-## 7) Delivery schedule (proposed)
+## 7) Delivery schedule (completed sequence)
 
 ### Week 1
 - Complete Epic A (World-to-UI motion baseline)
@@ -360,7 +368,7 @@ Stabilize what was added, and keep future agents efficient.
 - Complete Epic F and Epic E second macro set
 
 ### Week 7
-- Start Epic G experimental property wrappers (optional depending on scope)
+- Implement Epic G property wrappers and their isolated browser/review fixtures.
 - Add docs + sample call patterns
 
 ### Week 8
@@ -417,7 +425,7 @@ This roadmap is considered complete for version 1.0 when:
 
 ## 11) Versioning notes
 
-- This is `v1.0` of the roadmap.
+- This is the final implementation record for the 1.1 expansion roadmap.
 - If major direction changes occur, append a short `Changelog` section at the top with date + scope.
 - Keep this document in `Documentation` and link from `API.md` when team onboarding is updated.
 
@@ -438,4 +446,8 @@ If picking up this roadmap mid-way:
 
 ## 13) Implementation status
 
-All roadmap epics are implemented. The runtime exposes the planned APIs, new files include Unity metadata, the gallery catalog covers every new family, and the category/API documentation contains sample calls and lifecycle rules. `TweenHelperPresetReview` now includes authored world-to-UI, Image/Slider progress, gameplay-state, collection-topology, sequence-macro, camera, audio, light, particle, and renderer-property fixtures so the complete roadmap can be replayed and reviewed in one scene.
+All roadmap epics are implemented. The runtime exposes the accepted APIs, Unity files include metadata, the 406-entry gallery covers the customer-facing runtime categories, and the 446-entry Preset Browser adds isolated progress and engine-property discovery. Category/API documentation contains sample calls and lifecycle rules.
+
+`TweenHelperPresetReview` contains 527 stable, unique review IDs with authored world-to-UI, Image/Slider progress, gameplay-state, collection-topology, sequence-macro, camera, audio, light, particle, and renderer-property fixtures. Filled Images and meters use a renderable sprite, progress percentage text overlays the bar, Alert Pulse is described as a fixed-value color/scale warning, and Hop-to-UI separates anticipation, travel, arrival, and landing timing.
+
+Release completion still requires a fresh package-validator pass, exact-artifact export, manifest inspection, and clean-import verification after the final documentation update.

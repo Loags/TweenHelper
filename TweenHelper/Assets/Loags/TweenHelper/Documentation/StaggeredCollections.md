@@ -1,6 +1,6 @@
 # Staggered collections
 
-`TweenStaggerBuilder` schedules one finite tween per collection item and returns one `TweenHandle` for the complete group. It supports typed presets, dynamic preset names, custom DOTween factories, five ordering modes, custom delay maps, root lifecycle options, and eleven ready-to-play recipes.
+`TweenStaggerBuilder` schedules one finite tween per collection item and returns one `TweenHandle` for the complete group. It supports typed presets, dynamic preset names, custom DOTween factories, five ordering modes, custom delay maps, root lifecycle options, and nineteen gallery-facing recipes.
 
 Collection recipes are orchestration helpers, not `ITweenPreset` implementations. The built-in preset registry therefore remains at 300 entries.
 
@@ -142,7 +142,7 @@ For replayable previews or pooled UI, capture the desired target state before pl
 
 ## Animation Gallery
 
-Open the **Collections** category to compare all eleven recipes and change order, wave direction, diagonal, spiral, and checkerboard options while the matching C# call updates live.
+Open the **Collections** category to compare all nineteen recipes and change order, wave direction, diagonal, spiral, and checkerboard options while the matching C# call updates live.
 
 ## Expanded topology recipes
 

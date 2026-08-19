@@ -142,3 +142,11 @@ panel.Tween()
 ```
 
 `FillTo` captures the current normalized value. `FillFromTo` uses explicit endpoints. `ValueFillTo` and `FillAndText` update an optional TMP label on the same timeline. Drain and Charge add temporary impact/overshoot feedback; Alert Pulse changes no value and only activates at or below its threshold. Completion keeps the requested value while restoring transient visuals. Interrupted kill and rewind restore the invocation value, text, transform, and supported color.
+
+### Image setup
+
+An `Image` progress target must have a visible sprite assigned and use `Image.Type.Filled`. Select the required fill method and origin in the Inspector; Tween Helper animates `fillAmount` and does not replace those authored choices. A color-only Image with no sprite cannot display partial horizontal fill even though its numeric `fillAmount` changes.
+
+Place a paired TMP percentage label over or beside the bar and pass it to `ValueFillTo` or `FillAndText`. The review and Preset Browser fixtures use a filled UI sprite and an overlaid label so fill motion and formatted text remain visible together.
+
+`FillAlertPulse` is intentionally not a fill animation. It preserves the current Image/Slider value and applies a finite color/scale warning only when the value is at or below the threshold. `FillCharge` combines value movement with a temporary overshoot pulse; `FillDrain` moves toward the requested lower value with a short impact accent.

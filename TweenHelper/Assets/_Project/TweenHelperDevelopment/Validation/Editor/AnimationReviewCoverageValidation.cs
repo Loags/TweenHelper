@@ -23,8 +23,8 @@ namespace LB.TweenHelper.Editor
         private const string StatusKeyPrefix = "TweenHelper.PresetReview.Status.";
         private const int ExpectedPresetCount = 300;
         private const int ExpectedLegacySemanticCount = 98;
-        private const int ExpectedCoverageCount = 76;
-        private const int ExpectedTotalCount = 474;
+        private const int ExpectedCoverageCount = 129;
+        private const int ExpectedTotalCount = 527;
 
         static AnimationReviewCoverageValidation()
         {
@@ -330,6 +330,15 @@ namespace LB.TweenHelper.Editor
             ids.Add("Feedback:LevelUp:World");
             ids.Add("Feedback:LowHealthWarning:World");
             AddVariants(ids, "CameraFeedback:FovKick", "In");
+
+            AddNames(ids, "Collection", "CollectionOrbitIn", "CollectionOrbitOut", "GridConcentricIn", "GridConcentricOut", "GridQuadrantSweep", "ListAccordion", "LoadingRibbon", "LoadingRing");
+            AddNames(ids, "Destination", "ArcToUiProjected", "BezierToUiProjected", "HopToUiProjected", "PathThroughUiProjected");
+            AddNames(ids, "Feedback", "PickupCollectToUi:WorldToUI");
+            AddNames(ids, "GameplayState", "AbilityCharging:DestinationUi", "AbilityReady:DestinationUi", "BuffApplied:DestinationUi", "DebuffApplied:DestinationUi", "DodgeRoll:DestinationWorld", "ObjectiveUnlocked:DestinationWorld", "ResourceDepleted:DestinationUi", "ResourceRecovered:DestinationUi", "StunEnd:DestinationWorld", "StunStart:DestinationWorld");
+            AddNames(ids, "Progress", "ImageFillAlertPulse", "ImageFillAndText", "ImageFillCharge", "ImageFillDrain", "ImageFillFromTo", "ImageFillTo", "ImageValueFillTo", "ProgressHook", "SliderFillAlertPulse", "SliderFillAndText", "SliderFillCharge", "SliderFillDrain", "SliderFillFromTo", "SliderFillTo", "SliderValueFillTo");
+            AddNames(ids, "SequenceMacro", "CriticalHit:DestinationWorld", "CutsceneUiEntrance:DestinationUi", "RewardReveal:DestinationWorld", "WarningLoop:DestinationUi");
+            AddNames(ids, "CameraFeedback", "CollectLandingKick", "RackFocus");
+            AddNames(ids, "EngineProperty", "AudioPitch", "AudioVolume", "LightColor", "LightIntensity", "MaterialColor", "MaterialFloat", "ParticleEmissionRate", "ScannerPulse", "TorchFlicker");
             return ids;
         }
 

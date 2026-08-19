@@ -1,232 +1,120 @@
-# TweenHelper 1.0 Roadmap
+# Tween Helper 1.1.0 Release Roadmap
 
-> **Historical engineering record only.** Do not use this file for current release identity, compatibility, licensing, samples, or submission copy. The active 1.1.0 roadmap establishes the Standard Unity Asset Store EULA, Unity 6000.5.2f1 and DOTween package 1.2.825/runtime 1.3.030 as the tested configuration, and the Animation Gallery as the sole shipped demo.
+Status: **release candidate reopened after animation and preview expansion**
 
-Last updated: 2026-07-21
+Updated: 2026-08-19
 
-> The active `release-v.1.1.0` documentation, shipped Animation Gallery, Publisher Portal, and future media work is tracked in [ReleaseV110DocumentationDemoPublisherRoadmap.md](Assets/_Project/TweenHelperDevelopment/Documentation/ReleaseV110DocumentationDemoPublisherRoadmap.md). That audit supersedes this file for release-copy and demo-planning decisions while preserving this document as the 1.0 engineering history.
+Branch: `release-v.1.1.0`
 
-## Objective
+Tween Helper 1.1.0 remains the initial public release. The previously uploaded Publisher Portal draft is a historical candidate and must be replaced because the working tree now contains additional runtime animations, broader Preset Browser coverage, a rebuilt internal review scene, and corrected preview presentation.
 
-Ship TweenHelper 1.0 through the standard Unity Asset Store `.unitypackage` workflow as a stable, documented DOTween extension with deterministic preset registration, verified reset behavior, critical lifecycle tests, and useful Editor tooling.
+## Release facts
 
-The Unity Asset Store Submission Guidelines are the release authority. TweenHelper is not distributed as a Unity Package Manager package.
+| Fact | Current value |
+| --- | --- |
+| Product | Tween Helper `1.1.0` — initial public release |
+| Unity validation | Unity `6000.5.2f1`; lower versions are untested |
+| DOTween validation | Free package `1.2.825`, runtime `1.3.030`; installed separately |
+| Distribution root | `Assets/Loags/TweenHelper` only |
+| Registered presets | 300 |
+| Preset Browser | 446 isolated preview entries |
+| Animation Gallery | 406 customer-facing entries across eight categories |
+| Internal review scene | 527 stable, unique review configurations |
+| Render pipelines | Built-in and URP supported; HDRP/custom pipelines untested |
+| License | Standard Unity Asset Store EULA |
 
-The planned Unity Pipeline/UCodex integration has its own handoff roadmap at [Assets/_Project/TweenHelperDevelopment/Documentation/TweenHelperPipelineCliRoadmap.md](Assets/_Project/TweenHelperDevelopment/Documentation/TweenHelperPipelineCliRoadmap.md). It covers the repository-only developer commands and the optional customer-facing Editor integration without changing the base package dependency boundary.
+Counts name different product surfaces and must not be combined into an unqualified “animation count.” Registered presets are `ITweenPreset` types. Browser entries and gallery entries also include semantic operations, recipes, target variants, and component-property examples. The 527-entry review scene is development-only.
 
-The post-CLI Serialized Animation Recipes and `TweenPlayer` feature has a separate gated roadmap at [Assets/_Project/TweenHelperDevelopment/Documentation/SerializedAnimationRecipesTweenPlayerRoadmap.md](Assets/_Project/TweenHelperDevelopment/Documentation/SerializedAnimationRecipesTweenPlayerRoadmap.md). It must remain in its wait state until the CLI foundation is accepted and a mandatory post-implementation audit, roadmap review, agent-command design pass, and final roadmap validation are complete.
+## Delivered product surface
 
-## Confirmed release baseline
+### Runtime
 
-- Publisher: `Loags`
-- Product: `TweenHelper`
-- Candidate version: `1.0.0-pre.1`
-- Distribution root: `Assets/Loags/TweenHelper`
-- Minimum Unity version: `2022.3.0f1`
-- Minimum DOTween version: `1.3.030`
-- Historical license assumption: superseded. Current release uses the Standard Unity Asset Store EULA.
-- External dependency: DOTween, installed and licensed separately
-- Runtime namespace: `LB.TweenHelper`
-- Editor namespace: `LB.TweenHelper.Editor`
-- Demo namespace: `LB.TweenHelper.Demo`
-- Test namespaces: `LB.TweenHelper.Tests.Editor` and `LB.TweenHelper.Tests.PlayMode`
+- Fluent typed and dynamic preset playback through `TweenBuilder` and `TweenHandle`.
+- Sequential and joined animation composition, callbacks, loops, async waiting, cancellation, timeout handling, rewind, restart, and explicit kill behavior.
+- UI recipes, staggered collections, destination motion, gameplay feedback, production UI sequences, TextMesh Pro/value animation, progress animation, camera feedback, and engine-property animation.
+- World-to-UI projection through Arc, Hop, Bezier, Path, and pickup-collection workflows.
+- Image/Slider progress operations: Fill To, Fill From/To, Value Fill, Drain, Charge, Alert Pulse, Fill + Text, and normalized progress hooks.
+- Gameplay-state families, expanded collection topologies, reusable sequence macros, camera rack-focus/collection kick, audio/light/particle/material wrappers, Torch Flicker, and Scanner Pulse.
+- Stable 300-entry registered preset catalog; semantic additions intentionally remain non-preset operations.
 
-## Distribution structure
+### Editor discovery
 
-```text
-Assets/Loags/TweenHelper/
-|-- README.md
-|-- CHANGELOG.md
-|-- LICENSE.md
-|-- Third-Party Notices.txt
-|-- Runtime/
-|   |-- LB.TweenHelper.Runtime.asmdef
-|   |-- Core/
-|   `-- Presets/
-|-- Editor/
-|   |-- LB.TweenHelper.Editor.asmdef
-|   |-- PresetBrowserWindow.cs
-|   |-- DOTweenSetupValidator.cs
-|   `-- validation and documentation tools
-|-- Samples/
-|   `-- TweenHelper Demos/
-|       |-- Scripts/
-|       |-- Scenes/
-|       |-- Prefabs/
-|       `-- Materials/
-`-- Documentation/
-    |-- Installation.md
-    |-- API.md
-    |-- Lifecycle.md
-    `-- PresetCatalog.md
-```
+- **Tools > Tween Helper > Preset Browser** exposes 446 entries without reading or modifying the active scene.
+- Preview fixtures build only the participants required by each operation: target, backdrop, controls, incoming content, progress bar, camera, audio/light/particle fixture, or renderer proxy.
+- Proxy depth, sorting, Graphic color, parent `CanvasGroup` alpha, fill/value state, and projected UI state remain synchronized during playback.
+- Details and copied C# examples use the same selected configuration.
 
-Only this root is selected in Asset Store Publishing Tools. DOTween remains under `Assets/Plugins/Demigiant`, and Asset Store Publishing Tools remains under `Packages`; neither is included in the upload.
+### Samples and internal review
 
-Repository-only tests, reset-audit tooling, submission notes, and Publisher Portal release history live under `Assets/_Project/TweenHelperDevelopment`. They compile against the distributable assemblies where applicable but are excluded from the `.unitypackage`.
+- `TweenHelperAnimationGallery.unity` is the only shipped demo scene and exposes 406 entries.
+- `TweenHelperPresetReview.unity` is development-only and exposes 527 stable review IDs.
+- The rebuilt review scene assigns renderable sprites to filled Images and meters, overlays percentage text on progress bars, and includes visible progress, audio, light, particle, material, world-to-UI, and macro fixtures.
+- Hop-to-UI anticipation now precedes travel and landing squash begins only after the destination is reached.
 
-## M1 - Stabilize animations
+## Validation snapshot
 
-Status: functionally complete before the DOTween `1.3.030` upgrade; one consolidated upgrade validation remains.
+Completed for the current working tree:
 
-Implemented:
+- Preset Browser catalog: 446 entries, including all 300 registered presets and 146 semantic/component preview entries.
+- Animation Gallery catalog: 406 entries across eight categories.
+- Internal review catalog: 527 entries and 527 unique IDs.
+- All Image progress previews were sampled at runtime; fill values, percentage text, scale/color pulses, and the 50% hook updated correctly.
+- Preset Browser previews were exercised across the complete 446-entry catalog without compilation or runtime errors.
+- Unity Play Mode exited cleanly and the Console reported zero errors after the latest review-scene validation.
+- Runtime, demo, and validation-editor C# projects compiled with zero warnings and zero errors using isolated build output.
 
-- Preserved per-step builder options and duration precedence.
-- Made builder, handle, and async callbacks additive.
-- Defined cancellation, external kill, timeout, and normal completion behavior.
-- Replaced callback-created infinite loops with killable DOTween sequences.
-- Fixed fade-target compatibility and Unity object null handling.
-- Added repository-only reset auditing that targets both shipped demo scenes without being included in the export.
-- Fixed 2D discovery, reset state capture, report naming, and expected counts.
+Historical validator, test, export, and upload results do not approve the new working tree. Repeat the exact-artifact gates below after the documentation and code are committed.
 
-Existing evidence from the previous DOTween baseline:
+## Release gates
 
-- 2D: 11 presets x 4 modes = 44 passing checks.
-- 3D: 300 presets x 4 modes = 1,200 passing checks.
-- Combined reset matrix: 1,244/1,244 passing checks.
+### 1. Freeze source and documentation
 
-Exit gate:
+- [x] Keep version `1.1.0` as the initial public release.
+- [x] Preserve exactly 300 registered presets.
+- [x] Document the 446-entry Preset Browser, 406-entry gallery, and 527-entry internal review matrix accurately.
+- [x] Keep Unity Pipeline/MCP, telemetry, review tooling, and Publisher records outside the distributable root.
+- [ ] Commit and push the runtime, Editor, scene, package-tooling, and documentation changes.
 
-- [ ] Repeat the complete 1,244-check matrix once with DOTween `1.3.030`.
-- [ ] Confirm no package-originated Console errors or warnings.
+### 2. Validate the final working tree
 
-## M2 - Asset Store package layout
+- [ ] Refresh Unity and confirm no package-originated compilation errors or warnings.
+- [ ] Run EditMode and PlayMode suites.
+- [ ] Run gallery, review-coverage, lifecycle, and relevant preview validators.
+- [ ] Re-run a complete manual browser/review sample after the final import.
+- [ ] Verify Built-in and URP presentation.
 
-Status: implemented; Unity Editor import validation remains.
+### 3. Build and inspect the exact artifact
 
-Implemented:
+- [ ] Run Asset Store Publishing Tools Validator against `Assets/Loags/TweenHelper` only.
+- [ ] Export a replacement `TweenHelper-1.1.0.unitypackage`.
+- [ ] Inspect the path manifest: no `_Project`, DOTween, `Packages`, Pipeline/MCP, Publisher media, tests, or development tooling.
+- [ ] Import the exact artifact into clean supported projects with DOTween installed and configured separately.
+- [ ] Open Setup & Support, Preset Browser, and the Animation Gallery from the imported artifact.
+- [ ] Repeat core runtime, preview, documentation-link, and render-pipeline checks.
 
-- Moved all TweenHelper-owned content under `Assets/Loags/TweenHelper`.
-- Removed `package.json`, `Samples~`, `Documentation~`, and Package Manager sample-import tooling.
-- Preserved existing script, assembly, scene, prefab, and material GUIDs.
-- Kept Runtime, Editor, Samples, and customer documentation separated inside the distribution root.
-- Moved automated tests, reset-audit tooling, and submission notes to `Assets/_Project/TweenHelperDevelopment`.
-- Kept DOTween, Asset Store Publishing Tools, project settings, generated files, and unrelated project content outside the distribution root.
-- Removed the demo assembly's Input System package reference.
-- Guarded optional legacy-input shortcuts so demos do not throw when the legacy Input Manager is disabled.
-- Updated catalog generation and catalog tests to use the Asset Store folder path.
+### 4. Refresh publishing content
 
-Exit gate:
+- [x] Rewrite customer README, feature guides, changelog, gallery guide, and release facts for the expanded surface.
+- [x] Rewrite Portal release notes, description, technical details, dependency disclosure, reviewer note, and AI disclosure.
+- [ ] Capture replacement screenshots and the required animation demonstration video from the accepted exact artifact.
+- [ ] Confirm current Portal dimensions, codecs, file-size limits, keyword limit, and discount controls at upload time.
+- [ ] Replace the old draft artifact and obsolete media only after the replacements are accepted.
+- [ ] Preview the rendered listing and submit for review.
 
-- [ ] Confirm Unity imports the new root without missing scripts or references.
-- [x] Confirm all assets and folders have one `.meta` file and no duplicate GUIDs.
-- [ ] Export the exact `.unitypackage` from only `Assets/Loags/TweenHelper`.
-- [ ] Inspect the exported content list for files outside the root.
+## Asset Store compliance baseline
 
-## M3 - Critical tests
+Recheck the official [Unity Asset Store Submission Guidelines](https://assetstore.unity.com/publishing/submission-guidelines) immediately before upload. The 2026-05-20 revision requires, among other applicable rules:
 
-Status: implemented on the previous DOTween baseline; upgraded-DOTween run remains.
+- one organized product root;
+- comprehensive documentation for code/setup products;
+- disclosure and correct Portal registration of external Asset Store dependencies;
+- a demo scene for Animation-category submissions;
+- a marketing video demonstrating included animations;
+- no package-originated errors or warnings after setup;
+- transparent functional AI-assistance disclosure when applicable.
 
-The suites live under `Assets/_Project/TweenHelperDevelopment/Tests` so they compile against the distributable assemblies without being included in the Asset Store upload.
+The package must not include DOTween, Unity Pipeline/MCP integration, developer telemetry, Asset Store Publishing Tools, Recorder, internal review assets, or Publisher media.
 
-EditMode coverage:
+## Publishing decision
 
-- Exactly 300 attributed presets with unique, non-empty names.
-- Construction of every compatible preset.
-- Builder sequencing, joining, duration precedence, pending options, and option capture.
-- Additive builder and handle callbacks.
-- Await completion, cancellation, external kill, timeout, and cleanup.
-- Documentation examples and deterministic catalog drift.
-
-PlayMode coverage:
-
-- Cancellation kills once.
-- Finite Yoyo completion and cleanup.
-- Linked target destruction.
-- One-shot completion and public rewind restoration.
-- Infinite-loop termination across representative loop families.
-- Multiple awaiters and timeout cleanup.
-
-Exit gate:
-
-- [ ] Run EditMode once against DOTween `1.3.030`.
-- [ ] Run PlayMode once against DOTween `1.3.030`.
-- [ ] Rerun only a failing suite after fixing a concrete failure.
-
-## M4 - Documentation and licensing
-
-Status: implemented; final proofread remains.
-
-Implemented:
-
-- Offline README, installation, API, lifecycle, and preset documentation.
-- Standard Unity Asset Store EULA for Tween Helper-owned content (supersedes the earlier MIT assumption).
-- `Third-Party Notices.txt` identifying DOTween, its publisher, separate acquisition, and separate license.
-- Required DOTween version and setup instructions.
-- Asset Store submission checklist and copy-ready listing dependency notice.
-- Deterministic 300-preset catalog generation.
-
-Exit gate:
-
-- [ ] Regenerate the preset catalog and confirm no drift.
-- [ ] Proofread every Asset Store-facing requirement, dependency, limitation, and link.
-- [ ] Change the candidate version to `1.0.0` only after validation passes.
-
-## M5 - Usability
-
-Status: implemented.
-
-Implemented:
-
-- Preset browser under **Tools > TweenHelper > Preset Browser**.
-- Name and description search, family filters, compatibility feedback, and copyable fluent API examples.
-- Selected-object preview with transform and visual-state restoration.
-- Preview cleanup on window close, selection change, compilation, and Play Mode changes.
-- DOTween assembly, version, UI module, and settings validation.
-- Optional TweenHelper settings asset with safe in-memory defaults.
-
-Exit gate:
-
-- [ ] Open the browser after the asset-layout move and verify preview/restore once.
-- [ ] Run the DOTween setup validator against `1.3.030`.
-
-## M6 - Asset Store compliance
-
-Status: official Validator passed with one reviewed static-variable warning.
-
-Applicable Submission Guideline checks:
-
-- [x] One product root under `Assets/Loags/TweenHelper`.
-- [x] Content organized by purpose and relationship.
-- [x] No executables, archives, vendor binaries, generated libraries, or project settings inside the root.
-- [x] Offline documentation included.
-- [x] All custom Editor menu commands are under **Tools > TweenHelper**.
-- [x] All public types use publisher-owned namespaces.
-- [x] Standard Unity Asset Store EULA wording and DOTween third-party notice included for 1.1.0.
-- [x] DOTween requirement and limitation disclosed.
-- [x] Paths and package size are comfortably below limits.
-- [x] Run Asset Store Publishing Tools Validator against only the distribution root (35 passed checks).
-- [x] Review the single static-variable warning: runtime mutable state is reset during subsystem registration, immutable lookup data is safe, and Editor-only test-runner references are released after each run.
-- [ ] Configure DOTween as an external dependency in the Publisher Portal.
-- [ ] Add the DOTween notice to the product description.
-
-## M7 - Exact-artifact validation and release
-
-Status: pending.
-
-Validation policy:
-
-- Make all related changes before validation.
-- Run one compile check, one EditMode run, one PlayMode run, and one complete reset matrix.
-- Rerun only the failing slice after a specific fix.
-
-Release sequence:
-
-1. Restore Unity MCP or Unity batch licensing access.
-2. Rerun Asset Store Tools Validator against `Assets/Loags/TweenHelper` after the final code change and record the result.
-3. Run the consolidated DOTween `1.3.030` validation cycle.
-4. Export the exact `.unitypackage` using Asset Store Publishing Tools.
-5. Import that artifact into clean Unity `6000.0.67f1` and `6000.5.2f1` projects.
-6. Validate Unity `2022.3.0f1` when that Editor version is available.
-7. Confirm the clean import creates no files outside `Assets/Loags/TweenHelper`.
-8. Open both demo scenes, the preset browser, and the setup validator.
-9. Regenerate the catalog and confirm no diff.
-10. Set version `1.0.0`, copy the matching entry from `Assets/_Project/TweenHelperDevelopment/Documentation/PublisherPortalReleaseNotes.md`, and tag only the tested artifact.
-
-## Current environment blockers
-
-- Unity MCP is not currently exposed to this task.
-- Authorized Unity batch attempts are blocked before import by the local Unity Licensing Client IPC connection.
-- Unity `2022.3.0f1` is not currently installed; only `6000.0.67f1` and `6000.5.2f1` are available locally.
-
-Until exact-artifact validation passes, `1.0.0-pre.1` remains the honest release state.
+Do not submit the currently uploaded draft. Replace it only after the new source, documentation, validation evidence, artifact manifest, clean-import results, and media all describe the same 1.1.0 release.

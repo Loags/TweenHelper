@@ -1,11 +1,12 @@
 # Animation Review Coverage and Expansion Roadmap
 
-- Status: **PHASE 1 IMPLEMENTED — AUTOMATED VALIDATION PASSED, MANUAL REVIEW PENDING**
-- Last updated: 2026-08-13
+- Status: **PHASE 1 COMPLETE; SEPARATE 1.1 EXPANSION INTEGRATED INTO A 527-ENTRY REVIEW MATRIX**
+- Last updated: 2026-08-19
 - Previous validated baseline: **398 entries**
-- Current review catalog: **474 entries**
-- Pending manual review: **76 new entries**
-- Scope: Manual-review completeness for existing semantic animation APIs, followed by staged implementation of new collection, gameplay, UI, text, destination, and camera animation families.
+- Phase 1 checkpoint: **474 entries**
+- Current review catalog: **527 entries / 527 unique IDs**
+- Latest review snapshot: **527 reviewed, 516 Correct, 11 Needs Work**
+- Scope: Historical Phase 1 review-completeness work plus still-proposed future collection, gameplay, UI, text, destination, and camera candidates. The implemented 1.1 Epics A–H are recorded separately in the shipped `ImplementationRoadmap.md`.
 
 ## Purpose
 
@@ -13,7 +14,7 @@ This roadmap is the implementation and validation checklist for the next TweenHe
 
 1. **Public runtime API** — stays compact and semantic.
 2. **Review catalog** — contains every visually meaningful discrete configuration, including enum variants that call the same public method.
-3. **Showcase and Preset Browser** — remain curated and discovery-focused rather than duplicating the complete review matrix.
+3. **Animation Gallery and Preset Browser** — remain customer-facing discovery surfaces rather than duplicating the complete review matrix. The gallery contains 406 capture-focused entries; the browser contains 446 isolated previews.
 
 The review scene is the exhaustive visual-validation surface. A direction, ordering mode, interpolation mode, signed motion mode, or target-context branch does not need a direction-specific public method, but it does need a stable review entry when its appearance or runtime path is meaningfully different.
 
@@ -33,13 +34,18 @@ The current review scene contains:
 | --- | ---: |
 | Built-in presets | 300 |
 | UI recipes | 13 |
-| Collection and stagger entries | 36 |
-| Destination motion | 26 |
-| Gameplay feedback | 22 |
+| Collection recipes | 34 |
+| Stagger variants | 10 |
+| Destination motion | 30 |
+| Feedback sequences | 23 |
+| Gameplay states | 10 |
 | Production UI sequences | 39 |
 | Text and value animations | 31 |
-| Camera feedback | 7 |
-| **Total** | **474** |
+| Progress animations | 15 |
+| Sequence macros | 4 |
+| Camera feedback | 9 |
+| Engine properties | 9 |
+| **Total** | **527** |
 
 ## Phase 1 implementation record
 
@@ -67,7 +73,7 @@ Primary implementation surfaces:
 - `[ ]` Not started
 - `[~]` In progress
 - `[x]` Implemented and statically verified
-- Manual validation remains incomplete until the user marks every new entry Passed or Failed in the review scene.
+- `[x]` in the historical phase sections means implementation/automated validation completed at that checkpoint; the latest manual decision is owned by the review scene's stable ID.
 
 For every implementation slice, track these independently:
 
@@ -738,15 +744,15 @@ Use this checklist after each bounded implementation slice.
 
 # Resume instructions
 
-When implementation resumes:
+When review or expansion work resumes:
 
 1. Read this roadmap and the current development README.
 2. Inspect the actual review controller and count the current entries; do not assume the documented count if intervening work changed it.
 3. Check the working tree and preserve unrelated user changes.
-4. Continue from the first unchecked item in the active phase.
+4. Treat the 474-entry Phase 1 sections as historical checkpoints and continue from the current 527-entry matrix.
 5. Implement only one bounded slice before compiling and updating review integration.
 6. Preserve existing review IDs even if the controller representation is refactored.
 7. Record material design decisions directly in this document.
-8. Stop at each manual-validation gate and hand the new `NOT REVIEWED` entries to the user.
+8. Keep the 406-entry gallery, 446-entry browser, and 527-entry review counts qualified and separate in documentation.
 
-The immediate next task is **manual validation of the 76 Phase 1 coverage entries** under `NOT REVIEWED`. New semantic APIs begin only after that gate is complete.
+The immediate release task is to resolve the 11 entries currently marked **Needs Work**, rerun the relevant validators, and use the accepted 527-entry matrix as evidence for the replacement 1.1.0 release artifact. New expansion work must add stable review IDs and appropriate browser/gallery discovery without renaming existing IDs.

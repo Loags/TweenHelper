@@ -1,6 +1,12 @@
-# TMP Animation Expansion Roadmap (v1.0)
+# TMP Animation Expansion Roadmap (post-1.1)
+
+Status: **future proposal — not part of the 1.1.0 release candidate**
+
+Reviewed: 2026-08-19
 
 This document is the implementation plan for expanding TweenHelper's TextMesh Pro animation coverage without duplicating existing effects, ordering logic, lifecycle handling, or builder APIs.
+
+The current 1.1.0 release surface remains the twelve public TMP operation families documented in [TextAndValueAnimations.md](TextAndValueAnimations.md), represented by thirteen gallery/browser examples. Do not advertise the additional effects in this roadmap as shipped features until their runtime APIs, previews, lifecycle checks, and customer documentation are implemented.
 
 ## 1) Target outcome
 
