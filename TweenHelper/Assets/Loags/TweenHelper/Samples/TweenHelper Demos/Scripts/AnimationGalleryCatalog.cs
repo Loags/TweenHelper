@@ -75,6 +75,10 @@ namespace LB.TweenHelper.Demo
         UIAttentionHard,
         UIDisabled,
         UIEnabled,
+        RecipePanelMoveFade,
+        RecipeIconScalePreset,
+        RecipeMultiBindingPopup,
+        RecipeDelayedNotification,
         ListStaggerIn,
         ListStaggerOut,
         GridWave,
@@ -301,7 +305,7 @@ namespace LB.TweenHelper.Demo
         public static IReadOnlyList<AnimationGalleryEntry> Build()
         {
             TweenPresetRegistry.ScanForCodePresets();
-            var entries = new List<AnimationGalleryEntry>(419);
+            var entries = new List<AnimationGalleryEntry>(423);
             entries.AddRange(TweenPresetRegistry.Presets
                 .OrderBy(preset => preset.PresetName, StringComparer.Ordinal)
                 .Select(preset => new AnimationGalleryEntry($"preset:{preset.PresetName}", preset.PresetName, AnimationGalleryCategory.Presets,
@@ -335,6 +339,10 @@ namespace LB.TweenHelper.Demo
             string localSuffix = world ? string.Empty : "Local";
             switch (entry.Operation)
             {
+                case AnimationGalleryOperation.RecipePanelMoveFade: return "panelMoveFadePlayer.Play();";
+                case AnimationGalleryOperation.RecipeIconScalePreset: return "iconScalePresetPlayer.Play();";
+                case AnimationGalleryOperation.RecipeMultiBindingPopup: return "multiBindingPopupPlayer.Play();";
+                case AnimationGalleryOperation.RecipeDelayedNotification: return "delayedNotificationPlayer.Play();";
                 case AnimationGalleryOperation.ListStaggerIn:
                     return $"items.TweenStagger(owner).Preset<PopInFadePreset>().Order(StaggerOrder.{GetOrder(configuration)}).DelayBetween(0.08f).Play();";
                 case AnimationGalleryOperation.ListStaggerOut:
@@ -556,7 +564,11 @@ namespace LB.TweenHelper.Demo
                 (AnimationGalleryOperation.UIAttentionSoft, "Use subtle attention feedback."),
                 (AnimationGalleryOperation.UIAttentionHard, "Use emphatic attention feedback."),
                 (AnimationGalleryOperation.UIDisabled, "Transition to a disabled visual state."),
-                (AnimationGalleryOperation.UIEnabled, "Restore an enabled visual state."));
+                (AnimationGalleryOperation.UIEnabled, "Restore an enabled visual state."),
+                (AnimationGalleryOperation.RecipePanelMoveFade, "Play an asset-authored panel move and fade recipe."),
+                (AnimationGalleryOperation.RecipeIconScalePreset, "Combine a scale node with a registered preset in a recipe asset."),
+                (AnimationGalleryOperation.RecipeMultiBindingPopup, "Animate panel, backdrop, and icon through explicit recipe bindings."),
+                (AnimationGalleryOperation.RecipeDelayedNotification, "Sequence a finite delay before a notification move and fade."));
         }
 
         private static void AddCollections(ICollection<AnimationGalleryEntry> entries)

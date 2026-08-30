@@ -16,6 +16,7 @@ Tween Helper remains in pre-release development. The entries below describe the 
 - Added gameplay-state feedback, collection topology recipes, deal-in/deal-out and eight-direction serpentine collections, reusable sequence macros, camera rack-focus/collection kick, and engine-property wrappers for audio, lights, particle emission, and renderer properties.
 - Added two-step collection layout snapshots for animating direct UI children across caller-owned sibling-order and layout-setting changes.
 - Consolidated advanced semantic timelines around consistent capture, completion, rewind, interruption, loop, target-link, and async/cancellation behavior.
+- Added reusable TweenRecipe assets, explicit TweenPlayer bindings and ownership, pre-mutation validation, and a curated 27-operation executor spanning local/world transforms, presets, destination motion, feedback, multi-binding UI, text/value, collections, and camera/engine properties.
 
 ### Editor tools and samples
 
@@ -23,7 +24,8 @@ Tween Helper remains in pre-release development. The entries below describe the 
 - Added purpose-built preview fixtures for UI sequences, progress bars, cameras, audio, lights, particles, material properties, and projected world-to-UI content.
 - Synchronized proxy sorting/depth, Graphic color, parent `CanvasGroup` alpha, fill/value state, and incoming/backdrop participants during Editor previews.
 - Added Setup & Support, DOTween validation, and an optional settings asset.
-- Added the mouse-driven Animation Gallery with 419 entries, contextual options, replay/reset navigation, live C# examples, presentation mode, and dedicated world/camera/layout fixtures.
+- Added the mouse-driven Animation Gallery with 423 entries, contextual options, replay/reset navigation, live C# examples, presentation mode, and dedicated world/camera/layout fixtures.
+- Added the UI Toolkit Tween Recipe Editor, binding synchronization, constrained Then/With timeline editing, validation navigation, and exact-restoring scene/Prefab Mode preview.
 
 ### Fixes and documentation
 
@@ -31,4 +33,4 @@ Tween Helper remains in pre-release development. The entries below describe the 
 - Fixed Hop-to-UI timing so anticipation finishes before travel and landing squash begins after arrival.
 - Fixed Image fill and engine-meter review fixtures by assigning renderable filled sprites and placing synchronized percentage text over the bar.
 - Improved audio/light preview meters, pitch normalization, Torch Flicker visibility, and alert-pulse descriptions.
-- Added customer documentation for installation, API usage, every feature family, the 300-preset catalog, the 461-entry Preset Browser, and the 419-entry Animation Gallery.
+- Added customer documentation for installation, API usage, every feature family, the 300-preset catalog, the 461-entry Preset Browser, the 423-entry Animation Gallery, and the Tween Recipe authoring workflow.

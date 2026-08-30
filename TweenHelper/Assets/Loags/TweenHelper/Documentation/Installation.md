@@ -34,11 +34,13 @@ Run **Tools > Tween Helper > Validate > DOTween Setup** for a focused DOTween an
 
 Open **Tools > Tween Helper > Preset Browser** to confirm the Editor assembly and preview stage are working. The browser contains 461 isolated entries and does not require an active-scene target. Progress previews should show a visible filled bar and percentage, UI sequences should show only the participants required by the selected operation, layout transitions should show numbered list/grid changes, and engine-property entries should display their live meter/readout.
 
+Open **Tools > Tween Helper > Recipe Editor**, create a small recipe, and select **Validate** to confirm the recipe Editor and runtime assembly are available. Add a `TweenPlayer`, assign the recipe, choose **Sync Bindings**, and assign its explicit targets before previewing or entering Play Mode. See [Tween Recipes](TweenRecipes.md) for the complete workflow.
+
 ## 4. Open the Animation Gallery
 
 Open `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes/TweenHelperAnimationGallery.unity` and enter Play Mode.
 
-Use the mouse to select a category and animation. The selection auto-plays after resetting the fixture. Use Replay, Reset, Previous, and Next for repeatable comparison. The 419-entry catalog contains all 300 presets plus 119 curated UI, collection, destination, gameplay/macro, production-UI, text/value, and camera examples. Contextual options update both the preview and the displayed C# call.
+Use the mouse to select a category and animation. The selection auto-plays after resetting the fixture. Use Replay, Reset, Previous, and Next for repeatable comparison. The 423-entry catalog contains all 300 presets plus 123 curated UI, collection, destination, gameplay/macro, production-UI, text/value, and camera examples. Contextual options update both the preview and the displayed C# call.
 
 The gallery is designed for 16:9 presentation and validated at `1920×1080`. It uses dedicated world and camera preview rigs and does not require the Input System.
 

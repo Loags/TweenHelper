@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af149d9dec7f7be41a29f870f05ae9da, type: 3}
+  m_Name: TweenRecipeGalleryLibrary
+  m_EditorClassIdentifier: LB.TweenHelper.Demo::LB.TweenHelper.Demo.TweenRecipeGalleryLibrary
+  panelMoveFade: {fileID: 11400000, guid: d34bf39533e7b2840a2a73224023156a, type: 2}
+  iconScalePreset: {fileID: 11400000, guid: c4092ff0714729b41b4420b4183bdf86, type: 2}
+  multiBindingPopup: {fileID: 11400000, guid: 3ad17f9af3ea80845873c9bebdacc641, type: 2}
+  delayedNotification: {fileID: 11400000, guid: 78b7233df8202004d88200bc0aadd46e, type: 2}

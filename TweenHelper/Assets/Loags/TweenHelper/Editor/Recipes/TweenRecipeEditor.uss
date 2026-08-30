@@ -1,0 +1,409 @@
+.recipe-editor-root {
+    flex-grow: 1;
+    color: rgb(224, 232, 246);
+    background-color: rgb(17, 20, 29);
+}
+
+.recipe-toolbar {
+    min-height: 34px;
+    padding-left: 6px;
+    padding-right: 6px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(46, 53, 70);
+}
+
+.recipe-asset-field {
+    width: 330px;
+    margin-right: 6px;
+}
+
+.recipe-editor-content {
+    flex-grow: 1;
+    min-height: 360px;
+    flex-direction: row;
+    padding: 8px;
+}
+
+.recipe-left-panel,
+.recipe-center-panel,
+.recipe-right-panel {
+    background-color: rgb(24, 28, 39);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgb(43, 50, 67);
+    border-right-color: rgb(43, 50, 67);
+    border-top-color: rgb(43, 50, 67);
+    border-bottom-color: rgb(43, 50, 67);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.recipe-left-panel {
+    width: 245px;
+    min-width: 220px;
+    margin-right: 8px;
+}
+
+.recipe-center-panel {
+    flex-grow: 1;
+    min-width: 360px;
+    margin-right: 8px;
+}
+
+.recipe-right-panel {
+    width: 280px;
+    min-width: 250px;
+}
+
+.recipe-section-title {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(235, 242, 255);
+}
+
+.recipe-panel-heading,
+.recipe-inline-actions,
+.recipe-inspector-actions,
+.recipe-runtime-controls,
+.recipe-node-heading,
+.recipe-node-order-controls {
+    flex-direction: row;
+    align-items: center;
+}
+
+.recipe-panel-heading {
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.recipe-inline-actions > Button {
+    width: 26px;
+    height: 23px;
+    margin-left: 3px;
+}
+
+.recipe-binding-list {
+    min-height: 90px;
+    max-height: 180px;
+    margin-bottom: 10px;
+    background-color: rgb(19, 23, 33);
+    border-radius: 6px;
+}
+
+.recipe-binding-row {
+    height: 38px;
+    padding-left: 8px;
+    padding-right: 8px;
+    justify-content: center;
+}
+
+.recipe-binding-name,
+.recipe-palette-name {
+    -unity-font-style: bold;
+    color: rgb(220, 230, 247);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.recipe-muted {
+    font-size: 10px;
+    color: rgb(130, 145, 171);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.recipe-palette {
+    flex-grow: 1;
+    min-height: 180px;
+}
+
+.recipe-search {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.recipe-palette-list {
+    flex-grow: 1;
+    min-height: 120px;
+    background-color: rgb(19, 23, 33);
+    border-radius: 6px;
+}
+
+.recipe-palette-row {
+    height: 42px;
+    padding-left: 8px;
+    padding-right: 8px;
+    justify-content: center;
+}
+
+.recipe-primary-button {
+    height: 29px;
+    margin-top: 6px;
+    background-color: rgb(45, 91, 145);
+    color: rgb(238, 248, 255);
+}
+
+.recipe-timeline {
+    flex-grow: 1;
+    min-height: 300px;
+    margin-top: 7px;
+    background-color: rgb(17, 21, 31);
+    border-radius: 7px;
+}
+
+.recipe-timeline-scroll {
+    flex-grow: 1;
+}
+
+.recipe-timeline-content {
+    min-height: 285px;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 18px;
+    padding-right: 22px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+}
+
+.recipe-start-card {
+    width: 72px;
+    height: 38px;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(28, 103, 124);
+    border-radius: 18px;
+    -unity-font-style: bold;
+    color: rgb(222, 251, 255);
+}
+
+.recipe-connector {
+    width: 28px;
+    font-size: 24px;
+    -unity-text-align: middle-center;
+    color: rgb(74, 187, 218);
+}
+
+.recipe-node-group {
+    min-width: 172px;
+    justify-content: center;
+}
+
+.recipe-node-card {
+    width: 172px;
+    min-height: 128px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    padding: 9px;
+    background-color: rgb(31, 37, 51);
+    border-left-width: 1px;
+    border-right-width: 1px;
+    border-top-width: 1px;
+    border-bottom-width: 1px;
+    border-left-color: rgb(68, 82, 108);
+    border-right-color: rgb(68, 82, 108);
+    border-top-color: rgb(68, 82, 108);
+    border-bottom-color: rgb(68, 82, 108);
+    border-radius: 8px;
+}
+
+.recipe-node-with {
+    margin-left: 14px;
+    background-color: rgb(37, 34, 57);
+    border-left-color: rgb(122, 91, 214);
+    border-right-color: rgb(122, 91, 214);
+    border-top-color: rgb(122, 91, 214);
+    border-bottom-color: rgb(122, 91, 214);
+}
+
+.recipe-node-dragging {
+    opacity: 0.72;
+    border-left-color: rgb(255, 201, 96);
+    border-right-color: rgb(255, 201, 96);
+    border-top-color: rgb(255, 201, 96);
+    border-bottom-color: rgb(255, 201, 96);
+}
+
+.recipe-node-selected {
+    border-left-width: 2px;
+    border-right-width: 2px;
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-color: rgb(68, 211, 241);
+    border-right-color: rgb(68, 211, 241);
+    border-top-color: rgb(68, 211, 241);
+    border-bottom-color: rgb(68, 211, 241);
+}
+
+.recipe-node-invalid {
+    border-left-color: rgb(238, 93, 93);
+    border-right-color: rgb(238, 93, 93);
+    border-top-color: rgb(238, 93, 93);
+    border-bottom-color: rgb(238, 93, 93);
+}
+
+.recipe-node-heading {
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.recipe-node-placement {
+    font-size: 9px;
+    -unity-font-style: bold;
+    color: rgb(89, 216, 242);
+}
+
+.recipe-node-title {
+    margin-bottom: 3px;
+    font-size: 13px;
+    -unity-font-style: bold;
+    color: rgb(237, 243, 253);
+    white-space: normal;
+}
+
+.recipe-node-binding {
+    margin-top: 4px;
+    margin-bottom: 2px;
+    font-size: 11px;
+    color: rgb(174, 156, 244);
+}
+
+.recipe-node-order-controls {
+    margin-top: 6px;
+}
+
+.recipe-node-order-controls > Button {
+    width: 32px;
+    height: 21px;
+    margin-right: 3px;
+}
+
+.recipe-error-badge {
+    width: 18px;
+    height: 18px;
+    -unity-text-align: middle-center;
+    background-color: rgb(174, 55, 55);
+    border-radius: 9px;
+    -unity-font-style: bold;
+    color: white;
+}
+
+.recipe-inspector {
+    flex-grow: 1;
+}
+
+.recipe-inspector > .unity-base-field {
+    margin-top: 5px;
+}
+
+.recipe-inspector-actions {
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.recipe-inspector-actions > Button {
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+
+.recipe-empty-state {
+    margin-top: 9px;
+    padding: 8px;
+    white-space: normal;
+    color: rgb(139, 155, 181);
+    background-color: rgba(26, 31, 44, 0.7);
+    border-radius: 6px;
+}
+
+.recipe-warning {
+    color: rgb(241, 184, 93);
+}
+
+.recipe-validation-panel {
+    min-height: 68px;
+    max-height: 130px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    background-color: rgb(20, 24, 34);
+    border-top-width: 1px;
+    border-top-color: rgb(47, 55, 72);
+}
+
+.recipe-status {
+    margin-bottom: 4px;
+    -unity-font-style: bold;
+    color: rgb(240, 129, 118);
+}
+
+.recipe-status-valid {
+    color: rgb(99, 218, 146);
+}
+
+.recipe-preview-status {
+    margin-bottom: 4px;
+    font-size: 10px;
+    color: rgb(126, 159, 187);
+    white-space: normal;
+}
+
+.recipe-validation-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.recipe-validation-message {
+    min-height: 22px;
+    margin-right: 5px;
+    margin-bottom: 3px;
+    font-size: 10px;
+    -unity-text-align: middle-left;
+}
+
+.recipe-validation-warning {
+    color: rgb(239, 184, 99);
+}
+
+.recipe-validation-error {
+    color: rgb(247, 127, 119);
+}
+
+.recipe-player-bindings-heading {
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
+
+.recipe-player-binding-card {
+    margin-bottom: 6px;
+    padding: 7px;
+    background-color: rgb(31, 36, 48);
+    border-radius: 6px;
+}
+
+.recipe-player-validation {
+    margin-top: 8px;
+    padding: 7px;
+    white-space: normal;
+    color: rgb(247, 127, 119);
+    background-color: rgba(78, 28, 30, 0.35);
+    border-radius: 6px;
+}
+
+.recipe-player-validation-valid {
+    color: rgb(103, 222, 150);
+    background-color: rgba(28, 72, 44, 0.35);
+}
+
+.recipe-runtime-controls {
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+
+.recipe-runtime-controls > Button {
+    margin-right: 3px;
+    margin-bottom: 3px;
+}

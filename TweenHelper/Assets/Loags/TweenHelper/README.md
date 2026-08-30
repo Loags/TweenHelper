@@ -186,9 +186,15 @@ renderer.MaterialFloatTo("_Dissolve", 1f);
 
 Renderer operations use `MaterialPropertyBlock`; ambient light helpers are finite cycles suitable for explicit root looping. Retain and kill infinite handles during teardown.
 
+## Tween Recipes
+
+For reusable animations that designers can author without code, open **Tools > Tween Helper > Recipe Editor**. A `TweenRecipe` is a constrained Then/With/Delay timeline, and a `TweenPlayer` maps its stable binding IDs to explicit scene or prefab objects. Runtime playback and safe Editor preview use the same validated executor. The catalog covers the stable local-transform/visual/preset slice plus curated world, destination, feedback, multi-binding UI, text/value, collection, and camera/engine operations.
+
+See [Tween Recipes](Documentation/TweenRecipes.md) for authoring, binding, preview-safety, operation coverage, and sample assets.
+
 ## Animation Gallery
 
-The shipped mouse-driven Animation Gallery contains 419 entries across eight categories: 300 presets, 13 UI recipes, 23 collection examples, 12 destination operations, 25 gameplay-feedback/macro examples, 16 production UI sequences, 22 text/value examples, and eight camera operations. Selection resets and auto-plays; contextual controls and the displayed C# call update together.
+The shipped mouse-driven Animation Gallery contains 423 entries across eight categories: 300 presets, 17 UI recipes, 23 collection examples, 12 destination operations, 25 gameplay-feedback/macro examples, 16 production UI sequences, 22 text/value examples, and eight camera operations. Selection resets and auto-plays; contextual controls and the displayed C# call update together.
 
 ## Preset browser
 

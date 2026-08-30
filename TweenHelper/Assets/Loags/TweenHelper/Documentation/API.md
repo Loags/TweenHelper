@@ -64,6 +64,19 @@ TweenHandle handle = transform.Tween()
 
 `Then()` appends the next step. `With()` joins the next step at the previous insertion point.
 
+## TweenRecipe and TweenPlayer
+
+Create and edit recipe assets through **Tools > Tween Helper > Recipe Editor**, then bind them with a `TweenPlayer`. Recipe assets contain stable IDs and animation values only; target references live on each player.
+
+```csharp
+[SerializeField] private TweenPlayer popupPlayer;
+
+private void OnEnable() => popupPlayer.Play();
+private void OnDisable() => popupPlayer.Kill();
+```
+
+`TweenPlayer.Play()` validates the entire recipe and binding map before replacing the player's current handle or mutating a target. It returns the owned `TweenHandle`, and the player also exposes `Pause`, `Resume`, `Restart`, `Rewind`, `Complete`, and `Kill`. See [Tween Recipes](TweenRecipes.md) for the operation catalog and Editor workflow.
+
 ## Delay, callbacks, and raw DOTween injection
 
 ```csharp
@@ -235,6 +248,6 @@ TweenHelper initializes automatically. Without `Assets/Resources/TweenHelperSett
 
 ## Sample controls
 
-Open `TweenHelperAnimationGallery.unity` from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The mouse-driven gallery exposes all 300 presets plus 13 UI recipes, 23 collection examples, twelve destination-motion operations, twenty-five gameplay-feedback and macro sequences, sixteen production UI sequences, 22 text/value examples, and eight camera-feedback operations. Selection auto-plays after reset; Replay, Reset, previous/next navigation, contextual enum options, search, preset-family filters, and a live C# example remain available at runtime. Component-specific fill, audio, light, particle, and renderer examples are documented in their focused guides. The gallery does not require the Input System package.
+Open `TweenHelperAnimationGallery.unity` from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The mouse-driven gallery exposes all 300 presets plus 17 UI recipes, 23 collection examples, twelve destination-motion operations, twenty-five gameplay-feedback and macro sequences, sixteen production UI sequences, 22 text/value examples, and eight camera-feedback operations. Selection auto-plays after reset; Replay, Reset, previous/next navigation, contextual enum options, search, preset-family filters, and a live C# example remain available at runtime. Component-specific fill, audio, light, particle, and renderer examples are documented in their focused guides. The gallery does not require the Input System package.
 
 Open **Tools > Tween Helper > Preset Browser** for the complete 461-entry Editor discovery surface. It contains all 300 presets plus 161 semantic and component-property previews. The preview uses an isolated, purpose-built fixture and never reads from or modifies the active scene. UI sequence fixtures include only required participants; progress and engine-property fixtures expose live value meters and labels.

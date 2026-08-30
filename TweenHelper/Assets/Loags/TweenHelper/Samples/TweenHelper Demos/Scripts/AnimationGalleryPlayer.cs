@@ -55,8 +55,11 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private Camera previewCamera;
         [SerializeField] private Transform cameraFocusTarget;
 
+        private const string RecipeLibraryResource = "TweenRecipeGalleryLibrary";
+
         private readonly List<ComponentSnapshot> _snapshots = new List<ComponentSnapshot>();
         private TweenHandle _activeTween;
+        private TweenRecipeGalleryLibrary _recipeLibrary;
 
         private static readonly UISequenceDirection[] Directions =
         {
@@ -187,8 +190,51 @@ namespace LB.TweenHelper.Demo
                 case AnimationGalleryOperation.UIAttentionHard: return target.UIAttentionHard();
                 case AnimationGalleryOperation.UIDisabled: return target.UIDisabled();
                 case AnimationGalleryOperation.UIEnabled: return target.UIEnabled();
+                case AnimationGalleryOperation.RecipePanelMoveFade:
+                case AnimationGalleryOperation.RecipeIconScalePreset:
+                case AnimationGalleryOperation.RecipeMultiBindingPopup:
+                case AnimationGalleryOperation.RecipeDelayedNotification:
+                    return PlayTweenRecipe(operation);
                 default: throw new ArgumentOutOfRangeException(nameof(operation), operation, null);
             }
+        }
+
+        private TweenHandle PlayTweenRecipe(AnimationGalleryOperation operation)
+        {
+            _recipeLibrary ??= Resources.Load<TweenRecipeGalleryLibrary>(RecipeLibraryResource);
+            if (_recipeLibrary == null) throw new InvalidOperationException($"Missing Resources/{RecipeLibraryResource}.asset.");
+
+            TweenRecipe recipe = _recipeLibrary.Resolve(operation);
+            if (recipe == null) throw new InvalidOperationException($"Missing recipe for {operation}.");
+
+            switch (operation)
+            {
+                case AnimationGalleryOperation.RecipePanelMoveFade:
+                    return BuildAndPlayRecipe(recipe,
+                        new[] { new TweenPlayerBinding("panel", previewRouter.UiTarget) });
+                case AnimationGalleryOperation.RecipeIconScalePreset:
+                    return BuildAndPlayRecipe(recipe,
+                        new[] { new TweenPlayerBinding("icon", previewRouter.UiTarget) });
+                case AnimationGalleryOperation.RecipeMultiBindingPopup:
+                    return BuildAndPlayRecipe(recipe, new[]
+                    {
+                        new TweenPlayerBinding("panel", modalPanel),
+                        new TweenPlayerBinding("backdrop", modalBackdrop),
+                        new TweenPlayerBinding("icon", tooltipTarget)
+                    });
+                case AnimationGalleryOperation.RecipeDelayedNotification:
+                    return BuildAndPlayRecipe(recipe,
+                        new[] { new TweenPlayerBinding("notification", toastTarget) });
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(operation), operation, null);
+            }
+        }
+
+        private TweenHandle BuildAndPlayRecipe(TweenRecipe recipe, IReadOnlyList<TweenPlayerBinding> bindings)
+        {
+            TweenHandle handle = TweenRecipeExecutor.Build(recipe, bindings, gameObject);
+            handle.Resume();
+            return handle;
         }
 
         private TweenHandle PlayCollection(AnimationGalleryConfiguration configuration)
