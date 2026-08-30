@@ -67,7 +67,7 @@ label.TextStaggerIn(
 label.TextScatterOut(
     unit: TextAnimationUnit.Line,
     order: StaggerOrder.Random,
-    unitStagger: 0.2f,
+    unitStagger: 0.35f,
     seed: 1729);
 ```
 

@@ -1899,6 +1899,7 @@ namespace LB.TweenHelper.Demo
             float bounceAmplitude = usesWorldText ? 0.55f : 24f;
             float emphasisDistance = usesWorldText ? 0.35f : 12f;
             float staggerInterval = item.TextUnit == TextAnimationUnit.Line ? 0.32f : item.TextUnit == TextAnimationUnit.Word ? 0.1f : 0.045f;
+            float outgoingStaggerInterval = item.TextUnit == TextAnimationUnit.Line ? 0.55f : item.TextUnit == TextAnimationUnit.Word ? 0.14f : 0.045f;
             ConfigureTextValuePreview(item);
             switch (kind)
             {
@@ -1917,7 +1918,7 @@ namespace LB.TweenHelper.Demo
                 case TextValueReviewKind.ScoreIncrease:
                     return scoreText.ScoreIncrease(1200d, 1475d, "N0", 1.2f);
                 case TextValueReviewKind.TextStaggerOut:
-                    return characterTarget.TextStaggerOut(item.TextUnit, item.TextOrder, item.Direction, characterDistance, staggerInterval, item.TextSeed, 1.05f);
+                    return characterTarget.TextStaggerOut(item.TextUnit, item.TextOrder, item.Direction, characterDistance, outgoingStaggerInterval, item.TextSeed, 1.05f);
                 case TextValueReviewKind.TextCharacterBounce:
                     return characterTarget.TextCharacterBounce(item.Direction, bounceAmplitude, 1.2f);
                 case TextValueReviewKind.TextColorSweep:
@@ -1937,11 +1938,11 @@ namespace LB.TweenHelper.Demo
                 case TextValueReviewKind.TextScatterIn:
                     return characterTarget.TextScatterIn(item.TextUnit, item.TextOrder, usesWorldText ? 0.9f : 42f, 28f, staggerInterval, item.TextSeed, 1.15f);
                 case TextValueReviewKind.TextScatterOut:
-                    return characterTarget.TextScatterOut(item.TextUnit, item.TextOrder, usesWorldText ? 0.9f : 42f, 28f, staggerInterval, item.TextSeed, 1.05f);
+                    return characterTarget.TextScatterOut(item.TextUnit, item.TextOrder, usesWorldText ? 0.9f : 42f, 28f, outgoingStaggerInterval, item.TextSeed, 1.05f);
                 case TextValueReviewKind.TextRotateIn:
                     return characterTarget.TextRotateIn(item.TextUnit, item.TextOrder, 95f, staggerInterval, item.TextSeed, 1.05f);
                 case TextValueReviewKind.TextRotateOut:
-                    return characterTarget.TextRotateOut(item.TextUnit, item.TextOrder, 95f, staggerInterval, item.TextSeed, 1f);
+                    return characterTarget.TextRotateOut(item.TextUnit, item.TextOrder, 95f, outgoingStaggerInterval, item.TextSeed, 1f);
                 case TextValueReviewKind.TextShear:
                     return characterTarget.TextShear(0.32f, 1f);
                 case TextValueReviewKind.TextTrackingPulse:

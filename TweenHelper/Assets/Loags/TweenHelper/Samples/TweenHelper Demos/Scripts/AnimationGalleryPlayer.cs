@@ -434,6 +434,7 @@ namespace LB.TweenHelper.Demo
             int seed = TextSeeds[Math.Max(0, configuration.GetIndex(AnimationGalleryOptionKind.Seed))];
             float distance = world ? 0.65f : 28f;
             float unitStagger = unit == TextAnimationUnit.Line ? 0.2f : unit == TextAnimationUnit.Word ? 0.08f : 0.025f;
+            float outgoingUnitStagger = unit == TextAnimationUnit.Line ? 0.35f : unit == TextAnimationUnit.Word ? 0.1f : 0.025f;
             switch (configuration.Entry.Operation)
             {
                 case AnimationGalleryOperation.TypewriterReveal: return typewriterText.TypewriterReveal(unit);
@@ -443,7 +444,7 @@ namespace LB.TweenHelper.Demo
                 case AnimationGalleryOperation.TextStaggerIn: return target.TextStaggerIn(unit, order, direction, distance, unitStagger, seed);
                 case AnimationGalleryOperation.TextWave: return target.TextWave(direction, world ? 0.5f : 22f, 1);
                 case AnimationGalleryOperation.ScoreIncrease: return scoreText.ScoreIncrease(1200d, 1475d, "N0");
-                case AnimationGalleryOperation.TextStaggerOut: return target.TextStaggerOut(unit, order, direction, distance, unitStagger, seed);
+                case AnimationGalleryOperation.TextStaggerOut: return target.TextStaggerOut(unit, order, direction, distance, outgoingUnitStagger, seed);
                 case AnimationGalleryOperation.TextCharacterBounce: return target.TextCharacterBounce(direction, world ? 0.55f : 24f);
                 case AnimationGalleryOperation.TextColorSweep: return target.TextColorSweep(new Color(0.18f, 0.9f, 1f));
                 case AnimationGalleryOperation.TextGlitch: return target.TextGlitch(seed: seed);

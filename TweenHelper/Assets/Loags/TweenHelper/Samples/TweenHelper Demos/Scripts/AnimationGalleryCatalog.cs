@@ -336,6 +336,7 @@ namespace LB.TweenHelper.Demo
             string seed = configuration.GetValue(AnimationGalleryOptionKind.Seed);
             string targetContext = configuration.GetValue(AnimationGalleryOptionKind.TargetContext);
             string unitStagger = unit == "Line" ? "0.2f" : unit == "Word" ? "0.08f" : "0.025f";
+            string outgoingUnitStagger = unit == "Line" ? "0.35f" : unit == "Word" ? "0.1f" : "0.025f";
             bool world = targetContext == "World";
             string localSuffix = world ? string.Empty : "Local";
             switch (entry.Operation)
@@ -441,8 +442,9 @@ namespace LB.TweenHelper.Demo
                 case AnimationGalleryOperation.TypewriterHide:
                     return $"text.{entry.Operation}(TextAnimationUnit.{unit});";
                 case AnimationGalleryOperation.TextStaggerIn:
-                case AnimationGalleryOperation.TextStaggerOut:
                     return $"text.{entry.Operation}(unit: TextAnimationUnit.{unit}, order: StaggerOrder.{GetOrder(configuration)}, direction: UISequenceDirection.{direction}, unitStagger: {unitStagger}, seed: {seed});";
+                case AnimationGalleryOperation.TextStaggerOut:
+                    return $"text.{entry.Operation}(unit: TextAnimationUnit.{unit}, order: StaggerOrder.{GetOrder(configuration)}, direction: UISequenceDirection.{direction}, unitStagger: {outgoingUnitStagger}, seed: {seed});";
                 case AnimationGalleryOperation.TextCharacterBounce:
                 case AnimationGalleryOperation.TextWave:
                 case AnimationGalleryOperation.TextEmphasis:

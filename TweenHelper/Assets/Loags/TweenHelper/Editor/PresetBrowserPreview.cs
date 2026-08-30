@@ -863,7 +863,7 @@ namespace LB.TweenHelper.Editor
                 case PresetBrowserOperation.TextStaggerIn:
                     return _textTarget.TextStaggerIn(TextAnimationUnit.Word, StaggerOrder.FromCenter, distance: 0.5f, unitStagger: 0.08f, options: options);
                 case PresetBrowserOperation.TextStaggerOut:
-                    return _textTarget.TextStaggerOut(TextAnimationUnit.Line, StaggerOrder.LastToFirst, distance: 0.5f, unitStagger: 0.2f, options: options);
+                    return _textTarget.TextStaggerOut(TextAnimationUnit.Line, StaggerOrder.LastToFirst, distance: 0.5f, unitStagger: 0.35f, options: options);
                 case PresetBrowserOperation.TextWave:
                     return _textTarget.TextWave(amplitude: 0.35f, options: options);
                 case PresetBrowserOperation.TextCharacterBounce:
