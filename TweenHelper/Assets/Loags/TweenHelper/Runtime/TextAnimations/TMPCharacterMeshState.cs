@@ -294,11 +294,22 @@ namespace LB.TweenHelper
             }
 
             float cycle = progress * Mathf.PI * 2f;
+            int currentLine = -1;
+            int visibleOrderInLine = 0;
             for (int visibleOrder = 0; visibleOrder < count; visibleOrder++)
             {
-                float phase = visibleOrder * 0.72f;
+                int characterIndex = _elementMap.VisibleCharacterIndices[visibleOrder];
+                int lineNumber = _text.textInfo.characterInfo[characterIndex].lineNumber;
+                if (lineNumber != currentLine)
+                {
+                    currentLine = lineNumber;
+                    visibleOrderInLine = 0;
+                }
+
+                float phase = visibleOrderInLine * 0.72f;
+                visibleOrderInLine++;
                 float wave = (Mathf.Sin(cycle + phase) - Mathf.Sin(phase)) * 0.5f;
-                ApplyCharacter(_elementMap.VisibleCharacterIndices[visibleOrder],
+                ApplyCharacter(characterIndex,
                     new TMPGlyphTransform(direction * amplitude * strength * wave, Vector2.one, 0f, 0f, 1f));
             }
 
