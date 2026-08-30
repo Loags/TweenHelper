@@ -15,7 +15,7 @@ namespace LB.TweenHelper.Editor
         private const string SceneFolder = "Assets/_Project/TweenHelperDevelopment/Validation/Scenes";
         private const string ScenePath = SceneFolder + "/TweenHelperPresetReview.unity";
         private const string MaterialPath = SceneFolder + "/TweenHelperPresetReviewMaterial.mat";
-        private const int ReviewSceneVersion = 2;
+        private const int ReviewSceneVersion = 3;
         private static readonly Color BackgroundColor = new Color(0.025f, 0.04f, 0.08f);
         private static readonly Color PanelColor = new Color(0.055f, 0.08f, 0.14f, 0.94f);
         private static readonly Color BlueColor = new Color(0.1f, 0.58f, 0.95f);
@@ -41,6 +41,8 @@ namespace LB.TweenHelper.Editor
                 bool sceneNeedsEnginePropertyPreview = !sceneText.Contains("enginePropertyPreviewRoot:");
                 bool sceneNeedsVisualRefresh = !sceneText.Contains($"reviewSceneVersion: {ReviewSceneVersion}");
                 bool sceneNeedsCoveragePreview = !sceneText.Contains("incompleteGridPreviewGroup:") ||
+                                                 !sceneText.Contains("layoutListPreviewGroup:") ||
+                                                 !sceneText.Contains("layoutGridPreviewGroup:") ||
                                                  !sceneText.Contains("worldCollectionPreviewRoot:") ||
                                                  !sceneText.Contains("drawerSequenceBackdrop:") ||
                                                  !sceneText.Contains("worldTextValuePreviewRoot:");
@@ -142,11 +144,15 @@ namespace LB.TweenHelper.Editor
             Assign(serializedController, "collectionPreviewRoot", collectionPreview.Root);
             Assign(serializedController, "listPreviewGroup", collectionPreview.ListGroup);
             Assign(serializedController, "gridPreviewGroup", collectionPreview.GridGroup);
+            Assign(serializedController, "layoutListPreviewGroup", collectionPreview.LayoutListGroup);
+            Assign(serializedController, "layoutGridPreviewGroup", collectionPreview.LayoutGridGroup);
             Assign(serializedController, "incompleteGridPreviewGroup", collectionPreview.IncompleteGridGroup);
             Assign(serializedController, "worldCollectionPreviewRoot", collectionPreview.WorldRoot);
             Assign(serializedController, "loadingDotsPreviewGroup", collectionPreview.LoadingDotsGroup);
             AssignArray(serializedController, "listTargets", collectionPreview.ListTargets);
             AssignArray(serializedController, "gridTargets", collectionPreview.GridTargets);
+            AssignArray(serializedController, "layoutListTargets", collectionPreview.LayoutListTargets);
+            AssignArray(serializedController, "layoutGridTargets", collectionPreview.LayoutGridTargets);
             AssignArray(serializedController, "incompleteGridTargets", collectionPreview.IncompleteGridTargets);
             AssignArray(serializedController, "worldCollectionTargets", collectionPreview.WorldTargets);
             AssignArray(serializedController, "loadingDotTargets", collectionPreview.LoadingDotTargets);
@@ -345,6 +351,33 @@ namespace LB.TweenHelper.Editor
                 gridTargets[i] = CreateCollectionItem($"Grid Item {i + 1}", gridGroup.transform, (i + 1).ToString(), new Vector2((column - 1) * 112f, (1 - row) * 112f), new Vector2(86f, 86f));
             }
 
+            GameObject layoutListGroup = CreatePreviewGroup("Layout List Preview", root.transform);
+            VerticalLayoutGroup layoutList = layoutListGroup.AddComponent<VerticalLayoutGroup>();
+            layoutList.childAlignment = TextAnchor.MiddleCenter;
+            layoutList.childControlWidth = false;
+            layoutList.childControlHeight = false;
+            layoutList.childForceExpandWidth = false;
+            layoutList.childForceExpandHeight = false;
+            layoutList.spacing = 8f;
+            var layoutListTargets = new GameObject[6];
+            for (int i = 0; i < layoutListTargets.Length; i++)
+            {
+                layoutListTargets[i] = CreateCollectionItem($"Layout List Item {i + 1}", layoutListGroup.transform, (i + 1).ToString(), Vector2.zero, new Vector2(280f, 46f));
+            }
+
+            GameObject layoutGridGroup = CreatePreviewGroup("Layout Grid Preview", root.transform);
+            GridLayoutGroup layoutGrid = layoutGridGroup.AddComponent<GridLayoutGroup>();
+            layoutGrid.childAlignment = TextAnchor.MiddleCenter;
+            layoutGrid.cellSize = new Vector2(96f, 70f);
+            layoutGrid.spacing = new Vector2(16f, 16f);
+            layoutGrid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            layoutGrid.constraintCount = 3;
+            var layoutGridTargets = new GameObject[6];
+            for (int i = 0; i < layoutGridTargets.Length; i++)
+            {
+                layoutGridTargets[i] = CreateCollectionItem($"Layout Grid Item {i + 1}", layoutGridGroup.transform, (i + 1).ToString(), Vector2.zero, layoutGrid.cellSize);
+            }
+
             GameObject incompleteGridGroup = CreatePreviewGroup("Incomplete Grid Preview", root.transform);
             var incompleteGridTargets = new GameObject[8];
             for (int i = 0; i < incompleteGridTargets.Length; i++)
@@ -380,11 +413,13 @@ namespace LB.TweenHelper.Editor
 
             listGroup.SetActive(false);
             gridGroup.SetActive(false);
+            layoutListGroup.SetActive(false);
+            layoutGridGroup.SetActive(false);
             incompleteGridGroup.SetActive(false);
             worldRoot.SetActive(false);
             loadingDotsGroup.SetActive(false);
             root.SetActive(false);
-            return new CollectionPreview(root, listGroup, gridGroup, incompleteGridGroup, worldRoot, loadingDotsGroup, listTargets, gridTargets, incompleteGridTargets, worldTargets, loadingDotTargets);
+            return new CollectionPreview(root, listGroup, gridGroup, layoutListGroup, layoutGridGroup, incompleteGridGroup, worldRoot, loadingDotsGroup, listTargets, gridTargets, layoutListTargets, layoutGridTargets, incompleteGridTargets, worldTargets, loadingDotTargets);
         }
 
         private static DestinationPreview CreateDestinationPreview(Transform uiParent)
@@ -845,25 +880,33 @@ namespace LB.TweenHelper.Editor
             public readonly GameObject Root;
             public readonly GameObject ListGroup;
             public readonly GameObject GridGroup;
+            public readonly GameObject LayoutListGroup;
+            public readonly GameObject LayoutGridGroup;
             public readonly GameObject IncompleteGridGroup;
             public readonly GameObject WorldRoot;
             public readonly GameObject LoadingDotsGroup;
             public readonly GameObject[] ListTargets;
             public readonly GameObject[] GridTargets;
+            public readonly GameObject[] LayoutListTargets;
+            public readonly GameObject[] LayoutGridTargets;
             public readonly GameObject[] IncompleteGridTargets;
             public readonly GameObject[] WorldTargets;
             public readonly GameObject[] LoadingDotTargets;
 
-            public CollectionPreview(GameObject root, GameObject listGroup, GameObject gridGroup, GameObject incompleteGridGroup, GameObject worldRoot, GameObject loadingDotsGroup, GameObject[] listTargets, GameObject[] gridTargets, GameObject[] incompleteGridTargets, GameObject[] worldTargets, GameObject[] loadingDotTargets)
+            public CollectionPreview(GameObject root, GameObject listGroup, GameObject gridGroup, GameObject layoutListGroup, GameObject layoutGridGroup, GameObject incompleteGridGroup, GameObject worldRoot, GameObject loadingDotsGroup, GameObject[] listTargets, GameObject[] gridTargets, GameObject[] layoutListTargets, GameObject[] layoutGridTargets, GameObject[] incompleteGridTargets, GameObject[] worldTargets, GameObject[] loadingDotTargets)
             {
                 Root = root;
                 ListGroup = listGroup;
                 GridGroup = gridGroup;
+                LayoutListGroup = layoutListGroup;
+                LayoutGridGroup = layoutGridGroup;
                 IncompleteGridGroup = incompleteGridGroup;
                 WorldRoot = worldRoot;
                 LoadingDotsGroup = loadingDotsGroup;
                 ListTargets = listTargets;
                 GridTargets = gridTargets;
+                LayoutListTargets = layoutListTargets;
+                LayoutGridTargets = layoutGridTargets;
                 IncompleteGridTargets = incompleteGridTargets;
                 WorldTargets = worldTargets;
                 LoadingDotTargets = loadingDotTargets;

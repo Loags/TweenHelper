@@ -188,11 +188,11 @@ Renderer operations use `MaterialPropertyBlock`; ambient light helpers are finit
 
 ## Animation Gallery
 
-The shipped mouse-driven Animation Gallery contains 418 entries across eight categories: 300 presets, 13 UI recipes, 22 collection examples, 12 destination operations, 25 gameplay-feedback/macro examples, 16 production UI sequences, 22 text/value examples, and eight camera operations. Selection resets and auto-plays; contextual controls and the displayed C# call update together.
+The shipped mouse-driven Animation Gallery contains 419 entries across eight categories: 300 presets, 13 UI recipes, 23 collection examples, 12 destination operations, 25 gameplay-feedback/macro examples, 16 production UI sequences, 22 text/value examples, and eight camera operations. Selection resets and auto-plays; contextual controls and the displayed C# call update together.
 
 ## Preset browser
 
-Open **Tools > Tween Helper > Preset Browser** to search 460 isolated previews: all 300 registered presets plus 160 UI, collection, destination, gameplay, UI-sequence, TextMesh Pro, progress, camera, and engine-property entries. Select an entry to inspect its metadata and fluent API example. Contextual direction, topology, phase, target, backdrop, and property options update the preview and copied example together.
+Open **Tools > Tween Helper > Preset Browser** to search 461 isolated previews: all 300 registered presets plus 161 UI, collection, destination, gameplay, UI-sequence, TextMesh Pro, progress, camera, and engine-property entries. Select an entry to inspect its metadata and fluent API example. Contextual direction, topology, phase, layout-change, target, backdrop, and property options update the preview and copied example together.
 
 The browser builds an isolated fixture appropriate to the selected entry rather than reusing the active scene. UI sequences receive only their required backdrop, controls, and incoming target; component operations receive visible progress, camera, audio, light, particle, or renderer fixtures. Preview proxies synchronize depth, sorting, Graphic color, parent `CanvasGroup` alpha, fill/value state, and projected UI state. The active scene is never read or modified.
 

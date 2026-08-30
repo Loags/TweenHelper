@@ -21,8 +21,8 @@ namespace LB.TweenHelper.Editor
         private const string ReviewResetResultPath = "Temp/AnimationLifecycleRefactorReviewReset.txt";
         private const string StatusKeyPrefix = "TweenHelper.PresetReview.Status.";
         private const int NeedsWorkStatus = 1;
-        private const int ExpectedAffectedReviewCount = 175;
-        private const int ExpectedReviewCount = 608;
+        private const int ExpectedAffectedReviewCount = 177;
+        private const int ExpectedReviewCount = 610;
 
         static AnimationLifecycleRefactorValidation()
         {
@@ -335,6 +335,8 @@ namespace LB.TweenHelper.Editor
             AddVariants(ids, "Collection:CollectionBurstIn", "World");
             AddVariants(ids, "Collection:CollectionBurstOut", "World", "DefaultDistanceUI");
             AddVariants(ids, "Collection:CollectionGatherTo", "World");
+            AddNames(ids, "Collection", "CollectionLayoutTransition");
+            AddVariants(ids, "Collection:CollectionLayoutTransition", "GridColumns");
             return ids;
         }
 

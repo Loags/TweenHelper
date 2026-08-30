@@ -542,6 +542,8 @@ namespace LB.TweenHelper.Editor
                     return "Direction";
                 case PresetBrowserCollectionKind.GridCheckerboard:
                     return "Phase";
+                case PresetBrowserCollectionKind.CollectionLayoutTransition:
+                    return "Layout change";
                 default:
                     return string.Empty;
             }
@@ -581,6 +583,8 @@ namespace LB.TweenHelper.Editor
                     };
                 case PresetBrowserCollectionKind.GridCheckerboard:
                     return new List<string> { "Normal", "Inverted" };
+                case PresetBrowserCollectionKind.CollectionLayoutTransition:
+                    return new List<string> { "Vertical list reorder", "Grid: 3 columns to 2" };
                 default:
                     return new List<string>();
             }
@@ -604,6 +608,10 @@ namespace LB.TweenHelper.Editor
                     return $"items.GridSerpentine(owner, columns: 3, direction: GridSerpentineDirection.{(GridSerpentineDirection)Mathf.Clamp(optionIndex, 0, 7)});";
                 case PresetBrowserCollectionKind.GridCheckerboard:
                     return optionIndex == 0 ? "items.GridCheckerboard(owner, columns: 3);" : "items.GridCheckerboard(owner, columns: 3, inverted: true);";
+                case PresetBrowserCollectionKind.CollectionLayoutTransition:
+                    return optionIndex == 0
+                        ? "CollectionLayoutSnapshot before = container.CaptureCollectionLayout();\nitems.Reverse();\nApplySiblingOrder(items);\ncontainer.TweenCollectionLayoutFrom(before, 0.35f);"
+                        : "CollectionLayoutSnapshot before = container.CaptureCollectionLayout();\ngrid.constraintCount = 2;\ncontainer.TweenCollectionLayoutFrom(before, 0.35f);";
                 default:
                     return entry.Example;
             }

@@ -2,11 +2,11 @@
 
 Open `Scenes/TweenHelperAnimationGallery.unity` and enter Play Mode. Import TextMesh Pro Essential Resources first.
 
-The gallery is the package's single public demo. Its 418 entries provide mouse-driven access to:
+The gallery is the package's single public demo. Its 419 entries provide mouse-driven access to:
 
 - All 300 registered presets, with search and family filters.
 - 13 semantic UI recipes.
-- Twenty-two collection and stagger examples.
+- Twenty-three collection, stagger, and layout-transition examples.
 - Twelve destination-motion operations, including world-to-UI projection.
 - Twenty-five gameplay-feedback and reusable-macro examples.
 - Sixteen production UI sequences.
@@ -19,4 +19,4 @@ The scene is designed for 16:9 desktop and capture use and is validated at `1920
 
 The Built-in Render Pipeline and URP are supported. HDRP and custom render pipelines have not been tested.
 
-The Editor Preset Browser is the broader component-preview surface. It contains 460 isolated entries, including fourteen progress-bar and nine engine-property examples that are intentionally not duplicated in this capture-focused gallery.
+The Editor Preset Browser is the broader component-preview surface. It contains 461 isolated entries, including fourteen progress-bar and nine engine-property examples that are intentionally not duplicated in this capture-focused gallery.

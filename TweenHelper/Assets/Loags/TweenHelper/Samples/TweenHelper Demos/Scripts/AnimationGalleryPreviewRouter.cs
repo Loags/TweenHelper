@@ -9,6 +9,8 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private GameObject worldTarget;
         [SerializeField] private GameObject listRoot;
         [SerializeField] private GameObject gridRoot;
+        [SerializeField] private GameObject layoutListRoot;
+        [SerializeField] private GameObject layoutGridRoot;
         [SerializeField] private GameObject loadingDotsRoot;
         [SerializeField] private GameObject destinationUiRoot;
         [SerializeField] private GameObject destinationWorldRoot;
@@ -38,6 +40,9 @@ namespace LB.TweenHelper.Demo
                     break;
                 case AnimationGalleryFixture.Grid:
                     gridRoot.SetActive(true);
+                    break;
+                case AnimationGalleryFixture.CollectionLayout:
+                    (configuration.GetIndex(AnimationGalleryOptionKind.LayoutChange) == 0 ? layoutListRoot : layoutGridRoot).SetActive(true);
                     break;
                 case AnimationGalleryFixture.LoadingDots:
                     loadingDotsRoot.SetActive(true);
@@ -69,6 +74,8 @@ namespace LB.TweenHelper.Demo
             worldTargetRoot.SetActive(false);
             listRoot.SetActive(false);
             gridRoot.SetActive(false);
+            layoutListRoot.SetActive(false);
+            layoutGridRoot.SetActive(false);
             loadingDotsRoot.SetActive(false);
             destinationUiRoot.SetActive(false);
             destinationWorldRoot.SetActive(false);

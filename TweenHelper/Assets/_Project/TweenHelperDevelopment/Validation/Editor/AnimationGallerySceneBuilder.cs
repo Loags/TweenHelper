@@ -209,6 +209,23 @@ namespace LB.TweenHelper.Editor
             bindings.ListTargets = BuildCards(bindings.ListRoot.transform, 6, 1, new Vector2(128f, 58f));
             bindings.GridRoot = CreateFixtureRoot("Grid Preview", parent);
             bindings.GridTargets = BuildCards(bindings.GridRoot.transform, 9, 3, new Vector2(100f, 72f));
+            bindings.LayoutListRoot = CreateFixtureRoot("Layout List Preview", parent);
+            bindings.LayoutListTargets = BuildCards(bindings.LayoutListRoot.transform, 6, 1, new Vector2(210f, 42f));
+            VerticalLayoutGroup layoutList = bindings.LayoutListRoot.AddComponent<VerticalLayoutGroup>();
+            layoutList.childAlignment = TextAnchor.MiddleCenter;
+            layoutList.childControlWidth = false;
+            layoutList.childControlHeight = false;
+            layoutList.childForceExpandWidth = false;
+            layoutList.childForceExpandHeight = false;
+            layoutList.spacing = 8f;
+            bindings.LayoutGridRoot = CreateFixtureRoot("Layout Grid Preview", parent);
+            BuildCards(bindings.LayoutGridRoot.transform, 6, 3, new Vector2(100f, 62f));
+            GridLayoutGroup layoutGrid = bindings.LayoutGridRoot.AddComponent<GridLayoutGroup>();
+            layoutGrid.childAlignment = TextAnchor.MiddleCenter;
+            layoutGrid.cellSize = new Vector2(100f, 62f);
+            layoutGrid.spacing = new Vector2(18f, 16f);
+            layoutGrid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            layoutGrid.constraintCount = 3;
             bindings.LoadingDotsRoot = CreateFixtureRoot("Loading Dots Preview", parent);
             bindings.LoadingDotTargets = BuildCards(bindings.LoadingDotsRoot.transform, 3, 3, new Vector2(62f, 62f));
 
@@ -354,6 +371,8 @@ namespace LB.TweenHelper.Editor
             SetObject(router, "worldTarget", worldTarget);
             SetObject(router, "listRoot", bindings.ListRoot);
             SetObject(router, "gridRoot", bindings.GridRoot);
+            SetObject(router, "layoutListRoot", bindings.LayoutListRoot);
+            SetObject(router, "layoutGridRoot", bindings.LayoutGridRoot);
             SetObject(router, "loadingDotsRoot", bindings.LoadingDotsRoot);
             SetObject(router, "destinationUiRoot", bindings.DestinationUiRoot);
             SetObject(router, "destinationWorldRoot", bindings.DestinationWorldRoot);
@@ -372,6 +391,9 @@ namespace LB.TweenHelper.Editor
             SetObjectArray(player, "listTargets", bindings.ListTargets);
             SetObject(player, "gridOwner", bindings.GridRoot);
             SetObjectArray(player, "gridTargets", bindings.GridTargets);
+            SetObject(player, "layoutListOwner", bindings.LayoutListRoot.transform);
+            SetObjectArray(player, "layoutListTargets", bindings.LayoutListTargets);
+            SetObject(player, "layoutGridOwner", bindings.LayoutGridRoot.transform);
             SetObject(player, "loadingDotsOwner", bindings.LoadingDotsRoot);
             SetObjectArray(player, "loadingDotTargets", bindings.LoadingDotTargets);
             SetObject(player, "destinationUiTarget", bindings.DestinationUiTarget);
@@ -774,6 +796,8 @@ namespace LB.TweenHelper.Editor
             public GameObject WorldTargetRoot;
             public GameObject ListRoot;
             public GameObject GridRoot;
+            public GameObject LayoutListRoot;
+            public GameObject LayoutGridRoot;
             public GameObject LoadingDotsRoot;
             public GameObject DestinationUiRoot;
             public GameObject DestinationWorldRoot;
@@ -783,6 +807,7 @@ namespace LB.TweenHelper.Editor
             public GameObject CameraRoot;
             public GameObject[] ListTargets;
             public GameObject[] GridTargets;
+            public GameObject[] LayoutListTargets;
             public GameObject[] LoadingDotTargets;
             public GameObject DestinationUiTarget;
             public RectTransform DestinationUiStart;
@@ -813,6 +838,8 @@ namespace LB.TweenHelper.Editor
                 WorldTargetRoot.SetActive(false);
                 ListRoot.SetActive(false);
                 GridRoot.SetActive(false);
+                LayoutListRoot.SetActive(false);
+                LayoutGridRoot.SetActive(false);
                 LoadingDotsRoot.SetActive(false);
                 DestinationUiRoot.SetActive(false);
                 DestinationWorldRoot.SetActive(false);

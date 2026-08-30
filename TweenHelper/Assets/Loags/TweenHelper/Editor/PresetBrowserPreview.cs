@@ -30,6 +30,7 @@ namespace LB.TweenHelper.Editor
         private GameObject _backdrop;
         private GameObject _meterTrack;
         private GameObject _meterFill;
+        private RectTransform _layoutContainer;
         private RectTransform _uiDestination;
         private TMP_Text _textTarget;
         private TMP_Text _valueText;
@@ -154,6 +155,9 @@ namespace LB.TweenHelper.Editor
                 case PresetBrowserPreviewKind.LoadingDots:
                     BuildLoadingDotsStage();
                     break;
+                case PresetBrowserPreviewKind.CollectionLayout:
+                    BuildCollectionLayoutStage();
+                    break;
                 case PresetBrowserPreviewKind.UiTarget:
                     BuildUiTargetStage();
                     break;
@@ -227,6 +231,56 @@ namespace LB.TweenHelper.Editor
         {
             const float spacing = 1.8f;
             for (int i = 0; i < 3; i++) _collectionTargets.Add(CreateCube($"Loading Cube {i + 1}", new Vector3((i - 1) * spacing, 0f, 0f), Vector3.one * 0.68f));
+        }
+
+        private void BuildCollectionLayoutStage()
+        {
+            RectTransform canvas = CreateCanvas();
+            _layoutContainer = CreateRect("Layout Container", canvas, new Vector2(420f, 300f), Vector2.zero);
+            bool gridPreview = _collectionOptionIndex == 1;
+
+            if (gridPreview)
+            {
+                GridLayoutGroup grid = _layoutContainer.gameObject.AddComponent<GridLayoutGroup>();
+                grid.childAlignment = TextAnchor.MiddleCenter;
+                grid.cellSize = new Vector2(82f, 58f);
+                grid.spacing = new Vector2(16f, 16f);
+                grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+                grid.constraintCount = 3;
+            }
+            else
+            {
+                VerticalLayoutGroup list = _layoutContainer.gameObject.AddComponent<VerticalLayoutGroup>();
+                list.childAlignment = TextAnchor.MiddleCenter;
+                list.childControlWidth = false;
+                list.childControlHeight = false;
+                list.childForceExpandWidth = false;
+                list.childForceExpandHeight = false;
+                list.spacing = 8f;
+            }
+
+            for (int i = 0; i < 6; i++)
+            {
+                Vector2 size = gridPreview ? new Vector2(82f, 58f) : new Vector2(220f, 40f);
+                Image card = CreateImage($"Layout Item {i + 1}", _layoutContainer, size, Vector2.zero, i % 2 == 0 ? AccentColor : SecondaryColor);
+                if (!gridPreview)
+                {
+                    LayoutElement element = card.gameObject.AddComponent<LayoutElement>();
+                    element.preferredWidth = size.x;
+                    element.preferredHeight = size.y;
+                }
+
+                _collectionTargets.Add(card.gameObject);
+                Vector3 cardScale = gridPreview ? new Vector3(0.95f, 0.65f, 0.28f) : new Vector3(2.45f, 0.43f, 0.28f);
+                BindProxy(card.gameObject, CreateCube($"Layout Item {i + 1} Visual", Vector3.zero, cardScale), cardScale, 0f, i);
+
+                TMP_Text label = CreateText((i + 1).ToString(), card.rectTransform, size, Vector2.zero, 25f);
+                TMP_Text labelProxy = CreateWorldText((i + 1).ToString(), Vector3.zero, 4f, 2f);
+                BindProxy(label.gameObject, labelProxy.gameObject, Vector3.one * 0.55f, -0.38f, 20 + i);
+            }
+
+            Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(_layoutContainer);
         }
 
         private void BuildUiTargetStage()
@@ -605,6 +659,20 @@ namespace LB.TweenHelper.Editor
                     return _collectionTargets.CollectionDealIn(_stageRoot, Vector3.zero, options: options);
                 case PresetBrowserCollectionKind.CollectionDealOut:
                     return _collectionTargets.CollectionDealOut(_stageRoot, Vector3.zero, options: options);
+                case PresetBrowserCollectionKind.CollectionLayoutTransition:
+                {
+                    CollectionLayoutSnapshot snapshot = _layoutContainer.CaptureCollectionLayout();
+                    if (_collectionOptionIndex == 0)
+                    {
+                        for (int i = 0; i < _collectionTargets.Count; i++) _collectionTargets[i].transform.SetAsFirstSibling();
+                    }
+                    else
+                    {
+                        _layoutContainer.GetComponent<GridLayoutGroup>().constraintCount = 2;
+                    }
+
+                    return _layoutContainer.TweenCollectionLayoutFrom(snapshot, 0.65f, options);
+                }
                 case PresetBrowserCollectionKind.GridConcentricIn:
                     return _collectionTargets.GridConcentricIn(_stageRoot, 3, options: options);
                 case PresetBrowserCollectionKind.GridConcentricOut:
@@ -1020,6 +1088,7 @@ namespace LB.TweenHelper.Editor
             camera.fieldOfView = 38f;
 
             bool frontFacing = kind == PresetBrowserPreviewKind.UiTarget
+                || kind == PresetBrowserPreviewKind.CollectionLayout
                 || kind == PresetBrowserPreviewKind.WorldToUi
                 || kind == PresetBrowserPreviewKind.UiSequence
                 || kind == PresetBrowserPreviewKind.Text
@@ -1142,6 +1211,7 @@ namespace LB.TweenHelper.Editor
             _backdrop = null;
             _meterTrack = null;
             _meterFill = null;
+            _layoutContainer = null;
             _uiDestination = null;
             _textTarget = null;
             _valueText = null;

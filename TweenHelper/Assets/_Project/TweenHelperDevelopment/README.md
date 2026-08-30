@@ -15,15 +15,15 @@ This folder is repository-only. Never include it in the Asset Store `.unitypacka
 | Surface | Count | Purpose |
 | --- | ---: | --- |
 | Registered preset registry | 300 | Stable customer preset API |
-| Preset Browser | 460 | Customer Editor discovery and isolated previews |
-| Animation Gallery | 418 | Shipped capture-friendly runtime examples |
-| Preset Review scene | 608 | Exhaustive development-only visual configurations |
+| Preset Browser | 461 | Customer Editor discovery and isolated previews |
+| Animation Gallery | 419 | Shipped capture-friendly runtime examples |
+| Preset Review scene | 610 | Exhaustive development-only visual configurations |
 
-The review catalog contains 608 unique IDs:
+The review catalog contains 610 unique IDs:
 
 - 300 presets
 - 13 UI recipes
-- 46 collection recipes
+- 48 collection recipes and layout-transition configurations
 - 10 stagger variants
 - 30 destination-motion configurations
 - 23 feedback sequences
@@ -42,7 +42,7 @@ The review catalog contains 608 unique IDs:
 - **Tools > Tween Helper Dev > Validate Animation Lifecycle Refactor** checks lazy capture, completion, interruption, rewind, Yoyo, cleanup, and spatial playback behavior.
 - `Validation/Scenes/TweenHelperPresetReview.unity` is the manual visual acceptance surface.
 
-The review scene was rebuilt at scene version 2 so filled Images and property meters use a visible UI sprite, progress text overlays the bar, and the expanded world-to-UI/progress/engine fixtures are testable. A 2026-08-19 Play Mode sample confirmed all Image progress values and text update correctly; the Unity Console reported zero errors afterward.
+The review scene was rebuilt at scene version 3 so filled Images and property meters use a visible UI sprite, progress text overlays the bar, and dedicated layout-list/layout-grid fixtures reset exactly alongside the expanded world-to-UI/progress/engine fixtures.
 
 ## Development state
 

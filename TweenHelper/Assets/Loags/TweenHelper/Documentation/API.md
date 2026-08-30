@@ -179,7 +179,7 @@ The advanced APIs use the same `TweenBuilder`, `TweenOptions`, and `TweenHandle`
 
 | Feature | Start here |
 | --- | --- |
-| Staggered lists, grids, serpentine, deal, loading, burst, and gather recipes | [Staggered collections](StaggeredCollections.md) |
+| Staggered lists, grids, serpentine, deal, loading, burst, gather, and layout-difference transitions | [Staggered collections](StaggeredCollections.md) |
 | Arc, Bezier, hop, spring, snap, path, spiral, and multi-hop movement | [Destination-aware motion](DestinationMotion.md) |
 | Error, damage, success, reward, healing, defense, warning, and pickup feedback | [Gameplay feedback sequences](FeedbackSequences.md) |
 | Toasts, modals, tooltips, dropdowns, tabs, drawers, sheets, and page transitions | [Production UI sequences](UISequences.md) |
@@ -195,6 +195,17 @@ cards.CollectionDealIn(panelRoot, stackOrigin);
 cards.CollectionDealOut(panelRoot, discardPosition, local: false);
 gridItems.GridSerpentine(panelRoot, columns: 4, direction: GridSerpentineDirection.RowsFromTopRight);
 ```
+
+Animate a caller-owned sibling reorder or layout-setting change with the two-method snapshot/playback API:
+
+```csharp
+CollectionLayoutSnapshot before = container.CaptureCollectionLayout();
+items.Reverse();
+ApplySiblingOrder(items);
+TweenHandle handle = container.TweenCollectionLayoutFrom(before, 0.35f);
+```
+
+The snapshot must be replayed on the same container with the same active direct children. Completion, kill, replacement playback, and container destruction release temporary layout ownership; insertion/removal and hierarchy rollback are not supported.
 
 Use a direct extension when the operation is the complete animation, or add the same operation to a builder when it must compose with other steps:
 
@@ -224,6 +235,6 @@ TweenHelper initializes automatically. Without `Assets/Resources/TweenHelperSett
 
 ## Sample controls
 
-Open `TweenHelperAnimationGallery.unity` from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The mouse-driven gallery exposes all 300 presets plus 13 UI recipes, 22 collection recipes, twelve destination-motion operations, twenty-five gameplay-feedback and macro sequences, sixteen production UI sequences, 22 text/value examples, and eight camera-feedback operations. Selection auto-plays after reset; Replay, Reset, previous/next navigation, contextual enum options, search, preset-family filters, and a live C# example remain available at runtime. Component-specific fill, audio, light, particle, and renderer examples are documented in their focused guides. The gallery does not require the Input System package.
+Open `TweenHelperAnimationGallery.unity` from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The mouse-driven gallery exposes all 300 presets plus 13 UI recipes, 23 collection examples, twelve destination-motion operations, twenty-five gameplay-feedback and macro sequences, sixteen production UI sequences, 22 text/value examples, and eight camera-feedback operations. Selection auto-plays after reset; Replay, Reset, previous/next navigation, contextual enum options, search, preset-family filters, and a live C# example remain available at runtime. Component-specific fill, audio, light, particle, and renderer examples are documented in their focused guides. The gallery does not require the Input System package.
 
-Open **Tools > Tween Helper > Preset Browser** for the complete 460-entry Editor discovery surface. It contains all 300 presets plus 160 semantic and component-property previews. The preview uses an isolated, purpose-built fixture and never reads from or modifies the active scene. UI sequence fixtures include only required participants; progress and engine-property fixtures expose live value meters and labels.
+Open **Tools > Tween Helper > Preset Browser** for the complete 461-entry Editor discovery surface. It contains all 300 presets plus 161 semantic and component-property previews. The preview uses an isolated, purpose-built fixture and never reads from or modifies the active scene. UI sequence fixtures include only required participants; progress and engine-property fixtures expose live value meters and labels.

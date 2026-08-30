@@ -9,6 +9,18 @@ namespace LB.TweenHelper
     /// </summary>
     public static class StaggerRecipeExtensions
     {
+        /// <summary>
+        /// Captures the active direct children before the caller changes their Unity-authored layout.
+        /// </summary>
+        public static CollectionLayoutSnapshot CaptureCollectionLayout(this RectTransform container)
+            => CollectionLayoutTransitionUtility.Capture(container);
+
+        /// <summary>
+        /// Animates the active direct children from a captured visual state to their current Unity-authored layout.
+        /// </summary>
+        public static TweenHandle TweenCollectionLayoutFrom(this RectTransform container, CollectionLayoutSnapshot snapshot, float? duration = null, TweenOptions options = default)
+            => CollectionLayoutTransitionUtility.Play(container, snapshot, duration, options);
+
         public static TweenHandle ListStaggerIn(this IEnumerable<GameObject> targets, GameObject owner, float duration = 0.32f, float interval = 0.06f, TweenOptions options = default)
         {
             return targets.TweenStagger(owner)

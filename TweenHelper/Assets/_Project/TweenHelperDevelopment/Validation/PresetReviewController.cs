@@ -43,6 +43,8 @@ namespace LB.TweenHelper.Demo
             World,
             List,
             Grid,
+            LayoutList,
+            LayoutGrid,
             IncompleteGrid,
             WorldCollection,
             LoadingDots,
@@ -81,6 +83,7 @@ namespace LB.TweenHelper.Demo
             CollectionGatherTo,
             CollectionDealIn,
             CollectionDealOut,
+            CollectionLayoutTransition,
             GridConcentricIn,
             GridConcentricOut,
             GridQuadrantSweep,
@@ -285,7 +288,7 @@ namespace LB.TweenHelper.Demo
             public bool ReverseDirection;
 
             public bool UsesUiTarget => Preview == PreviewKind.Ui;
-            public bool UsesCollectionPreview => Preview == PreviewKind.List || Preview == PreviewKind.Grid || Preview == PreviewKind.IncompleteGrid || Preview == PreviewKind.WorldCollection || Preview == PreviewKind.LoadingDots;
+            public bool UsesCollectionPreview => Preview == PreviewKind.List || Preview == PreviewKind.Grid || Preview == PreviewKind.LayoutList || Preview == PreviewKind.LayoutGrid || Preview == PreviewKind.IncompleteGrid || Preview == PreviewKind.WorldCollection || Preview == PreviewKind.LoadingDots;
             public bool UsesDestinationPreview => Preview == PreviewKind.DestinationWorld || Preview == PreviewKind.DestinationUi || Preview == PreviewKind.WorldToUi;
             public bool UsesUISequencePreview => Preview == PreviewKind.UISequence;
             public bool UsesTextValuePreview => Preview == PreviewKind.TextValue || Preview == PreviewKind.WorldTextValue;
@@ -301,14 +304,16 @@ namespace LB.TweenHelper.Demo
             public readonly Quaternion LocalRotation;
             public readonly Color Color;
             public readonly float CanvasGroupAlpha;
+            public readonly int SiblingIndex;
 
-            private TargetSnapshot(Vector3 localPosition, Vector3 localScale, Quaternion localRotation, Color color, float canvasGroupAlpha)
+            private TargetSnapshot(Vector3 localPosition, Vector3 localScale, Quaternion localRotation, Color color, float canvasGroupAlpha, int siblingIndex)
             {
                 LocalPosition = localPosition;
                 LocalScale = localScale;
                 LocalRotation = localRotation;
                 Color = color;
                 CanvasGroupAlpha = canvasGroupAlpha;
+                SiblingIndex = siblingIndex;
             }
 
             public static TargetSnapshot Capture(GameObject target)
@@ -317,7 +322,7 @@ namespace LB.TweenHelper.Demo
                 var renderer = target.GetComponent<Renderer>();
                 var canvasGroup = target.GetComponent<CanvasGroup>();
                 Color color = graphic != null ? graphic.color : renderer.material.color;
-                return new TargetSnapshot(target.transform.localPosition, target.transform.localScale, target.transform.localRotation, color, canvasGroup != null ? canvasGroup.alpha : 1f);
+                return new TargetSnapshot(target.transform.localPosition, target.transform.localScale, target.transform.localRotation, color, canvasGroup != null ? canvasGroup.alpha : 1f, target.transform.GetSiblingIndex());
             }
 
             public void Apply(GameObject target)
@@ -325,6 +330,7 @@ namespace LB.TweenHelper.Demo
                 target.transform.localPosition = LocalPosition;
                 target.transform.localScale = LocalScale;
                 target.transform.localRotation = LocalRotation;
+                target.transform.SetSiblingIndex(SiblingIndex);
 
                 var graphic = target.GetComponent<Graphic>();
                 if (graphic != null) graphic.color = Color;
@@ -424,11 +430,15 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private GameObject collectionPreviewRoot;
         [SerializeField] private GameObject listPreviewGroup;
         [SerializeField] private GameObject gridPreviewGroup;
+        [SerializeField] private GameObject layoutListPreviewGroup;
+        [SerializeField] private GameObject layoutGridPreviewGroup;
         [SerializeField] private GameObject incompleteGridPreviewGroup;
         [SerializeField] private GameObject worldCollectionPreviewRoot;
         [SerializeField] private GameObject loadingDotsPreviewGroup;
         [SerializeField] private GameObject[] listTargets;
         [SerializeField] private GameObject[] gridTargets;
+        [SerializeField] private GameObject[] layoutListTargets;
+        [SerializeField] private GameObject[] layoutGridTargets;
         [SerializeField] private GameObject[] incompleteGridTargets;
         [SerializeField] private GameObject[] worldCollectionTargets;
         [SerializeField] private GameObject[] loadingDotTargets;
@@ -517,6 +527,8 @@ namespace LB.TweenHelper.Demo
         private TargetSnapshot _worldSnapshot;
         private TargetSnapshot[] _listSnapshots;
         private TargetSnapshot[] _gridSnapshots;
+        private TargetSnapshot[] _layoutListSnapshots;
+        private TargetSnapshot[] _layoutGridSnapshots;
         private TargetSnapshot[] _incompleteGridSnapshots;
         private TargetSnapshot[] _worldCollectionSnapshots;
         private TargetSnapshot[] _loadingDotSnapshots;
@@ -549,6 +561,11 @@ namespace LB.TweenHelper.Demo
         private Color _engineLightColor;
         private float _engineParticleEmissionRate;
         private TargetSnapshot _engineRendererSnapshot;
+        private VerticalLayoutGroup _layoutListGroup;
+        private GridLayoutGroup _layoutGridGroup;
+        private bool _layoutListGroupEnabled;
+        private bool _layoutGridGroupEnabled;
+        private int _layoutGridConstraintCount;
         private TweenHandle _activeTween;
         private Coroutine _delayedReplay;
         private ReviewFilter _activeFilter;
@@ -562,6 +579,13 @@ namespace LB.TweenHelper.Demo
             _worldSnapshot = TargetSnapshot.Capture(worldTarget);
             _listSnapshots = CaptureTargets(listTargets);
             _gridSnapshots = CaptureTargets(gridTargets);
+            _layoutListSnapshots = CaptureTargets(layoutListTargets);
+            _layoutGridSnapshots = CaptureTargets(layoutGridTargets);
+            _layoutListGroup = layoutListPreviewGroup.GetComponent<VerticalLayoutGroup>();
+            _layoutGridGroup = layoutGridPreviewGroup.GetComponent<GridLayoutGroup>();
+            _layoutListGroupEnabled = _layoutListGroup.enabled;
+            _layoutGridGroupEnabled = _layoutGridGroup.enabled;
+            _layoutGridConstraintCount = _layoutGridGroup.constraintCount;
             _incompleteGridSnapshots = CaptureTargets(incompleteGridTargets);
             _worldCollectionSnapshots = CaptureTargets(worldCollectionTargets);
             _loadingDotSnapshots = CaptureTargets(loadingDotTargets);
@@ -668,6 +692,7 @@ namespace LB.TweenHelper.Demo
             AddCollectionRecipe(CollectionReviewKind.CollectionGatherTo, "Gathers every grid item into one destination while shrinking and fading them.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.CollectionDealIn, "Deals numbered UI items from one shared origin into their authored positions.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.CollectionDealOut, "Deals numbered UI items from authored positions into one shared destination.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.CollectionLayoutTransition, "Reorders a numbered vertical list between two Unity-authored layouts.", PreviewKind.LayoutList);
             AddCollectionRecipe(CollectionReviewKind.GridConcentricIn, "Reveals grid rings from the outside toward the center.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.GridConcentricOut, "Dismisses grid rings from the center toward the outside.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.GridQuadrantSweep, "Sweeps the four grid quadrants clockwise from the top-left.", PreviewKind.Grid);
@@ -881,6 +906,7 @@ namespace LB.TweenHelper.Demo
             item.UseDefaultDistance = true;
             AddCollectionRecipe(CollectionReviewKind.CollectionGatherTo, "Gathers world-space objects into one exact destination while shrinking and fading.", PreviewKind.WorldCollection, "World", "Collection Gather To - World");
             AddCollectionRecipe(CollectionReviewKind.CollectionDealOut, "Deals world-space objects from authored positions into one exact shared destination.", PreviewKind.WorldCollection, "World", "Collection Deal Out - World");
+            AddCollectionRecipe(CollectionReviewKind.CollectionLayoutTransition, "Changes a numbered grid from three columns to two.", PreviewKind.LayoutGrid, "GridColumns", "Collection Layout Transition - Grid Columns");
             item = AddCollectionRecipe(CollectionReviewKind.CollectionBurstOut, "Scatters UI cells using the automatic 120-canvas-unit default distance.", PreviewKind.Grid, "DefaultDistanceUI", "Collection Burst Out - UI Default Distance");
             item.UseDefaultDistance = true;
             AddCollectionRecipe(CollectionReviewKind.GridDiagonalWave, "Traverses a three-column, eight-item grid and preserves the incomplete final row.", PreviewKind.IncompleteGrid, "IncompleteGrid", "Grid Diagonal Wave - Incomplete Grid");
@@ -1550,6 +1576,22 @@ namespace LB.TweenHelper.Demo
                     return targets.CollectionDealIn(owner, Vector3.zero, duration: 0.58f, interval: 0.055f, local: item.Preview != PreviewKind.WorldCollection);
                 case CollectionReviewKind.CollectionDealOut:
                     return targets.CollectionDealOut(owner, Vector3.zero, duration: 0.54f, interval: 0.05f, local: item.Preview != PreviewKind.WorldCollection);
+                case CollectionReviewKind.CollectionLayoutTransition:
+                {
+                    RectTransform container = (RectTransform)owner.transform;
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(container);
+                    CollectionLayoutSnapshot snapshot = container.CaptureCollectionLayout();
+                    if (item.Preview == PreviewKind.LayoutGrid)
+                    {
+                        _layoutGridGroup.constraintCount = 2;
+                    }
+                    else
+                    {
+                        for (int i = 0; i < targets.Length; i++) targets[i].transform.SetAsFirstSibling();
+                    }
+
+                    return container.TweenCollectionLayoutFrom(snapshot, 0.65f);
+                }
                 case CollectionReviewKind.GridConcentricIn:
                     return targets.GridConcentricIn(owner, item.GridColumns, 0.34f, 0.085f);
                 case CollectionReviewKind.GridConcentricOut:
@@ -1606,6 +1648,8 @@ namespace LB.TweenHelper.Demo
             {
                 case PreviewKind.List: return listTargets;
                 case PreviewKind.Grid: return gridTargets;
+                case PreviewKind.LayoutList: return layoutListTargets;
+                case PreviewKind.LayoutGrid: return layoutGridTargets;
                 case PreviewKind.IncompleteGrid: return incompleteGridTargets;
                 case PreviewKind.WorldCollection: return worldCollectionTargets;
                 case PreviewKind.LoadingDots: return loadingDotTargets;
@@ -1619,6 +1663,8 @@ namespace LB.TweenHelper.Demo
             {
                 case PreviewKind.List: return listPreviewGroup;
                 case PreviewKind.Grid: return gridPreviewGroup;
+                case PreviewKind.LayoutList: return layoutListPreviewGroup;
+                case PreviewKind.LayoutGrid: return layoutGridPreviewGroup;
                 case PreviewKind.IncompleteGrid: return incompleteGridPreviewGroup;
                 case PreviewKind.WorldCollection: return worldCollectionPreviewRoot;
                 case PreviewKind.LoadingDots: return loadingDotsPreviewGroup;
@@ -2101,6 +2147,10 @@ namespace LB.TweenHelper.Demo
             KillTargetTweens(collectionPreviewRoot);
             KillTargets(listTargets);
             KillTargets(gridTargets);
+            KillTargetTweens(layoutListPreviewGroup);
+            KillTargets(layoutListTargets);
+            KillTargetTweens(layoutGridPreviewGroup);
+            KillTargets(layoutGridTargets);
             KillTargets(incompleteGridTargets);
             KillTargetTweens(worldCollectionPreviewRoot);
             KillTargets(worldCollectionTargets);
@@ -2137,6 +2187,11 @@ namespace LB.TweenHelper.Demo
             _worldSnapshot.Apply(worldTarget);
             ApplySnapshots(listTargets, _listSnapshots);
             ApplySnapshots(gridTargets, _gridSnapshots);
+            ApplySnapshots(layoutListTargets, _layoutListSnapshots);
+            ApplySnapshots(layoutGridTargets, _layoutGridSnapshots);
+            _layoutListGroup.enabled = _layoutListGroupEnabled;
+            _layoutGridGroup.enabled = _layoutGridGroupEnabled;
+            _layoutGridGroup.constraintCount = _layoutGridConstraintCount;
             ApplySnapshots(incompleteGridTargets, _incompleteGridSnapshots);
             ApplySnapshots(worldCollectionTargets, _worldCollectionSnapshots);
             ApplySnapshots(loadingDotTargets, _loadingDotSnapshots);
@@ -2172,16 +2227,19 @@ namespace LB.TweenHelper.Demo
             ParticleSystem.EmissionModule emission = engineParticles.emission;
             emission.rateOverTimeMultiplier = _engineParticleEmissionRate;
             _engineRendererSnapshot.Apply(engineRenderer.gameObject);
+            Canvas.ForceUpdateCanvases();
         }
 
         private void ApplyPreviewVisibility(PreviewKind preview)
         {
             uiTarget.SetActive(preview == PreviewKind.Ui);
             worldTarget.SetActive(preview == PreviewKind.World || preview == PreviewKind.CameraFeedback);
-            bool showCollection = preview == PreviewKind.List || preview == PreviewKind.Grid || preview == PreviewKind.IncompleteGrid || preview == PreviewKind.LoadingDots;
+            bool showCollection = preview == PreviewKind.List || preview == PreviewKind.Grid || preview == PreviewKind.LayoutList || preview == PreviewKind.LayoutGrid || preview == PreviewKind.IncompleteGrid || preview == PreviewKind.LoadingDots;
             collectionPreviewRoot.SetActive(showCollection);
             listPreviewGroup.SetActive(preview == PreviewKind.List);
             gridPreviewGroup.SetActive(preview == PreviewKind.Grid);
+            layoutListPreviewGroup.SetActive(preview == PreviewKind.LayoutList);
+            layoutGridPreviewGroup.SetActive(preview == PreviewKind.LayoutGrid);
             incompleteGridPreviewGroup.SetActive(preview == PreviewKind.IncompleteGrid);
             worldCollectionPreviewRoot.SetActive(preview == PreviewKind.WorldCollection);
             loadingDotsPreviewGroup.SetActive(preview == PreviewKind.LoadingDots);

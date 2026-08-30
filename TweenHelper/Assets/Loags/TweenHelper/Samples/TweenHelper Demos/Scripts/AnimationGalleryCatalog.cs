@@ -29,6 +29,7 @@ namespace LB.TweenHelper.Demo
         UiTarget,
         List,
         Grid,
+        CollectionLayout,
         LoadingDots,
         Destination,
         Feedback,
@@ -50,6 +51,7 @@ namespace LB.TweenHelper.Demo
         SpiralPattern,
         SerpentineDirection,
         Phase,
+        LayoutChange,
         Interpolation,
         MotionVariant,
         TargetContext,
@@ -95,6 +97,7 @@ namespace LB.TweenHelper.Demo
         CollectionGatherTo,
         CollectionDealIn,
         CollectionDealOut,
+        CollectionLayoutTransition,
         ArcTo,
         BezierTo,
         HopTo,
@@ -288,6 +291,7 @@ namespace LB.TweenHelper.Demo
         private static readonly AnimationGalleryOptionDescriptor SpiralPattern = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.SpiralPattern, "Pattern", 0, "Outside-in clockwise", "Outside-in counter-clockwise", "Inside-out clockwise", "Inside-out counter-clockwise");
         private static readonly AnimationGalleryOptionDescriptor SerpentineDirection = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.SerpentineDirection, "Direction", 0, "Rows from top-left", "Rows from top-right", "Rows from bottom-left", "Rows from bottom-right", "Columns from top-left", "Columns from top-right", "Columns from bottom-left", "Columns from bottom-right");
         private static readonly AnimationGalleryOptionDescriptor Phase = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.Phase, "Phase", 0, "Normal", "Inverted");
+        private static readonly AnimationGalleryOptionDescriptor LayoutChange = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.LayoutChange, "Layout change", 0, "Vertical list reorder", "Grid: 3 columns to 2");
         private static readonly AnimationGalleryOptionDescriptor Interpolation = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.Interpolation, "Interpolation", 1, "Linear", "Catmull-Rom");
         private static readonly AnimationGalleryOptionDescriptor MotionVariant = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.MotionVariant, "Motion variant", 0, "Positive / outward", "Negative / inward");
         private static readonly AnimationGalleryOptionDescriptor TargetContext = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.TargetContext, "Target", 0, "UI / local", "World");
@@ -297,7 +301,7 @@ namespace LB.TweenHelper.Demo
         public static IReadOnlyList<AnimationGalleryEntry> Build()
         {
             TweenPresetRegistry.ScanForCodePresets();
-            var entries = new List<AnimationGalleryEntry>(418);
+            var entries = new List<AnimationGalleryEntry>(419);
             entries.AddRange(TweenPresetRegistry.Presets
                 .OrderBy(preset => preset.PresetName, StringComparer.Ordinal)
                 .Select(preset => new AnimationGalleryEntry($"preset:{preset.PresetName}", preset.PresetName, AnimationGalleryCategory.Presets,
@@ -359,6 +363,10 @@ namespace LB.TweenHelper.Demo
                     return "items.CollectionDealIn(owner, origin);";
                 case AnimationGalleryOperation.CollectionDealOut:
                     return "items.CollectionDealOut(owner, destination);";
+                case AnimationGalleryOperation.CollectionLayoutTransition:
+                    return configuration.GetIndex(AnimationGalleryOptionKind.LayoutChange) == 0
+                        ? "CollectionLayoutSnapshot before = container.CaptureCollectionLayout();\nitems.Reverse();\nApplySiblingOrder(items);\ncontainer.TweenCollectionLayoutFrom(before, 0.35f);"
+                        : "CollectionLayoutSnapshot before = container.CaptureCollectionLayout();\ngrid.constraintCount = 2;\ncontainer.TweenCollectionLayoutFrom(before, 0.35f);";
                 case AnimationGalleryOperation.GridConcentricIn:
                     return "items.GridConcentricIn(owner, columns: 3);";
                 case AnimationGalleryOperation.GridConcentricOut:
@@ -575,6 +583,7 @@ namespace LB.TweenHelper.Demo
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.CollectionGatherTo, AnimationGalleryFixture.Grid, "Gather every item into one destination.", "Collection");
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.CollectionDealIn, AnimationGalleryFixture.Grid, "Deal items from one shared origin into their authored positions.", "Collection");
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.CollectionDealOut, AnimationGalleryFixture.Grid, "Deal items from authored positions into one shared destination.", "Collection");
+            Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.CollectionLayoutTransition, AnimationGalleryFixture.CollectionLayout, "Animate active direct UI children between two Unity-authored layouts.", "RectTransform", LayoutChange);
         }
 
         private static void AddDestinationMotion(ICollection<AnimationGalleryEntry> entries)

@@ -1,6 +1,6 @@
 # Staggered collections
 
-`TweenStaggerBuilder` schedules one finite tween per collection item and returns one `TweenHandle` for the complete group. It supports typed presets, dynamic preset names, custom DOTween factories, five ordering modes, custom delay maps, root lifecycle options, and twenty-two gallery-facing recipes.
+`TweenStaggerBuilder` schedules one finite tween per collection item and returns one `TweenHandle` for the complete group. It supports typed presets, dynamic preset names, custom DOTween factories, five ordering modes, custom delay maps, root lifecycle options, and twenty-three gallery-facing collection examples.
 
 Collection recipes are orchestration helpers, not `ITweenPreset` implementations. The built-in preset registry therefore remains at 300 entries.
 
@@ -138,12 +138,40 @@ Burst In starts all items at one origin and restores their authored positions, s
 
 Every recipe returns its active `TweenHandle` and accepts duration, stagger interval, and `TweenOptions` overrides. `LoadingDots` also accepts the pause between complete cycles. Strength scales the spatial distance and deformation without moving Burst In or Gather To away from their exact requested endpoint.
 
+## Animate Unity layout changes
+
+Capture a container before the caller changes sibling order or layout settings, then animate from that captured visual state to Unity's rebuilt layout:
+
+```csharp
+CollectionLayoutSnapshot before = container.CaptureCollectionLayout();
+
+items.Sort(CompareByRarity);
+ApplySiblingOrder(items);
+
+TweenHandle handle = container.TweenCollectionLayoutFrom(before, 0.35f);
+```
+
+The same two-method workflow handles responsive grid changes:
+
+```csharp
+CollectionLayoutSnapshot before = gridRoot.CaptureCollectionLayout();
+grid.constraintCount = 2;
+gridRoot.TweenCollectionLayoutFrom(before, options: TweenOptions.WithUnscaledTime());
+```
+
+`CollectionLayoutSnapshot` is opaque, short-lived, and not serializable. Playback supports active direct `RectTransform` children with unchanged membership under one enabled `HorizontalLayoutGroup`, `VerticalLayoutGroup`, or `GridLayoutGroup`. Sibling-order and layout-setting changes are caller-owned; TweenHelper only animates the resulting anchored positions and changed local scales.
+
+Playback validates the snapshot, container, active child set, parent relationships, duration, speed-based option, and enabled layout group before changing layout ownership. It then rebuilds the final Unity-authored layout, temporarily disables that layout group, and links one sequence to the container. Normal completion and early kill both settle the children at the new layout, re-enable the group, and force a final rebuild. Starting another layout transition on the same container first kills and settles the current one. Destroying the container kills the linked sequence; no persistent component or serialized state is created.
+
+Rewind may show the captured positions while the sequence remains active, but it does not restore sibling order, layout settings, or application data. Restart is supported while that rewound sequence is still active. Insertion, removal, destroyed or reparented children, nested transitions, cross-container moves, automatic sorting/filtering, world-space motion, and continuously changing layouts are outside the initial scope.
+
 ## Validation and errors
 
 - Empty collections return an inactive `TweenHandle` and log a warning.
 - Null targets and duplicate target references are rejected when the collection is copied.
 - An owner or item destroyed between configuration and `Build` is rejected before child tweens are created.
 - Missing presets, incompatible targets, invalid delays, invalid column counts, invalid grid directions, invalid ripple origins, and invalid Deal parameters throw descriptive exceptions.
+- Layout transitions reject a null or mismatched snapshot, changed active membership, reparented children, invalid duration, speed-based timing, unsupported layout groups, and multiple enabled layout groups before taking ownership. Empty matching containers return an inactive completed handle.
 - Building without first selecting a preset or custom factory is rejected.
 - Killing a preset-based stagger group follows normal `TweenHandle` semantics and does not restore arbitrary target state automatically.
 - Deal In and Deal Out restore captured authored transforms on interrupted kill. Deal In rewinds to its origin pose, while Deal Out rewinds to the authored pose. Burst In, Burst Out, and Gather To restore their captured item states on interrupted kill and rewind. Normal Burst Out and Gather To completion intentionally leaves their hidden endpoint.
@@ -154,7 +182,7 @@ For replayable previews or pooled UI, capture the desired target state before pl
 
 ## Animation Gallery
 
-Open the **Collections** category to compare all twenty-two recipes and change order, wave direction, diagonal, spiral, serpentine direction, and checkerboard options while the matching C# call updates live.
+Open the **Collections** category to compare all twenty-three examples and change order, wave direction, diagonal, spiral, serpentine direction, checkerboard phase, and layout-change configuration while the matching C# call updates live.
 
 ## Expanded topology recipes
 
@@ -171,4 +199,4 @@ strip.LoadingRibbon(owner);
 
 Concentric In schedules outer rings toward the center; Concentric Out reverses that topology. Quadrant Sweep supports clockwise and counter-clockwise corner starts through `GridQuadrantSweepDirection`. Accordion unfolds captured list positions from their shared center. Orbit In restores authored endpoints after a spiral entrance, while Orbit Out finishes at its faded orbit endpoint. Loading Ring and Ribbon are infinite root loops and restore all captured item state when killed.
 
-The gallery now contains twenty-two collection recipes, including all eight topology additions plus Deal In, Deal Out, and Grid Serpentine.
+The gallery now contains twenty-three collection examples: the twenty-two existing recipes plus the list-reorder/grid-column layout transition.

@@ -18,6 +18,9 @@ namespace LB.TweenHelper.Demo
         [SerializeField] private GameObject[] listTargets;
         [SerializeField] private GameObject gridOwner;
         [SerializeField] private GameObject[] gridTargets;
+        [SerializeField] private RectTransform layoutListOwner;
+        [SerializeField] private GameObject[] layoutListTargets;
+        [SerializeField] private RectTransform layoutGridOwner;
         [SerializeField] private GameObject loadingDotsOwner;
         [SerializeField] private GameObject[] loadingDotTargets;
 
@@ -221,6 +224,8 @@ namespace LB.TweenHelper.Demo
                     return gridTargets.CollectionDealIn(gridOwner, Vector3.zero);
                 case AnimationGalleryOperation.CollectionDealOut:
                     return gridTargets.CollectionDealOut(gridOwner, Vector3.zero);
+                case AnimationGalleryOperation.CollectionLayoutTransition:
+                    return PlayCollectionLayout(configuration);
                 case AnimationGalleryOperation.GridConcentricIn:
                     return gridTargets.GridConcentricIn(gridOwner, 3);
                 case AnimationGalleryOperation.GridConcentricOut:
@@ -239,6 +244,25 @@ namespace LB.TweenHelper.Demo
                     return loadingDotTargets.LoadingRibbon(loadingDotsOwner);
                 default: throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private TweenHandle PlayCollectionLayout(AnimationGalleryConfiguration configuration)
+        {
+            bool useGrid = configuration.GetIndex(AnimationGalleryOptionKind.LayoutChange) == 1;
+            RectTransform container = useGrid ? layoutGridOwner : layoutListOwner;
+            LayoutRebuilder.ForceRebuildLayoutImmediate(container);
+            CollectionLayoutSnapshot snapshot = container.CaptureCollectionLayout();
+
+            if (useGrid)
+            {
+                container.GetComponent<GridLayoutGroup>().constraintCount = 2;
+            }
+            else
+            {
+                for (int i = 0; i < layoutListTargets.Length; i++) layoutListTargets[i].transform.SetAsFirstSibling();
+            }
+
+            return container.TweenCollectionLayoutFrom(snapshot, 0.65f);
         }
 
         private TweenHandle PlayDestination(AnimationGalleryConfiguration configuration)
@@ -421,6 +445,7 @@ namespace LB.TweenHelper.Demo
             _activeTween?.Kill();
             _activeTween = null;
             foreach (ComponentSnapshot snapshot in _snapshots) snapshot.Apply();
+            Canvas.ForceUpdateCanvases();
         }
 
         private static bool IsWorld(AnimationGalleryConfiguration configuration)
@@ -451,6 +476,7 @@ namespace LB.TweenHelper.Demo
             private readonly Vector3 _position;
             private readonly Quaternion _rotation;
             private readonly Vector3 _scale;
+            private readonly int _siblingIndex;
             private readonly bool _active;
             private readonly Graphic _graphic;
             private readonly Color _graphicColor;
@@ -463,6 +489,10 @@ namespace LB.TweenHelper.Demo
             private readonly Color _rendererColor;
             private readonly Camera _camera;
             private readonly float _fieldOfView;
+            private readonly LayoutGroup _layoutGroup;
+            private readonly bool _layoutGroupEnabled;
+            private readonly GridLayoutGroup _gridLayoutGroup;
+            private readonly int _gridConstraintCount;
 
             private ComponentSnapshot(Transform transform)
             {
@@ -470,6 +500,7 @@ namespace LB.TweenHelper.Demo
                 _position = transform.localPosition;
                 _rotation = transform.localRotation;
                 _scale = transform.localScale;
+                _siblingIndex = transform.GetSiblingIndex();
                 _active = transform.gameObject.activeSelf;
                 _graphic = transform.GetComponent<Graphic>();
                 _graphicColor = _graphic == null ? Color.white : _graphic.color;
@@ -482,6 +513,10 @@ namespace LB.TweenHelper.Demo
                 _rendererColor = _renderer == null ? Color.white : _renderer.material.color;
                 _camera = transform.GetComponent<Camera>();
                 _fieldOfView = _camera == null ? 60f : _camera.fieldOfView;
+                _layoutGroup = transform.GetComponent<LayoutGroup>();
+                _layoutGroupEnabled = _layoutGroup != null && _layoutGroup.enabled;
+                _gridLayoutGroup = transform.GetComponent<GridLayoutGroup>();
+                _gridConstraintCount = _gridLayoutGroup == null ? 0 : _gridLayoutGroup.constraintCount;
             }
 
             public static ComponentSnapshot Capture(Transform transform) => new ComponentSnapshot(transform);
@@ -493,6 +528,9 @@ namespace LB.TweenHelper.Demo
                 _transform.localPosition = _position;
                 _transform.localRotation = _rotation;
                 _transform.localScale = _scale;
+                if (_transform.parent == null || _transform.parent.gameObject.activeInHierarchy) _transform.SetSiblingIndex(_siblingIndex);
+                if (_layoutGroup != null) _layoutGroup.enabled = _layoutGroupEnabled;
+                if (_gridLayoutGroup != null) _gridLayoutGroup.constraintCount = _gridConstraintCount;
                 if (_graphic != null) _graphic.color = _graphicColor;
                 if (_canvasGroup != null) _canvasGroup.alpha = _alpha;
                 if (_text != null)
