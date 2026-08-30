@@ -173,14 +173,25 @@ namespace LB.TweenHelper.Demo
             TypewriterHide,
             NumberCountUp,
             NumberCountDown,
-            TextCharacterStaggerIn,
+            TextStaggerIn,
             TextWave,
             ScoreIncrease,
-            TextCharacterStaggerOut,
+            TextStaggerOut,
             TextCharacterBounce,
             TextColorSweep,
             TextGlitch,
             TextEmphasis,
+            TextWiggle,
+            TextFloat,
+            TextSwing,
+            TextPulse,
+            TextScatterIn,
+            TextScatterOut,
+            TextRotateIn,
+            TextRotateOut,
+            TextShear,
+            TextTrackingPulse,
+            TextImpactRipple,
             TextScrambleReveal
         }
 
@@ -250,6 +261,10 @@ namespace LB.TweenHelper.Demo
             public SequenceMacroReviewKind SequenceMacroKind;
             public UISequenceReviewKind UISequenceKind;
             public TextValueReviewKind TextValueKind;
+            public TextAnimationUnit TextUnit = TextAnimationUnit.Character;
+            public StaggerOrder TextOrder = StaggerOrder.FirstToLast;
+            public TextGlyphPivot TextPivot = TextGlyphPivot.Center;
+            public int TextSeed = 1337;
             public ProgressReviewKind ProgressKind;
             public CameraFeedbackReviewKind CameraFeedbackKind;
             public EnginePropertyReviewKind EnginePropertyKind;
@@ -726,18 +741,29 @@ namespace LB.TweenHelper.Demo
             AddUISequence(UISequenceReviewKind.PagePush, "Pushes the outgoing page left while the incoming page enters from the right.");
             AddUISequence(UISequenceReviewKind.PageCrossFade, "Cross-fades pages with restrained depth scaling and overlapping timing.");
 
-            AddTextValueAnimation(TextValueReviewKind.TypewriterReveal, "Reveals rich TextMesh Pro content character by character without exposing markup.");
-            AddTextValueAnimation(TextValueReviewKind.TypewriterHide, "Hides currently visible TextMesh Pro content in reverse character order.");
+            AddTextValueAnimation(TextValueReviewKind.TypewriterReveal, "Reveals rich TextMesh Pro content by character, word, or line without exposing markup.");
+            AddTextValueAnimation(TextValueReviewKind.TypewriterHide, "Hides currently visible TextMesh Pro content by character, word, or line.");
             AddTextValueAnimation(TextValueReviewKind.NumberCountUp, "Counts from 0 to 1,250 and writes the exact formatted destination.");
             AddTextValueAnimation(TextValueReviewKind.NumberCountDown, "Counts from 1,250 to 0 using the same direction-independent operation.");
-            AddTextValueAnimation(TextValueReviewKind.TextCharacterStaggerIn, "Reveals visible characters with directional movement, alpha, scale, and compressed stagger timing.");
+            AddTextValueAnimation(TextValueReviewKind.TextStaggerIn, "Reveals ordered text groups with directional movement, alpha, scale, and compressed stagger timing.");
             AddTextValueAnimation(TextValueReviewKind.TextWave, "Sends a finite wave across visible characters and restores the exact mesh baseline.");
             AddTextValueAnimation(TextValueReviewKind.ScoreIncrease, "Counts a score upward with a temporary scale punch and gold flash.");
-            AddTextValueAnimation(TextValueReviewKind.TextCharacterStaggerOut, "Hides visible characters in reverse order with directional movement, scale, and alpha.");
+            AddTextValueAnimation(TextValueReviewKind.TextStaggerOut, "Hides ordered text groups with directional movement, scale, and alpha.");
             AddTextValueAnimation(TextValueReviewKind.TextCharacterBounce, "Sends a finite traveling bounce across visible characters and restores the mesh baseline.");
             AddTextValueAnimation(TextValueReviewKind.TextColorSweep, "Sweeps a cyan highlight across per-character vertex colors and restores the original colors.");
             AddTextValueAnimation(TextValueReviewKind.TextGlitch, "Applies a deterministic seeded offset, scale, and two-color glitch before exact restoration.");
             AddTextValueAnimation(TextValueReviewKind.TextEmphasis, "Temporarily lifts, scales, and colors a selected visible-character range.");
+            AddTextValueAnimation(TextValueReviewKind.TextWiggle, "Plays one smooth deterministic per-glyph position and rotation cycle.");
+            AddTextValueAnimation(TextValueReviewKind.TextFloat, "Plays one smooth phase-offset directional float cycle.");
+            AddTextValueAnimation(TextValueReviewKind.TextSwing, "Swings glyphs around the top pivot without a separate pendulum engine.");
+            AddTextValueAnimation(TextValueReviewKind.TextPulse, "Pulses per-glyph scale for one finite cycle.");
+            AddTextValueAnimation(TextValueReviewKind.TextScatterIn, "Resolves deterministic scattered poses into authored text.");
+            AddTextValueAnimation(TextValueReviewKind.TextScatterOut, "Scatters authored text into deterministic poses and finishes hidden.");
+            AddTextValueAnimation(TextValueReviewKind.TextRotateIn, "Rotates ordered glyph groups into authored text.");
+            AddTextValueAnimation(TextValueReviewKind.TextRotateOut, "Rotates ordered glyph groups out and finishes hidden.");
+            AddTextValueAnimation(TextValueReviewKind.TextShear, "Applies a finite horizontal glyph deformation and restores the mesh.");
+            AddTextValueAnimation(TextValueReviewKind.TextTrackingPulse, "Expands glyphs from the visual center without changing TMP layout.");
+            AddTextValueAnimation(TextValueReviewKind.TextImpactRipple, "Propagates one local-space radial reaction through captured glyph centers.");
             AddTextValueAnimation(TextValueReviewKind.TextScrambleReveal, "Resolves deterministic substitute glyphs into the untouched rich-text source string.");
 
             AddProgressAnimation(ProgressReviewKind.ImageFillTo, "Image Fill To", "Animates Image.fillAmount from its current normalized value to 85%.");
@@ -897,13 +923,57 @@ namespace LB.TweenHelper.Demo
 
         private void AddTextValueReviewCoverage()
         {
-            AddTextDirectionVariants(TextValueReviewKind.TextCharacterStaggerIn, "Character Stagger In", "Reveals visible characters with directional movement, alpha, and scale from");
-            AddTextDirectionVariants(TextValueReviewKind.TextCharacterStaggerOut, "Character Stagger Out", "Hides visible characters in reverse order with directional movement toward");
+            AddTextDirectionVariants(TextValueReviewKind.TextStaggerIn, "Text Stagger In", "Reveals visible characters with directional movement, alpha, and scale from");
+            AddTextDirectionVariants(TextValueReviewKind.TextStaggerOut, "Text Stagger Out", "Hides visible characters with directional movement toward");
             AddTextDirectionVariants(TextValueReviewKind.TextWave, "Text Wave", "Sends a finite character wave toward");
             AddTextDirectionVariants(TextValueReviewKind.TextCharacterBounce, "Character Bounce", "Sends a finite traveling character bounce toward");
             AddTextDirectionVariants(TextValueReviewKind.TextEmphasis, "Text Emphasis", "Moves and emphasizes the selected character range toward");
+            AddTextDirectionVariants(TextValueReviewKind.TextFloat, "Text Float", "Floats visible characters toward");
 
-            AddTextValueAnimation(TextValueReviewKind.TextCharacterStaggerIn, "Reveals a world TextMesh Pro mesh with upward per-character displacement and exact restoration.", PreviewKind.WorldTextValue, UISequenceDirection.Up, "World", "World TMP Character Stagger In");
+            AddTextUnitVariants(TextValueReviewKind.TypewriterReveal, "Typewriter Reveal");
+            AddTextUnitVariants(TextValueReviewKind.TypewriterHide, "Typewriter Hide");
+            AddTextUnitVariants(TextValueReviewKind.TextStaggerIn, "Text Stagger In");
+            AddTextUnitVariants(TextValueReviewKind.TextStaggerOut, "Text Stagger Out");
+            AddTextUnitVariants(TextValueReviewKind.TextScatterIn, "Text Scatter In");
+            AddTextUnitVariants(TextValueReviewKind.TextScatterOut, "Text Scatter Out");
+            AddTextUnitVariants(TextValueReviewKind.TextRotateIn, "Text Rotate In");
+            AddTextUnitVariants(TextValueReviewKind.TextRotateOut, "Text Rotate Out");
+
+            AddTextOrderVariants(TextValueReviewKind.TextStaggerIn, StaggerOrder.FirstToLast, "Text Stagger In");
+            AddTextOrderVariants(TextValueReviewKind.TextStaggerOut, StaggerOrder.LastToFirst, "Text Stagger Out");
+            AddTextOrderVariants(TextValueReviewKind.TextScatterIn, StaggerOrder.FirstToLast, "Text Scatter In");
+            AddTextOrderVariants(TextValueReviewKind.TextScatterOut, StaggerOrder.LastToFirst, "Text Scatter Out");
+            AddTextOrderVariants(TextValueReviewKind.TextRotateIn, StaggerOrder.FirstToLast, "Text Rotate In");
+            AddTextOrderVariants(TextValueReviewKind.TextRotateOut, StaggerOrder.LastToFirst, "Text Rotate Out");
+
+            ReviewItem item = AddTextValueAnimation(TextValueReviewKind.TextSwing, "Swings glyphs around their centers.", variantKey: "PivotCenter", name: "Text Swing Center Pivot");
+            item.TextPivot = TextGlyphPivot.Center;
+            AddTextSeedVariant(TextValueReviewKind.TextWiggle, "Text Wiggle");
+            AddTextSeedVariant(TextValueReviewKind.TextScatterIn, "Text Scatter In");
+            AddTextSeedVariant(TextValueReviewKind.TextScatterOut, "Text Scatter Out");
+
+            TextValueReviewKind[] worldKinds =
+            {
+                TextValueReviewKind.TextWiggle,
+                TextValueReviewKind.TextFloat,
+                TextValueReviewKind.TextSwing,
+                TextValueReviewKind.TextPulse,
+                TextValueReviewKind.TextScatterIn,
+                TextValueReviewKind.TextScatterOut,
+                TextValueReviewKind.TextRotateIn,
+                TextValueReviewKind.TextRotateOut,
+                TextValueReviewKind.TextShear,
+                TextValueReviewKind.TextTrackingPulse,
+                TextValueReviewKind.TextImpactRipple
+            };
+            for (int i = 0; i < worldKinds.Length; i++)
+            {
+                TextValueReviewKind kind = worldKinds[i];
+                AddTextValueAnimation(kind, "Validates the same operation against world-space TextMesh Pro with exact restoration.",
+                    PreviewKind.WorldTextValue, UISequenceDirection.Up, "World", $"World TMP {SplitPascalCase(kind.ToString())}");
+            }
+
+            AddTextValueAnimation(TextValueReviewKind.TextStaggerIn, "Reveals a world TextMesh Pro mesh with upward per-character displacement and exact restoration.", PreviewKind.WorldTextValue, UISequenceDirection.Up, "World", "World TMP Text Stagger In");
             AddTextValueAnimation(TextValueReviewKind.TextColorSweep, "Sweeps world TextMesh Pro vertex colors and restores the exact mesh baseline.", PreviewKind.WorldTextValue, UISequenceDirection.Up, "World", "World TMP Color Sweep");
             AddTextValueAnimation(TextValueReviewKind.TextScrambleReveal, "Resolves a world TextMesh Pro source string without damaging its final content.", PreviewKind.WorldTextValue, UISequenceDirection.Up, "World", "World TMP Scramble Reveal");
         }
@@ -939,6 +1009,37 @@ namespace LB.TweenHelper.Demo
                 UISequenceDirection direction = directions[i];
                 AddTextValueAnimation(kind, $"{descriptionPrefix} {direction.ToString().ToLowerInvariant()} and restores the exact text state.", PreviewKind.TextValue, direction, direction.ToString(), $"{operationName} {direction}");
             }
+        }
+
+        private void AddTextUnitVariants(TextValueReviewKind kind, string operationName)
+        {
+            TextAnimationUnit[] units = { TextAnimationUnit.Word, TextAnimationUnit.Line };
+            for (int i = 0; i < units.Length; i++)
+            {
+                TextAnimationUnit unit = units[i];
+                ReviewItem item = AddTextValueAnimation(kind, $"Uses TMP {unit.ToString().ToLowerInvariant()} metadata while preserving rich text and layout-only characters.",
+                    variantKey: "Unit" + unit, name: $"{operationName} {unit}");
+                item.TextUnit = unit;
+            }
+        }
+
+        private void AddTextOrderVariants(TextValueReviewKind kind, StaggerOrder defaultOrder, string operationName)
+        {
+            foreach (StaggerOrder order in Enum.GetValues(typeof(StaggerOrder)))
+            {
+                if (order == defaultOrder) continue;
+                ReviewItem item = AddTextValueAnimation(kind, $"Uses the shared {order} stagger order with deterministic group timing.",
+                    variantKey: "Order" + order, name: $"{operationName} {order}");
+                item.TextOrder = order;
+            }
+        }
+
+        private void AddTextSeedVariant(TextValueReviewKind kind, string operationName)
+        {
+            ReviewItem item = AddTextValueAnimation(kind, "Uses an alternate deterministic seed for repeatable visual comparison.",
+                variantKey: "Seed2468", name: $"{operationName} Seed 2468");
+            item.TextOrder = StaggerOrder.Random;
+            item.TextSeed = 2468;
         }
 
         private void AddRecipe(string name, string description)
@@ -1064,6 +1165,11 @@ namespace LB.TweenHelper.Demo
                 Kind = ReviewKind.TextValueAnimation,
                 Preview = preview,
                 TextValueKind = kind,
+                TextOrder = kind == TextValueReviewKind.TextStaggerOut || kind == TextValueReviewKind.TextScatterOut || kind == TextValueReviewKind.TextRotateOut
+                    ? StaggerOrder.LastToFirst
+                    : StaggerOrder.FirstToLast,
+                TextPivot = kind == TextValueReviewKind.TextSwing ? TextGlyphPivot.Top : TextGlyphPivot.Center,
+                TextSeed = 1337,
                 Direction = direction
             };
             _allItems.Add(item);
@@ -1720,21 +1826,21 @@ namespace LB.TweenHelper.Demo
             switch (kind)
             {
                 case TextValueReviewKind.TypewriterReveal:
-                    return typewriterText.TypewriterReveal(1.2f);
+                    return typewriterText.TypewriterReveal(item.TextUnit, 1.2f);
                 case TextValueReviewKind.TypewriterHide:
-                    return typewriterText.TypewriterHide(1f);
+                    return typewriterText.TypewriterHide(item.TextUnit, 1f);
                 case TextValueReviewKind.NumberCountUp:
                     return numberText.NumberCountTo(0d, 1250d, "N0", 1.15f);
                 case TextValueReviewKind.NumberCountDown:
                     return numberText.NumberCountTo(1250d, 0d, "N0", 1.15f);
-                case TextValueReviewKind.TextCharacterStaggerIn:
-                    return characterTarget.TextCharacterStaggerIn(item.Direction, characterDistance, 0.045f, 1.05f);
+                case TextValueReviewKind.TextStaggerIn:
+                    return characterTarget.TextStaggerIn(item.TextUnit, item.TextOrder, item.Direction, characterDistance, 0.045f, item.TextSeed, 1.05f);
                 case TextValueReviewKind.TextWave:
                     return characterTarget.TextWave(item.Direction, waveAmplitude, 1, 1.25f);
                 case TextValueReviewKind.ScoreIncrease:
                     return scoreText.ScoreIncrease(1200d, 1475d, "N0", 1.2f);
-                case TextValueReviewKind.TextCharacterStaggerOut:
-                    return characterTarget.TextCharacterStaggerOut(item.Direction, 30f, 0.045f, 1.05f);
+                case TextValueReviewKind.TextStaggerOut:
+                    return characterTarget.TextStaggerOut(item.TextUnit, item.TextOrder, item.Direction, characterDistance, 0.045f, item.TextSeed, 1.05f);
                 case TextValueReviewKind.TextCharacterBounce:
                     return characterTarget.TextCharacterBounce(item.Direction, bounceAmplitude, 1.2f);
                 case TextValueReviewKind.TextColorSweep:
@@ -1743,6 +1849,28 @@ namespace LB.TweenHelper.Demo
                     return characterTarget.TextGlitch(9f, 1729, 0.9f);
                 case TextValueReviewKind.TextEmphasis:
                     return characterTarget.TextEmphasis(item.Direction, emphasisDistance, 0, 9, new Color(1f, 0.7f, 0.12f), 0.9f);
+                case TextValueReviewKind.TextWiggle:
+                    return characterTarget.TextWiggle(usesWorldText ? 0.2f : 5f, 4f, item.TextSeed, 1.1f);
+                case TextValueReviewKind.TextFloat:
+                    return characterTarget.TextFloat(item.Direction, usesWorldText ? 0.45f : 16f, 1.2f);
+                case TextValueReviewKind.TextSwing:
+                    return characterTarget.TextSwing(14f, item.TextPivot, 1.15f);
+                case TextValueReviewKind.TextPulse:
+                    return characterTarget.TextPulse(0.14f, 1.05f);
+                case TextValueReviewKind.TextScatterIn:
+                    return characterTarget.TextScatterIn(item.TextUnit, item.TextOrder, usesWorldText ? 0.9f : 42f, 28f, 0.045f, item.TextSeed, 1.15f);
+                case TextValueReviewKind.TextScatterOut:
+                    return characterTarget.TextScatterOut(item.TextUnit, item.TextOrder, usesWorldText ? 0.9f : 42f, 28f, 0.045f, item.TextSeed, 1.05f);
+                case TextValueReviewKind.TextRotateIn:
+                    return characterTarget.TextRotateIn(item.TextUnit, item.TextOrder, 95f, 0.045f, item.TextSeed, 1.05f);
+                case TextValueReviewKind.TextRotateOut:
+                    return characterTarget.TextRotateOut(item.TextUnit, item.TextOrder, 95f, 0.045f, item.TextSeed, 1f);
+                case TextValueReviewKind.TextShear:
+                    return characterTarget.TextShear(0.32f, 1f);
+                case TextValueReviewKind.TextTrackingPulse:
+                    return characterTarget.TextTrackingPulse(usesWorldText ? 0.55f : 16f, 1.05f);
+                case TextValueReviewKind.TextImpactRipple:
+                    return characterTarget.TextImpactRipple(Vector2.zero, usesWorldText ? 3.5f : 190f, usesWorldText ? 0.5f : 24f, 0.08f, 1.1f);
                 case TextValueReviewKind.TextScrambleReveal:
                     return characterTarget.TextScrambleReveal(1729, 1.35f);
                 default:
@@ -2093,13 +2221,24 @@ namespace LB.TweenHelper.Demo
             bool usesWorldText = item.Preview == PreviewKind.WorldTextValue;
             bool showTypewriter = kind == TextValueReviewKind.TypewriterReveal || kind == TextValueReviewKind.TypewriterHide;
             bool showNumber = kind == TextValueReviewKind.NumberCountUp || kind == TextValueReviewKind.NumberCountDown;
-            bool showCharacter = kind == TextValueReviewKind.TextCharacterStaggerIn ||
+            bool showCharacter = kind == TextValueReviewKind.TextStaggerIn ||
                                  kind == TextValueReviewKind.TextWave ||
-                                 kind == TextValueReviewKind.TextCharacterStaggerOut ||
+                                 kind == TextValueReviewKind.TextStaggerOut ||
                                  kind == TextValueReviewKind.TextCharacterBounce ||
                                  kind == TextValueReviewKind.TextColorSweep ||
                                  kind == TextValueReviewKind.TextGlitch ||
                                  kind == TextValueReviewKind.TextEmphasis ||
+                                 kind == TextValueReviewKind.TextWiggle ||
+                                 kind == TextValueReviewKind.TextFloat ||
+                                 kind == TextValueReviewKind.TextSwing ||
+                                 kind == TextValueReviewKind.TextPulse ||
+                                 kind == TextValueReviewKind.TextScatterIn ||
+                                 kind == TextValueReviewKind.TextScatterOut ||
+                                 kind == TextValueReviewKind.TextRotateIn ||
+                                 kind == TextValueReviewKind.TextRotateOut ||
+                                 kind == TextValueReviewKind.TextShear ||
+                                 kind == TextValueReviewKind.TextTrackingPulse ||
+                                 kind == TextValueReviewKind.TextImpactRipple ||
                                  kind == TextValueReviewKind.TextScrambleReveal;
             typewriterText.gameObject.SetActive(!usesWorldText && showTypewriter);
             numberText.gameObject.SetActive(!usesWorldText && showNumber);

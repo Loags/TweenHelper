@@ -15,11 +15,11 @@ This folder is repository-only. Never include it in the Asset Store `.unitypacka
 | Surface | Count | Purpose |
 | --- | ---: | --- |
 | Registered preset registry | 300 | Stable customer preset API |
-| Preset Browser | 446 | Customer Editor discovery and isolated previews |
-| Animation Gallery | 406 | Shipped capture-friendly runtime examples |
-| Preset Review scene | 527 | Exhaustive development-only visual configurations |
+| Preset Browser | 457 | Customer Editor discovery and isolated previews |
+| Animation Gallery | 415 | Shipped capture-friendly runtime examples |
+| Preset Review scene | 596 | Exhaustive development-only visual configurations |
 
-The review catalog contains 527 unique IDs:
+The review catalog contains 596 unique IDs:
 
 - 300 presets
 - 13 UI recipes
@@ -29,7 +29,7 @@ The review catalog contains 527 unique IDs:
 - 23 feedback sequences
 - 10 gameplay-state configurations
 - 39 production UI sequences
-- 31 text/value configurations
+- 100 text/value configurations
 - 15 progress configurations
 - 4 sequence macros
 - 9 camera-feedback configurations

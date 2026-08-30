@@ -2,7 +2,7 @@
 
 Tween Helper is a fluent animation builder and a catalog of reusable presets built on DOTween. It supports transform, UI, SpriteRenderer, renderer, TextMesh Pro, collections, destination motion, world-to-UI projection, gameplay feedback, production UI, progress values, cameras, audio, lights, particles, and material properties while keeping playback, sequencing, cancellation, and reset behavior consistent.
 
-Version `1.1.0` is the initial public release. It was developed and validated with Unity `6000.5.2f1` and DOTween Free package `1.2.825` (runtime `1.3.030`). Lower Unity and older DOTween versions have not been tested. DOTween is installed and licensed separately; it is not included with Tween Helper.
+Tween Helper is in pre-release development and has not had a public release. The current baseline was developed and validated with Unity `6000.5.2f1` and DOTween Free package `1.2.825` (runtime `1.3.030`). Lower Unity and older DOTween versions have not been tested. DOTween is installed and licensed separately; it is not included with Tween Helper.
 
 ## Requirements
 
@@ -138,14 +138,17 @@ Animate TextMesh Pro content and numeric values without expanding the preset reg
 ```csharp
 title.TypewriterReveal();
 score.NumberCountTo(0, 1250, format: "N0");
-message.TextCharacterStaggerIn(UISequenceDirection.Up);
+message.TextStaggerIn(direction: UISequenceDirection.Up);
 message.TextWave(amplitude: 12f);
+message.TextWiggle(seed: 1729);
+message.TextScatterIn(order: StaggerOrder.FromCenter);
+message.TextImpactRipple(Vector2.zero);
 message.TextColorSweep();
 message.TextScrambleReveal(seed: 1729);
 score.ScoreIncrease(1200, 1475, format: "N0");
 ```
 
-Typewriter operations preserve rich-text markup by animating `maxVisibleCharacters`. Stagger, wave, bounce, color-sweep, glitch, and emphasis operations evaluate visible TMP glyphs through one owner-linked tween and restore the original mesh exactly. Scramble Reveal preserves markup while resolving deterministic substitute glyphs. Number counting accepts increasing or decreasing values, while Score Increase combines an exact count destination with temporary scale and color feedback.
+Typewriter operations reveal characters, words, or lines while preserving rich-text markup. Ordered stagger, scatter, and rotate transitions share the existing `StaggerOrder` timing path; smooth wiggle, float, swing, pulse, shear, tracking, ripple, wave, bounce, color-sweep, glitch, and emphasis effects evaluate visible TMP glyphs through one owner-linked tween and restore the captured mesh exactly. Scramble Reveal preserves markup while resolving deterministic substitute glyphs. Number counting accepts increasing or decreasing values, while Score Increase combines an exact count destination with temporary scale and color feedback.
 
 Animate normalized Image or Slider progress with optional synchronized text:
 
@@ -185,11 +188,11 @@ Renderer operations use `MaterialPropertyBlock`; ambient light helpers are finit
 
 ## Animation Gallery
 
-The shipped mouse-driven Animation Gallery contains 406 entries across eight categories: 300 presets, 13 UI recipes, 19 collection examples, 12 destination operations, 25 gameplay-feedback/macro examples, 16 production UI sequences, 13 text/value examples, and eight camera operations. Selection resets and auto-plays; contextual controls and the displayed C# call update together.
+The shipped mouse-driven Animation Gallery contains 415 entries across eight categories: 300 presets, 13 UI recipes, 19 collection examples, 12 destination operations, 25 gameplay-feedback/macro examples, 16 production UI sequences, 22 text/value examples, and eight camera operations. Selection resets and auto-plays; contextual controls and the displayed C# call update together.
 
 ## Preset browser
 
-Open **Tools > Tween Helper > Preset Browser** to search 446 isolated previews: all 300 registered presets plus 146 UI, collection, destination, gameplay, UI-sequence, TextMesh Pro, progress, camera, and engine-property entries. Select an entry to inspect its metadata and fluent API example. Contextual direction, topology, phase, target, backdrop, and property options update the preview and copied example together.
+Open **Tools > Tween Helper > Preset Browser** to search 457 isolated previews: all 300 registered presets plus 157 UI, collection, destination, gameplay, UI-sequence, TextMesh Pro, progress, camera, and engine-property entries. Select an entry to inspect its metadata and fluent API example. Contextual direction, topology, phase, target, backdrop, and property options update the preview and copied example together.
 
 The browser builds an isolated fixture appropriate to the selected entry rather than reusing the active scene. UI sequences receive only their required backdrop, controls, and incoming target; component operations receive visible progress, camera, audio, light, particle, or renderer fixtures. Preview proxies synchronize depth, sorting, Graphic color, parent `CanvasGroup` alpha, fill/value state, and projected UI state. The active scene is never read or modified.
 

@@ -42,6 +42,9 @@ namespace LB.TweenHelper.Demo
     {
         Direction,
         Order,
+        Unit,
+        Pivot,
+        Seed,
         GridDirection,
         DiagonalPattern,
         SpiralPattern,
@@ -145,14 +148,23 @@ namespace LB.TweenHelper.Demo
         TypewriterHide,
         NumberCountUp,
         NumberCountDown,
-        TextCharacterStaggerIn,
+        TextStaggerIn,
         TextWave,
         ScoreIncrease,
-        TextCharacterStaggerOut,
+        TextStaggerOut,
         TextCharacterBounce,
         TextColorSweep,
         TextGlitch,
         TextEmphasis,
+        TextWiggle,
+        TextFloat,
+        TextSwing,
+        TextPulse,
+        TextScatterIn,
+        TextRotateIn,
+        TextShear,
+        TextTrackingPulse,
+        TextImpactRipple,
         TextScrambleReveal,
         CameraImpact,
         CameraRecoil,
@@ -264,6 +276,9 @@ namespace LB.TweenHelper.Demo
     {
         private static readonly AnimationGalleryOptionDescriptor Direction = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.Direction, "Direction", 2, "Up", "Down", "Left", "Right");
         private static readonly AnimationGalleryOptionDescriptor Order = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.Order, "Order", 0, "First to last", "Last to first", "From center", "To center", "Random (seeded)");
+        private static readonly AnimationGalleryOptionDescriptor Unit = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.Unit, "Unit", 0, "Character", "Word", "Line");
+        private static readonly AnimationGalleryOptionDescriptor Pivot = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.Pivot, "Pivot", 1, "Center", "Top");
+        private static readonly AnimationGalleryOptionDescriptor Seed = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.Seed, "Seed", 1, "1337", "1729", "2468");
         private static readonly AnimationGalleryOptionDescriptor GridDirection = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.GridDirection, "Direction", 0, "Left to right", "Right to left", "Top to bottom", "Bottom to top");
         private static readonly AnimationGalleryOptionDescriptor DiagonalPattern = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.DiagonalPattern, "Pattern", 0, "Top-left to bottom-right", "Top-right to bottom-left", "Bottom-left to top-right", "Bottom-right to top-left");
         private static readonly AnimationGalleryOptionDescriptor SpiralPattern = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.SpiralPattern, "Pattern", 0, "Outside-in clockwise", "Outside-in counter-clockwise", "Inside-out clockwise", "Inside-out counter-clockwise");
@@ -277,7 +292,7 @@ namespace LB.TweenHelper.Demo
         public static IReadOnlyList<AnimationGalleryEntry> Build()
         {
             TweenPresetRegistry.ScanForCodePresets();
-            var entries = new List<AnimationGalleryEntry>(380);
+            var entries = new List<AnimationGalleryEntry>(415);
             entries.AddRange(TweenPresetRegistry.Presets
                 .OrderBy(preset => preset.PresetName, StringComparer.Ordinal)
                 .Select(preset => new AnimationGalleryEntry($"preset:{preset.PresetName}", preset.PresetName, AnimationGalleryCategory.Presets,
@@ -303,6 +318,9 @@ namespace LB.TweenHelper.Demo
             }
 
             string direction = configuration.GetValue(AnimationGalleryOptionKind.Direction).Replace(" ", string.Empty);
+            string unit = configuration.GetValue(AnimationGalleryOptionKind.Unit);
+            string pivot = configuration.GetValue(AnimationGalleryOptionKind.Pivot);
+            string seed = configuration.GetValue(AnimationGalleryOptionKind.Seed);
             string targetContext = configuration.GetValue(AnimationGalleryOptionKind.TargetContext);
             bool world = targetContext == "World";
             string localSuffix = world ? string.Empty : "Local";
@@ -391,12 +409,31 @@ namespace LB.TweenHelper.Demo
                 case AnimationGalleryOperation.DrawerShow:
                 case AnimationGalleryOperation.DrawerHide:
                     return $"panel.{entry.Operation}(UISequenceDirection.{direction}, {(configuration.GetIndex(AnimationGalleryOptionKind.Backdrop) == 0 ? "backdrop" : "null")});";
-                case AnimationGalleryOperation.TextCharacterStaggerIn:
-                case AnimationGalleryOperation.TextCharacterStaggerOut:
+                case AnimationGalleryOperation.TypewriterReveal:
+                case AnimationGalleryOperation.TypewriterHide:
+                    return $"text.{entry.Operation}(TextAnimationUnit.{unit});";
+                case AnimationGalleryOperation.TextStaggerIn:
+                case AnimationGalleryOperation.TextStaggerOut:
+                    return $"text.{entry.Operation}(unit: TextAnimationUnit.{unit}, order: StaggerOrder.{GetOrder(configuration)}, direction: UISequenceDirection.{direction}, seed: {seed});";
                 case AnimationGalleryOperation.TextCharacterBounce:
                 case AnimationGalleryOperation.TextWave:
                 case AnimationGalleryOperation.TextEmphasis:
+                case AnimationGalleryOperation.TextFloat:
                     return $"text.{entry.Operation}(UISequenceDirection.{direction});";
+                case AnimationGalleryOperation.TextWiggle:
+                    return $"text.TextWiggle(seed: {seed});";
+                case AnimationGalleryOperation.TextSwing:
+                    return $"text.TextSwing(pivot: TextGlyphPivot.{pivot});";
+                case AnimationGalleryOperation.TextPulse:
+                case AnimationGalleryOperation.TextShear:
+                case AnimationGalleryOperation.TextTrackingPulse:
+                    return $"text.{entry.Operation}();";
+                case AnimationGalleryOperation.TextScatterIn:
+                    return $"text.TextScatterIn(unit: TextAnimationUnit.{unit}, order: StaggerOrder.{GetOrder(configuration)}, seed: {seed});";
+                case AnimationGalleryOperation.TextRotateIn:
+                    return $"text.TextRotateIn(unit: TextAnimationUnit.{unit}, order: StaggerOrder.{GetOrder(configuration)}, seed: {seed});";
+                case AnimationGalleryOperation.TextImpactRipple:
+                    return "text.TextImpactRipple(Vector2.zero);";
                 case AnimationGalleryOperation.CameraFovKick:
                     return configuration.GetIndex(AnimationGalleryOptionKind.MotionVariant) == 0 ? "camera.CameraFovKick(11f);" : "camera.CameraFovKick(-11f);";
                 case AnimationGalleryOperation.CameraRackFocus:
@@ -593,18 +630,27 @@ namespace LB.TweenHelper.Demo
 
         private static void AddTextAndValues(ICollection<AnimationGalleryEntry> entries)
         {
-            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TypewriterReveal, AnimationGalleryFixture.TextValue, "Reveal text one visible character at a time.", "TMP");
-            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TypewriterHide, AnimationGalleryFixture.TextValue, "Hide text one visible character at a time.", "TMP");
+            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TypewriterReveal, AnimationGalleryFixture.TextValue, "Reveal text by character, word, or line.", "TMP", Unit);
+            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TypewriterHide, AnimationGalleryFixture.TextValue, "Hide text by character, word, or line.", "TMP", Unit);
             Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.NumberCountUp, AnimationGalleryFixture.TextValue, "Count a formatted number upward.", "TMP");
             Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.NumberCountDown, AnimationGalleryFixture.TextValue, "Count a formatted number downward.", "TMP");
-            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextCharacterStaggerIn, AnimationGalleryFixture.TextValue, "Stagger visible characters into place.", "TMP", Direction, TargetContext);
+            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextStaggerIn, AnimationGalleryFixture.TextValue, "Stagger characters, words, or lines into place.", "TMP", Unit, Order, Direction, Seed, TargetContext);
             Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextWave, AnimationGalleryFixture.TextValue, "Move visible characters in a directional wave.", "TMP", Direction, TargetContext);
             Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.ScoreIncrease, AnimationGalleryFixture.TextValue, "Count a score while emphasizing the gain.", "TMP");
-            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextCharacterStaggerOut, AnimationGalleryFixture.TextValue, "Stagger visible characters out of view.", "TMP", Direction, TargetContext);
+            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextStaggerOut, AnimationGalleryFixture.TextValue, "Stagger characters, words, or lines out of view.", "TMP", Unit, Order, Direction, Seed, TargetContext);
             Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextCharacterBounce, AnimationGalleryFixture.TextValue, "Bounce visible characters along a direction.", "TMP", Direction, TargetContext);
             Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextColorSweep, AnimationGalleryFixture.TextValue, "Sweep a highlight color across visible characters.", "TMP", TargetContext);
             Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextGlitch, AnimationGalleryFixture.TextValue, "Apply deterministic seeded character jitter.", "TMP", TargetContext);
             Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextEmphasis, AnimationGalleryFixture.TextValue, "Emphasize a selected character range.", "TMP", Direction, TargetContext);
+            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextWiggle, AnimationGalleryFixture.TextValue, "Play one smooth deterministic glyph wiggle cycle.", "TMP", Seed, TargetContext);
+            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextFloat, AnimationGalleryFixture.TextValue, "Play one phase-offset directional float cycle.", "TMP", Direction, TargetContext);
+            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextSwing, AnimationGalleryFixture.TextValue, "Swing glyphs around a center or top pivot.", "TMP", Pivot, TargetContext);
+            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextPulse, AnimationGalleryFixture.TextValue, "Pulse per-glyph scale for one finite cycle.", "TMP", TargetContext);
+            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextScatterIn, AnimationGalleryFixture.TextValue, "Resolve deterministic scattered poses into authored text.", "TMP", Unit, Order, Seed, TargetContext);
+            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextRotateIn, AnimationGalleryFixture.TextValue, "Rotate ordered text groups into authored text.", "TMP", Unit, Order, Seed, TargetContext);
+            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextShear, AnimationGalleryFixture.TextValue, "Deform glyphs with a finite horizontal shear.", "TMP", TargetContext);
+            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextTrackingPulse, AnimationGalleryFixture.TextValue, "Expand glyphs from the visual center without relayout.", "TMP", TargetContext);
+            Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextImpactRipple, AnimationGalleryFixture.TextValue, "Propagate a finite reaction from a TMP-local impact point.", "TMP", TargetContext);
             Add(entries, AnimationGalleryCategory.TextAndValues, AnimationGalleryOperation.TextScrambleReveal, AnimationGalleryFixture.TextValue, "Reveal text through a deterministic scramble.", "TMP", TargetContext);
         }
 

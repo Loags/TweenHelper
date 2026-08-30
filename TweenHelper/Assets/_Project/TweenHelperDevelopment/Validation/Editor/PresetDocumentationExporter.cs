@@ -123,7 +123,7 @@ namespace LB.TweenHelper.Editor
             var builder = new StringBuilder();
             builder.AppendLine("# Tween Helper preset catalog");
             builder.AppendLine();
-            builder.AppendLine("> Generated deterministically from the 300 registered preset types included with Tween Helper 1.1.0.");
+            builder.AppendLine("> Generated deterministically from the 300 registered preset types in the current pre-release baseline.");
             builder.AppendLine();
             builder.AppendLine($"Built-in presets: **{sorted.Count}**");
             builder.AppendLine();
@@ -149,7 +149,7 @@ namespace LB.TweenHelper.Editor
             builder.AppendLine();
             builder.AppendLine("## Semantic operation index (non-preset)");
             builder.AppendLine();
-            builder.AppendLine("The 1.1 roadmap additions are composable builder/direct operations rather than registered `ITweenPreset` entries, so the 300-preset registry remains stable. They are discoverable alongside the presets in the 446-entry Preset Browser.");
+            builder.AppendLine("The current semantic additions are composable builder/direct operations rather than registered `ITweenPreset` entries, so the 300-preset registry remains stable. They are discoverable alongside the presets in the current Preset Browser.");
             builder.AppendLine();
             builder.AppendLine("| Domain | Operations |");
             builder.AppendLine("| --- | --- |");
@@ -159,6 +159,7 @@ namespace LB.TweenHelper.Editor
             builder.AppendLine("| Collections | `GridConcentricIn`, `GridConcentricOut`, `GridQuadrantSweep`, `ListAccordion`, `CollectionOrbitIn`, `CollectionOrbitOut`, `LoadingRing`, `LoadingRibbon` |");
             builder.AppendLine("| Macros and camera | `CriticalHitSequence`, `RewardRevealSequence`, `WarningLoopSequence`, `CutsceneUIEntranceSequence`, `CameraRackFocus`, `CollectLandingCameraKick` |");
             builder.AppendLine("| Engine properties | `AudioVolumeTo`, `AudioPitchTo`, `LightIntensityTo`, `LightColorTo`, `ParticleEmissionRateTo`, `MaterialFloatTo`, `MaterialColorTo`, `TorchFlicker`, `ScannerPulse` |");
+            builder.AppendLine("| Text and values | `TypewriterReveal`, `TypewriterHide`, `NumberCountTo`, `TextStaggerIn`, `TextStaggerOut`, `TextWave`, `TextCharacterBounce`, `TextColorSweep`, `TextGlitch`, `TextEmphasis`, `TextWiggle`, `TextFloat`, `TextSwing`, `TextPulse`, `TextScatterIn`, `TextScatterOut`, `TextRotateIn`, `TextRotateOut`, `TextShear`, `TextTrackingPulse`, `TextImpactRipple`, `TextScrambleReveal`, `ScoreIncrease` |");
 
             return builder.ToString();
         }

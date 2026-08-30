@@ -23,8 +23,8 @@ namespace LB.TweenHelper.Editor
         private const string StatusKeyPrefix = "TweenHelper.PresetReview.Status.";
         private const int ExpectedPresetCount = 300;
         private const int ExpectedLegacySemanticCount = 98;
-        private const int ExpectedCoverageCount = 129;
-        private const int ExpectedTotalCount = 527;
+        private const int ExpectedCoverageCount = 198;
+        private const int ExpectedTotalCount = 596;
 
         static AnimationReviewCoverageValidation()
         {
@@ -314,14 +314,42 @@ namespace LB.TweenHelper.Editor
             AddDirectionalVariants(ids, "UISequence:DrawerHide", UISequenceDirection.Up, UISequenceDirection.Down, UISequenceDirection.Right);
             AddDirectionalVariants(ids, "UISequence:PagePush", UISequenceDirection.Up, UISequenceDirection.Down, UISequenceDirection.Right);
 
-            AddDirectionalVariants(ids, "TextValue:TextCharacterStaggerIn", UISequenceDirection.Down, UISequenceDirection.Left, UISequenceDirection.Right);
-            AddDirectionalVariants(ids, "TextValue:TextCharacterStaggerOut", UISequenceDirection.Down, UISequenceDirection.Left, UISequenceDirection.Right);
+            AddDirectionalVariants(ids, "TextValue:TextStaggerIn", UISequenceDirection.Down, UISequenceDirection.Left, UISequenceDirection.Right);
+            AddDirectionalVariants(ids, "TextValue:TextStaggerOut", UISequenceDirection.Down, UISequenceDirection.Left, UISequenceDirection.Right);
             AddDirectionalVariants(ids, "TextValue:TextWave", UISequenceDirection.Down, UISequenceDirection.Left, UISequenceDirection.Right);
             AddDirectionalVariants(ids, "TextValue:TextCharacterBounce", UISequenceDirection.Down, UISequenceDirection.Left, UISequenceDirection.Right);
             AddDirectionalVariants(ids, "TextValue:TextEmphasis", UISequenceDirection.Down, UISequenceDirection.Left, UISequenceDirection.Right);
-            AddVariants(ids, "TextValue:TextCharacterStaggerIn", "World");
+            AddVariants(ids, "TextValue:TextStaggerIn", "World");
             AddVariants(ids, "TextValue:TextColorSweep", "World");
             AddVariants(ids, "TextValue:TextScrambleReveal", "World");
+            AddNames(ids, "TextValue", "TextWiggle", "TextFloat", "TextSwing", "TextPulse", "TextScatterIn", "TextScatterOut", "TextRotateIn", "TextRotateOut", "TextShear", "TextTrackingPulse", "TextImpactRipple");
+            AddDirectionalVariants(ids, "TextValue:TextFloat", UISequenceDirection.Down, UISequenceDirection.Left, UISequenceDirection.Right);
+            AddVariants(ids, "TextValue:TypewriterReveal", "UnitWord", "UnitLine");
+            AddVariants(ids, "TextValue:TypewriterHide", "UnitWord", "UnitLine");
+            AddVariants(ids, "TextValue:TextStaggerIn", "UnitWord", "UnitLine");
+            AddVariants(ids, "TextValue:TextStaggerOut", "UnitWord", "UnitLine");
+            AddVariants(ids, "TextValue:TextScatterIn", "UnitWord", "UnitLine");
+            AddVariants(ids, "TextValue:TextScatterOut", "UnitWord", "UnitLine");
+            AddVariants(ids, "TextValue:TextRotateIn", "UnitWord", "UnitLine");
+            AddVariants(ids, "TextValue:TextRotateOut", "UnitWord", "UnitLine");
+            AddVariants(ids, "TextValue:TextStaggerIn", "OrderLastToFirst", "OrderFromCenter", "OrderToCenter", "OrderRandom");
+            AddVariants(ids, "TextValue:TextStaggerOut", "OrderFirstToLast", "OrderFromCenter", "OrderToCenter", "OrderRandom");
+            AddVariants(ids, "TextValue:TextScatterIn", "OrderLastToFirst", "OrderFromCenter", "OrderToCenter", "OrderRandom");
+            AddVariants(ids, "TextValue:TextScatterOut", "OrderFirstToLast", "OrderFromCenter", "OrderToCenter", "OrderRandom");
+            AddVariants(ids, "TextValue:TextRotateIn", "OrderLastToFirst", "OrderFromCenter", "OrderToCenter", "OrderRandom");
+            AddVariants(ids, "TextValue:TextRotateOut", "OrderFirstToLast", "OrderFromCenter", "OrderToCenter", "OrderRandom");
+            AddVariants(ids, "TextValue:TextSwing", "PivotCenter");
+            AddVariants(ids, "TextValue:TextWiggle", "Seed2468", "World");
+            AddVariants(ids, "TextValue:TextScatterIn", "Seed2468", "World");
+            AddVariants(ids, "TextValue:TextScatterOut", "Seed2468", "World");
+            AddVariants(ids, "TextValue:TextFloat", "World");
+            AddVariants(ids, "TextValue:TextSwing", "World");
+            AddVariants(ids, "TextValue:TextPulse", "World");
+            AddVariants(ids, "TextValue:TextRotateIn", "World");
+            AddVariants(ids, "TextValue:TextRotateOut", "World");
+            AddVariants(ids, "TextValue:TextShear", "World");
+            AddVariants(ids, "TextValue:TextTrackingPulse", "World");
+            AddVariants(ids, "TextValue:TextImpactRipple", "World");
 
             ids.Add("Feedback:HealReceive:UI");
             ids.Add("Feedback:ShieldBlock:UI");
@@ -363,7 +391,7 @@ namespace LB.TweenHelper.Editor
             ids.Add("Feedback:LowHealthWarning:UI");
 
             AddNames(ids, "UISequence", "ToastShow", "ToastHide", "ModalOpen", "ModalClose", "TooltipShow", "TooltipHide", "DropdownOpen", "DropdownClose", "TabSwitch", "DrawerShow", "DrawerHide", "BottomSheetShow", "BottomSheetHide", "PagePush", "PageCrossFade");
-            AddNames(ids, "TextValue", "TypewriterReveal", "TypewriterHide", "NumberCountUp", "NumberCountDown", "TextCharacterStaggerIn", "TextWave", "ScoreIncrease", "TextCharacterStaggerOut", "TextCharacterBounce", "TextColorSweep", "TextGlitch", "TextEmphasis", "TextScrambleReveal");
+            AddNames(ids, "TextValue", "TypewriterReveal", "TypewriterHide", "NumberCountUp", "NumberCountDown", "TextStaggerIn", "TextWave", "ScoreIncrease", "TextStaggerOut", "TextCharacterBounce", "TextColorSweep", "TextGlitch", "TextEmphasis", "TextScrambleReveal");
             AddNames(ids, "CameraFeedback", "Impact", "Recoil", "LandingImpact", "FovKick", "FocusZoom", "Breathing");
             return ids;
         }

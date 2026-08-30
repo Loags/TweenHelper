@@ -72,6 +72,21 @@ namespace LB.TweenHelper.Demo
             StaggerOrder.Random
         };
 
+        private static readonly TextAnimationUnit[] TextUnits =
+        {
+            TextAnimationUnit.Character,
+            TextAnimationUnit.Word,
+            TextAnimationUnit.Line
+        };
+
+        private static readonly TextGlyphPivot[] TextPivots =
+        {
+            TextGlyphPivot.Center,
+            TextGlyphPivot.Top
+        };
+
+        private static readonly int[] TextSeeds = { 1337, 1729, 2468 };
+
         private static readonly GridWaveDirection[] GridDirections =
         {
             GridWaveDirection.LeftToRight,
@@ -325,22 +340,35 @@ namespace LB.TweenHelper.Demo
             bool world = configuration.GetValue(AnimationGalleryOptionKind.TargetContext) == "World";
             TMP_Text target = world ? worldCharacterText : characterText;
             UISequenceDirection direction = Directions[Math.Max(0, configuration.GetIndex(AnimationGalleryOptionKind.Direction))];
+            TextAnimationUnit unit = TextUnits[Math.Max(0, configuration.GetIndex(AnimationGalleryOptionKind.Unit))];
+            TextGlyphPivot pivot = TextPivots[Math.Max(0, configuration.GetIndex(AnimationGalleryOptionKind.Pivot))];
+            StaggerOrder order = Orders[Math.Max(0, configuration.GetIndex(AnimationGalleryOptionKind.Order))];
+            int seed = TextSeeds[Math.Max(0, configuration.GetIndex(AnimationGalleryOptionKind.Seed))];
             float distance = world ? 0.65f : 28f;
             switch (configuration.Entry.Operation)
             {
-                case AnimationGalleryOperation.TypewriterReveal: return typewriterText.TypewriterReveal();
-                case AnimationGalleryOperation.TypewriterHide: return typewriterText.TypewriterHide();
+                case AnimationGalleryOperation.TypewriterReveal: return typewriterText.TypewriterReveal(unit);
+                case AnimationGalleryOperation.TypewriterHide: return typewriterText.TypewriterHide(unit);
                 case AnimationGalleryOperation.NumberCountUp: return numberText.NumberCountTo(0d, 1250d, "N0");
                 case AnimationGalleryOperation.NumberCountDown: return numberText.NumberCountTo(1250d, 0d, "N0");
-                case AnimationGalleryOperation.TextCharacterStaggerIn: return target.TextCharacterStaggerIn(direction, distance);
+                case AnimationGalleryOperation.TextStaggerIn: return target.TextStaggerIn(unit, order, direction, distance, seed: seed);
                 case AnimationGalleryOperation.TextWave: return target.TextWave(direction, world ? 0.5f : 22f, 1);
                 case AnimationGalleryOperation.ScoreIncrease: return scoreText.ScoreIncrease(1200d, 1475d, "N0");
-                case AnimationGalleryOperation.TextCharacterStaggerOut: return target.TextCharacterStaggerOut(direction, distance);
+                case AnimationGalleryOperation.TextStaggerOut: return target.TextStaggerOut(unit, order, direction, distance, seed: seed);
                 case AnimationGalleryOperation.TextCharacterBounce: return target.TextCharacterBounce(direction, world ? 0.55f : 24f);
                 case AnimationGalleryOperation.TextColorSweep: return target.TextColorSweep(new Color(0.18f, 0.9f, 1f));
-                case AnimationGalleryOperation.TextGlitch: return target.TextGlitch(seed: 1729);
+                case AnimationGalleryOperation.TextGlitch: return target.TextGlitch(seed: seed);
                 case AnimationGalleryOperation.TextEmphasis: return target.TextEmphasis(direction, world ? 0.35f : 12f, 0, 9, new Color(1f, 0.7f, 0.12f));
-                case AnimationGalleryOperation.TextScrambleReveal: return target.TextScrambleReveal(seed: 1729);
+                case AnimationGalleryOperation.TextWiggle: return target.TextWiggle(distance: world ? 0.2f : 4f, seed: seed);
+                case AnimationGalleryOperation.TextFloat: return target.TextFloat(direction, world ? 0.4f : 14f);
+                case AnimationGalleryOperation.TextSwing: return target.TextSwing(pivot: pivot);
+                case AnimationGalleryOperation.TextPulse: return target.TextPulse();
+                case AnimationGalleryOperation.TextScatterIn: return target.TextScatterIn(unit, order, world ? 0.9f : 42f, seed: seed);
+                case AnimationGalleryOperation.TextRotateIn: return target.TextRotateIn(unit, order, seed: seed);
+                case AnimationGalleryOperation.TextShear: return target.TextShear();
+                case AnimationGalleryOperation.TextTrackingPulse: return target.TextTrackingPulse(world ? 0.55f : 14f);
+                case AnimationGalleryOperation.TextImpactRipple: return target.TextImpactRipple(Vector2.zero, world ? 3.5f : 190f, world ? 0.5f : 24f);
+                case AnimationGalleryOperation.TextScrambleReveal: return target.TextScrambleReveal(seed: seed);
                 default: throw new ArgumentOutOfRangeException();
             }
         }

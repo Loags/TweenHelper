@@ -1,12 +1,12 @@
-# TMP Animation Expansion Roadmap (post-1.1)
+# TMP Animation Expansion Roadmap
 
-Status: **future proposal — not part of the 1.1.0 release candidate**
+Status: **pre-release implementation roadmap — phases 0–4 implemented; phase 5 remains conditional and unapproved**
 
-Reviewed: 2026-08-19
+Reviewed: 2026-08-30
 
 This document is the implementation plan for expanding TweenHelper's TextMesh Pro animation coverage without duplicating existing effects, ordering logic, lifecycle handling, or builder APIs.
 
-The current 1.1.0 release surface remains the twelve public TMP operation families documented in [TextAndValueAnimations.md](TextAndValueAnimations.md), represented by thirteen gallery/browser examples. Do not advertise the additional effects in this roadmap as shipped features until their runtime APIs, previews, lifecycle checks, and customer documentation are implemented.
+TweenHelper has not yet had a public release. When this roadmap was approved, the codebase contained twelve TMP operation families documented in [TextAndValueAnimations.md](TextAndValueAnimations.md), represented by thirteen gallery/browser examples. Those APIs were an internal development baseline rather than a published compatibility contract. The phases 0–4 additions were not advertised as available until their runtime APIs, previews, lifecycle checks, and customer documentation were implemented together.
 
 ## 1) Target outcome
 
@@ -18,7 +18,15 @@ Add the missing glyph-motion families while keeping TweenHelper lightweight and 
 - One-shot spatial reactions
 - Optional formation-based entrances and exits
 
-The implementation must preserve all current TMP APIs and reuse the existing text mesh, timeline, stagger, options, builder, and gallery infrastructure.
+The implementation must preserve the visual behavior and lifecycle quality of current TMP effects while reusing the existing text mesh, timeline, stagger, options, builder, and gallery infrastructure. Because the project is pre-release, public method names may be consolidated when the generalized API is clearer; update all internal call sites, previews, and documentation in the same phase.
+
+### Initial-release scope
+
+- Phases 0–4 are the planned initial-release scope.
+- Phase 5 formation transitions remain optional and require a separate approval after Phase 4 visual review.
+- Do not preserve an awkward API solely for compatibility with unreleased development builds.
+- Preserve behavior where it remains intentional, and document every deliberate visual or lifecycle change.
+- Recalculate gallery, browser, and internal review counts after integration; historical counts are not acceptance targets.
 
 ---
 
@@ -101,7 +109,7 @@ Extend `TMPCharacterMeshState` with one internal glyph-transform representation 
 - Alpha and optional tint, preserving current behavior
 - Center and top-center pivots
 
-Keep a compatibility overload for the current offset/uniform-scale/alpha/tint call so existing effects retain their behavior. All new transform effects must use the same four-vertex application loop.
+Keep an internal convenience overload for the current offset/uniform-scale/alpha/tint call if it makes the existing effects clearer during the refactor. This is an implementation aid, not a public compatibility requirement. All new transform effects must use the same four-vertex application loop.
 
 Shared types:
 
@@ -129,15 +137,15 @@ When scatter is implemented, extract the current deterministic hash from `TMPCha
 
 ## 5) Planned public animation API
 
-Names and signatures should be collision-checked before implementation. Existing overloads remain source-compatible and delegate to the shared engines.
+Names and signatures must be collision-checked before implementation. Prefer one clear generalized public API over compatibility aliases for unreleased method names.
 
 ### 5.1 Reveal and hide control
 
 Add:
 
 ```csharp
-TypewriterReveal(TextAnimationUnit unit, float? duration = null)
-TypewriterHide(TextAnimationUnit unit, float? duration = null)
+TypewriterReveal(TextAnimationUnit unit = TextAnimationUnit.Character, float? duration = null)
+TypewriterHide(TextAnimationUnit unit = TextAnimationUnit.Character, float? duration = null)
 
 TextStaggerIn(
     TextAnimationUnit unit = TextAnimationUnit.Character,
@@ -158,10 +166,13 @@ TextStaggerOut(
     float? duration = null)
 ```
 
-Compatibility routing:
+Pre-release API cleanup:
 
-- Current `TextCharacterStaggerIn` delegates to `TextStaggerIn(Character, FirstToLast, ...)`.
-- Current `TextCharacterStaggerOut` delegates to `TextStaggerOut(Character, LastToFirst, ...)`.
+- Replace the public `TextCharacterStaggerIn` API with `TextStaggerIn`; character-first behavior remains available through the default arguments.
+- Replace the public `TextCharacterStaggerOut` API with `TextStaggerOut`; reverse character behavior remains available through the default arguments.
+- Update the builder API, direct extensions, Gallery, Preset Browser, documentation, samples, review catalog, and development validation call sites in the same implementation phase.
+- Do not retain public legacy aliases unless a concrete pre-release integration requirement is identified and documented before implementation.
+- Adding the default `Character` value to typewriter keeps ordinary parameterless calls concise without requiring a separate compatibility overload.
 - `FromCenter`, `ToCenter`, and `Random` come from the existing `StaggerOrder`; no named reveal variants are added.
 - Typewriter remains sequential. Non-sequential reveals use mesh-based stagger so `maxVisibleCharacters` is not misused for arbitrary ordering.
 
@@ -244,7 +255,7 @@ Files:
 Work:
 
 - Introduce shared text-unit mapping, affine glyph transforms, pivots, and stagger timing.
-- Route existing mesh effects through compatibility paths without changing public behavior.
+- Route existing mesh effects through the shared internal paths without unintended visual or lifecycle changes.
 - Keep `NormalizedTweenTimeline`, `TweenOptions`, `StaggerOrder`, and `StaggerDelayUtility` unchanged unless a verified shared bug requires a fix.
 
 Exit criteria:
@@ -259,7 +270,7 @@ Work:
 
 - Add word and line typewriter units.
 - Add `TextStaggerIn` and `TextStaggerOut` with unit, order, and seed.
-- Make legacy character-stagger APIs delegate to the generalized engine.
+- Replace the character-specific public stagger methods with the generalized APIs and update all repository call sites.
 - Add builder and direct extension parity.
 
 Exit criteria:
@@ -355,6 +366,8 @@ Gallery policy:
 - Add one representative entry per new engine, not one entry per order, direction, pivot, or unit.
 - Expose order, unit, direction, seed, or pivot as gallery controls where the current gallery architecture supports them.
 - Do not add separate gallery rows for pendulum/dangle, center-out/edges-in, or other parameter-only variants.
+- Replace existing character-stagger catalog operations and snippets with the generalized names rather than keeping duplicate legacy entries.
+- Recalculate and document Gallery, Preset Browser, and review totals only after the final catalog integrations are complete.
 
 ---
 
@@ -368,7 +381,7 @@ No new automated tests are required by this roadmap unless explicitly requested.
 4. Change text during playback and confirm safe recapture.
 5. Check forward completion, rewind, interrupted kill, restart loops, and yoyo loops.
 6. Verify deterministic ordering and scatter with repeated seeds.
-7. Confirm existing TMP examples have not changed visually unless a change was explicitly approved.
+7. Confirm existing TMP examples remain visually equivalent unless a deliberate pre-release behavior change is recorded in this roadmap and the relevant customer documentation.
 8. Confirm every added or moved Unity file has its `.meta` file.
 
 Do not run a Unity batch build unless explicitly requested.
@@ -398,3 +411,87 @@ External packages were used only as feature inspiration:
 - Text Studio 3D interaction reference: `https://www.wetzold.com/tools/text-studio/3d/docs/animate-3d-text-and-add-interaction/`
 
 Do not copy their implementation or expand TweenHelper into a competing authoring framework.
+
+---
+
+## 12) Implementation evidence
+
+### Phase 0 — Foundation refactor
+
+Completed 2026-08-30.
+
+- Added the shared `TextAnimationUnit`, `TextGlyphPivot`, `TMPTextElementMap`, `TMPGlyphTransform`, and `TMPStaggerTiming` foundations.
+- Existing stagger, wave, bounce, color sweep, glitch, and emphasis effects now share the same visible-element map and four-vertex affine transform path.
+- The stagger-in/out evaluators use `StaggerDelayUtility.CalculateDelays` through the shared timing helper while retaining the existing 58% start-window compression.
+- Mesh writers now claim one playback-time state per `TMP_Text`; parallel independent character-mesh operations fail before a second writer can mutate the label.
+- Unity recompiled the runtime assembly without C# errors. Manual normalized seeks followed by the registered restore callback produced a maximum vertex delta of `0` for both `TextMeshProUGUI` and world-space `TextMeshPro`.
+
+### Phase 1 — Reveal units and ordering
+
+Completed 2026-08-30.
+
+- Generalized typewriter playback to `Character`, `Word`, and `Line` units using TMP word/line metadata while leaving the source rich-text string untouched.
+- Replaced the unreleased `TextCharacterStaggerIn` / `TextCharacterStaggerOut` surface with `TextStaggerIn` / `TextStaggerOut` in runtime APIs and all C# repository call sites.
+- Added unit, all five existing `StaggerOrder` values, direction, interval, and deterministic seed routing to builder and direct-extension APIs.
+- In transitions finish fully visible; out transitions finish hidden; rewind/interruption restore the invocation visibility and regenerated baseline mesh.
+- Unity recompiled without current C# errors. A rich, whitespace-containing multiline `TextMeshProUGUI` probe produced partial boundaries for all three units (`13`, `14`, and `15`) and exact mesh/visibility restoration across all five stagger orders.
+
+### Phase 2 — Smooth active motion
+
+Completed 2026-08-30.
+
+- Added finite `TextWiggle`, `TextFloat`, `TextSwing`, and `TextPulse` engines with matching builder and direct-extension APIs.
+- Every engine uses phase-offset glyph transforms, produces one cycle, and relies on `TweenOptions.WithLoops` for repetition.
+- Wiggle uses smooth seeded motion rather than glitch time slices; float is a cyclical directional oscillator rather than a traveling wave.
+- `TextSwing` supports both center and top pivots through the shared affine vertex loop; no pendulum or dangle aliases were added.
+- Unity recompiled without current C# errors. Mid-cycle UI deformation deltas were non-zero for all four engines, and completion/interruption restored exact UI and world-space mesh baselines.
+
+### Phase 3 — Transform transitions
+
+Completed 2026-08-30.
+
+- Extracted the existing hash unchanged into `TMPDeterministicNoise`; glitch, wiggle, and scatter now share it.
+- Added `TextScatterIn` / `TextScatterOut`, `TextRotateIn` / `TextRotateOut`, `TextShear`, and `TextTrackingPulse` with builder/direct parity.
+- Scatter and rotate reuse the generalized unit/order/seed timing path and the shared glyph transform. Out variants restore authored geometry and finish hidden through `maxVisibleCharacters = 0`.
+- Tracking offsets captured vertices around the visual center and never changes `TMP_Text.characterSpacing` or another layout property.
+- Unity recompiled without current C# errors. Repeated seeded scatter poses had a maximum vertex delta of `0`; a different seed produced a different pose. UI and world-space interruption restored exactly, transform operations deformed at mid-progress, and scatter-out completed hidden.
+
+### Phase 4 — Spatial reaction
+
+Completed 2026-08-30.
+
+- Added one finite `TextImpactRipple` engine with builder/direct parity. Its impact point is explicitly in TMP-object local coordinates.
+- Captured glyph centers drive one radial delay/falloff evaluator; affected glyphs move and scale through the shared transform before returning to baseline.
+- The engine performs no camera lookup and adds no persistent repel, magnet, or cursor-following controller.
+- Unity recompiled without current C# errors. Local-space UI and world-space probes produced visible reactions (maximum vertex deltas `18.969` and `0.456`), ignored an origin outside the configured radius, and restored exactly on completion, rewind, and interruption.
+
+### Phase 5 — Conditional formation transitions
+
+Not approved or implemented. Phases 0–4 completed Gallery, Browser, review, documentation, lifecycle, and visual validation, but no separate approval for formation work has been given.
+
+### Integrated discovery and review evidence
+
+Completed 2026-08-30.
+
+- The Animation Gallery contains `415` entries: the 300-preset baseline plus `115` curated examples, including `22` Text & Values entries. It keeps one representative entry per new engine and exposes unit, order, direction, pivot, seed, and UI/world parameters as controls.
+- The Preset Browser contains `457` unique entries, including `24` TextMesh Pro entries and direct routing for every public text operation.
+- The internal review catalog contains `596` entries and `596` unique IDs. Its `100` text/value configurations cover every new enum/configuration branch without duplicating parameter-only variants in the customer Gallery.
+- The review coverage model resolves exactly `198 / 198` expansion IDs. The lifecycle review set contains `175` affected IDs with none missing.
+- Customer snippets, operation routing, the generated semantic operation index, API documentation, Text and Value guide, installation guide, sample README, changelog, and development surface counts use the integrated totals.
+- All five newly added Unity scripts have matching `.meta` files.
+
+### Final Unity validation evidence
+
+Completed in Play Mode on Unity `6000.5.2f1` without a batch build or new test assets.
+
+- Visual review showed a readable local-space UI impact ripple at mid-progress and a distinct deterministic world-space scatter formation at mid-progress.
+- A runtime matrix passed empty text, one glyph, rich text, whitespace, line breaks, a sprite-backed second material submesh, `TextMeshProUGUI`, and world-space `TextMeshPro`.
+- Character, word, and line typewriter units produced distinct partial boundaries. All five `StaggerOrder` values produced non-zero motion and exact restoration.
+- Live text replacement recaptured safely; repeated seed `1337` produced a maximum pose delta of `0`, while seed `2468` produced a distinct pose.
+- Direct extensions and builder playback produced a maximum pose delta of `0`.
+- Interrupted kill, rewind, restart, forward completion, even Yoyo completion, vertex-color restoration, in/out visibility contracts, and the single-writer guard all passed. Every restoration comparison reported a maximum vertex delta of `0`.
+- Final script compilation was up to date and the Unity Console contained no current errors.
+
+### Phase 5 recommendation
+
+Defer formation transitions. Scatter, rotate, generalized ordering, active motion, and impact ripple now cover the initial-release visual gap without another formation engine, and the roadmap's separate approval requirement has not been satisfied. Reconsider Phase 5 only after customer-facing review identifies a concrete arc/circle/wave-path need that is visually distinct from deterministic scatter.

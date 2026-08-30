@@ -1,6 +1,6 @@
 # Text and value animations
 
-Tween Helper provides twelve semantic TextMesh Pro operations through type-safe one-line extensions and composable `TweenBuilder` steps. They do not add entries to the 300-preset registry.
+Tween Helper provides 23 semantic TextMesh Pro operations through matching one-line extensions and composable `TweenBuilder` steps. These are parameterized operations, not entries in the 300-preset registry.
 
 ## Quick start
 
@@ -16,7 +16,7 @@ public sealed class ScorePresentation : MonoBehaviour
 
     public void RevealTitle()
     {
-        title.TypewriterReveal();
+        title.TypewriterReveal(TextAnimationUnit.Word);
     }
 
     public void AddScore(int previousScore, int currentScore)
@@ -29,21 +29,48 @@ public sealed class ScorePresentation : MonoBehaviour
 ## Included operations
 
 | Operation | Default duration | Purpose |
-|---|---:|---|
-| `TypewriterReveal` | `0.85s` | Reveals TMP characters without changing the source text. |
-| `TypewriterHide` | `0.65s` | Hides the currently visible TMP characters. |
+| --- | ---: | --- |
+| `TypewriterReveal` | `0.85s` | Reveals characters, words, or lines without changing the source text. |
+| `TypewriterHide` | `0.65s` | Hides characters, words, or lines sequentially. |
 | `NumberCountTo` | `0.8s` | Counts in either direction between explicit numeric values. |
-| `TextCharacterStaggerIn` | `0.65s` | Reveals visible glyphs with offset, alpha, scale, and stagger. |
-| `TextCharacterStaggerOut` | `0.58s` | Hides visible glyphs in reverse order with offset, alpha, scale, and stagger. |
+| `TextStaggerIn` | `0.65s` | Reveals ordered character, word, or line groups with movement, alpha, and scale. |
+| `TextStaggerOut` | `0.58s` | Hides ordered character, word, or line groups with movement, alpha, and scale. |
 | `TextWave` | `0.8s` | Sends one or more finite directional waves across visible glyphs. |
 | `TextCharacterBounce` | `0.72s` | Sends one finite traveling bounce across visible glyphs. |
 | `TextColorSweep` | `0.78s` | Sweeps a temporary highlight through per-character vertex colors. |
-| `TextGlitch` | `0.52s` | Applies a deterministic seeded offset, scale, and color glitch. |
+| `TextGlitch` | `0.52s` | Applies deterministic seeded offset, scale, and color slices. |
 | `TextEmphasis` | `0.55s` | Temporarily lifts, scales, and colors a selected visible-character range. |
+| `TextWiggle` | `0.65s` | Plays one smooth deterministic position-and-rotation cycle. |
+| `TextFloat` | `0.9s` | Plays one phase-offset directional float cycle. |
+| `TextSwing` | `0.8s` | Swings glyphs around a center or top pivot. |
+| `TextPulse` | `0.7s` | Plays one phase-offset per-glyph scale cycle. |
+| `TextScatterIn` | `0.75s` | Resolves deterministic scattered poses into the authored layout. |
+| `TextScatterOut` | `0.65s` | Scatters authored text into deterministic poses and finishes hidden. |
+| `TextRotateIn` | `0.65s` | Rotates ordered groups into the authored layout. |
+| `TextRotateOut` | `0.58s` | Rotates ordered groups out and finishes hidden. |
+| `TextShear` | `0.6s` | Applies a finite horizontal glyph deformation. |
+| `TextTrackingPulse` | `0.7s` | Expands glyph positions from the visual center without changing TMP layout. |
+| `TextImpactRipple` | `0.75s` | Propagates a finite local-space radial reaction through glyph centers. |
 | `TextScrambleReveal` | `0.9s` | Resolves deterministic substitute glyphs into the original source text. |
 | `ScoreIncrease` | `0.9s` | Counts upward while applying temporary scale and color feedback. |
 
-Character stagger defaults to `UISequenceDirection.Up`, an `18`-unit offset, and `0.025s` between character starts. `Up`, `Down`, `Left`, and `Right` are supported by character stagger, wave, bounce, and emphasis operations. Long labels compress their start offsets into the requested total duration. `TextWave` defaults to an upward `12`-unit wave and one sweep. `TextGlitch` and `TextScrambleReveal` accept a seed so capture, replay, and automated demos remain deterministic.
+## Units, order, and deterministic seeds
+
+`TextAnimationUnit` supports `Character`, `Word`, and `Line`. Typewriter remains sequential. Use mesh-based stagger, scatter, or rotate transitions when ordering must be `FirstToLast`, `LastToFirst`, `FromCenter`, `ToCenter`, or seeded `Random`.
+
+```csharp
+label.TextStaggerIn(
+    unit: TextAnimationUnit.Word,
+    order: StaggerOrder.FromCenter,
+    direction: UISequenceDirection.Up);
+
+label.TextScatterOut(
+    unit: TextAnimationUnit.Line,
+    order: StaggerOrder.Random,
+    seed: 1729);
+```
+
+Stagger defaults to an `18`-unit offset and `0.025s` between group starts. Long labels compress their start offsets into the requested duration. Stagger, scatter, and rotate share the same order and timing path. Glitch, wiggle, and scatter share deterministic noise, so the same seed produces the same poses on replay.
 
 ## Builder composition
 
@@ -51,78 +78,100 @@ Every operation is also available on `TweenBuilder`:
 
 ```csharp
 TweenHandle handle = title.Tween()
-    .TypewriterReveal(0.7f)
+    .TypewriterReveal(TextAnimationUnit.Word, 0.7f)
     .Then()
     .TextColorSweep()
-    .With()
+    .Then()
     .TextCharacterBounce(UISequenceDirection.Up, amplitude: 10f)
     .Play();
 ```
 
-An explicit method duration wins over `TweenOptions.Duration`, which wins over the operation default. Delay, ID, loops, update mode, and unscaled time apply at the operation root. Speed-based timing is rejected because these operations use normalized semantic timing.
+Independent mesh-writing operations on the same label must be sequenced with `Then()`; do not join them with `With()`. Tween Helper rejects a second simultaneous mesh writer before it can mutate the label. Whole-label operations can still run on another target or in a deliberately separate sequence.
 
-`TweenOptions.WithStrength` scales character distance, mesh-effect amplitude, temporary color emphasis, and Score Increase feedback. It never changes a numeric destination or source string.
+An explicit method duration wins over `TweenOptions.Duration`, which wins over the operation default. Delay, ID, loops, update mode, unscaled time, ease, strength, and target linking apply at the operation root. Speed-based timing is rejected because text operations use normalized semantic timing.
+
+Finite active effects play one cycle. Repeat them with `TweenOptions` rather than relying on an internal infinite loop:
+
+```csharp
+TweenHandle handle = label.TextFloat(
+    options: TweenOptions.WithLoops(-1, DG.Tweening.LoopType.Yoyo));
+```
+
+Retain and kill infinite handles during owner teardown.
 
 ## Formatting values
 
 `NumberCountTo` and `ScoreIncrease` accept explicit start and destination values. They never parse arbitrary label content.
 
-Use a standard numeric format string:
-
 ```csharp
 score.NumberCountTo(0, 1250, format: "N0");
-```
-
-Format strings use the current culture. Use the formatter overload for units, localization, or project-specific formatting:
-
-```csharp
 distance.NumberCountTo(0, 12.5, value => $"{value:0.0} km");
 ```
 
-The destination formatter is evaluated explicitly on normal completion, so the final displayed value is exact rather than an accumulated approximation.
+Format strings use the current culture. Use the formatter overload for units, localization, or project-specific formatting. The formatter is evaluated explicitly on normal completion, so the final displayed value is exact.
 
-## Rich text and character meshes
+## Rich text, whitespace, and mesh data
 
-Typewriter operations change `TMP_Text.maxVisibleCharacters`; they do not split or rewrite `TMP_Text.text`. Rich-text tags therefore remain intact.
+Typewriter changes `TMP_Text.maxVisibleCharacters`; it does not split or rewrite `TMP_Text.text`. Unit boundaries come from `TMP_TextInfo`, so rich-text tags remain intact.
 
-Character Stagger, Text Wave, Character Bounce, Color Sweep, Glitch, and Emphasis:
+Mesh effects:
 
-- Work with `TextMeshProUGUI` and world-space `TextMeshPro`.
-- Animate visible TMP elements while skipping layout-only characters such as line breaks.
-- Preserve alignment, wrapping, rich text, vertex colors, and multiple material submeshes.
-- Use one normalized tween for the whole label instead of creating one tween per glyph.
-- Recapture the current mesh if TMP reports a text or layout rebuild during playback.
+- Support both `TextMeshProUGUI` and world-space `TextMeshPro`.
+- Animate visible glyphs while preserving whitespace, line breaks, and other layout-only characters.
+- Preserve alignment, wrapping, vertex colors, invisible glyphs, and every material submesh.
+- Capture state when playback starts, not when a builder is created.
+- Recapture safely when TMP rebuilds because text, properties, character count, or mesh data changed.
+- Use one normalized tween for the label rather than one tween per glyph.
+- Restore the exact captured mesh after transient completion, rewind, and interrupted kill.
 
-`TextScrambleReveal` temporarily replaces only single-code-unit visible glyphs in the source string. TMP rich-text tags, whitespace, and unsupported multi-code-unit glyphs are left untouched, and the exact source string is restored at the end.
-
-Do not run two character-mesh-writing operations in parallel on the same label. Also avoid overlapping Scramble Reveal with another operation that writes `TMP_Text.text`. Sequence them with `Then()`, or use separate TMP targets.
+`TextScrambleReveal` temporarily replaces only supported single-code-unit visible glyphs. Tags, whitespace, and unsupported multi-code-unit glyphs are left untouched, and the exact source string is restored.
 
 ## Completion and interruption
 
-- Typewriter completion leaves all characters shown or hidden according to the operation.
-- Number Count completion writes the exact formatted destination.
-- Killing Typewriter or Number Count preserves the current visible/counting progress.
-- Rewinding Typewriter or Number Count restores the value captured when playback began.
-- Character Stagger In and the transient mesh effects restore the current TMP mesh baseline on completion, interrupted kill, and rewind.
-- Character Stagger Out restores the mesh baseline and finishes with `maxVisibleCharacters = 0`; interrupted kill and rewind restore the invocation visibility.
-- Scramble Reveal finishes with the exact source text fully visible; interrupted kill and rewind restore the source text and invocation visibility.
-- Score Increase completion leaves the destination score displayed and restores scale, rotation, and color.
-- Killing Score Increase preserves its current displayed value while restoring transient scale, rotation, and color.
-- Rewinding Score Increase restores the invocation text and visual state.
+- Typewriter completion leaves the requested fully shown or hidden state. Interrupted kill preserves current progress; rewind restores invocation visibility.
+- Number Count completion writes the exact destination. Interrupted kill preserves current progress; rewind restores invocation text.
+- Stagger, scatter, and rotate in-transitions restore the authored mesh and finish fully visible.
+- Stagger, scatter, and rotate out-transitions restore the authored mesh and finish with `maxVisibleCharacters = 0`.
+- Interrupted kill and rewind of mesh transitions restore the invocation mesh and visibility.
+- Wave, bounce, color sweep, glitch, emphasis, wiggle, float, swing, pulse, shear, tracking pulse, and impact ripple restore the invocation mesh on completion, kill, and rewind.
+- Scramble Reveal finishes with the exact source string fully visible; interrupted kill and rewind restore the invocation source and visibility.
+- Score Increase leaves the destination text while restoring transient scale, rotation, and color; rewind restores the invocation text and visuals.
 - Destroying the TMP target kills the linked root through DOTween's normal link behavior.
 
-For an intentionally looping wave, loop the finite root operation:
+Yoyo loops remain finite when given a finite loop count, and an even Yoyo completion returns transient mesh effects to their captured baseline.
+
+## Impact points in TMP-local coordinates
+
+`TextImpactRipple` receives its origin in the TMP object's local coordinate space. Convert input at the call site so the animation engine does not need to find a camera.
+
+For UI TMP, convert a screen pointer to the label's `RectTransform` space:
 
 ```csharp
-TweenHandle handle = label.TextWave(
-    options: TweenOptions.WithLoops(-1, DG.Tweening.LoopType.Restart));
+RectTransform rect = (RectTransform)uiLabel.transform;
+RectTransformUtility.ScreenPointToLocalPointInRectangle(
+    rect,
+    pointerPosition,
+    eventCamera,
+    out Vector2 localPoint);
+
+uiLabel.TextImpactRipple(localPoint);
 ```
 
-Retain and kill infinite handles during owner teardown.
+Use `null` for `eventCamera` on a Screen Space - Overlay canvas. For world-space TMP, convert a world hit through the label transform and choose radius/amplitude values in that local scale:
 
-## Animation Gallery
+```csharp
+Vector3 localHit = worldLabel.transform.InverseTransformPoint(hit.point);
+worldLabel.TextImpactRipple(
+    new Vector2(localHit.x, localHit.y),
+    radius: 0.8f,
+    amplitude: 0.12f);
+```
 
-Open **Text & Values** to compare thirteen curated examples for the twelve public operation families. Count-up and count-down are shown separately; directional and target-context controls update the preview and C# call.
+## Animation Gallery and Preset Browser
+
+Open **Text & Values** in the Animation Gallery to compare 22 customer-facing entries. The baseline examples remain, and nine representative entries cover the new wiggle, float, swing, pulse, scatter, rotate, shear, tracking, and ripple engines. Contextual unit, order, direction, pivot, seed, and UI/world controls update both the preview and its displayed C# call.
+
+The Preset Browser routes every public text operation through an isolated fixture. The internal review scene keeps exhaustive unit, order, direction, pivot, seed, UI, and world-space configurations without duplicating those parameter-only variants in the customer gallery.
 
 ## Progress fills and sliders
 
@@ -141,12 +190,10 @@ panel.Tween()
     .Play();
 ```
 
-`FillTo` captures the current normalized value. `FillFromTo` uses explicit endpoints. `ValueFillTo` and `FillAndText` update an optional TMP label on the same timeline. Drain and Charge add temporary impact/overshoot feedback; Alert Pulse changes no value and only activates at or below its threshold. Completion keeps the requested value while restoring transient visuals. Interrupted kill and rewind restore the invocation value, text, transform, and supported color.
+`FillTo` captures the current normalized value. `FillFromTo` uses explicit endpoints. `ValueFillTo` and `FillAndText` update an optional TMP label on the same timeline. Drain and Charge add temporary impact/overshoot feedback; Alert Pulse changes no value and activates only at or below its threshold. Completion keeps the requested value while restoring transient visuals. Interrupted kill and rewind restore the invocation value, text, transform, and supported color.
 
 ### Image setup
 
-An `Image` progress target must have a visible sprite assigned and use `Image.Type.Filled`. Select the required fill method and origin in the Inspector; Tween Helper animates `fillAmount` and does not replace those authored choices. A color-only Image with no sprite cannot display partial horizontal fill even though its numeric `fillAmount` changes.
+An `Image` progress target must have a visible sprite assigned and use `Image.Type.Filled`. Tween Helper animates `fillAmount` without replacing the authored fill method or origin. A color-only Image with no sprite cannot display partial fill even when its numeric `fillAmount` changes.
 
 Place a paired TMP percentage label over or beside the bar and pass it to `ValueFillTo` or `FillAndText`. The review and Preset Browser fixtures use a filled UI sprite and an overlaid label so fill motion and formatted text remain visible together.
-
-`FillAlertPulse` is intentionally not a fill animation. It preserves the current Image/Slider value and applies a finite color/scale warning only when the value is at or below the threshold. `FillCharge` combines value movement with a temporary overshoot pulse; `FillDrain` moves toward the requested lower value with a short impact accent.

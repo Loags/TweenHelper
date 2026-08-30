@@ -22,7 +22,7 @@ namespace LB.TweenHelper.Editor
         private const string StatusKeyPrefix = "TweenHelper.PresetReview.Status.";
         private const int NeedsWorkStatus = 1;
         private const int ExpectedAffectedReviewCount = 106;
-        private const int ExpectedReviewCount = 527;
+        private const int ExpectedReviewCount = 596;
 
         static AnimationLifecycleRefactorValidation()
         {
@@ -200,7 +200,7 @@ namespace LB.TweenHelper.Editor
 
             TextMeshProUGUI typewriter = CreateText("Typewriter", canvasObject.transform, "Lifecycle capture");
             typewriter.maxVisibleCharacters = 0;
-            TweenHandle typewriterHandle = typewriter.gameObject.Tween().TypewriterReveal(1f).Build();
+            TweenHandle typewriterHandle = typewriter.gameObject.Tween().TypewriterReveal(duration: 1f).Build();
             Seek(typewriterHandle, 0.5f);
             int partialVisibility = typewriter.maxVisibleCharacters;
             Require(partialVisibility > 0 && partialVisibility < typewriter.textInfo.characterCount, $"partial visibility={partialVisibility}");
@@ -294,15 +294,32 @@ namespace LB.TweenHelper.Editor
             AddVariants(ids, "Feedback:LevelUp", "UI", "World");
             AddVariants(ids, "Feedback:LowHealthWarning", "UI", "World");
 
-            AddNames(ids, "TextValue", "TypewriterReveal", "TypewriterHide", "NumberCountUp", "NumberCountDown", "TextCharacterStaggerIn", "TextWave", "ScoreIncrease", "TextCharacterStaggerOut", "TextCharacterBounce", "TextColorSweep", "TextGlitch", "TextEmphasis", "TextScrambleReveal");
-            AddDirectionalVariants(ids, "TextValue:TextCharacterStaggerIn");
-            AddDirectionalVariants(ids, "TextValue:TextCharacterStaggerOut");
+            AddNames(ids, "TextValue", "TypewriterReveal", "TypewriterHide", "NumberCountUp", "NumberCountDown", "TextStaggerIn", "TextWave", "ScoreIncrease", "TextStaggerOut", "TextCharacterBounce", "TextColorSweep", "TextGlitch", "TextEmphasis", "TextScrambleReveal");
+            AddDirectionalVariants(ids, "TextValue:TextStaggerIn");
+            AddDirectionalVariants(ids, "TextValue:TextStaggerOut");
             AddDirectionalVariants(ids, "TextValue:TextWave");
             AddDirectionalVariants(ids, "TextValue:TextCharacterBounce");
             AddDirectionalVariants(ids, "TextValue:TextEmphasis");
-            AddVariants(ids, "TextValue:TextCharacterStaggerIn", "World");
+            AddVariants(ids, "TextValue:TextStaggerIn", "World");
             AddVariants(ids, "TextValue:TextColorSweep", "World");
             AddVariants(ids, "TextValue:TextScrambleReveal", "World");
+            AddNames(ids, "TextValue", "TextWiggle", "TextFloat", "TextSwing", "TextPulse", "TextScatterIn", "TextScatterOut", "TextRotateIn", "TextRotateOut", "TextShear", "TextTrackingPulse", "TextImpactRipple");
+            AddDirectionalVariants(ids, "TextValue:TextFloat");
+            AddVariants(ids, "TextValue:TypewriterReveal", "UnitWord", "UnitLine");
+            AddVariants(ids, "TextValue:TypewriterHide", "UnitWord", "UnitLine");
+            AddVariants(ids, "TextValue:TextStaggerIn", "UnitWord", "UnitLine", "OrderLastToFirst", "OrderFromCenter", "OrderToCenter", "OrderRandom");
+            AddVariants(ids, "TextValue:TextStaggerOut", "UnitWord", "UnitLine", "OrderFirstToLast", "OrderFromCenter", "OrderToCenter", "OrderRandom");
+            AddVariants(ids, "TextValue:TextScatterIn", "UnitWord", "UnitLine", "OrderLastToFirst", "OrderFromCenter", "OrderToCenter", "OrderRandom", "Seed2468", "World");
+            AddVariants(ids, "TextValue:TextScatterOut", "UnitWord", "UnitLine", "OrderFirstToLast", "OrderFromCenter", "OrderToCenter", "OrderRandom", "Seed2468", "World");
+            AddVariants(ids, "TextValue:TextRotateIn", "UnitWord", "UnitLine", "OrderLastToFirst", "OrderFromCenter", "OrderToCenter", "OrderRandom", "World");
+            AddVariants(ids, "TextValue:TextRotateOut", "UnitWord", "UnitLine", "OrderFirstToLast", "OrderFromCenter", "OrderToCenter", "OrderRandom", "World");
+            AddVariants(ids, "TextValue:TextWiggle", "Seed2468", "World");
+            AddVariants(ids, "TextValue:TextFloat", "World");
+            AddVariants(ids, "TextValue:TextSwing", "PivotCenter", "World");
+            AddVariants(ids, "TextValue:TextPulse", "World");
+            AddVariants(ids, "TextValue:TextShear", "World");
+            AddVariants(ids, "TextValue:TextTrackingPulse", "World");
+            AddVariants(ids, "TextValue:TextImpactRipple", "World");
 
             AddNames(ids, "UISequence", "ToastShow", "ToastHide", "ModalOpen", "ModalClose", "TooltipShow", "TooltipHide", "DropdownOpen", "DropdownClose", "TabSwitch", "DrawerShow", "DrawerHide", "BottomSheetShow", "BottomSheetHide", "PagePush", "PageCrossFade");
             AddDirectionalVariants(ids, "UISequence:ToastShow");

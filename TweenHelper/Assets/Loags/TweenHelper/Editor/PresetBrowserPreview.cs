@@ -778,17 +778,17 @@ namespace LB.TweenHelper.Editor
                 case PresetBrowserOperation.PageCrossFadeTo:
                     return _singleTarget.PageCrossFadeTo(_incomingTarget, options: options);
                 case PresetBrowserOperation.TypewriterReveal:
-                    return _textTarget.TypewriterReveal(options: options);
+                    return _textTarget.TypewriterReveal(TextAnimationUnit.Word, options: options);
                 case PresetBrowserOperation.TypewriterHide:
-                    return _textTarget.TypewriterHide(options: options);
+                    return _textTarget.TypewriterHide(TextAnimationUnit.Word, options: options);
                 case PresetBrowserOperation.NumberCountUp:
                     return _textTarget.NumberCountTo(0d, 1250d, "N0", options: options);
                 case PresetBrowserOperation.NumberCountDown:
                     return _textTarget.NumberCountTo(1250d, 0d, "N0", options: options);
-                case PresetBrowserOperation.TextCharacterStaggerIn:
-                    return _textTarget.TextCharacterStaggerIn(distance: 0.5f, options: options);
-                case PresetBrowserOperation.TextCharacterStaggerOut:
-                    return _textTarget.TextCharacterStaggerOut(distance: 0.5f, options: options);
+                case PresetBrowserOperation.TextStaggerIn:
+                    return _textTarget.TextStaggerIn(distance: 0.5f, options: options);
+                case PresetBrowserOperation.TextStaggerOut:
+                    return _textTarget.TextStaggerOut(distance: 0.5f, options: options);
                 case PresetBrowserOperation.TextWave:
                     return _textTarget.TextWave(amplitude: 0.35f, options: options);
                 case PresetBrowserOperation.TextCharacterBounce:
@@ -799,6 +799,28 @@ namespace LB.TweenHelper.Editor
                     return _textTarget.TextGlitch(distance: 0.2f, options: options);
                 case PresetBrowserOperation.TextEmphasis:
                     return _textTarget.TextEmphasis(amplitude: 0.3f, startCharacter: 6, characterCount: 6, options: options);
+                case PresetBrowserOperation.TextWiggle:
+                    return _textTarget.TextWiggle(distance: 0.16f, options: options);
+                case PresetBrowserOperation.TextFloat:
+                    return _textTarget.TextFloat(amplitude: 0.32f, options: options);
+                case PresetBrowserOperation.TextSwing:
+                    return _textTarget.TextSwing(pivot: TextGlyphPivot.Top, options: options);
+                case PresetBrowserOperation.TextPulse:
+                    return _textTarget.TextPulse(options: options);
+                case PresetBrowserOperation.TextScatterIn:
+                    return _textTarget.TextScatterIn(order: StaggerOrder.Random, distance: 0.7f, options: options);
+                case PresetBrowserOperation.TextScatterOut:
+                    return _textTarget.TextScatterOut(order: StaggerOrder.Random, distance: 0.7f, options: options);
+                case PresetBrowserOperation.TextRotateIn:
+                    return _textTarget.TextRotateIn(order: StaggerOrder.FromCenter, options: options);
+                case PresetBrowserOperation.TextRotateOut:
+                    return _textTarget.TextRotateOut(order: StaggerOrder.ToCenter, options: options);
+                case PresetBrowserOperation.TextShear:
+                    return _textTarget.TextShear(options: options);
+                case PresetBrowserOperation.TextTrackingPulse:
+                    return _textTarget.TextTrackingPulse(distance: 0.5f, options: options);
+                case PresetBrowserOperation.TextImpactRipple:
+                    return _textTarget.TextImpactRipple(Vector2.zero, radius: 3.5f, amplitude: 0.45f, options: options);
                 case PresetBrowserOperation.TextScrambleReveal:
                     return _textTarget.TextScrambleReveal(options: options);
                 case PresetBrowserOperation.ScoreIncrease:

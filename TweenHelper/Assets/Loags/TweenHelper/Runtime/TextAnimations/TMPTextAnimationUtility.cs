@@ -18,11 +18,12 @@ namespace LB.TweenHelper
             return value => value.ToString(format, CultureInfo.CurrentCulture);
         }
 
-        public static Tween CreateTypewriter(GameObject target, bool reveal, float duration, TweenOptions options)
+        public static Tween CreateTypewriter(GameObject target, bool reveal, TextAnimationUnit unit, float duration, TweenOptions options)
         {
             ValidateRequest(target, duration, options);
+            ValidateTextUnit(unit);
             TMP_Text text = RequireText(target);
-            var state = new TextVisibilityState(text, reveal);
+            var state = new TextVisibilityState(text, reveal, unit);
             Ease ease = options.Ease ?? Ease.Linear;
 
             return CreateTimeline(target, duration, options, state.Initialize, progress => state.Apply(EaseValue(progress, ease)), state.Complete, state.Restore, null);
@@ -40,24 +41,10 @@ namespace LB.TweenHelper
             return CreateTimeline(target, duration, options, state.Initialize, progress => state.Apply(EaseValue(progress, ease)), state.Complete, state.Restore, null);
         }
 
-        public static Tween CreateCharacterStagger(GameObject target, UISequenceDirection direction, float distance, float characterStagger, float duration, TweenOptions options)
+        public static Tween CreateTextStagger(GameObject target, TextAnimationUnit unit, StaggerOrder order, UISequenceDirection direction,
+            float distance, float unitStagger, int seed, float duration, TweenOptions options)
         {
-            ValidateRequest(target, duration, options);
-            ValidateFinite(distance, nameof(distance));
-            ValidateFinite(characterStagger, nameof(characterStagger));
-            if (distance < 0f) throw new ArgumentOutOfRangeException(nameof(distance), distance, "Distance cannot be negative.");
-            if (characterStagger < 0f) throw new ArgumentOutOfRangeException(nameof(characterStagger), characterStagger, "Character stagger cannot be negative.");
-            Vector3 directionVector = DirectionVector(direction);
-            float strength = ResolveStrength(options);
-            var state = new TMPCharacterMeshState(RequireText(target));
-            Ease ease = options.Ease ?? Ease.Linear;
-
-            return CreateTimeline(target, duration, options, state.Initialize, progress => state.ApplyStagger(EaseValue(progress, ease), directionVector, distance, characterStagger, duration, strength), state.Restore, state.Restore, state.Restore);
-        }
-
-        public static Tween CreateCharacterStaggerOut(GameObject target, UISequenceDirection direction, float distance, float characterStagger, float duration, TweenOptions options)
-        {
-            ValidateCharacterMotion(target, direction, distance, characterStagger, duration, options, out TMP_Text text, out Vector3 directionVector, out float strength);
+            ValidateStaggerMotion(target, unit, order, direction, distance, unitStagger, duration, options, out TMP_Text text, out Vector3 directionVector, out float strength);
             var state = new TMPCharacterMeshState(text);
             int invocationVisibleCharacters = int.MaxValue;
             Ease ease = options.Ease ?? Ease.Linear;
@@ -73,15 +60,53 @@ namespace LB.TweenHelper
             {
                 state.Restore();
                 text.maxVisibleCharacters = invocationVisibleCharacters;
+                text.ForceMeshUpdate();
+            }
+
+            void Complete()
+            {
+                state.Restore();
+                text.maxVisibleCharacters = int.MaxValue;
+                text.ForceMeshUpdate();
+            }
+
+            return CreateTimeline(target, duration, options, Initialize,
+                progress => state.ApplyStagger(EaseValue(progress, ease), unit, order, directionVector, distance, unitStagger, duration, seed, strength),
+                Complete, Restore, Restore);
+        }
+
+        public static Tween CreateTextStaggerOut(GameObject target, TextAnimationUnit unit, StaggerOrder order, UISequenceDirection direction,
+            float distance, float unitStagger, int seed, float duration, TweenOptions options)
+        {
+            ValidateStaggerMotion(target, unit, order, direction, distance, unitStagger, duration, options, out TMP_Text text, out Vector3 directionVector, out float strength);
+            var state = new TMPCharacterMeshState(text);
+            int invocationVisibleCharacters = int.MaxValue;
+            Ease ease = options.Ease ?? Ease.Linear;
+
+            void Initialize()
+            {
+                invocationVisibleCharacters = text.maxVisibleCharacters;
+                text.maxVisibleCharacters = int.MaxValue;
+                state.Initialize();
+            }
+
+            void Restore()
+            {
+                state.Restore();
+                text.maxVisibleCharacters = invocationVisibleCharacters;
+                text.ForceMeshUpdate();
             }
 
             void Complete()
             {
                 state.Restore();
                 text.maxVisibleCharacters = 0;
+                text.ForceMeshUpdate();
             }
 
-            return CreateTimeline(target, duration, options, Initialize, progress => state.ApplyStaggerOut(EaseValue(progress, ease), directionVector, distance, characterStagger, duration, strength), Complete, Restore, Restore);
+            return CreateTimeline(target, duration, options, Initialize,
+                progress => state.ApplyStaggerOut(EaseValue(progress, ease), unit, order, directionVector, distance, unitStagger, duration, seed, strength),
+                Complete, Restore, Restore);
         }
 
         public static Tween CreateTextWave(GameObject target, UISequenceDirection direction, float amplitude, int waveCount, float duration, TweenOptions options)
@@ -150,6 +175,144 @@ namespace LB.TweenHelper
             return CreateTimeline(target, duration, options, state.Initialize, progress => state.ApplyEmphasis(EaseValue(progress, ease), directionVector, amplitude, startCharacter, characterCount, highlightColor ?? EmphasisColor, strength), state.Restore, state.Restore, state.Restore);
         }
 
+        public static Tween CreateTextWiggle(GameObject target, float distance, float rotation, int seed, float duration, TweenOptions options)
+        {
+            ValidateRequest(target, duration, options);
+            ValidateFinite(distance, nameof(distance));
+            ValidateFinite(rotation, nameof(rotation));
+            if (distance < 0f) throw new ArgumentOutOfRangeException(nameof(distance), distance, "Distance cannot be negative.");
+            if (rotation < 0f) throw new ArgumentOutOfRangeException(nameof(rotation), rotation, "Rotation cannot be negative.");
+            float strength = ResolveStrength(options);
+            var state = new TMPCharacterMeshState(RequireText(target));
+            Ease ease = options.Ease ?? Ease.Linear;
+
+            return CreateTimeline(target, duration, options, state.Initialize,
+                progress => state.ApplyWiggle(EaseValue(progress, ease), distance, rotation, seed, strength),
+                state.Restore, state.Restore, state.Restore);
+        }
+
+        public static Tween CreateTextFloat(GameObject target, UISequenceDirection direction, float amplitude, float duration, TweenOptions options)
+        {
+            ValidateRequest(target, duration, options);
+            ValidateFinite(amplitude, nameof(amplitude));
+            if (amplitude < 0f) throw new ArgumentOutOfRangeException(nameof(amplitude), amplitude, "Amplitude cannot be negative.");
+            Vector3 directionVector = DirectionVector(direction);
+            float strength = ResolveStrength(options);
+            var state = new TMPCharacterMeshState(RequireText(target));
+            Ease ease = options.Ease ?? Ease.Linear;
+
+            return CreateTimeline(target, duration, options, state.Initialize,
+                progress => state.ApplyFloat(EaseValue(progress, ease), directionVector, amplitude, strength),
+                state.Restore, state.Restore, state.Restore);
+        }
+
+        public static Tween CreateTextSwing(GameObject target, float angle, TextGlyphPivot pivot, float duration, TweenOptions options)
+        {
+            ValidateRequest(target, duration, options);
+            ValidateFinite(angle, nameof(angle));
+            if (angle < 0f) throw new ArgumentOutOfRangeException(nameof(angle), angle, "Angle cannot be negative.");
+            if (!Enum.IsDefined(typeof(TextGlyphPivot), pivot)) throw new ArgumentOutOfRangeException(nameof(pivot), pivot, "Unknown glyph pivot.");
+            float strength = ResolveStrength(options);
+            var state = new TMPCharacterMeshState(RequireText(target));
+            Ease ease = options.Ease ?? Ease.Linear;
+
+            return CreateTimeline(target, duration, options, state.Initialize,
+                progress => state.ApplySwing(EaseValue(progress, ease), angle, pivot, strength),
+                state.Restore, state.Restore, state.Restore);
+        }
+
+        public static Tween CreateTextPulse(GameObject target, float scaleAmount, float duration, TweenOptions options)
+        {
+            ValidateRequest(target, duration, options);
+            ValidateFinite(scaleAmount, nameof(scaleAmount));
+            if (scaleAmount < 0f) throw new ArgumentOutOfRangeException(nameof(scaleAmount), scaleAmount, "Scale amount cannot be negative.");
+            float strength = ResolveStrength(options);
+            var state = new TMPCharacterMeshState(RequireText(target));
+            Ease ease = options.Ease ?? Ease.Linear;
+
+            return CreateTimeline(target, duration, options, state.Initialize,
+                progress => state.ApplyPulse(EaseValue(progress, ease), scaleAmount, strength),
+                state.Restore, state.Restore, state.Restore);
+        }
+
+        public static Tween CreateTextScatter(GameObject target, bool entering, TextAnimationUnit unit, StaggerOrder order,
+            float distance, float rotation, float unitStagger, int seed, float duration, TweenOptions options)
+        {
+            ValidateOrderedGlyphTransition(target, unit, order, unitStagger, duration, options, out TMP_Text text, out float strength);
+            ValidateFinite(distance, nameof(distance));
+            ValidateFinite(rotation, nameof(rotation));
+            if (distance < 0f) throw new ArgumentOutOfRangeException(nameof(distance), distance, "Distance cannot be negative.");
+            if (rotation < 0f) throw new ArgumentOutOfRangeException(nameof(rotation), rotation, "Rotation cannot be negative.");
+            var state = new TMPCharacterMeshState(text);
+            Ease ease = options.Ease ?? Ease.Linear;
+
+            return CreateVisibilityTransition(target, text, state, duration, options,
+                progress => state.ApplyScatter(EaseValue(progress, ease), entering, unit, order, distance, rotation, unitStagger, duration, seed, strength),
+                entering);
+        }
+
+        public static Tween CreateTextRotate(GameObject target, bool entering, TextAnimationUnit unit, StaggerOrder order,
+            float angle, float unitStagger, int seed, float duration, TweenOptions options)
+        {
+            ValidateOrderedGlyphTransition(target, unit, order, unitStagger, duration, options, out TMP_Text text, out float strength);
+            ValidateFinite(angle, nameof(angle));
+            if (angle < 0f) throw new ArgumentOutOfRangeException(nameof(angle), angle, "Angle cannot be negative.");
+            var state = new TMPCharacterMeshState(text);
+            Ease ease = options.Ease ?? Ease.Linear;
+
+            return CreateVisibilityTransition(target, text, state, duration, options,
+                progress => state.ApplyRotateTransition(EaseValue(progress, ease), entering, unit, order, angle, unitStagger, duration, seed, strength),
+                entering);
+        }
+
+        public static Tween CreateTextShear(GameObject target, float amount, float duration, TweenOptions options)
+        {
+            ValidateRequest(target, duration, options);
+            ValidateFinite(amount, nameof(amount));
+            float strength = ResolveStrength(options);
+            var state = new TMPCharacterMeshState(RequireText(target));
+            Ease ease = options.Ease ?? Ease.Linear;
+
+            return CreateTimeline(target, duration, options, state.Initialize,
+                progress => state.ApplyShear(EaseValue(progress, ease), amount, strength),
+                state.Restore, state.Restore, state.Restore);
+        }
+
+        public static Tween CreateTextTrackingPulse(GameObject target, float distance, float duration, TweenOptions options)
+        {
+            ValidateRequest(target, duration, options);
+            ValidateFinite(distance, nameof(distance));
+            if (distance < 0f) throw new ArgumentOutOfRangeException(nameof(distance), distance, "Distance cannot be negative.");
+            float strength = ResolveStrength(options);
+            var state = new TMPCharacterMeshState(RequireText(target));
+            Ease ease = options.Ease ?? Ease.Linear;
+
+            return CreateTimeline(target, duration, options, state.Initialize,
+                progress => state.ApplyTrackingPulse(EaseValue(progress, ease), distance, strength),
+                state.Restore, state.Restore, state.Restore);
+        }
+
+        public static Tween CreateTextImpactRipple(GameObject target, Vector2 impactPoint, float radius, float amplitude,
+            float scaleAmount, float duration, TweenOptions options)
+        {
+            ValidateRequest(target, duration, options);
+            ValidateFinite(impactPoint.x, nameof(impactPoint));
+            ValidateFinite(impactPoint.y, nameof(impactPoint));
+            ValidateFinite(radius, nameof(radius));
+            ValidateFinite(amplitude, nameof(amplitude));
+            ValidateFinite(scaleAmount, nameof(scaleAmount));
+            if (radius <= 0f) throw new ArgumentOutOfRangeException(nameof(radius), radius, "Radius must be greater than zero.");
+            if (amplitude < 0f) throw new ArgumentOutOfRangeException(nameof(amplitude), amplitude, "Amplitude cannot be negative.");
+            if (scaleAmount < 0f) throw new ArgumentOutOfRangeException(nameof(scaleAmount), scaleAmount, "Scale amount cannot be negative.");
+            float strength = ResolveStrength(options);
+            var state = new TMPCharacterMeshState(RequireText(target));
+            Ease ease = options.Ease ?? Ease.Linear;
+
+            return CreateTimeline(target, duration, options, state.Initialize,
+                progress => state.ApplyImpactRipple(EaseValue(progress, ease), impactPoint, radius, amplitude, scaleAmount, strength),
+                state.Restore, state.Restore, state.Restore);
+        }
+
         public static Tween CreateScrambleReveal(GameObject target, int seed, float duration, TweenOptions options)
         {
             ValidateRequest(target, duration, options);
@@ -177,6 +340,35 @@ namespace LB.TweenHelper
             return CreateTimeline(target, duration, options, state.Initialize, Evaluate, state.Complete, state.RestoreAll, state.RestoreVisuals);
         }
 
+        private static Tween CreateVisibilityTransition(GameObject target, TMP_Text text, TMPCharacterMeshState state,
+            float duration, TweenOptions options, Action<float> evaluate, bool visibleAtCompletion)
+        {
+            int invocationVisibleCharacters = int.MaxValue;
+
+            void Initialize()
+            {
+                invocationVisibleCharacters = text.maxVisibleCharacters;
+                text.maxVisibleCharacters = int.MaxValue;
+                state.Initialize();
+            }
+
+            void Restore()
+            {
+                state.Restore();
+                text.maxVisibleCharacters = invocationVisibleCharacters;
+                text.ForceMeshUpdate();
+            }
+
+            void Complete()
+            {
+                state.Restore();
+                text.maxVisibleCharacters = visibleAtCompletion ? int.MaxValue : 0;
+                text.ForceMeshUpdate();
+            }
+
+            return CreateTimeline(target, duration, options, Initialize, evaluate, Complete, Restore, Restore);
+        }
+
         private static Tween CreateTimeline(GameObject owner, float duration, TweenOptions options, Action initialize, Action<float> evaluate, Action complete, Action rewind, Action interruptedKill)
         {
             return NormalizedTweenTimeline.Create(
@@ -199,15 +391,35 @@ namespace LB.TweenHelper
             return text;
         }
 
-        private static void ValidateCharacterMotion(GameObject target, UISequenceDirection direction, float distance, float characterStagger, float duration, TweenOptions options, out TMP_Text text, out Vector3 directionVector, out float strength)
+        private static void ValidateStaggerMotion(GameObject target, TextAnimationUnit unit, StaggerOrder order, UISequenceDirection direction,
+            float distance, float unitStagger, float duration, TweenOptions options, out TMP_Text text, out Vector3 directionVector, out float strength)
         {
             ValidateRequest(target, duration, options);
+            ValidateTextUnit(unit);
+            if (!Enum.IsDefined(typeof(StaggerOrder), order)) throw new ArgumentOutOfRangeException(nameof(order), order, "Unknown stagger order.");
             ValidateFinite(distance, nameof(distance));
-            ValidateFinite(characterStagger, nameof(characterStagger));
+            ValidateFinite(unitStagger, nameof(unitStagger));
             if (distance < 0f) throw new ArgumentOutOfRangeException(nameof(distance), distance, "Distance cannot be negative.");
-            if (characterStagger < 0f) throw new ArgumentOutOfRangeException(nameof(characterStagger), characterStagger, "Character stagger cannot be negative.");
+            if (unitStagger < 0f) throw new ArgumentOutOfRangeException(nameof(unitStagger), unitStagger, "Unit stagger cannot be negative.");
             text = RequireText(target);
             directionVector = DirectionVector(direction);
+            strength = ResolveStrength(options);
+        }
+
+        private static void ValidateTextUnit(TextAnimationUnit unit)
+        {
+            if (!Enum.IsDefined(typeof(TextAnimationUnit), unit)) throw new ArgumentOutOfRangeException(nameof(unit), unit, "Unknown text animation unit.");
+        }
+
+        private static void ValidateOrderedGlyphTransition(GameObject target, TextAnimationUnit unit, StaggerOrder order,
+            float unitStagger, float duration, TweenOptions options, out TMP_Text text, out float strength)
+        {
+            ValidateRequest(target, duration, options);
+            ValidateTextUnit(unit);
+            if (!Enum.IsDefined(typeof(StaggerOrder), order)) throw new ArgumentOutOfRangeException(nameof(order), order, "Unknown stagger order.");
+            ValidateFinite(unitStagger, nameof(unitStagger));
+            if (unitStagger < 0f) throw new ArgumentOutOfRangeException(nameof(unitStagger), unitStagger, "Unit stagger cannot be negative.");
+            text = RequireText(target);
             strength = ResolveStrength(options);
         }
 
@@ -279,29 +491,47 @@ namespace LB.TweenHelper
         {
             private readonly TMP_Text _text;
             private readonly bool _reveal;
+            private readonly TextAnimationUnit _unit;
+            private TMPTextElementMap _elementMap;
+            private string _sourceText;
             private int _invocationVisibleCharacters;
             private int _start;
-            private int _end;
 
-            public TextVisibilityState(TMP_Text text, bool reveal)
+            public TextVisibilityState(TMP_Text text, bool reveal, TextAnimationUnit unit)
             {
                 _text = text;
                 _reveal = reveal;
+                _unit = unit;
             }
 
             public void Initialize()
             {
-                _text.ForceMeshUpdate();
                 _invocationVisibleCharacters = _text.maxVisibleCharacters;
-                int characterCount = _text.textInfo.characterCount;
-                _start = _reveal ? 0 : Mathf.Min(_invocationVisibleCharacters, characterCount);
-                if (_invocationVisibleCharacters == int.MaxValue) _start = characterCount;
-                _end = _reveal ? characterCount : 0;
+                CaptureElementMap();
+                _start = _reveal ? 0 : Mathf.Min(_invocationVisibleCharacters, _elementMap.CharacterCount);
+                if (_invocationVisibleCharacters == int.MaxValue) _start = _elementMap.CharacterCount;
             }
 
             public void Apply(float progress)
             {
-                _text.maxVisibleCharacters = Mathf.RoundToInt(Mathf.LerpUnclamped(_start, _end, progress));
+                EnsureCurrentElementMap();
+                if (_unit == TextAnimationUnit.Character)
+                {
+                    int end = _reveal ? _elementMap.CharacterCount : 0;
+                    _text.maxVisibleCharacters = Mathf.RoundToInt(Mathf.LerpUnclamped(_start, end, progress));
+                    return;
+                }
+
+                if (progress <= 0f)
+                {
+                    _text.maxVisibleCharacters = _start;
+                    return;
+                }
+
+                int startGroups = _reveal ? 0 : _elementMap.CountVisibilityGroupsBefore(_unit, _start);
+                int endGroups = _reveal ? _elementMap.GetVisibilityGroupCount(_unit) : 0;
+                int visibleGroups = Mathf.RoundToInt(Mathf.LerpUnclamped(startGroups, endGroups, progress));
+                _text.maxVisibleCharacters = _elementMap.GetVisibilityBoundary(_unit, visibleGroups);
             }
 
             public void Complete()
@@ -312,6 +542,25 @@ namespace LB.TweenHelper
             public void Restore()
             {
                 _text.maxVisibleCharacters = _invocationVisibleCharacters;
+            }
+
+            private void EnsureCurrentElementMap()
+            {
+                if (_text.text != _sourceText || _text.havePropertiesChanged || _text.textInfo.characterCount != _elementMap.CharacterCount)
+                {
+                    CaptureElementMap();
+                }
+            }
+
+            private void CaptureElementMap()
+            {
+                int visibleCharacters = _text.maxVisibleCharacters;
+                _text.maxVisibleCharacters = int.MaxValue;
+                _text.ForceMeshUpdate();
+                _elementMap = new TMPTextElementMap(_text.textInfo);
+                _sourceText = _text.text;
+                _text.maxVisibleCharacters = visibleCharacters;
+                _text.ForceMeshUpdate();
             }
         }
 
