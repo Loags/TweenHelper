@@ -127,7 +127,7 @@ namespace LB.TweenHelper.Editor
             builder.AppendLine();
             builder.AppendLine($"Built-in presets: **{sorted.Count}**");
             builder.AppendLine();
-            builder.AppendLine("The eleven staggered and spatial collection recipes compose group sequences and are intentionally not registry entries. See [Staggered collections](StaggeredCollections.md).");
+            builder.AppendLine("The fourteen staggered and spatial collection recipes compose group sequences and are intentionally not registry entries. See [Staggered collections](StaggeredCollections.md).");
             builder.AppendLine();
             builder.AppendLine("The catalog is checked for duplicate, empty, and unconstructible preset registrations before release.");
 
@@ -156,7 +156,7 @@ namespace LB.TweenHelper.Editor
             builder.AppendLine("| World to UI | `ArcToUI`, `HopToUI`, `BezierToUI`, `PathThroughUI`, `PickupCollectToUI` |");
             builder.AppendLine("| Progress | `FillTo`, `FillFromTo`, `ValueFillTo`, `FillDrain`, `FillCharge`, `FillAlertPulse`, `FillAndText`, `OnProgress` |");
             builder.AppendLine("| Gameplay state | `AbilityCharging`, `AbilityReady`, `DodgeRoll`, `StunStart`, `StunEnd`, `BuffApplied`, `DebuffApplied`, `ResourceDepleted`, `ResourceRecovered`, `ObjectiveUnlocked` |");
-            builder.AppendLine("| Collections | `GridConcentricIn`, `GridConcentricOut`, `GridQuadrantSweep`, `ListAccordion`, `CollectionOrbitIn`, `CollectionOrbitOut`, `LoadingRing`, `LoadingRibbon` |");
+            builder.AppendLine("| Collections | `GridConcentricIn`, `GridConcentricOut`, `GridQuadrantSweep`, `GridSerpentine`, `ListAccordion`, `CollectionDealIn`, `CollectionDealOut`, `CollectionOrbitIn`, `CollectionOrbitOut`, `LoadingRing`, `LoadingRibbon` |");
             builder.AppendLine("| Macros and camera | `CriticalHitSequence`, `RewardRevealSequence`, `WarningLoopSequence`, `CutsceneUIEntranceSequence`, `CameraRackFocus`, `CollectLandingCameraKick` |");
             builder.AppendLine("| Engine properties | `AudioVolumeTo`, `AudioPitchTo`, `LightIntensityTo`, `LightColorTo`, `ParticleEmissionRateTo`, `MaterialFloatTo`, `MaterialColorTo`, `TorchFlicker`, `ScannerPulse` |");
             builder.AppendLine("| Text and values | `TypewriterReveal`, `TypewriterHide`, `NumberCountTo`, `TextStaggerIn`, `TextStaggerOut`, `TextWave`, `TextCharacterBounce`, `TextColorSweep`, `TextGlitch`, `TextEmphasis`, `TextWiggle`, `TextFloat`, `TextSwing`, `TextPulse`, `TextScatterIn`, `TextScatterOut`, `TextRotateIn`, `TextRotateOut`, `TextShear`, `TextTrackingPulse`, `TextImpactRipple`, `TextScrambleReveal`, `ScoreIncrease` |");

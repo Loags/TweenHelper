@@ -111,6 +111,18 @@ namespace LB.TweenHelper.Demo
             GridSpiralDirection.InsideOutCounterClockwise
         };
 
+        private static readonly GridSerpentineDirection[] SerpentineDirections =
+        {
+            GridSerpentineDirection.RowsFromTopLeft,
+            GridSerpentineDirection.RowsFromTopRight,
+            GridSerpentineDirection.RowsFromBottomLeft,
+            GridSerpentineDirection.RowsFromBottomRight,
+            GridSerpentineDirection.ColumnsFromTopLeft,
+            GridSerpentineDirection.ColumnsFromTopRight,
+            GridSerpentineDirection.ColumnsFromBottomLeft,
+            GridSerpentineDirection.ColumnsFromBottomRight
+        };
+
         private void Awake()
         {
             CaptureBaseline();
@@ -195,6 +207,8 @@ namespace LB.TweenHelper.Demo
                     return gridTargets.GridDiagonalWave(gridOwner, 3, DiagonalDirections[Math.Max(0, configuration.GetIndex(AnimationGalleryOptionKind.DiagonalPattern))]);
                 case AnimationGalleryOperation.GridSpiral:
                     return gridTargets.GridSpiral(gridOwner, 3, SpiralDirections[Math.Max(0, configuration.GetIndex(AnimationGalleryOptionKind.SpiralPattern))]);
+                case AnimationGalleryOperation.GridSerpentine:
+                    return gridTargets.GridSerpentine(gridOwner, 3, SerpentineDirections[Math.Max(0, configuration.GetIndex(AnimationGalleryOptionKind.SerpentineDirection))]);
                 case AnimationGalleryOperation.GridCheckerboard:
                     return gridTargets.GridCheckerboard(gridOwner, 3, configuration.GetIndex(AnimationGalleryOptionKind.Phase) == 1);
                 case AnimationGalleryOperation.CollectionBurstIn:
@@ -203,6 +217,10 @@ namespace LB.TweenHelper.Demo
                     return gridTargets.CollectionBurstOut(gridOwner, Vector3.zero);
                 case AnimationGalleryOperation.CollectionGatherTo:
                     return gridTargets.CollectionGatherTo(gridOwner, Vector3.zero);
+                case AnimationGalleryOperation.CollectionDealIn:
+                    return gridTargets.CollectionDealIn(gridOwner, Vector3.zero);
+                case AnimationGalleryOperation.CollectionDealOut:
+                    return gridTargets.CollectionDealOut(gridOwner, Vector3.zero);
                 case AnimationGalleryOperation.GridConcentricIn:
                     return gridTargets.GridConcentricIn(gridOwner, 3);
                 case AnimationGalleryOperation.GridConcentricOut:

@@ -48,6 +48,7 @@ namespace LB.TweenHelper.Demo
         GridDirection,
         DiagonalPattern,
         SpiralPattern,
+        SerpentineDirection,
         Phase,
         Interpolation,
         MotionVariant,
@@ -79,6 +80,7 @@ namespace LB.TweenHelper.Demo
         LoadingDots,
         GridDiagonalWave,
         GridSpiral,
+        GridSerpentine,
         GridCheckerboard,
         GridConcentricIn,
         GridConcentricOut,
@@ -91,6 +93,8 @@ namespace LB.TweenHelper.Demo
         CollectionBurstIn,
         CollectionBurstOut,
         CollectionGatherTo,
+        CollectionDealIn,
+        CollectionDealOut,
         ArcTo,
         BezierTo,
         HopTo,
@@ -282,6 +286,7 @@ namespace LB.TweenHelper.Demo
         private static readonly AnimationGalleryOptionDescriptor GridDirection = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.GridDirection, "Direction", 0, "Left to right", "Right to left", "Top to bottom", "Bottom to top");
         private static readonly AnimationGalleryOptionDescriptor DiagonalPattern = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.DiagonalPattern, "Pattern", 0, "Top-left to bottom-right", "Top-right to bottom-left", "Bottom-left to top-right", "Bottom-right to top-left");
         private static readonly AnimationGalleryOptionDescriptor SpiralPattern = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.SpiralPattern, "Pattern", 0, "Outside-in clockwise", "Outside-in counter-clockwise", "Inside-out clockwise", "Inside-out counter-clockwise");
+        private static readonly AnimationGalleryOptionDescriptor SerpentineDirection = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.SerpentineDirection, "Direction", 0, "Rows from top-left", "Rows from top-right", "Rows from bottom-left", "Rows from bottom-right", "Columns from top-left", "Columns from top-right", "Columns from bottom-left", "Columns from bottom-right");
         private static readonly AnimationGalleryOptionDescriptor Phase = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.Phase, "Phase", 0, "Normal", "Inverted");
         private static readonly AnimationGalleryOptionDescriptor Interpolation = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.Interpolation, "Interpolation", 1, "Linear", "Catmull-Rom");
         private static readonly AnimationGalleryOptionDescriptor MotionVariant = new AnimationGalleryOptionDescriptor(AnimationGalleryOptionKind.MotionVariant, "Motion variant", 0, "Positive / outward", "Negative / inward");
@@ -292,7 +297,7 @@ namespace LB.TweenHelper.Demo
         public static IReadOnlyList<AnimationGalleryEntry> Build()
         {
             TweenPresetRegistry.ScanForCodePresets();
-            var entries = new List<AnimationGalleryEntry>(415);
+            var entries = new List<AnimationGalleryEntry>(418);
             entries.AddRange(TweenPresetRegistry.Presets
                 .OrderBy(preset => preset.PresetName, StringComparer.Ordinal)
                 .Select(preset => new AnimationGalleryEntry($"preset:{preset.PresetName}", preset.PresetName, AnimationGalleryCategory.Presets,
@@ -340,6 +345,8 @@ namespace LB.TweenHelper.Demo
                     return $"items.GridDiagonalWave(owner, columns: 3, GridDiagonalDirection.{GetEnumValue(configuration, AnimationGalleryOptionKind.DiagonalPattern)});";
                 case AnimationGalleryOperation.GridSpiral:
                     return $"items.GridSpiral(owner, columns: 3, GridSpiralDirection.{GetEnumValue(configuration, AnimationGalleryOptionKind.SpiralPattern)});";
+                case AnimationGalleryOperation.GridSerpentine:
+                    return $"items.GridSerpentine(owner, columns: 3, GridSerpentineDirection.{GetEnumValue(configuration, AnimationGalleryOptionKind.SerpentineDirection)});";
                 case AnimationGalleryOperation.GridCheckerboard:
                     return configuration.GetIndex(AnimationGalleryOptionKind.Phase) == 0 ? "items.GridCheckerboard(owner, columns: 3);" : "items.GridCheckerboard(owner, columns: 3, inverted: true);";
                 case AnimationGalleryOperation.CollectionBurstIn:
@@ -348,6 +355,10 @@ namespace LB.TweenHelper.Demo
                     return "items.CollectionBurstOut(owner, origin);";
                 case AnimationGalleryOperation.CollectionGatherTo:
                     return "items.CollectionGatherTo(owner, destination);";
+                case AnimationGalleryOperation.CollectionDealIn:
+                    return "items.CollectionDealIn(owner, origin);";
+                case AnimationGalleryOperation.CollectionDealOut:
+                    return "items.CollectionDealOut(owner, destination);";
                 case AnimationGalleryOperation.GridConcentricIn:
                     return "items.GridConcentricIn(owner, columns: 3);";
                 case AnimationGalleryOperation.GridConcentricOut:
@@ -549,6 +560,7 @@ namespace LB.TweenHelper.Demo
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.LoadingDots, AnimationGalleryFixture.LoadingDots, "Play one finite loading-dot preview cycle.", "Collection");
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.GridDiagonalWave, AnimationGalleryFixture.Grid, "Reveal a grid along a chosen diagonal.", "Collection", DiagonalPattern);
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.GridSpiral, AnimationGalleryFixture.Grid, "Reveal a grid using a configurable spiral.", "Collection", SpiralPattern);
+            Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.GridSerpentine, AnimationGalleryFixture.Grid, "Reveal a grid using a configurable row or column serpentine traversal.", "Collection", SerpentineDirection);
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.GridCheckerboard, AnimationGalleryFixture.Grid, "Animate alternating checkerboard cells.", "Collection", Phase);
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.GridConcentricIn, AnimationGalleryFixture.Grid, "Collapse concentric grid rings toward the center.", "Collection");
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.GridConcentricOut, AnimationGalleryFixture.Grid, "Expand concentric grid rings from the center.", "Collection");
@@ -561,6 +573,8 @@ namespace LB.TweenHelper.Demo
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.CollectionBurstIn, AnimationGalleryFixture.Grid, "Move every item from a shared origin into place.", "Collection");
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.CollectionBurstOut, AnimationGalleryFixture.Grid, "Scatter every item away from a shared origin.", "Collection");
             Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.CollectionGatherTo, AnimationGalleryFixture.Grid, "Gather every item into one destination.", "Collection");
+            Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.CollectionDealIn, AnimationGalleryFixture.Grid, "Deal items from one shared origin into their authored positions.", "Collection");
+            Add(entries, AnimationGalleryCategory.Collections, AnimationGalleryOperation.CollectionDealOut, AnimationGalleryFixture.Grid, "Deal items from authored positions into one shared destination.", "Collection");
         }
 
         private static void AddDestinationMotion(ICollection<AnimationGalleryEntry> entries)
@@ -707,6 +721,8 @@ namespace LB.TweenHelper.Demo
                     return new[] { "TopLeftToBottomRight", "TopRightToBottomLeft", "BottomLeftToTopRight", "BottomRightToTopLeft" }[index];
                 case AnimationGalleryOptionKind.SpiralPattern:
                     return new[] { "OutsideInClockwise", "OutsideInCounterClockwise", "InsideOutClockwise", "InsideOutCounterClockwise" }[index];
+                case AnimationGalleryOptionKind.SerpentineDirection:
+                    return new[] { "RowsFromTopLeft", "RowsFromTopRight", "RowsFromBottomLeft", "RowsFromBottomRight", "ColumnsFromTopLeft", "ColumnsFromTopRight", "ColumnsFromBottomLeft", "ColumnsFromBottomRight" }[index];
                 case AnimationGalleryOptionKind.Interpolation:
                     return index == 0 ? "Linear" : "CatmullRom";
                 default:

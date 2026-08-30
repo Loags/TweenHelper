@@ -473,10 +473,10 @@ Not approved or implemented. Phases 0–4 completed Gallery, Browser, review, do
 
 Completed 2026-08-30.
 
-- The Animation Gallery contains `415` entries: the 300-preset baseline plus `115` curated examples, including `22` Text & Values entries. It keeps one representative entry per new engine and exposes unit, order, direction, pivot, seed, and UI/world parameters as controls.
-- The Preset Browser contains `457` unique entries, including `24` TextMesh Pro entries and direct routing for every public text operation.
-- The internal review catalog contains `596` entries and `596` unique IDs. Its `100` text/value configurations cover every new enum/configuration branch without duplicating parameter-only variants in the customer Gallery.
-- The review coverage model resolves exactly `198 / 198` expansion IDs. The lifecycle review set contains `175` affected IDs with none missing.
+- The Animation Gallery contains `418` entries: the 300-preset baseline plus `118` curated examples, including `22` Text & Values entries. It keeps one representative entry per new engine and exposes unit, order, direction, pivot, seed, and UI/world parameters as controls.
+- The Preset Browser contains `460` unique entries, including `24` TextMesh Pro entries and direct routing for every public text operation.
+- The internal review catalog contains `608` entries and `608` unique IDs. Its `100` text/value configurations cover every new enum/configuration branch without duplicating parameter-only variants in the customer Gallery.
+- The review coverage model resolves exactly `210 / 210` expansion IDs. The lifecycle review set contains `175` affected IDs with none missing.
 - Customer snippets, operation routing, the generated semantic operation index, API documentation, Text and Value guide, installation guide, sample README, changelog, and development surface counts use the integrated totals.
 - All five newly added Unity scripts have matching `.meta` files.
 

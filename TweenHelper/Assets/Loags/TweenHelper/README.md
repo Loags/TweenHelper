@@ -76,7 +76,7 @@ TweenHandle handle = cards.TweenStagger(this)
     .Play();
 ```
 
-Nineteen gallery-facing collection recipes cover list entrances/exits, directional, diagonal, spiral, checkerboard, ripple, concentric, quadrant, accordion, orbit, loading-ring/ribbon, burst, and gather motion. Collection recipes orchestrate semantic group timelines without adding entries to the 300-preset registry.
+Twenty-two gallery-facing collection recipes cover list entrances/exits, directional, diagonal, spiral, serpentine, checkerboard, ripple, concentric, quadrant, accordion, deal, orbit, loading-ring/ribbon, burst, and gather motion. Collection recipes orchestrate semantic group timelines without adding entries to the 300-preset registry.
 
 Move to explicit destinations with reusable world, local, and anchored-position motions:
 
@@ -188,11 +188,11 @@ Renderer operations use `MaterialPropertyBlock`; ambient light helpers are finit
 
 ## Animation Gallery
 
-The shipped mouse-driven Animation Gallery contains 415 entries across eight categories: 300 presets, 13 UI recipes, 19 collection examples, 12 destination operations, 25 gameplay-feedback/macro examples, 16 production UI sequences, 22 text/value examples, and eight camera operations. Selection resets and auto-plays; contextual controls and the displayed C# call update together.
+The shipped mouse-driven Animation Gallery contains 418 entries across eight categories: 300 presets, 13 UI recipes, 22 collection examples, 12 destination operations, 25 gameplay-feedback/macro examples, 16 production UI sequences, 22 text/value examples, and eight camera operations. Selection resets and auto-plays; contextual controls and the displayed C# call update together.
 
 ## Preset browser
 
-Open **Tools > Tween Helper > Preset Browser** to search 457 isolated previews: all 300 registered presets plus 157 UI, collection, destination, gameplay, UI-sequence, TextMesh Pro, progress, camera, and engine-property entries. Select an entry to inspect its metadata and fluent API example. Contextual direction, topology, phase, target, backdrop, and property options update the preview and copied example together.
+Open **Tools > Tween Helper > Preset Browser** to search 460 isolated previews: all 300 registered presets plus 160 UI, collection, destination, gameplay, UI-sequence, TextMesh Pro, progress, camera, and engine-property entries. Select an entry to inspect its metadata and fluent API example. Contextual direction, topology, phase, target, backdrop, and property options update the preview and copied example together.
 
 The browser builds an isolated fixture appropriate to the selected entry rather than reusing the active scene. UI sequences receive only their required backdrop, controls, and incoming target; component operations receive visible progress, camera, audio, light, particle, or renderer fixtures. Preview proxies synchronize depth, sorting, Graphic color, parent `CanvasGroup` alpha, fill/value state, and projected UI state. The active scene is never read or modified.
 

@@ -4,7 +4,7 @@
 
 Built-in presets: **300**
 
-The eleven staggered and spatial collection recipes compose group sequences and are intentionally not registry entries. See [Staggered collections](StaggeredCollections.md).
+The fourteen staggered and spatial collection recipes compose group sequences and are intentionally not registry entries. See [Staggered collections](StaggeredCollections.md).
 
 The catalog is checked for duplicate, empty, and unconstructible preset registrations before release.
 
@@ -472,7 +472,7 @@ The current semantic additions are composable builder/direct operations rather t
 | World to UI | `ArcToUI`, `HopToUI`, `BezierToUI`, `PathThroughUI`, `PickupCollectToUI` |
 | Progress | `FillTo`, `FillFromTo`, `ValueFillTo`, `FillDrain`, `FillCharge`, `FillAlertPulse`, `FillAndText`, `OnProgress` |
 | Gameplay state | `AbilityCharging`, `AbilityReady`, `DodgeRoll`, `StunStart`, `StunEnd`, `BuffApplied`, `DebuffApplied`, `ResourceDepleted`, `ResourceRecovered`, `ObjectiveUnlocked` |
-| Collections | `GridConcentricIn`, `GridConcentricOut`, `GridQuadrantSweep`, `ListAccordion`, `CollectionOrbitIn`, `CollectionOrbitOut`, `LoadingRing`, `LoadingRibbon` |
+| Collections | `GridConcentricIn`, `GridConcentricOut`, `GridQuadrantSweep`, `GridSerpentine`, `ListAccordion`, `CollectionDealIn`, `CollectionDealOut`, `CollectionOrbitIn`, `CollectionOrbitOut`, `LoadingRing`, `LoadingRibbon` |
 | Macros and camera | `CriticalHitSequence`, `RewardRevealSequence`, `WarningLoopSequence`, `CutsceneUIEntranceSequence`, `CameraRackFocus`, `CollectLandingCameraKick` |
 | Engine properties | `AudioVolumeTo`, `AudioPitchTo`, `LightIntensityTo`, `LightColorTo`, `ParticleEmissionRateTo`, `MaterialFloatTo`, `MaterialColorTo`, `TorchFlicker`, `ScannerPulse` |
 | Text and values | `TypewriterReveal`, `TypewriterHide`, `NumberCountTo`, `TextStaggerIn`, `TextStaggerOut`, `TextWave`, `TextCharacterBounce`, `TextColorSweep`, `TextGlitch`, `TextEmphasis`, `TextWiggle`, `TextFloat`, `TextSwing`, `TextPulse`, `TextScatterIn`, `TextScatterOut`, `TextRotateIn`, `TextRotateOut`, `TextShear`, `TextTrackingPulse`, `TextImpactRipple`, `TextScrambleReveal`, `ScoreIncrease` |

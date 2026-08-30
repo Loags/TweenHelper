@@ -179,7 +179,7 @@ The advanced APIs use the same `TweenBuilder`, `TweenOptions`, and `TweenHandle`
 
 | Feature | Start here |
 | --- | --- |
-| Staggered lists, grids, loading dots, burst, and gather recipes | [Staggered collections](StaggeredCollections.md) |
+| Staggered lists, grids, serpentine, deal, loading, burst, and gather recipes | [Staggered collections](StaggeredCollections.md) |
 | Arc, Bezier, hop, spring, snap, path, spiral, and multi-hop movement | [Destination-aware motion](DestinationMotion.md) |
 | Error, damage, success, reward, healing, defense, warning, and pickup feedback | [Gameplay feedback sequences](FeedbackSequences.md) |
 | Toasts, modals, tooltips, dropdowns, tabs, drawers, sheets, and page transitions | [Production UI sequences](UISequences.md) |
@@ -187,6 +187,14 @@ The advanced APIs use the same `TweenBuilder`, `TweenOptions`, and `TweenHandle`
 | Impact, recoil, landing, field-of-view, focus zoom, and breathing | [Camera feedback](CameraFeedback.md) |
 | Audio, light, particle emission, renderer properties, and ambient pulses | [Engine property animations](EnginePropertyAnimations.md) |
 
+
+Collection Deal and Grid Serpentine use the same owner-linked collection surface:
+
+```csharp
+cards.CollectionDealIn(panelRoot, stackOrigin);
+cards.CollectionDealOut(panelRoot, discardPosition, local: false);
+gridItems.GridSerpentine(panelRoot, columns: 4, direction: GridSerpentineDirection.RowsFromTopRight);
+```
 
 Use a direct extension when the operation is the complete animation, or add the same operation to a builder when it must compose with other steps:
 
@@ -216,6 +224,6 @@ TweenHelper initializes automatically. Without `Assets/Resources/TweenHelperSett
 
 ## Sample controls
 
-Open `TweenHelperAnimationGallery.unity` from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The mouse-driven gallery exposes all 300 presets plus 13 UI recipes, nineteen collection recipes, twelve destination-motion operations, twenty-five gameplay-feedback and macro sequences, sixteen production UI sequences, 22 text/value examples, and eight camera-feedback operations. Selection auto-plays after reset; Replay, Reset, previous/next navigation, contextual enum options, search, preset-family filters, and a live C# example remain available at runtime. Component-specific fill, audio, light, particle, and renderer examples are documented in their focused guides. The gallery does not require the Input System package.
+Open `TweenHelperAnimationGallery.unity` from `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes`. The mouse-driven gallery exposes all 300 presets plus 13 UI recipes, 22 collection recipes, twelve destination-motion operations, twenty-five gameplay-feedback and macro sequences, sixteen production UI sequences, 22 text/value examples, and eight camera-feedback operations. Selection auto-plays after reset; Replay, Reset, previous/next navigation, contextual enum options, search, preset-family filters, and a live C# example remain available at runtime. Component-specific fill, audio, light, particle, and renderer examples are documented in their focused guides. The gallery does not require the Input System package.
 
-Open **Tools > Tween Helper > Preset Browser** for the complete 457-entry Editor discovery surface. It contains all 300 presets plus 157 semantic and component-property previews. The preview uses an isolated, purpose-built fixture and never reads from or modifies the active scene. UI sequence fixtures include only required participants; progress and engine-property fixtures expose live value meters and labels.
+Open **Tools > Tween Helper > Preset Browser** for the complete 460-entry Editor discovery surface. It contains all 300 presets plus 160 semantic and component-property previews. The preview uses an isolated, purpose-built fixture and never reads from or modifies the active scene. UI sequence fixtures include only required participants; progress and engine-property fixtures expose live value meters and labels.

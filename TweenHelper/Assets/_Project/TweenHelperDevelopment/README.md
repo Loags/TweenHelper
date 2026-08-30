@@ -6,7 +6,7 @@ This folder is repository-only. Never include it in the Asset Store `.unitypacka
 
 - `Tests` contains EditMode and PlayMode validation assemblies.
 - `Validation` contains gallery audits, preset integrity tools, lifecycle/coverage validators, and the internal review scene.
-- `Documentation` contains release, publishing, Pipeline/CLI, telemetry, validation, and future-feature roadmaps.
+- `Documentation` contains active feature roadmaps and a clearly separated archive of superseded plans.
 - `CLI` contains the development-only Unity Pipeline command adapter and local telemetry documentation.
 - Publisher Portal source records and branding remain development-only.
 
@@ -15,15 +15,15 @@ This folder is repository-only. Never include it in the Asset Store `.unitypacka
 | Surface | Count | Purpose |
 | --- | ---: | --- |
 | Registered preset registry | 300 | Stable customer preset API |
-| Preset Browser | 457 | Customer Editor discovery and isolated previews |
-| Animation Gallery | 415 | Shipped capture-friendly runtime examples |
-| Preset Review scene | 596 | Exhaustive development-only visual configurations |
+| Preset Browser | 460 | Customer Editor discovery and isolated previews |
+| Animation Gallery | 418 | Shipped capture-friendly runtime examples |
+| Preset Review scene | 608 | Exhaustive development-only visual configurations |
 
-The review catalog contains 596 unique IDs:
+The review catalog contains 608 unique IDs:
 
 - 300 presets
 - 13 UI recipes
-- 34 collection recipes
+- 46 collection recipes
 - 10 stagger variants
 - 30 destination-motion configurations
 - 23 feedback sequences
@@ -44,6 +44,6 @@ The review catalog contains 596 unique IDs:
 
 The review scene was rebuilt at scene version 2 so filled Images and property meters use a visible UI sprite, progress text overlays the bar, and the expanded world-to-UI/progress/engine fixtures are testable. A 2026-08-19 Play Mode sample confirmed all Image progress values and text update correctly; the Unity Console reported zero errors afterward.
 
-## Publishing boundary
+## Development state
 
-The uploaded 1.1.0 draft predates the latest runtime, browser, scene, package-tooling, and documentation changes. Treat it as superseded. Follow `Documentation/AssetStoreSubmission.md` and `Documentation/ReleaseV110DocumentationDemoPublisherRoadmap.md` to validate, export, clean-import, refresh media, and replace the draft.
+Tween Helper has not had a public release. Current catalog counts and validation snapshots are development baselines and may change as active roadmaps are implemented. Use the repository root `ROADMAP.md` for active plans; files under `Documentation/Archive` are historical only.

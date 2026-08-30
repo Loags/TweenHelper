@@ -86,6 +86,18 @@ namespace LB.TweenHelper
                 .Play();
         }
 
+        public static TweenHandle GridSerpentine(this IEnumerable<GameObject> targets, GameObject owner, int columns, GridSerpentineDirection direction = GridSerpentineDirection.RowsFromTopLeft, float duration = 0.32f, float interval = 0.055f, TweenOptions options = default)
+        {
+            ValidateColumns(columns);
+            StaggerDelayUtility.ValidateDelay(interval, nameof(interval));
+            var snapshot = Snapshot(targets);
+            int[] ranks = CalculateSerpentineRanks(snapshot.Count, columns, direction);
+            return snapshot.TweenStagger(owner)
+                .Preset<PopInFadePreset>(duration, options)
+                .DelayBy((_, index) => ranks[index] * interval)
+                .Play();
+        }
+
         public static TweenHandle GridCheckerboard(this IEnumerable<GameObject> targets, GameObject owner, int columns, bool inverted = false, float duration = 0.34f, float phaseInterval = 0.16f, TweenOptions options = default)
         {
             ValidateColumns(columns);
@@ -107,6 +119,12 @@ namespace LB.TweenHelper
 
         public static TweenHandle CollectionGatherTo(this IEnumerable<GameObject> targets, GameObject owner, Vector3 destination, float duration = 0.52f, float interval = 0.04f, bool local = true, TweenOptions options = default)
             => SpatialCollectionRecipeUtility.Create(Snapshot(targets), owner, SpatialCollectionAnimation.GatherTo, destination, 0f, duration, interval, local, options);
+
+        public static TweenHandle CollectionDealIn(this IEnumerable<GameObject> targets, GameObject owner, Vector3 origin, StaggerOrder order = StaggerOrder.FirstToLast, float rotationAccent = 8f, float startScale = 0.9f, float duration = 0.45f, float interval = 0.06f, bool local = true, TweenOptions options = default)
+            => CollectionDealUtility.CreateIn(Snapshot(targets), owner, origin, order, rotationAccent, startScale, duration, interval, local, options);
+
+        public static TweenHandle CollectionDealOut(this IEnumerable<GameObject> targets, GameObject owner, Vector3 destination, StaggerOrder order = StaggerOrder.LastToFirst, float rotationAccent = 8f, float endScale = 0.9f, float duration = 0.4f, float interval = 0.05f, bool local = true, TweenOptions options = default)
+            => CollectionDealUtility.CreateOut(Snapshot(targets), owner, destination, order, rotationAccent, endScale, duration, interval, local, options);
 
         public static TweenHandle LoadingDots(this IEnumerable<GameObject> targets, GameObject owner, float duration = 0.25f, float interval = 0.12f, float loopPause = 0.2f, TweenOptions options = default)
         {
@@ -186,6 +204,9 @@ namespace LB.TweenHelper
         public static TweenHandle GridSpiral(this IEnumerable<Component> targets, GameObject owner, int columns, GridSpiralDirection direction = GridSpiralDirection.OutsideInClockwise, float duration = 0.3f, float interval = 0.045f, TweenOptions options = default)
             => TweenStaggerExtensions.ToGameObjects(targets).GridSpiral(owner, columns, direction, duration, interval, options);
 
+        public static TweenHandle GridSerpentine(this IEnumerable<Component> targets, GameObject owner, int columns, GridSerpentineDirection direction = GridSerpentineDirection.RowsFromTopLeft, float duration = 0.32f, float interval = 0.055f, TweenOptions options = default)
+            => TweenStaggerExtensions.ToGameObjects(targets).GridSerpentine(owner, columns, direction, duration, interval, options);
+
         public static TweenHandle GridCheckerboard(this IEnumerable<Component> targets, GameObject owner, int columns, bool inverted = false, float duration = 0.34f, float phaseInterval = 0.16f, TweenOptions options = default)
             => TweenStaggerExtensions.ToGameObjects(targets).GridCheckerboard(owner, columns, inverted, duration, phaseInterval, options);
 
@@ -197,6 +218,12 @@ namespace LB.TweenHelper
 
         public static TweenHandle CollectionGatherTo(this IEnumerable<Component> targets, GameObject owner, Vector3 destination, float duration = 0.52f, float interval = 0.04f, bool local = true, TweenOptions options = default)
             => TweenStaggerExtensions.ToGameObjects(targets).CollectionGatherTo(owner, destination, duration, interval, local, options);
+
+        public static TweenHandle CollectionDealIn(this IEnumerable<Component> targets, GameObject owner, Vector3 origin, StaggerOrder order = StaggerOrder.FirstToLast, float rotationAccent = 8f, float startScale = 0.9f, float duration = 0.45f, float interval = 0.06f, bool local = true, TweenOptions options = default)
+            => TweenStaggerExtensions.ToGameObjects(targets).CollectionDealIn(owner, origin, order, rotationAccent, startScale, duration, interval, local, options);
+
+        public static TweenHandle CollectionDealOut(this IEnumerable<Component> targets, GameObject owner, Vector3 destination, StaggerOrder order = StaggerOrder.LastToFirst, float rotationAccent = 8f, float endScale = 0.9f, float duration = 0.4f, float interval = 0.05f, bool local = true, TweenOptions options = default)
+            => TweenStaggerExtensions.ToGameObjects(targets).CollectionDealOut(owner, destination, order, rotationAccent, endScale, duration, interval, local, options);
 
         public static TweenHandle LoadingDots(this IEnumerable<Component> targets, GameObject owner, float duration = 0.25f, float interval = 0.12f, float loopPause = 0.2f, TweenOptions options = default)
             => TweenStaggerExtensions.ToGameObjects(targets).LoadingDots(owner, duration, interval, loopPause, options);
@@ -356,6 +383,91 @@ namespace LB.TweenHelper
 
             if (insideOut) order.Reverse();
             for (int rank = 0; rank < order.Count; rank++) ranks[order[rank]] = rank;
+            return ranks;
+        }
+
+        private static int[] CalculateSerpentineRanks(int count, int columns, GridSerpentineDirection direction)
+        {
+            bool rowsFirst;
+            bool fromTop;
+            bool fromLeft;
+            switch (direction)
+            {
+                case GridSerpentineDirection.RowsFromTopLeft:
+                    rowsFirst = true;
+                    fromTop = true;
+                    fromLeft = true;
+                    break;
+                case GridSerpentineDirection.RowsFromTopRight:
+                    rowsFirst = true;
+                    fromTop = true;
+                    fromLeft = false;
+                    break;
+                case GridSerpentineDirection.RowsFromBottomLeft:
+                    rowsFirst = true;
+                    fromTop = false;
+                    fromLeft = true;
+                    break;
+                case GridSerpentineDirection.RowsFromBottomRight:
+                    rowsFirst = true;
+                    fromTop = false;
+                    fromLeft = false;
+                    break;
+                case GridSerpentineDirection.ColumnsFromTopLeft:
+                    rowsFirst = false;
+                    fromTop = true;
+                    fromLeft = true;
+                    break;
+                case GridSerpentineDirection.ColumnsFromTopRight:
+                    rowsFirst = false;
+                    fromTop = true;
+                    fromLeft = false;
+                    break;
+                case GridSerpentineDirection.ColumnsFromBottomLeft:
+                    rowsFirst = false;
+                    fromTop = false;
+                    fromLeft = true;
+                    break;
+                case GridSerpentineDirection.ColumnsFromBottomRight:
+                    rowsFirst = false;
+                    fromTop = false;
+                    fromLeft = false;
+                    break;
+                default: throw new ArgumentOutOfRangeException(nameof(direction), direction, "Unknown serpentine direction.");
+            }
+
+            var ranks = new int[count];
+            int rows = GetRowCount(count, columns);
+            int rank = 0;
+            if (rowsFirst)
+            {
+                for (int rowStep = 0; rowStep < rows; rowStep++)
+                {
+                    int row = fromTop ? rowStep : rows - 1 - rowStep;
+                    bool leftToRight = (rowStep & 1) == 0 ? fromLeft : !fromLeft;
+                    for (int columnStep = 0; columnStep < columns; columnStep++)
+                    {
+                        int column = leftToRight ? columnStep : columns - 1 - columnStep;
+                        int index = row * columns + column;
+                        if (index < count) ranks[index] = rank++;
+                    }
+                }
+
+                return ranks;
+            }
+
+            for (int columnStep = 0; columnStep < columns; columnStep++)
+            {
+                int column = fromLeft ? columnStep : columns - 1 - columnStep;
+                bool topToBottom = (columnStep & 1) == 0 ? fromTop : !fromTop;
+                for (int rowStep = 0; rowStep < rows; rowStep++)
+                {
+                    int row = topToBottom ? rowStep : rows - 1 - rowStep;
+                    int index = row * columns + column;
+                    if (index < count) ranks[index] = rank++;
+                }
+            }
+
             return ranks;
         }
 

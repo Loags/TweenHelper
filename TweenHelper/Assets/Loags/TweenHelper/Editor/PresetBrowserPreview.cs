@@ -591,6 +591,8 @@ namespace LB.TweenHelper.Editor
                     return _collectionTargets.GridDiagonalWave(_stageRoot, 3, (GridDiagonalDirection)Mathf.Clamp(_collectionOptionIndex, 0, 3), options: options);
                 case PresetBrowserCollectionKind.GridSpiral:
                     return _collectionTargets.GridSpiral(_stageRoot, 3, (GridSpiralDirection)Mathf.Clamp(_collectionOptionIndex, 0, 3), options: options);
+                case PresetBrowserCollectionKind.GridSerpentine:
+                    return _collectionTargets.GridSerpentine(_stageRoot, 3, (GridSerpentineDirection)Mathf.Clamp(_collectionOptionIndex, 0, 7), options: options);
                 case PresetBrowserCollectionKind.GridCheckerboard:
                     return _collectionTargets.GridCheckerboard(_stageRoot, 3, _collectionOptionIndex == 1, options: options);
                 case PresetBrowserCollectionKind.CollectionBurstIn:
@@ -599,6 +601,10 @@ namespace LB.TweenHelper.Editor
                     return _collectionTargets.CollectionBurstOut(_stageRoot, Vector3.zero, 2f, options: options);
                 case PresetBrowserCollectionKind.CollectionGatherTo:
                     return _collectionTargets.CollectionGatherTo(_stageRoot, Vector3.zero, options: options);
+                case PresetBrowserCollectionKind.CollectionDealIn:
+                    return _collectionTargets.CollectionDealIn(_stageRoot, Vector3.zero, options: options);
+                case PresetBrowserCollectionKind.CollectionDealOut:
+                    return _collectionTargets.CollectionDealOut(_stageRoot, Vector3.zero, options: options);
                 case PresetBrowserCollectionKind.GridConcentricIn:
                     return _collectionTargets.GridConcentricIn(_stageRoot, 3, options: options);
                 case PresetBrowserCollectionKind.GridConcentricOut:

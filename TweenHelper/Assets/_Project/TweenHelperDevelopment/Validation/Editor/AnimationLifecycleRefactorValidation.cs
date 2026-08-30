@@ -21,8 +21,8 @@ namespace LB.TweenHelper.Editor
         private const string ReviewResetResultPath = "Temp/AnimationLifecycleRefactorReviewReset.txt";
         private const string StatusKeyPrefix = "TweenHelper.PresetReview.Status.";
         private const int NeedsWorkStatus = 1;
-        private const int ExpectedAffectedReviewCount = 106;
-        private const int ExpectedReviewCount = 596;
+        private const int ExpectedAffectedReviewCount = 175;
+        private const int ExpectedReviewCount = 608;
 
         static AnimationLifecycleRefactorValidation()
         {

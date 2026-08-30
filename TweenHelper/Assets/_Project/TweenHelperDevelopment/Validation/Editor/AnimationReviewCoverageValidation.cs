@@ -23,8 +23,8 @@ namespace LB.TweenHelper.Editor
         private const string StatusKeyPrefix = "TweenHelper.PresetReview.Status.";
         private const int ExpectedPresetCount = 300;
         private const int ExpectedLegacySemanticCount = 98;
-        private const int ExpectedCoverageCount = 198;
-        private const int ExpectedTotalCount = 596;
+        private const int ExpectedCoverageCount = 210;
+        private const int ExpectedTotalCount = 608;
 
         static AnimationReviewCoverageValidation()
         {
@@ -286,6 +286,7 @@ namespace LB.TweenHelper.Editor
             var ids = new HashSet<string>(StringComparer.Ordinal);
             AddVariants(ids, "Collection:GridDiagonalWave", "TopRightToBottomLeft", "BottomLeftToTopRight", "BottomRightToTopLeft", "IncompleteGrid");
             AddVariants(ids, "Collection:GridSpiral", "OutsideInCounterClockwise", "InsideOutClockwise", "InsideOutCounterClockwise", "IncompleteGrid");
+            AddVariants(ids, "Collection:GridSerpentine", "RowsFromTopRight", "RowsFromBottomLeft", "RowsFromBottomRight", "ColumnsFromTopLeft", "ColumnsFromTopRight", "ColumnsFromBottomLeft", "ColumnsFromBottomRight", "IncompleteGrid");
             AddVariants(ids, "Collection:GridCheckerboard", "Inverted");
             AddVariants(ids, "Collection:GridRipple", "CornerOrigin", "EdgeOrigin");
             AddVariants(ids, "Collection:StaggerPresetByName", "PresetByName");
@@ -293,6 +294,7 @@ namespace LB.TweenHelper.Editor
             AddVariants(ids, "Collection:CollectionBurstIn", "World");
             AddVariants(ids, "Collection:CollectionBurstOut", "World", "DefaultDistanceUI");
             AddVariants(ids, "Collection:CollectionGatherTo", "World");
+            AddVariants(ids, "Collection:CollectionDealOut", "World");
 
             AddVariants(ids, "Destination:PathThrough3D", "Linear");
             AddVariants(ids, "Destination:PathLocalThroughUi", "Linear");
@@ -359,7 +361,7 @@ namespace LB.TweenHelper.Editor
             ids.Add("Feedback:LowHealthWarning:World");
             AddVariants(ids, "CameraFeedback:FovKick", "In");
 
-            AddNames(ids, "Collection", "CollectionOrbitIn", "CollectionOrbitOut", "GridConcentricIn", "GridConcentricOut", "GridQuadrantSweep", "ListAccordion", "LoadingRibbon", "LoadingRing");
+            AddNames(ids, "Collection", "CollectionDealIn", "CollectionDealOut", "CollectionOrbitIn", "CollectionOrbitOut", "GridConcentricIn", "GridConcentricOut", "GridQuadrantSweep", "GridSerpentine", "ListAccordion", "LoadingRibbon", "LoadingRing");
             AddNames(ids, "Destination", "ArcToUiProjected", "BezierToUiProjected", "HopToUiProjected", "PathThroughUiProjected");
             AddNames(ids, "Feedback", "PickupCollectToUi:WorldToUI");
             AddNames(ids, "GameplayState", "AbilityCharging:DestinationUi", "AbilityReady:DestinationUi", "BuffApplied:DestinationUi", "DebuffApplied:DestinationUi", "DodgeRoll:DestinationWorld", "ObjectiveUnlocked:DestinationWorld", "ResourceDepleted:DestinationUi", "ResourceRecovered:DestinationUi", "StunEnd:DestinationWorld", "StunStart:DestinationWorld");

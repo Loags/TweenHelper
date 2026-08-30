@@ -538,6 +538,7 @@ namespace LB.TweenHelper.Editor
             {
                 case PresetBrowserCollectionKind.GridDiagonalWave:
                 case PresetBrowserCollectionKind.GridSpiral:
+                case PresetBrowserCollectionKind.GridSerpentine:
                     return "Direction";
                 case PresetBrowserCollectionKind.GridCheckerboard:
                     return "Phase";
@@ -566,6 +567,18 @@ namespace LB.TweenHelper.Editor
                         "Inside out, clockwise",
                         "Inside out, counter-clockwise"
                     };
+                case PresetBrowserCollectionKind.GridSerpentine:
+                    return new List<string>
+                    {
+                        "Rows from top-left",
+                        "Rows from top-right",
+                        "Rows from bottom-left",
+                        "Rows from bottom-right",
+                        "Columns from top-left",
+                        "Columns from top-right",
+                        "Columns from bottom-left",
+                        "Columns from bottom-right"
+                    };
                 case PresetBrowserCollectionKind.GridCheckerboard:
                     return new List<string> { "Normal", "Inverted" };
                 default:
@@ -587,6 +600,8 @@ namespace LB.TweenHelper.Editor
                     return $"items.GridDiagonalWave(owner, columns: 3, direction: GridDiagonalDirection.{(GridDiagonalDirection)Mathf.Clamp(optionIndex, 0, 3)});";
                 case PresetBrowserCollectionKind.GridSpiral:
                     return $"items.GridSpiral(owner, columns: 3, direction: GridSpiralDirection.{(GridSpiralDirection)Mathf.Clamp(optionIndex, 0, 3)});";
+                case PresetBrowserCollectionKind.GridSerpentine:
+                    return $"items.GridSerpentine(owner, columns: 3, direction: GridSerpentineDirection.{(GridSerpentineDirection)Mathf.Clamp(optionIndex, 0, 7)});";
                 case PresetBrowserCollectionKind.GridCheckerboard:
                     return optionIndex == 0 ? "items.GridCheckerboard(owner, columns: 3);" : "items.GridCheckerboard(owner, columns: 3, inverted: true);";
                 default:

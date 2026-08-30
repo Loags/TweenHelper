@@ -74,10 +74,13 @@ namespace LB.TweenHelper.Demo
             GridWaveBottomToTop,
             GridDiagonalWave,
             GridSpiral,
+            GridSerpentine,
             GridCheckerboard,
             CollectionBurstIn,
             CollectionBurstOut,
             CollectionGatherTo,
+            CollectionDealIn,
+            CollectionDealOut,
             GridConcentricIn,
             GridConcentricOut,
             GridQuadrantSweep,
@@ -271,6 +274,7 @@ namespace LB.TweenHelper.Demo
             public UISequenceDirection Direction;
             public GridDiagonalDirection DiagonalDirection;
             public GridSpiralDirection SpiralDirection;
+            public GridSerpentineDirection SerpentineDirection;
             public DestinationPathInterpolation PathInterpolation = DestinationPathInterpolation.CatmullRom;
             public int GridColumns = 3;
             public int OriginIndex = -1;
@@ -657,10 +661,13 @@ namespace LB.TweenHelper.Demo
             AddStaggerVariant(CollectionReviewKind.GridWaveBottomToTop, "Reveals grid rows from bottom to top.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.GridDiagonalWave, "Reveals grid diagonals from the top-left toward the bottom-right.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.GridSpiral, "Reveals grid items in a clockwise outside-in spiral.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.GridSerpentine, "Reveals numbered grid items through alternating rows from the top-left.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.GridCheckerboard, "Pulses alternating checkerboard cells in two coordinated phases.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.CollectionBurstIn, "Launches every grid item from the collection center into its authored position.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.CollectionBurstOut, "Scatters grid items away from the collection center while shrinking and fading them.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.CollectionGatherTo, "Gathers every grid item into one destination while shrinking and fading them.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.CollectionDealIn, "Deals numbered UI items from one shared origin into their authored positions.", PreviewKind.Grid);
+            AddCollectionRecipe(CollectionReviewKind.CollectionDealOut, "Deals numbered UI items from authored positions into one shared destination.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.GridConcentricIn, "Reveals grid rings from the outside toward the center.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.GridConcentricOut, "Dismisses grid rings from the center toward the outside.", PreviewKind.Grid);
             AddCollectionRecipe(CollectionReviewKind.GridQuadrantSweep, "Sweeps the four grid quadrants clockwise from the top-left.", PreviewKind.Grid);
@@ -845,6 +852,21 @@ namespace LB.TweenHelper.Demo
             item.SpiralDirection = GridSpiralDirection.InsideOutClockwise;
             item = AddCollectionRecipe(CollectionReviewKind.GridSpiral, "Starts at the center, winds counter-clockwise through expanding rings, and finishes at the outside edge.", PreviewKind.Grid, "InsideOutCounterClockwise", "Grid Spiral - Inside Out Counter-Clockwise");
             item.SpiralDirection = GridSpiralDirection.InsideOutCounterClockwise;
+
+            item = AddCollectionRecipe(CollectionReviewKind.GridSerpentine, "Traverses alternating rows from the top-right.", PreviewKind.Grid, "RowsFromTopRight", "Grid Serpentine - Rows From Top Right");
+            item.SerpentineDirection = GridSerpentineDirection.RowsFromTopRight;
+            item = AddCollectionRecipe(CollectionReviewKind.GridSerpentine, "Traverses alternating rows from the bottom-left.", PreviewKind.Grid, "RowsFromBottomLeft", "Grid Serpentine - Rows From Bottom Left");
+            item.SerpentineDirection = GridSerpentineDirection.RowsFromBottomLeft;
+            item = AddCollectionRecipe(CollectionReviewKind.GridSerpentine, "Traverses alternating rows from the bottom-right.", PreviewKind.Grid, "RowsFromBottomRight", "Grid Serpentine - Rows From Bottom Right");
+            item.SerpentineDirection = GridSerpentineDirection.RowsFromBottomRight;
+            item = AddCollectionRecipe(CollectionReviewKind.GridSerpentine, "Traverses alternating columns from the top-left.", PreviewKind.Grid, "ColumnsFromTopLeft", "Grid Serpentine - Columns From Top Left");
+            item.SerpentineDirection = GridSerpentineDirection.ColumnsFromTopLeft;
+            item = AddCollectionRecipe(CollectionReviewKind.GridSerpentine, "Traverses alternating columns from the top-right.", PreviewKind.Grid, "ColumnsFromTopRight", "Grid Serpentine - Columns From Top Right");
+            item.SerpentineDirection = GridSerpentineDirection.ColumnsFromTopRight;
+            item = AddCollectionRecipe(CollectionReviewKind.GridSerpentine, "Traverses alternating columns from the bottom-left.", PreviewKind.Grid, "ColumnsFromBottomLeft", "Grid Serpentine - Columns From Bottom Left");
+            item.SerpentineDirection = GridSerpentineDirection.ColumnsFromBottomLeft;
+            item = AddCollectionRecipe(CollectionReviewKind.GridSerpentine, "Traverses alternating columns from the bottom-right.", PreviewKind.Grid, "ColumnsFromBottomRight", "Grid Serpentine - Columns From Bottom Right");
+            item.SerpentineDirection = GridSerpentineDirection.ColumnsFromBottomRight;
             item = AddCollectionRecipe(CollectionReviewKind.GridCheckerboard, "Pulses the opposite checkerboard cells first, then completes the second phase.", PreviewKind.Grid, "Inverted", "Grid Checkerboard - Inverted");
             item.Inverted = true;
 
@@ -858,10 +880,12 @@ namespace LB.TweenHelper.Demo
             item = AddCollectionRecipe(CollectionReviewKind.CollectionBurstOut, "Scatters world-space objects using the automatic 1.2-unit default distance.", PreviewKind.WorldCollection, "World", "Collection Burst Out - World Default Distance");
             item.UseDefaultDistance = true;
             AddCollectionRecipe(CollectionReviewKind.CollectionGatherTo, "Gathers world-space objects into one exact destination while shrinking and fading.", PreviewKind.WorldCollection, "World", "Collection Gather To - World");
+            AddCollectionRecipe(CollectionReviewKind.CollectionDealOut, "Deals world-space objects from authored positions into one exact shared destination.", PreviewKind.WorldCollection, "World", "Collection Deal Out - World");
             item = AddCollectionRecipe(CollectionReviewKind.CollectionBurstOut, "Scatters UI cells using the automatic 120-canvas-unit default distance.", PreviewKind.Grid, "DefaultDistanceUI", "Collection Burst Out - UI Default Distance");
             item.UseDefaultDistance = true;
             AddCollectionRecipe(CollectionReviewKind.GridDiagonalWave, "Traverses a three-column, eight-item grid and preserves the incomplete final row.", PreviewKind.IncompleteGrid, "IncompleteGrid", "Grid Diagonal Wave - Incomplete Grid");
             AddCollectionRecipe(CollectionReviewKind.GridSpiral, "Traverses a three-column, eight-item spiral without skipping the incomplete final row.", PreviewKind.IncompleteGrid, "IncompleteGrid", "Grid Spiral - Incomplete Grid");
+            AddCollectionRecipe(CollectionReviewKind.GridSerpentine, "Traverses a three-column, eight-item grid without assigning ranks to missing cells.", PreviewKind.IncompleteGrid, "IncompleteGrid", "Grid Serpentine - Incomplete Grid");
         }
 
         private void AddDestinationReviewCoverage()
@@ -1509,6 +1533,8 @@ namespace LB.TweenHelper.Demo
                     return targets.GridDiagonalWave(owner, item.GridColumns, item.DiagonalDirection, 0.34f, 0.085f);
                 case CollectionReviewKind.GridSpiral:
                     return targets.GridSpiral(owner, item.GridColumns, item.SpiralDirection, 0.32f, 0.07f);
+                case CollectionReviewKind.GridSerpentine:
+                    return targets.GridSerpentine(owner, item.GridColumns, item.SerpentineDirection, 0.36f, 0.075f);
                 case CollectionReviewKind.GridCheckerboard:
                     return targets.GridCheckerboard(owner, item.GridColumns, item.Inverted, 0.4f, 0.2f);
                 case CollectionReviewKind.CollectionBurstIn:
@@ -1520,6 +1546,10 @@ namespace LB.TweenHelper.Demo
                 }
                 case CollectionReviewKind.CollectionGatherTo:
                     return targets.CollectionGatherTo(owner, Vector3.zero, 0.62f, 0.055f, item.Preview != PreviewKind.WorldCollection);
+                case CollectionReviewKind.CollectionDealIn:
+                    return targets.CollectionDealIn(owner, Vector3.zero, duration: 0.58f, interval: 0.055f, local: item.Preview != PreviewKind.WorldCollection);
+                case CollectionReviewKind.CollectionDealOut:
+                    return targets.CollectionDealOut(owner, Vector3.zero, duration: 0.54f, interval: 0.05f, local: item.Preview != PreviewKind.WorldCollection);
                 case CollectionReviewKind.GridConcentricIn:
                     return targets.GridConcentricIn(owner, item.GridColumns, 0.34f, 0.085f);
                 case CollectionReviewKind.GridConcentricOut:
