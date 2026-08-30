@@ -457,9 +457,9 @@ namespace LB.TweenHelper.Demo
                 case AnimationGalleryOperation.TextTrackingPulse:
                     return $"text.{entry.Operation}();";
                 case AnimationGalleryOperation.TextScatterIn:
-                    return $"text.TextScatterIn(unit: TextAnimationUnit.{unit}, order: StaggerOrder.{GetOrder(configuration)}, seed: {seed});";
+                    return $"text.TextScatterIn(unit: TextAnimationUnit.{unit}, order: StaggerOrder.{GetOrder(configuration)}, unitStagger: {unitStagger}, seed: {seed});";
                 case AnimationGalleryOperation.TextRotateIn:
-                    return $"text.TextRotateIn(unit: TextAnimationUnit.{unit}, order: StaggerOrder.{GetOrder(configuration)}, seed: {seed});";
+                    return $"text.TextRotateIn(unit: TextAnimationUnit.{unit}, order: StaggerOrder.{GetOrder(configuration)}, unitStagger: {unitStagger}, seed: {seed});";
                 case AnimationGalleryOperation.TextImpactRipple:
                     return "text.TextImpactRipple(Vector2.zero);";
                 case AnimationGalleryOperation.CameraFovKick:

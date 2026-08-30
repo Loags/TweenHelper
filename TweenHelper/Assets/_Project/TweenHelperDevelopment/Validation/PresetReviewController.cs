@@ -1935,13 +1935,13 @@ namespace LB.TweenHelper.Demo
                 case TextValueReviewKind.TextPulse:
                     return characterTarget.TextPulse(0.14f, 1.05f);
                 case TextValueReviewKind.TextScatterIn:
-                    return characterTarget.TextScatterIn(item.TextUnit, item.TextOrder, usesWorldText ? 0.9f : 42f, 28f, 0.045f, item.TextSeed, 1.15f);
+                    return characterTarget.TextScatterIn(item.TextUnit, item.TextOrder, usesWorldText ? 0.9f : 42f, 28f, staggerInterval, item.TextSeed, 1.15f);
                 case TextValueReviewKind.TextScatterOut:
-                    return characterTarget.TextScatterOut(item.TextUnit, item.TextOrder, usesWorldText ? 0.9f : 42f, 28f, 0.045f, item.TextSeed, 1.05f);
+                    return characterTarget.TextScatterOut(item.TextUnit, item.TextOrder, usesWorldText ? 0.9f : 42f, 28f, staggerInterval, item.TextSeed, 1.05f);
                 case TextValueReviewKind.TextRotateIn:
-                    return characterTarget.TextRotateIn(item.TextUnit, item.TextOrder, 95f, 0.045f, item.TextSeed, 1.05f);
+                    return characterTarget.TextRotateIn(item.TextUnit, item.TextOrder, 95f, staggerInterval, item.TextSeed, 1.05f);
                 case TextValueReviewKind.TextRotateOut:
-                    return characterTarget.TextRotateOut(item.TextUnit, item.TextOrder, 95f, 0.045f, item.TextSeed, 1f);
+                    return characterTarget.TextRotateOut(item.TextUnit, item.TextOrder, 95f, staggerInterval, item.TextSeed, 1f);
                 case TextValueReviewKind.TextShear:
                     return characterTarget.TextShear(0.32f, 1f);
                 case TextValueReviewKind.TextTrackingPulse:

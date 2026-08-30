@@ -452,8 +452,8 @@ namespace LB.TweenHelper.Demo
                 case AnimationGalleryOperation.TextFloat: return target.TextFloat(direction, world ? 0.4f : 14f);
                 case AnimationGalleryOperation.TextSwing: return target.TextSwing(pivot: pivot);
                 case AnimationGalleryOperation.TextPulse: return target.TextPulse();
-                case AnimationGalleryOperation.TextScatterIn: return target.TextScatterIn(unit, order, world ? 0.9f : 42f, seed: seed);
-                case AnimationGalleryOperation.TextRotateIn: return target.TextRotateIn(unit, order, seed: seed);
+                case AnimationGalleryOperation.TextScatterIn: return target.TextScatterIn(unit, order, world ? 0.9f : 42f, unitStagger: unitStagger, seed: seed);
+                case AnimationGalleryOperation.TextRotateIn: return target.TextRotateIn(unit, order, unitStagger: unitStagger, seed: seed);
                 case AnimationGalleryOperation.TextShear: return target.TextShear();
                 case AnimationGalleryOperation.TextTrackingPulse: return target.TextTrackingPulse(world ? 0.55f : 14f);
                 case AnimationGalleryOperation.TextImpactRipple: return target.TextImpactRipple(Vector2.zero, world ? 3.5f : 190f, world ? 0.5f : 24f);
