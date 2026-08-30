@@ -473,7 +473,7 @@ Not approved or implemented. Phases 0–4 completed Gallery, Browser, review, do
 
 Completed 2026-08-30.
 
-- The Animation Gallery contains `419` entries: the 300-preset baseline plus `119` curated examples, including `22` Text & Values entries. It keeps one representative entry per new engine and exposes unit, order, direction, pivot, seed, and UI/world parameters as controls.
+- The Animation Gallery contains `423` entries: the 300-preset baseline plus `123` curated examples, including `22` Text & Values entries. It keeps one representative entry per new engine and exposes unit, order, direction, pivot, seed, and UI/world parameters as controls.
 - The Preset Browser contains `461` unique entries, including `24` TextMesh Pro entries and direct routing for every public text operation.
 - The internal review catalog contains `610` entries and `610` unique IDs. Its `100` text/value configurations cover every new enum/configuration branch without duplicating parameter-only variants in the customer Gallery.
 - The review coverage model resolves exactly `212 / 212` expansion IDs. The lifecycle review set contains `177` affected IDs with none missing.

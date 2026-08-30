@@ -16,7 +16,7 @@ This folder is repository-only. Never include it in the Asset Store `.unitypacka
 | --- | ---: | --- |
 | Registered preset registry | 300 | Stable customer preset API |
 | Preset Browser | 461 | Customer Editor discovery and isolated previews |
-| Animation Gallery | 419 | Shipped capture-friendly runtime examples |
+| Animation Gallery | 423 | Shipped capture-friendly runtime examples |
 | Preset Review scene | 610 | Exhaustive development-only visual configurations |
 
 The review catalog contains 610 unique IDs:
