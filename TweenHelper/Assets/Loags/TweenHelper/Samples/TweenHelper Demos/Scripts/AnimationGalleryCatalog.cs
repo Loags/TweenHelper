@@ -335,6 +335,7 @@ namespace LB.TweenHelper.Demo
             string pivot = configuration.GetValue(AnimationGalleryOptionKind.Pivot);
             string seed = configuration.GetValue(AnimationGalleryOptionKind.Seed);
             string targetContext = configuration.GetValue(AnimationGalleryOptionKind.TargetContext);
+            string unitStagger = unit == "Line" ? "0.2f" : unit == "Word" ? "0.08f" : "0.025f";
             bool world = targetContext == "World";
             string localSuffix = world ? string.Empty : "Local";
             switch (entry.Operation)
@@ -441,7 +442,7 @@ namespace LB.TweenHelper.Demo
                     return $"text.{entry.Operation}(TextAnimationUnit.{unit});";
                 case AnimationGalleryOperation.TextStaggerIn:
                 case AnimationGalleryOperation.TextStaggerOut:
-                    return $"text.{entry.Operation}(unit: TextAnimationUnit.{unit}, order: StaggerOrder.{GetOrder(configuration)}, direction: UISequenceDirection.{direction}, seed: {seed});";
+                    return $"text.{entry.Operation}(unit: TextAnimationUnit.{unit}, order: StaggerOrder.{GetOrder(configuration)}, direction: UISequenceDirection.{direction}, unitStagger: {unitStagger}, seed: {seed});";
                 case AnimationGalleryOperation.TextCharacterBounce:
                 case AnimationGalleryOperation.TextWave:
                 case AnimationGalleryOperation.TextEmphasis:

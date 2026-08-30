@@ -376,7 +376,8 @@ namespace LB.TweenHelper.Editor
 
         private void BuildTextStage()
         {
-            _textTarget = CreateWorldText("TWEEN HELPER", Vector3.zero, 5.6f, 9f);
+            bool lineStagger = _entry.Operation == PresetBrowserOperation.TextStaggerOut;
+            _textTarget = CreateWorldText(lineStagger ? "TWEEN\nHELPER" : "TWEEN HELPER", Vector3.zero, lineStagger ? 4.2f : 5.6f, 9f);
             _textTarget.color = new Color(0.75f, 0.9f, 1f, 1f);
             _singleTarget = _textTarget.gameObject;
         }
@@ -860,9 +861,9 @@ namespace LB.TweenHelper.Editor
                 case PresetBrowserOperation.NumberCountDown:
                     return _textTarget.NumberCountTo(1250d, 0d, "N0", options: options);
                 case PresetBrowserOperation.TextStaggerIn:
-                    return _textTarget.TextStaggerIn(distance: 0.5f, options: options);
+                    return _textTarget.TextStaggerIn(TextAnimationUnit.Word, StaggerOrder.FromCenter, distance: 0.5f, unitStagger: 0.08f, options: options);
                 case PresetBrowserOperation.TextStaggerOut:
-                    return _textTarget.TextStaggerOut(distance: 0.5f, options: options);
+                    return _textTarget.TextStaggerOut(TextAnimationUnit.Line, StaggerOrder.LastToFirst, distance: 0.5f, unitStagger: 0.2f, options: options);
                 case PresetBrowserOperation.TextWave:
                     return _textTarget.TextWave(amplitude: 0.35f, options: options);
                 case PresetBrowserOperation.TextCharacterBounce:
