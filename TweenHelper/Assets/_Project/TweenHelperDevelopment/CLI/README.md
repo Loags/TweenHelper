@@ -52,7 +52,7 @@ Each event contains only schema version, UTC completion time, allowlisted comman
 
 The active file rotates at 5 MiB to one backup named `cli-telemetry-v1.old.jsonl`. Recorder failures never change the command result or exception. The summary command reads the active file only and reports total/success/exception counts and average/maximum duration by command plus overall status counts; malformed lines are skipped and counted. Because its completion is appended after its snapshot, a summary does not include itself until the next call.
 
-Coverage begins after Pipeline argument binding. Requests rejected before handler entry, built-in/third-party Pipeline commands, non-Pipeline tools, and direct domain calls are not observed. See [TweenHelperPipelineCliTelemetryRoadmap.md](../Documentation/TweenHelperPipelineCliTelemetryRoadmap.md) for the exact contract and exclusions.
+Coverage begins after Pipeline argument binding. Requests rejected before handler entry, built-in/third-party Pipeline commands, non-Pipeline tools, and direct domain calls are not observed. The contract and exclusions in this README are the current source of truth.
 
 ## Boundaries
 
