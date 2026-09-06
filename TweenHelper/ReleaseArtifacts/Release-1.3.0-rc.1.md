@@ -2,7 +2,7 @@
 
 Status: locally verified release candidate; not submitted or published.
 
-Source commit: recorded after the implementation commit.
+Source commit: `f3711bd705c987f41ec769086d0fdad21eb2a1ce` (implementation, customer documentation, candidate archive and validation/media tooling). This follow-up record changes release metadata only.
 
 Artifact: [TweenHelper-1.3.0-rc.1.unitypackage](TweenHelper-1.3.0-rc.1.unitypackage), 794,160 bytes, 198 paths/GUIDs.
 
