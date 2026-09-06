@@ -11,9 +11,10 @@ namespace LB.TweenHelper
         public static Tween Create(GameObject target, Vector3 rotationAxis, float degrees, float duration, TweenOptions options)
         {
             var strength = CodePreset.ResolveStrengthStatic(options);
+            float angle = options.MotionMultiplier < 1f ? Mathf.DeltaAngle(0f, degrees * options.UnmodifiedStrength) : degrees * strength;
             var presetOptions = options.Ease.HasValue ? options : options.SetEase(Ease.InOutQuad);
             var ease = presetOptions.Ease ?? Ease.InOutQuad;
-            return target.transform.DOLocalRotate(rotationAxis * (degrees * strength), duration, RotateMode.LocalAxisAdd)
+            return target.transform.DOLocalRotate(rotationAxis * angle, duration, RotateMode.LocalAxisAdd)
                 .SetEase(ease)
                 .WithDefaults(presetOptions, target);
         }

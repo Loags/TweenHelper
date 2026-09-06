@@ -49,7 +49,7 @@ namespace LB.TweenHelper
         /// <param name="complete">If true, forces the tween to complete before killing.</param>
         public void Kill(bool complete = false)
         {
-            Tween?.Kill(complete);
+            TweenLifetime.Kill(Tween, complete);
         }
 
         /// <summary>

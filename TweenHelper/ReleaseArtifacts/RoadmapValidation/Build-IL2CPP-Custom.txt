@@ -1,0 +1,7 @@
+Result: Succeeded
+Errors: 0
+Warnings: 3
+Size: 338691298
+Time: 00:00:35.8206285
+Unity: 6000.5.2f1
+Stripping: High

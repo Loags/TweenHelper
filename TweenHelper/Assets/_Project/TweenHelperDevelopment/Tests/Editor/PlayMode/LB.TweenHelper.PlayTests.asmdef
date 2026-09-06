@@ -3,7 +3,8 @@
     "rootNamespace": "LB.TweenHelper.Tests.PlayMode",
     "references": [
         "LB.TweenHelper.Runtime",
-        "DOTween.Modules"
+        "DOTween.Modules",
+        "Unity.ugui"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

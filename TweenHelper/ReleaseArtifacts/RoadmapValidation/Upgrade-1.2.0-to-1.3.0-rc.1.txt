@@ -1,0 +1,2 @@
+PASS: 1.2.0 -> 1.3.0-rc.1. Customer scene, TweenPlayer script and existing recipe GUID preserved.
+Recipe: Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Recipes/DelayedNotification.asset

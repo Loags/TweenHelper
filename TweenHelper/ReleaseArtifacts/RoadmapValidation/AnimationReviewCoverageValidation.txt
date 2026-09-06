@@ -1,0 +1,24 @@
+RESULT: PASS
+PASS | Catalog contains exactly 610 entries | actual=610
+PASS | Every review ID is unique | unique=610, total=610
+PASS | Catalog still contains 300 preset IDs | actual=300
+PASS | All 98 legacy semantic IDs are unchanged | none missing
+PASS | Exactly 212 coverage IDs were added | missing=[], extra=[]
+PASS | The preserved baseline still contains 398 IDs | actual=398
+PASS | All 6 downward destination entries carry a negative signed magnitude | actual=6
+INFO | New coverage IDs with an existing manual status | 212 (zero is expected before first review; later runs may be non-zero)
+PASS | Scene reference resolves: incompleteGridPreviewGroup | resolved
+PASS | Scene reference resolves: layoutListPreviewGroup | resolved
+PASS | Scene reference resolves: layoutGridPreviewGroup | resolved
+PASS | Scene reference resolves: worldCollectionPreviewRoot | resolved
+PASS | Scene reference resolves: drawerSequenceBackdrop | resolved
+PASS | Scene reference resolves: worldTextValuePreviewRoot | resolved
+PASS | Scene reference resolves: worldCharacterText | resolved
+PASS | Scene array resolves: incompleteGridTargets[8] | actual=8
+PASS | Scene array resolves: layoutListTargets[6] | actual=6
+PASS | Scene array resolves: layoutGridTargets[6] | actual=6
+PASS | Scene array resolves: worldCollectionTargets[6] | actual=6
+PASS | World text fixture uses TextMeshPro rather than TextMeshProUGUI | TextMeshPro
+PASS | All 212 new review entries build and complete | passed=212
+PASS | All 4 directly seekable signed downward paths travel below their endpoint floor | passed=4
+PASS | Runtime smoke validation did not change manual review statuses | manual status keys remain caller-owned

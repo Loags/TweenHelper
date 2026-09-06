@@ -4,8 +4,7 @@ using UnityEngine;
 namespace LB.TweenHelper
 {
     /// <summary>
-    /// Singleton ScriptableObject that defines global defaults for tweens and DoTween engine configuration.
-    /// This serves as the single source of truth for all tween settings across the project.
+    /// Defines Tween Helper defaults and optional shared DOTween engine configuration.
     /// </summary>
     [CreateAssetMenu(fileName = "TweenHelperSettings", menuName = "LB/TweenHelper Settings", order = 1)]
     public class TweenHelperSettings : ScriptableObject
@@ -17,8 +16,12 @@ namespace LB.TweenHelper
         [SerializeField] private UpdateType defaultUpdateType = UpdateType.Normal;
         [SerializeField] private bool defaultUnscaledTime = false;
         [SerializeField] private bool defaultSnapping = false;
+        [SerializeField, Tooltip("Reduced motion scales decorative strength to 20%. Semantic destinations and timing are preserved.")] private TweenMotionPreference motionPreference = TweenMotionPreference.Full;
+
+        public TweenMotionPreference MotionPreference => motionPreference == TweenMotionPreference.Reduced ? TweenMotionPreference.Reduced : TweenMotionPreference.Full;
         
         [Header("DoTween Engine Configuration")]
+        [SerializeField, Tooltip("Opt in to changing global DOTween settings. Leave disabled to preserve the host project's configuration.")] private bool configureDotweenEngine = false;
         [SerializeField] private bool useSafeMode = true;
         [SerializeField] private bool enableAutoPlay = true;
         [SerializeField] private bool enableAutoKill = true;
@@ -97,6 +100,8 @@ namespace LB.TweenHelper
         /// Whether DoTween should run in Safe Mode for additional error checking.
         /// </summary>
         public bool UseSafeMode => useSafeMode;
+
+        public bool ConfigureDotweenEngine => configureDotweenEngine;
         
         /// <summary>
         /// Whether tweens should auto-play by default.

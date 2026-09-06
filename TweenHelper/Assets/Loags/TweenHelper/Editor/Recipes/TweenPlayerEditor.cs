@@ -84,6 +84,7 @@ namespace LB.TweenHelper.Editor
             AddBindingFields(recipe);
             _root.Add(new PropertyField(serializedObject.FindProperty("playOnStart")));
             _root.Add(new PropertyField(serializedObject.FindProperty("useUnscaledTime")));
+            _root.Add(new PropertyField(serializedObject.FindProperty("motionPreference")));
             _root.Add(new PropertyField(serializedObject.FindProperty("onStarted")));
             _root.Add(new PropertyField(serializedObject.FindProperty("onCompleted")));
             _root.Add(new PropertyField(serializedObject.FindProperty("onKilled")));

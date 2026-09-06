@@ -18,7 +18,7 @@ The timeline is intentionally constrained. It represents only `Then`, `With`, an
 
 Add **Tween Player** to a GameObject, assign a recipe, and choose **Sync Bindings** in its Inspector. Assign every GameObject or ordered collection explicitly. Synchronization adds new recipe slots without silently deleting stale assignments, so removed slots can be reviewed before deletion.
 
-Call `Play()` from code or a UnityEvent. A player owns exactly one active `TweenHandle`; playing again replaces its previous handle after the new recipe and all bindings have validated. The component also exposes `Pause`, `Resume`, `Restart`, `Rewind`, `Complete`, and `Kill`.
+Call `Play()` from code to receive the active handle. For an Inspector-wired UnityEvent, choose `PlayFromEvent()`; its void signature is compatible with persistent event bindings. A player owns exactly one active `TweenHandle`; playing again replaces its previous handle after the new recipe and all bindings have validated. The component also exposes `Pause`, `Resume`, `Restart`, `Rewind`, `Complete`, and `Kill`.
 
 ```csharp
 [SerializeField] private TweenPlayer notificationPlayer;
@@ -70,14 +70,17 @@ Editor preview capture includes the added transform, TMP text, Camera field of v
 
 ## Samples
 
-Four sample assets are included in `Samples/TweenHelper Demos/Recipes`:
+Seven sample assets are included in `Samples/TweenHelper Demos/Recipes`:
 
 - **PanelMoveFade** demonstrates parallel move and fade.
 - **IconScalePreset** combines a direct scale step with a registered preset.
 - **MultiBindingPopup** maps panel, backdrop, and icon independently.
 - **DelayedNotification** adds a finite delay before a move/fade group.
+- **ProgressReward** fills a progress indicator before success feedback.
+- **RewardPresentation** combines reward reveal and confirmation.
+- **CollectionEntrance** applies a staggered entrance to an explicit collection.
 
-The Animation Gallery includes focused entries for the same assets and executes them through the shared validated recipe executor.
+The Animation Gallery includes focused entries for the original four assets and executes them through the shared validated recipe executor. See [Recipe workflows](RecipeWorkflows.md) for the additional samples and Progress Fill To, and [Motion preferences](MotionPreferences.md) for reduced-motion overrides.
 
 ## Validation rules
 

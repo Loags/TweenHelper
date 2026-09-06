@@ -5,7 +5,7 @@ namespace LB.TweenHelper
 {
     /// <summary>
     /// Handles runtime initialization of the TweenHelper system.
-    /// Applies settings at startup, initializes DoTween, sets capacities, and optionally prewarms the engine.
+    /// Configures the shared DOTween engine only when explicitly enabled and optionally prewarms package usage.
     /// </summary>
     public static class TweenHelperBootstrapper
     {
@@ -36,9 +36,12 @@ namespace LB.TweenHelper
             
             try
             {
-                InitializeDoTween(settings);
-                ConfigureDoTween(settings);
-                SetCapacities(settings);
+                if (settings.ConfigureDotweenEngine)
+                {
+                    InitializeDoTween(settings);
+                    ConfigureDoTween(settings);
+                    if (DOTween.TotalActiveTweens() == 0) SetCapacities(settings);
+                }
                 
                 if (settings.EnablePrewarm)
                 {
@@ -158,7 +161,7 @@ namespace LB.TweenHelper
         }
         
         /// <summary>
-        /// Cleans up the DoTween engine. Called automatically on application quit.
+        /// Resets package initialization state for a new play session.
         /// </summary>
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void OnSubsystemRegistration()
@@ -177,20 +180,7 @@ namespace LB.TweenHelper
         
         private static void OnApplicationQuitting()
         {
-            if (_isInitialized)
-            {
-                try
-                {
-                    DOTween.KillAll();
-                    DOTween.Clear();
-                    _isInitialized = false;
-                    Debug.Log("TweenHelper cleaned up on application quit.");
-                }
-                catch (System.Exception ex)
-                {
-                    Debug.LogWarning($"TweenHelperBootstrapper: Cleanup failed. {ex.Message}");
-                }
-            }
+            _isInitialized = false;
         }
     }
 }

@@ -13,8 +13,13 @@ public static class TweenHelperPublisherVideoCapture
 {
     private const string MenuPath = "Tools/Tween Helper Dev/Validation/Capture Animation Gallery Stills";
 
+    [MenuItem("Tools/Tween Helper Dev/Validation/Capture Animation Gallery Reel")]
+    private static void CaptureAnimationGalleryReel() => Capture(false);
+
     [MenuItem(MenuPath)]
-    private static void CaptureAnimationGalleryStills()
+    private static void CaptureAnimationGalleryStills() => Capture(true);
+
+    private static void Capture(bool stills)
     {
         if (!Application.isPlaying) throw new InvalidOperationException("Enter Play Mode in TweenHelperAnimationGallery before starting Recorder validation.");
         if (UnityEngine.Object.FindAnyObjectByType<AnimationGalleryRecorderValidationRunner>() != null)
@@ -26,7 +31,8 @@ public static class TweenHelperPublisherVideoCapture
         if (controller == null) throw new InvalidOperationException("AnimationGalleryController was not found in the active Play Mode scene.");
 
         var runnerObject = new GameObject("Animation Gallery Recorder Validation");
-        runnerObject.AddComponent<AnimationGalleryRecorderValidationRunner>().Initialize(controller, GetOutputDirectory());
+        string output = stills ? GetOutputDirectory() : Path.Combine(GetOutputDirectory(), "Reel");
+        runnerObject.AddComponent<AnimationGalleryRecorderValidationRunner>().Initialize(controller, output, !stills);
     }
 
     [MenuItem(MenuPath, true)]
@@ -59,6 +65,9 @@ public sealed class AnimationGalleryRecorderValidationRunner : MonoBehaviour
     private RecorderController _recorderController;
     private RecorderControllerSettings _controllerSettings;
     private ImageRecorderSettings _imageRecorderSettings;
+    private MovieRecorderSettings _movieRecorderSettings;
+    private bool _recordMovie;
+    private int _recordedFrames;
     private int _resolutionIndex;
     private int _stateIndex;
     private int _frameWait;
@@ -67,8 +76,9 @@ public sealed class AnimationGalleryRecorderValidationRunner : MonoBehaviour
     private Dropdown _openedDropdown;
     private readonly List<string> _capturedFiles = new List<string>();
 
-    public void Initialize(AnimationGalleryController controller, string outputDirectory)
+    public void Initialize(AnimationGalleryController controller, string outputDirectory, bool recordMovie = false)
     {
+        _recordMovie = recordMovie;
         _controller = controller;
         _outputDirectory = outputDirectory;
         _categoryButtons = GetPrivateField<Button[]>(controller, "categoryButtons");
@@ -119,7 +129,11 @@ public sealed class AnimationGalleryRecorderValidationRunner : MonoBehaviour
             return;
         }
 
-        if (_recorderController.IsRecording()) return;
+        if (_recorderController.IsRecording())
+        {
+            if (_recordMovie && ++_recordedFrames % 60 == 0) Replay();
+            return;
+        }
 
         FinishCapture();
         AdvanceState();
@@ -141,7 +155,7 @@ public sealed class AnimationGalleryRecorderValidationRunner : MonoBehaviour
         {
             SelectEntry(AnimationGalleryCategory.Collections, 0);
             ApplyRepresentativeOption();
-            _openDropdown = true;
+            _openDropdown = !_recordMovie;
         }
 
         _frameWait = 12;
@@ -191,28 +205,47 @@ public sealed class AnimationGalleryRecorderValidationRunner : MonoBehaviour
         string outputFile = Path.Combine(_outputDirectory, fileName);
 
         _controllerSettings = ScriptableObject.CreateInstance<RecorderControllerSettings>();
-        _imageRecorderSettings = ScriptableObject.CreateInstance<ImageRecorderSettings>();
-        _imageRecorderSettings.name = "Tween Helper Gallery Validation Still";
-        _imageRecorderSettings.Enabled = true;
-        _imageRecorderSettings.OutputFormat = ImageRecorderSettings.ImageRecorderOutputFormat.PNG;
-        _imageRecorderSettings.CaptureAlpha = false;
-        _imageRecorderSettings.OutputFile = outputFile;
-        _imageRecorderSettings.imageInputSettings = new GameViewInputSettings
+        _controllerSettings.FrameRate = 30;
+        if (_recordMovie)
         {
-            OutputWidth = resolution.x,
-            OutputHeight = resolution.y
-        };
+            _movieRecorderSettings = ScriptableObject.CreateInstance<MovieRecorderSettings>();
+            _movieRecorderSettings.name = "Tween Helper Gallery Reel";
+            _movieRecorderSettings.Enabled = true;
+            _movieRecorderSettings.CaptureAudio = false;
+            _movieRecorderSettings.OutputFile = outputFile;
+            _movieRecorderSettings.ImageInputSettings = new GameViewInputSettings { OutputWidth = resolution.x, OutputHeight = resolution.y };
+            _controllerSettings.AddRecorderSettings(_movieRecorderSettings);
+            _controllerSettings.SetRecordModeToTimeInterval(0, 4);
+        }
+        else
+        {
+            _imageRecorderSettings = ScriptableObject.CreateInstance<ImageRecorderSettings>();
+            _imageRecorderSettings.name = "Tween Helper Gallery Validation Still";
+            _imageRecorderSettings.Enabled = true;
+            _imageRecorderSettings.OutputFormat = ImageRecorderSettings.ImageRecorderOutputFormat.PNG;
+            _imageRecorderSettings.CaptureAlpha = false;
+            _imageRecorderSettings.OutputFile = outputFile;
+            _imageRecorderSettings.imageInputSettings = new GameViewInputSettings
+            {
+                OutputWidth = resolution.x,
+                OutputHeight = resolution.y
+            };
 
-        _controllerSettings.AddRecorderSettings(_imageRecorderSettings);
-        _controllerSettings.SetRecordModeToSingleFrame(0);
+            _controllerSettings.AddRecorderSettings(_imageRecorderSettings);
+            _controllerSettings.SetRecordModeToSingleFrame(0);
+        }
         _recorderController = new RecorderController(_controllerSettings);
         _recorderController.PrepareRecording();
         if (!_recorderController.StartRecording()) throw new InvalidOperationException($"Recorder could not start for {fileName}.");
 
-        _capturedFiles.Add(outputFile + ".png");
+        _capturedFiles.Add(outputFile + (_recordMovie ? ".mp4" : ".png"));
         _captureStarted = true;
         _frameWait = 2;
+        _recordedFrames = 0;
+        if (_recordMovie) Replay();
     }
+
+    private void Replay() => GetPrivateField<Button>(_controller, "replayButton").onClick.Invoke();
 
     private void FinishCapture()
     {
@@ -223,8 +256,10 @@ public sealed class AnimationGalleryRecorderValidationRunner : MonoBehaviour
             _openedDropdown = null;
         }
         Destroy(_imageRecorderSettings);
+        Destroy(_movieRecorderSettings);
         Destroy(_controllerSettings);
         _imageRecorderSettings = null;
+        _movieRecorderSettings = null;
         _controllerSettings = null;
         _recorderController = null;
         _captureStarted = false;
@@ -242,7 +277,7 @@ public sealed class AnimationGalleryRecorderValidationRunner : MonoBehaviour
         if (_resolutionIndex >= Resolutions.Length)
         {
             ValidateOutputs();
-            Debug.Log($"Animation Gallery Recorder validation captured {_capturedFiles.Count} stills in {_outputDirectory}.");
+            Debug.Log($"Animation Gallery Recorder validation captured {_capturedFiles.Count} {(_recordMovie ? "clips" : "stills")} in {_outputDirectory}.");
             Destroy(gameObject);
             return;
         }

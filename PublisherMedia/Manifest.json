@@ -1,0 +1,71 @@
+{
+  "candidate": "1.3.0-rc.1",
+  "artifactSha256": "8a10b496d2881a9f5ad72d5bed6b922b88416addf68b4c8db0f7fc6b9e4a934a",
+  "files": [
+    {
+      "path": "PublisherMedia/Images/camera-feedback-1920x1080.png",
+      "bytes": 179884,
+      "sha256": "fa52b63e8f774135b3638775885177699271f0e861130f9a2bad2f8e1dbd44e9"
+    },
+    {
+      "path": "PublisherMedia/Images/collections-1920x1080.png",
+      "bytes": 197734,
+      "sha256": "200f6702321d6fea4fd56a3a5af008dbf5404a574ba438a524878eb116bac673"
+    },
+    {
+      "path": "PublisherMedia/Images/collections-option-menu-1920x1080.png",
+      "bytes": 207242,
+      "sha256": "3dedb1b92839875f8a7e9bdf3e5937d867efb90873358e3a7376d62943c7708a"
+    },
+    {
+      "path": "PublisherMedia/Images/destination-motion-1920x1080.png",
+      "bytes": 178758,
+      "sha256": "138880369edbb77b83e6c4009cc341e13d329c15b81e91151ca76f0b1e99eb86"
+    },
+    {
+      "path": "PublisherMedia/Images/gameplay-feedback-1920x1080.png",
+      "bytes": 180553,
+      "sha256": "a066ff3b9c7fb289f5ea445e2749761e312a158909690b03fec471c788d24f7b"
+    },
+    {
+      "path": "PublisherMedia/Images/presets-1920x1080.png",
+      "bytes": 164798,
+      "sha256": "7a43df6e1390f65266897aa9388f86b1b2d942a5150226bcbcb538691726183c"
+    },
+    {
+      "path": "PublisherMedia/Images/text-and-values-1920x1080.png",
+      "bytes": 214244,
+      "sha256": "ef90d2cec325152d657192201fbf8b8667a26ddc465b84cf93cb8e5329f8033e"
+    },
+    {
+      "path": "PublisherMedia/Images/ui-hover-1920x1080.png",
+      "bytes": 157209,
+      "sha256": "d8f0b05b508f0af7125ac0eb88278aeb1a0e1d53e31444530f271b897269500f"
+    },
+    {
+      "path": "PublisherMedia/Images/ui-recipes-1920x1080.png",
+      "bytes": 158592,
+      "sha256": "fb54a2e463b752047ccef6cc03ea6a3159d173dceb684ad2a26372797a46d15d"
+    },
+    {
+      "path": "PublisherMedia/Images/ui-sequences-1920x1080.png",
+      "bytes": 191630,
+      "sha256": "5b8f041835344c4816b09948963ae6ace7add7b9bb1a73bde3fe2f1d8a382b11"
+    },
+    {
+      "path": "PublisherMedia/MarketingReel/TweenHelper-1.3.0-rc.1-Reel.mp4",
+      "bytes": 1238834,
+      "sha256": "cfb1269fa1b3f31488d927c1e242ebc8d6de3d8db8258c0fbcb8c591c2ccaa7f"
+    },
+    {
+      "path": "PublisherMedia/MarketingReel/TweenHelper-Reel.srt",
+      "bytes": 755,
+      "sha256": "020385f1a8f9c79791f6d148152db49897a68db4a4d039f92ebd58844dc05a70"
+    },
+    {
+      "path": "PublisherMedia/Tutorial/FirstAnimation.md",
+      "bytes": 2384,
+      "sha256": "c4d5da0c12c5905c4dc270625df161183d905189bf3d9fae77f414baf5b63bfa"
+    }
+  ]
+}

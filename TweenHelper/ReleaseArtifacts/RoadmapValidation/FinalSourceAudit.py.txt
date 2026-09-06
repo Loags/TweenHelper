@@ -1,0 +1,28 @@
+from pathlib import Path
+import re
+import json
+from urllib.parse import unquote
+
+product = Path('TweenHelper/Assets/Loags/TweenHelper')
+failures = []
+guids = {}
+for asset in product.rglob('*'):
+    if asset.suffix == '.meta':
+        match = re.search(r'^guid: ([a-f0-9]{32})$', asset.read_text(), re.M)
+        if not match: failures.append('Invalid metadata GUID: ' + str(asset)); continue
+        guid = match.group(1)
+        if guid in guids: failures.append('Duplicate GUID: ' + str(asset))
+        guids[guid] = str(asset)
+    elif not Path(str(asset) + '.meta').exists(): failures.append('Missing metadata: ' + str(asset))
+documents = list(product.rglob('*.md')) + list(Path('PublisherMedia').rglob('*.md')) + list(Path('TweenHelper/ReleaseArtifacts').glob('*.md')) + list(Path('TweenHelper/Assets/_Project/TweenHelperDevelopment/Documentation').glob('Publishing*.md'))
+for document in documents:
+    content = document.read_text(encoding='utf-8-sig')
+    content = re.sub(r'```.*?```', '', content, flags=re.S)
+    for target in re.findall(r'\]\(([^\n)]+)\)', content):
+        target = unquote(target.split('#')[0].split('?')[0].strip('<>'))
+        if not target or re.match(r'\w+:', target): continue
+        if not (document.parent / target).exists(): failures.append(f'Broken link: {document} -> {target}')
+report = dict(metadataGuids=len(guids), markdownDocuments=len(documents), failures=failures)
+Path('TweenHelper/ReleaseArtifacts/RoadmapValidation/SourceAudit.json').write_text(json.dumps(report, indent=2))
+print(json.dumps(report, indent=2))
+raise SystemExit(bool(failures))

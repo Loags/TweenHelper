@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace LB.TweenHelper
 {
@@ -335,9 +336,9 @@ namespace LB.TweenHelper
                 result.Add(TweenRecipeValidationSeverity.Error, $"'{nodeName}' value must be zero or greater.", node.Id);
             }
 
-            if (node.Operation == TweenRecipeOperation.AudioVolumeTo && (parameters.FloatValue < 0f || parameters.FloatValue > 1f))
+            if ((node.Operation == TweenRecipeOperation.AudioVolumeTo || node.Operation == TweenRecipeOperation.ProgressFillTo) && (parameters.FloatValue < 0f || parameters.FloatValue > 1f))
             {
-                result.Add(TweenRecipeValidationSeverity.Error, $"'{nodeName}' volume must be between 0 and 1.", node.Id);
+                result.Add(TweenRecipeValidationSeverity.Error, $"'{nodeName}' value must be between 0 and 1.", node.Id);
             }
 
             if (node.Operation == TweenRecipeOperation.NumberCountTo && !string.IsNullOrWhiteSpace(parameters.StringValue))
@@ -430,6 +431,11 @@ namespace LB.TweenHelper
 
             switch (node.Operation)
             {
+                case TweenRecipeOperation.ProgressFillTo:
+                    Image image = target.GetComponent<Image>();
+                    if (target.GetComponent<Slider>() == null && (image == null || image.type != Image.Type.Filled))
+                        result.Add(TweenRecipeValidationSeverity.Error, $"'{target.name}' requires a Slider or a filled Image.", node.Id, node.BindingId);
+                    break;
                 case TweenRecipeOperation.RegisteredPreset:
                     ITweenPreset preset = TweenPresetRegistry.GetPresetByName(node.Parameters.StringValue);
                     if (preset != null && !preset.CanApplyTo(target))

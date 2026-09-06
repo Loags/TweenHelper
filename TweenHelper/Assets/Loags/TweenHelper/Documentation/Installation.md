@@ -2,14 +2,19 @@
 
 ## Validated configuration
 
-Tween Helper 1.2.0 was developed and validated with:
+Tween Helper 1.3.0-rc.1 was checked with:
 
 - Unity `6000.5.2f1`.
 - DOTween Free package `1.2.825`, which reports runtime `1.3.030`.
 - Unity UI (uGUI) and TextMesh Pro.
-- Built-in Render Pipeline and Universal Render Pipeline workflows.
+- Built-in Render Pipeline clean import, reference checks, and Windows x64 Mono and IL2CPP player smoke checks; IL2CPP used High managed stripping.
+- Universal Render Pipeline 17.5.0 in the development project: live Gallery rendering, recipe/lifecycle validation and Edit Mode/Play Mode tests.
 
-Lower Unity versions and older DOTween versions have not been tested. HDRP and custom render pipelines are also untested. These statements describe the validated configuration; they are not claims that other configurations cannot work.
+The exported candidate was also imported over the historical 1.2.0 package in a disposable customer project. A customer-owned scene retained its TweenPlayer script and existing recipe reference. Read the migration guide before enabling global DOTween configuration: the new default preserves the host engine.
+
+Player smoke checks cover all 300 registered names, string-only preset playback, retained completion, worker-thread cancellation and repeated cleanup. They are not full rendered-game or platform certification. The tested Windows players used Built-in; a standalone URP player and a second Unity version have not been validated for this candidate.
+
+Other Unity versions, older DOTween versions, macOS/Linux players, mobile, WebGL, HDRP and custom render pipelines have not been tested for this candidate. These statements describe the validated configuration; they are not claims that other configurations cannot work.
 
 DOTween is a separate dependency and is not included with Tween Helper.
 
@@ -47,6 +52,8 @@ The gallery is designed for 16:9 presentation and validated at `1920×1080`. It 
 Progress-bar, audio, light, particle, and renderer-property examples are available in the Preset Browser and documented in their focused guides. They are not additional registered presets.
 
 ## Support
+
+For complete first-use examples, continue with [Quick start](QuickStart.md). When updating an existing project, read [Lifecycle and migration](LifecycleAndMigration.md), particularly the explicit opt-in for global DOTween engine configuration.
 
 Open **Tools > Tween Helper > Setup & Support** to prepare a bug report, feature request, documentation question, or other support email. The form opens your default email client with editable content; it never sends a message automatically.
 

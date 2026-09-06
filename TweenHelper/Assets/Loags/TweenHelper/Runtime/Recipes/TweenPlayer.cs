@@ -11,6 +11,7 @@ namespace LB.TweenHelper
         [SerializeField] private List<TweenPlayerBinding> bindings = new List<TweenPlayerBinding>();
         [SerializeField] private bool playOnStart;
         [SerializeField] private bool useUnscaledTime;
+        [SerializeField] private TweenMotionPreference motionPreference;
         [SerializeField] private UnityEvent onStarted = new UnityEvent();
         [SerializeField] private UnityEvent onCompleted = new UnityEvent();
         [SerializeField] private UnityEvent onKilled = new UnityEvent();
@@ -21,6 +22,9 @@ namespace LB.TweenHelper
         public IReadOnlyList<TweenPlayerBinding> Bindings => bindings;
         public TweenHandle ActiveHandle => _activeHandle;
         public bool IsPlaying => _activeHandle != null && _activeHandle.IsPlaying;
+        public TweenMotionPreference MotionPreference => motionPreference;
+
+        public void SetReducedMotion(bool reduced) => motionPreference = reduced ? TweenMotionPreference.Reduced : TweenMotionPreference.Full;
 
         private void Start()
         {
@@ -37,7 +41,7 @@ namespace LB.TweenHelper
             }
 
             Kill();
-            if (!TweenRecipeExecutor.TryBuild(recipe, bindings, gameObject, out TweenHandle handle, out validation, useUnscaledTime))
+            if (!TweenRecipeExecutor.TryBuild(recipe, bindings, gameObject, out TweenHandle handle, out validation, useUnscaledTime, motionPreference: motionPreference))
             {
                 Debug.LogError($"TweenPlayer '{name}' could not build its recipe.\n{validation.GetSummary()}", this);
                 return null;
@@ -52,6 +56,7 @@ namespace LB.TweenHelper
         }
 
         public void Pause() => _activeHandle?.Pause();
+        public void PlayFromEvent() => Play();
         public void Resume() => _activeHandle?.Resume();
         public void Restart() => _activeHandle?.Restart();
         public void Rewind() => _activeHandle?.Rewind();

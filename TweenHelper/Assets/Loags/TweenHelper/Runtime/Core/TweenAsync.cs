@@ -34,15 +34,7 @@ namespace LB.TweenHelper
                 return;
             }
             
-            try
-            {
-                await AwaitCompletionResult(tween, cancellationToken);
-            }
-            catch (OperationCanceledException)
-            {
-                Debug.Log("TweenAsync: Tween await was cancelled.");
-                throw;
-            }
+            await AwaitCompletionResult(tween, cancellationToken);
         }
         
         /// <summary>
@@ -66,7 +58,7 @@ namespace LB.TweenHelper
                 return false;
             }
             
-            if (timeoutSeconds <= 0f)
+            if (timeoutSeconds <= 0f || float.IsNaN(timeoutSeconds) || float.IsInfinity(timeoutSeconds))
             {
                 Debug.LogWarning("TweenAsync: Timeout must be greater than zero.");
                 return false;
@@ -79,57 +71,18 @@ namespace LB.TweenHelper
                 {
                     return await AwaitCompletionResult(tween, combinedCts.Token);
                 }
-                catch (OperationCanceledException) when (timeoutCts.Token.IsCancellationRequested)
+                catch (OperationCanceledException) when (timeoutCts.IsCancellationRequested && !cancellationToken.IsCancellationRequested)
                 {
-                    Debug.LogWarning($"TweenAsync: Tween await timed out after {timeoutSeconds} seconds. Killing tween.");
-                    tween.Kill();
                     return false;
-                }
-                catch (OperationCanceledException)
-                {
-                    Debug.Log("TweenAsync: Tween await was cancelled by external token.");
-                    throw;
                 }
             }
         }
 
         private static async Task<bool> AwaitCompletionResult(Tween tween, CancellationToken cancellationToken)
         {
-            var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-            int terminalState = 0;
-
-            void OnComplete()
+            using (var observation = new TweenCompletionObservation(tween, cancellationToken))
             {
-                if (Interlocked.CompareExchange(ref terminalState, 1, 0) == 0) tcs.TrySetResult(true);
-            }
-
-            void OnKill()
-            {
-                if (Interlocked.CompareExchange(ref terminalState, 2, 0) == 0) tcs.TrySetResult(false);
-            }
-
-            void Cancel()
-            {
-                if (Interlocked.CompareExchange(ref terminalState, 3, 0) != 0) return;
-                tween.ForceInit();
-                TweenExtensions.Kill(tween, false);
-                tcs.TrySetCanceled();
-            }
-
-            tween.onComplete += OnComplete;
-            tween.onKill += OnKill;
-
-            using (cancellationToken.Register(Cancel))
-            {
-                try
-                {
-                    return await tcs.Task;
-                }
-                finally
-                {
-                    tween.onComplete -= OnComplete;
-                    tween.onKill -= OnKill;
-                }
+                return await observation.Task;
             }
         }
         
@@ -180,22 +133,25 @@ namespace LB.TweenHelper
                 return;
             }
             
-            var tasks = new Task[tweens.Length];
-            for (int i = 0; i < tweens.Length; i++)
-            {
-#pragma warning disable CS4014 // Because this call is not awaited, execution continues before call is completed
-                tasks[i] = AwaitCompletion(tweens[i], cancellationToken);
-#pragma warning restore CS4014
-            }
-            
+            var observations = new TweenCompletionObservation[tweens.Length];
+            var tasks = new Task<bool>[tweens.Length];
             try
             {
-                await Task.WhenAny(tasks);
+                for (int i = 0; i < tweens.Length; i++)
+                {
+                    observations[i] = new TweenCompletionObservation(tweens[i], cancellationToken);
+                    tasks[i] = observations[i].Task;
+                }
+                Task<bool> winner = await Task.WhenAny(tasks);
+                await winner;
             }
-            catch (OperationCanceledException)
+            finally
             {
-                Debug.Log("TweenAsync: Awaiting any tween was cancelled.");
-                throw;
+                foreach (TweenCompletionObservation observation in observations) observation?.Dispose();
+                foreach (Task<bool> task in tasks)
+                {
+                    if (task != null && task.IsFaulted) _ = task.Exception;
+                }
             }
         }
         
@@ -234,46 +190,23 @@ namespace LB.TweenHelper
         /// </summary>
         public struct TweenAwaiter : System.Runtime.CompilerServices.INotifyCompletion
         {
-            private readonly TaskCompletionSource<bool> _tcs;
+            private readonly Task<bool> _task;
             
             public TweenAwaiter(Tween tween)
             {
-                _tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-                if (tween != null && tween.IsActive())
-                {
-                    var tcs = _tcs;
-                    TweenCallback onComplete = null;
-                    TweenCallback onKill = null;
-
-                    void Complete(bool completed)
-                    {
-                        tween.onComplete -= onComplete;
-                        tween.onKill -= onKill;
-                        tcs.TrySetResult(completed);
-                    }
-
-                    onComplete = () => Complete(true);
-                    onKill = () => Complete(false);
-                    tween.onComplete += onComplete;
-                    tween.onKill += onKill;
-                }
-                else
-                {
-                    _tcs.TrySetResult(false);
-                }
+                _task = new TweenCompletionObservation(tween).Task;
             }
             
-            public bool IsCompleted => _tcs.Task.IsCompleted;
+            public bool IsCompleted => _task.IsCompleted;
             
             public void OnCompleted(Action continuation)
             {
-                _tcs.Task.GetAwaiter().OnCompleted(continuation);
+                _task.GetAwaiter().OnCompleted(continuation);
             }
             
             public bool GetResult()
             {
-                return _tcs.Task.GetAwaiter().GetResult();
+                return _task.GetAwaiter().GetResult();
             }
         }
         

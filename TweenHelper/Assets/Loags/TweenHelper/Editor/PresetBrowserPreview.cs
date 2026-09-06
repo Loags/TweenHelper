@@ -971,7 +971,7 @@ namespace LB.TweenHelper.Editor
         {
             Tween disabled = _singleTarget.UIDisabled(duration: 0.01f, options: options);
             disabled.Complete();
-            disabled.Kill(false);
+            new TweenHandle(disabled).Kill();
             return _singleTarget.UIEnabled(options: options);
         }
 
@@ -1202,7 +1202,7 @@ namespace LB.TweenHelper.Editor
 
         private void CleanupStage()
         {
-            if (_activeTween != null && _activeTween.IsActive()) _activeTween.Kill(false);
+            if (_activeTween != null && _activeTween.IsActive()) new TweenHandle(_activeTween).Kill();
             _activeTween = null;
             _elapsedTime = 0f;
             _playbackDuration = 0f;

@@ -36,7 +36,8 @@ namespace LB.TweenHelper
             TweenRecipeOperation.CameraFieldOfViewTo,
             TweenRecipeOperation.LightIntensityTo,
             TweenRecipeOperation.AudioVolumeTo,
-            TweenRecipeOperation.ParticleEmissionRateTo
+            TweenRecipeOperation.ParticleEmissionRateTo,
+            TweenRecipeOperation.ProgressFillTo
         };
 
         public static IReadOnlyList<TweenRecipeOperation> Operations => SupportedOperations;
@@ -73,6 +74,8 @@ namespace LB.TweenHelper
                 case TweenRecipeOperation.AudioVolumeTo:
                 case TweenRecipeOperation.ParticleEmissionRateTo:
                     return true;
+                case TweenRecipeOperation.ProgressFillTo:
+                    return true;
                 default:
                     return false;
             }
@@ -80,6 +83,7 @@ namespace LB.TweenHelper
 
         public static string GetDisplayName(TweenRecipeOperation operation)
         {
+            if (operation == TweenRecipeOperation.ProgressFillTo) return "Progress Fill To";
             switch (operation)
             {
                 case TweenRecipeOperation.Delay: return "Delay";
@@ -115,6 +119,7 @@ namespace LB.TweenHelper
 
         public static string GetCategory(TweenRecipeOperation operation)
         {
+            if (operation == TweenRecipeOperation.ProgressFillTo) return "Text And Values";
             switch (operation)
             {
                 case TweenRecipeOperation.Delay: return "Timing";
@@ -160,6 +165,7 @@ namespace LB.TweenHelper
 
         public static string GetDescription(TweenRecipeOperation operation)
         {
+            if (operation == TweenRecipeOperation.ProgressFillTo) return "Animate a filled Image or Slider to a normalized value.";
             switch (operation)
             {
                 case TweenRecipeOperation.Delay: return "Wait before the next sequential node.";
@@ -211,6 +217,7 @@ namespace LB.TweenHelper
 
         public static TweenRecipeParameterFields GetVisibleFields(TweenRecipeOperation operation)
         {
+            if (operation == TweenRecipeOperation.ProgressFillTo) return TweenRecipeParameterFields.Float;
             switch (operation)
             {
                 case TweenRecipeOperation.RegisteredPreset:
@@ -248,6 +255,7 @@ namespace LB.TweenHelper
 
         public static string GetParameterLabel(TweenRecipeOperation operation, TweenRecipeParameterFields field)
         {
+            if (operation == TweenRecipeOperation.ProgressFillTo && field == TweenRecipeParameterFields.Float) return "Normalized Value";
             switch (field)
             {
                 case TweenRecipeParameterFields.Vector3:
@@ -308,6 +316,7 @@ namespace LB.TweenHelper
 
         public static float GetDefaultFloat(TweenRecipeOperation operation)
         {
+            if (operation == TweenRecipeOperation.ProgressFillTo) return 1f;
             switch (operation)
             {
                 case TweenRecipeOperation.FadeTo:
@@ -343,14 +352,15 @@ namespace LB.TweenHelper
             }
         }
 
-        internal static Tween CreateTween(TweenRecipeNode node, GameObject target, GameObject secondaryTarget, IReadOnlyList<GameObject> collectionTargets)
+        internal static Tween CreateTween(TweenRecipeNode node, GameObject target, GameObject secondaryTarget, IReadOnlyList<GameObject> collectionTargets, TweenMotionPreference motionPreference = TweenMotionPreference.UseProjectDefault)
         {
             TweenRecipeParameters parameters = node.Parameters;
+            if (node.Operation == TweenRecipeOperation.ProgressFillTo) return BuildTween(target.Tween().FillTo(parameters.FloatValue, node.Duration), node.Ease, motionPreference);
             switch (node.Operation)
             {
                 case TweenRecipeOperation.RegisteredPreset:
                     ITweenPreset preset = TweenPresetRegistry.GetPresetByName(parameters.StringValue);
-                    TweenOptions options = TweenOptions.WithDuration(node.Duration).SetEase(node.Ease);
+                    TweenOptions options = TweenOptions.WithDuration(node.Duration).SetEase(node.Ease).SetMotionPreference(motionPreference).ResolveMotionPreference();
                     return preset.CreateTween(target, node.Duration, options);
                 case TweenRecipeOperation.MoveLocalTo:
                     return TweenTargetUtility.CreateLocalMoveTween(target, parameters.Vector3Value, node.Duration);
@@ -375,49 +385,49 @@ namespace LB.TweenHelper
                 case TweenRecipeOperation.RotateWorldBy:
                     return target.transform.DORotate(parameters.Vector3Value, node.Duration, RotateMode.WorldAxisAdd);
                 case TweenRecipeOperation.ArcWorldTo:
-                    return BuildTween(target.Tween().ArcTo(parameters.Vector3Value, parameters.FloatValue, node.Duration), node.Ease);
+                    return BuildTween(target.Tween().ArcTo(parameters.Vector3Value, parameters.FloatValue, node.Duration), node.Ease, motionPreference);
                 case TweenRecipeOperation.HopWorldTo:
-                    return BuildTween(target.Tween().HopTo(parameters.Vector3Value, parameters.FloatValue, node.Duration), node.Ease);
+                    return BuildTween(target.Tween().HopTo(parameters.Vector3Value, parameters.FloatValue, node.Duration), node.Ease, motionPreference);
                 case TweenRecipeOperation.ErrorReject:
-                    return BuildTween(target.Tween().ErrorReject(node.Duration), node.Ease);
+                    return BuildTween(target.Tween().ErrorReject(node.Duration), node.Ease, motionPreference);
                 case TweenRecipeOperation.DamageHit:
-                    return BuildTween(target.Tween().DamageHit(node.Duration), node.Ease);
+                    return BuildTween(target.Tween().DamageHit(node.Duration), node.Ease, motionPreference);
                 case TweenRecipeOperation.SuccessConfirm:
-                    return BuildTween(target.Tween().SuccessConfirm(node.Duration), node.Ease);
+                    return BuildTween(target.Tween().SuccessConfirm(node.Duration), node.Ease, motionPreference);
                 case TweenRecipeOperation.RewardReveal:
-                    return BuildTween(target.Tween().RewardReveal(node.Duration), node.Ease);
+                    return BuildTween(target.Tween().RewardReveal(node.Duration), node.Ease, motionPreference);
                 case TweenRecipeOperation.PageCrossFadeTo:
-                    return BuildTween(target.Tween().PageCrossFadeTo(secondaryTarget, parameters.FloatValue, node.Duration), node.Ease);
+                    return BuildTween(target.Tween().PageCrossFadeTo(secondaryTarget, parameters.FloatValue, node.Duration), node.Ease, motionPreference);
                 case TweenRecipeOperation.TypewriterReveal:
-                    return BuildTween(target.Tween().TypewriterReveal(TextAnimationUnit.Character, node.Duration), node.Ease);
+                    return BuildTween(target.Tween().TypewriterReveal(TextAnimationUnit.Character, node.Duration), node.Ease, motionPreference);
                 case TweenRecipeOperation.NumberCountTo:
                     string format = string.IsNullOrWhiteSpace(parameters.StringValue) ? "N0" : parameters.StringValue;
-                    return BuildTween(target.Tween().NumberCountTo(0d, parameters.IntValue, format, node.Duration), node.Ease);
+                    return BuildTween(target.Tween().NumberCountTo(0d, parameters.IntValue, format, node.Duration), node.Ease, motionPreference);
                 case TweenRecipeOperation.CollectionPreset:
-                    return CreateCollectionPreset(node, collectionTargets);
+                    return CreateCollectionPreset(node, collectionTargets, motionPreference);
                 case TweenRecipeOperation.CameraFieldOfViewTo:
                     return target.GetComponent<Camera>().DOFieldOfView(parameters.FloatValue, node.Duration);
                 case TweenRecipeOperation.LightIntensityTo:
-                    return BuildTween(target.Tween().LightIntensityTo(parameters.FloatValue, node.Duration), node.Ease);
+                    return BuildTween(target.Tween().LightIntensityTo(parameters.FloatValue, node.Duration), node.Ease, motionPreference);
                 case TweenRecipeOperation.AudioVolumeTo:
-                    return BuildTween(target.Tween().AudioVolumeTo(parameters.FloatValue, node.Duration), node.Ease);
+                    return BuildTween(target.Tween().AudioVolumeTo(parameters.FloatValue, node.Duration), node.Ease, motionPreference);
                 case TweenRecipeOperation.ParticleEmissionRateTo:
-                    return BuildTween(target.Tween().ParticleEmissionRateTo(parameters.FloatValue, node.Duration), node.Ease);
+                    return BuildTween(target.Tween().ParticleEmissionRateTo(parameters.FloatValue, node.Duration), node.Ease, motionPreference);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(node.Operation), node.Operation, null);
             }
         }
 
-        private static Tween BuildTween(TweenBuilder builder, Ease ease)
+        private static Tween BuildTween(TweenBuilder builder, Ease ease, TweenMotionPreference motionPreference)
         {
-            TweenHandle handle = builder.WithEase(ease).Build();
+            TweenHandle handle = builder.WithEase(ease).WithMotionPreference(motionPreference).Build();
             return handle.Tween;
         }
 
-        private static Tween CreateCollectionPreset(TweenRecipeNode node, IReadOnlyList<GameObject> targets)
+        private static Tween CreateCollectionPreset(TweenRecipeNode node, IReadOnlyList<GameObject> targets, TweenMotionPreference motionPreference)
         {
             ITweenPreset preset = TweenPresetRegistry.GetPresetByName(node.Parameters.StringValue);
-            TweenOptions options = TweenOptions.WithDuration(node.Duration).SetEase(node.Ease);
+            TweenOptions options = TweenOptions.WithDuration(node.Duration).SetEase(node.Ease).SetMotionPreference(motionPreference).ResolveMotionPreference();
             Sequence sequence = DOTween.Sequence();
             try
             {
@@ -432,7 +442,7 @@ namespace LB.TweenHelper
             }
             catch
             {
-                if (sequence.IsActive()) sequence.Kill();
+                TweenLifetime.Kill(sequence);
                 throw;
             }
         }

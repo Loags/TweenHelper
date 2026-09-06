@@ -281,7 +281,7 @@ namespace LB.TweenHelper
             if (_hasScannedCodePresets) return;
 
             _hasScannedCodePresets = true;
-            int count = 0;
+            int count = BuiltInPresetRegistration.Register();
 
             try
             {
@@ -296,6 +296,7 @@ namespace LB.TweenHelper
                         {
                             if (type.GetCustomAttribute<AutoRegisterPresetAttribute>() == null ||
                                 type.IsAbstract ||
+                                _presetsByType.ContainsKey(type) ||
                                 !typeof(ITweenPreset).IsAssignableFrom(type))
                             {
                                 continue;

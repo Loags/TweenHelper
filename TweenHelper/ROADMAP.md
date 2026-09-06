@@ -1,10 +1,21 @@
 # Tween Helper roadmap
 
-Status: **1.2.0 release candidate validated**
+Status: **M0–M9 implementation delivered for 1.3.0-rc.1; local release checks passed.**
 
-Updated: 2026-08-30
+The [implementation roadmap](Assets/_Project/TweenHelperDevelopment/Documentation/PublishingImplementationRoadmap.md) now records completed source work and verified gates. See [implementation evidence](Assets/_Project/TweenHelperDevelopment/Documentation/PublishingImplementationEvidence.md) and the [exact candidate release record](ReleaseArtifacts/Release-1.3.0-rc.1.md).
 
-Tween Helper 1.2.0 is the current release target. No implementation roadmap is active.
+| Milestone | Delivered |
+| --- | --- |
+| M0–M2 | Documented contracts, async/Editor lifecycle correctness and preservation of host DOTween configuration |
+| M3 | Explicit built-in registration; Mono and IL2CPP High player checks, including a preserved customer-only preset |
+| M4 | Complete quick start, lifecycle/migration guides, event adapter and clean/update installation evidence |
+| M5 | Reproducible CPU/cancellation/cleanup measurements with explicit allocation and rendering limitations |
+| M6 | Audited archive, 53 passing tests, existing validators, current stills, captioned reel and release copy |
+| M7 | Use-case discovery, favorites and 20-entry local Browser history |
+| M8 | Package/per-call/player motion preferences, preserved outcomes and authored Toggle |
+| M9 | ProgressFillTo, 28 operations, seven recipe samples and an authored progress/reward workflow |
+
+Remaining external checks: actual Publisher Portal draft/publication/dependency settings, native Browser/Setup/Inspector screenshots on a functioning capture surface, optional human usability review, and final upload/submission approval. Other Unity versions/platforms and standalone URP rendering are not advertised as validated. No Unity Editor batch/CI build or external publishing action was performed.
 
 ## Delivered for 1.2.0
 

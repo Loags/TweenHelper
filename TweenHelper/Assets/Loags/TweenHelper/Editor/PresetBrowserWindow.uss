@@ -60,6 +60,7 @@
 }
 
 .browser-filter-card {
+    flex-wrap: wrap;
     min-height: 48px;
     flex-direction: row;
     align-items: center;

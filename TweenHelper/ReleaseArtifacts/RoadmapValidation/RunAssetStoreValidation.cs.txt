@@ -1,0 +1,33 @@
+
+EditorApplication.CallbackFunction run = null;
+run = () =>
+{
+    EditorApplication.update -= run;
+    var assembly = AppDomain.CurrentDomain.GetAssemblies().First(a => a.GetName().Name == "asset-store-tools-editor");
+    var settingsType = assembly.GetType("AssetStoreTools.Validator.Data.CurrentProjectValidationSettings");
+    var settings = Activator.CreateInstance(settingsType);
+    settingsType.GetField("ValidationPaths").SetValue(settings, new List<string> { "Assets/Loags/TweenHelper" });
+    settingsType.GetField("ValidationType").SetValue(settings, Enum.Parse(assembly.GetType("AssetStoreTools.Validator.Data.ValidationType"), "UnityPackage"));
+    settingsType.GetField("Category").SetValue(settings, "Tools/Animation");
+    var validatorType = assembly.GetType("AssetStoreTools.Validator.CurrentProjectValidator");
+    var validator = Activator.CreateInstance(validatorType, new[] { settings });
+    var result = validatorType.GetMethod("Validate").Invoke(validator, null);
+    var resultType = result.GetType();
+    var tests = ((System.Collections.IEnumerable)resultType.GetField("Tests").GetValue(result)).Cast<object>().Select(test =>
+    {
+        var testType = test.GetType();
+        var outcome = testType.GetField("Result").GetValue(test);
+        var outcomeType = outcome.GetType();
+        int count = (int)outcomeType.GetProperty("MessageCount").GetValue(outcome);
+        var messages = Enumerable.Range(0, count).Select(index =>
+        {
+            var message = outcomeType.GetMethod("GetMessage").Invoke(outcome, new object[] { index });
+            return message.GetType().GetMethod("GetText").Invoke(message, null);
+        }).ToArray();
+        return new { title = testType.GetField("Title").GetValue(test), status = outcomeType.GetField("Status").GetValue(outcome).ToString(), messages };
+    }).ToArray();
+    var report = new { category = "Tools/Animation", root = "Assets/Loags/TweenHelper", status = resultType.GetField("Status").GetValue(result).ToString(), hadCompilationErrors = resultType.GetField("HadCompilationErrors").GetValue(result), tests };
+    System.IO.File.WriteAllText("ReleaseArtifacts/RoadmapValidation/AssetStoreValidation.json", Newtonsoft.Json.JsonConvert.SerializeObject(report, Newtonsoft.Json.Formatting.Indented));
+};
+EditorApplication.update += run;
+return "Package validation queued; no upload or submission.";

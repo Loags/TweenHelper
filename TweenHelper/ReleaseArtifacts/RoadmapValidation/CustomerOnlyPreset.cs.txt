@@ -1,0 +1,20 @@
+// Copy into the disposable customer's Assets folder, then build IL2CPP with High stripping.
+// Run the development smoke player with --tweenhelper-smoke --custom-preset-smoke.
+using DG.Tweening;
+using LB.TweenHelper;
+using UnityEngine;
+using UnityEngine.Scripting;
+
+[Preserve, AutoRegisterPreset]
+public sealed class CustomerOnlyPreset : CodePreset
+{
+    [Preserve]
+    public CustomerOnlyPreset() { }
+
+    public override string PresetName => "CustomerOnlyPreserved";
+
+    public override Tween CreateTween(GameObject target, float? duration = null, TweenOptions options = default)
+    {
+        return target.transform.DOLocalMoveX(3f, duration ?? DefaultDuration).WithDefaults(options, target);
+    }
+}

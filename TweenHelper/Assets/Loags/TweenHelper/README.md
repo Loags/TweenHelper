@@ -2,7 +2,7 @@
 
 Tween Helper is a fluent animation builder and a catalog of reusable presets built on DOTween. It supports transform, UI, SpriteRenderer, renderer, TextMesh Pro, collections, destination motion, world-to-UI projection, gameplay feedback, production UI, progress values, cameras, audio, lights, particles, and material properties while keeping playback, sequencing, cancellation, and reset behavior consistent.
 
-The current release is Tween Helper `1.2.0`. It was developed and validated with Unity `6000.5.2f1` and DOTween Free package `1.2.825` (runtime `1.3.030`). Lower Unity and older DOTween versions have not been tested. DOTween is installed and licensed separately; it is not included with Tween Helper.
+This is the Tween Helper `1.3.0-rc.1` release candidate, extending the 1.2.0 baseline. It is developed with Unity `6000.5.2f1` and DOTween Free package `1.2.825` (runtime `1.3.030`). Lower Unity and older DOTween versions have not been tested. DOTween is installed and licensed separately; it is not included with Tween Helper.
 
 ## Requirements
 
@@ -14,7 +14,13 @@ The current release is Tween Helper `1.2.0`. It was developed and validated with
 
 DOTween is an external Asset Store dependency and is not redistributed with this package. Use **Tools > Tween Helper > Validate > DOTween Setup** after installation for an actionable setup check.
 
-## What's new in 1.2.0
+## What's new in 1.3.0-rc.1
+
+This candidate hardens async cancellation and Editor preview cleanup, preserves the host's DOTween configuration by default, and explicitly registers all built-in presets for stripped players. It adds Browser use-case filters, favorites and recent entries; package-local reduced-motion options; and a progress-fill recipe operation with three additional workflow samples and an authored preference-toggle prefab. The recipe catalog now has 28 operations and seven samples. Preset, Browser and Gallery totals remain 300, 461 and 423 respectively.
+
+Windows Mono and IL2CPP with High stripping passed the candidate's player smoke checks. See [installation and compatibility](Documentation/Installation.md) for the exact tested scope and [lifecycle and migration](Documentation/LifecycleAndMigration.md) before updating an existing project.
+
+## Previous release: 1.2.0
 
 Version 1.2.0 adds generalized character, word, and line TextMesh Pro animation; collection Deal In/Out, grid serpentine, and layout-difference transitions; and visual Tween Recipe authoring with explicit bindings and safe Editor preview. The release contains 300 registered presets, 461 isolated Preset Browser entries, and 423 Animation Gallery entries. See [the changelog](CHANGELOG.md) for the complete release delta.
 
@@ -27,6 +33,12 @@ All distributable files are installed beneath `Assets/Loags/TweenHelper`. The in
 Tween Helper opens **Tools > Tween Helper > Setup & Support** once for each imported package version. The window checks DOTween, the active render pipeline, Unity UI, and TextMesh Pro without changing the project automatically. It also links to the required installation locations and remains available from the Tools menu after dismissal.
 
 ## Quick start
+
+Explore [recipe workflows](Documentation/RecipeWorkflows.md) and [motion preferences](Documentation/MotionPreferences.md). The Preset Browser also offers use-case filters, favorites and the 20 most recently selected entries; these are stored locally per project and do not modify your scenes.
+
+Read [performance and ownership](Documentation/Performance.md) for measured CPU examples and profiling limits, and [external dependency notices](Third-Party%20Notices.md) for separately installed components.
+
+Follow [Your first Tween Helper animations](Documentation/QuickStart.md) for three complete workflows, then read [Lifecycle and migration](Documentation/LifecycleAndMigration.md) for cancellation, pooled objects, retained handles, and host DOTween configuration.
 
 ```csharp
 using LB.TweenHelper;
@@ -215,6 +227,8 @@ Only the selected Tween Helper-related environment information is added. Tween H
 ## Settings
 
 No settings asset is required. TweenHelper uses safe in-memory defaults when `Resources/TweenHelperSettings` is absent. Choose **Tools > Tween Helper > Settings > Create Settings Asset** only when the project needs customized defaults.
+
+Global DOTween engine configuration is opt-in through **Configure Dotween Engine** on that asset. By default, Tween Helper applies its own tween defaults while preserving the host project's global settings. See [migration guidance](Documentation/LifecycleAndMigration.md) when updating a project that relied on the earlier automatic global configuration.
 
 ## Async and cancellation contract
 

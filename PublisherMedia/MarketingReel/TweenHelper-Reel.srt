@@ -1,0 +1,31 @@
+1
+00:00:00,000 --> 00:00:04,030
+300 reusable presets. Preview, replay, and copy the C# call.
+
+2
+00:00:04,030 --> 00:00:08,060
+Compose UI feedback with the semantic builder API.
+
+3
+00:00:08,060 --> 00:00:12,090
+Animate collections with reusable layout and ordering options.
+
+4
+00:00:12,090 --> 00:00:16,120
+Guide rewards and UI elements to a precise destination.
+
+5
+00:00:16,120 --> 00:00:20,150
+Add brief feedback to meaningful gameplay interactions.
+
+6
+00:00:20,150 --> 00:00:24,180
+Coordinate authored UI participants in a single sequence.
+
+7
+00:00:24,180 --> 00:00:28,210
+Animate TMP characters and values with explicit ownership.
+
+8
+00:00:28,210 --> 00:00:32,240
+Layer camera feedback with interruption and restoration.

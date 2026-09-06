@@ -1,0 +1,109 @@
+{
+    "unity": "6000.5.2f1",
+    "device": "Intel(R) Core(TM) i7-6700K CPU @ 4.00GHz / Null Device",
+    "operatingSystem": "Windows 10  (10.0.19045) 64bit",
+    "backend": "Mono",
+    "result": "Passed",
+    "registryCount": 300,
+    "measurements": [
+        {
+            "workload": "transform",
+            "size": 10,
+            "constructionMs": 0.0463,
+            "constructionBytes": 0,
+            "medianStepMs": 0.0026000000000000005,
+            "p95StepMs": 0.0054,
+            "stepBytes": 0,
+            "cleanupMs": 0.0071,
+            "remainingTweens": 0
+        },
+        {
+            "workload": "collection recipe",
+            "size": 10,
+            "constructionMs": 6.6177,
+            "constructionBytes": 0,
+            "medianStepMs": 0.0021000000000000005,
+            "p95StepMs": 0.0023,
+            "stepBytes": 0,
+            "cleanupMs": 0.0053,
+            "remainingTweens": 0
+        },
+        {
+            "workload": "transform",
+            "size": 100,
+            "constructionMs": 0.2676,
+            "constructionBytes": 0,
+            "medianStepMs": 0.0258,
+            "p95StepMs": 0.1675,
+            "stepBytes": 0,
+            "cleanupMs": 0.029400000000000004,
+            "remainingTweens": 0
+        },
+        {
+            "workload": "collection recipe",
+            "size": 100,
+            "constructionMs": 0.38220000000000006,
+            "constructionBytes": 0,
+            "medianStepMs": 0.0212,
+            "p95StepMs": 0.1076,
+            "stepBytes": 0,
+            "cleanupMs": 0.019100000000000004,
+            "remainingTweens": 0
+        },
+        {
+            "workload": "transform",
+            "size": 500,
+            "constructionMs": 2.9881,
+            "constructionBytes": 0,
+            "medianStepMs": 0.1713,
+            "p95StepMs": 0.9333,
+            "stepBytes": 0,
+            "cleanupMs": 0.21050000000000003,
+            "remainingTweens": 0
+        },
+        {
+            "workload": "collection recipe",
+            "size": 500,
+            "constructionMs": 2.2419000000000004,
+            "constructionBytes": 0,
+            "medianStepMs": 0.11220000000000001,
+            "p95StepMs": 0.3647,
+            "stepBytes": 0,
+            "cleanupMs": 0.0693,
+            "remainingTweens": 0
+        },
+        {
+            "workload": "rich TMP wave",
+            "size": 32,
+            "constructionMs": 0.0333,
+            "constructionBytes": 0,
+            "medianStepMs": 0.0333,
+            "p95StepMs": 0.0721,
+            "stepBytes": 0,
+            "cleanupMs": 0.0204,
+            "remainingTweens": 0
+        },
+        {
+            "workload": "rich TMP wave",
+            "size": 256,
+            "constructionMs": 0.027800000000000003,
+            "constructionBytes": 0,
+            "medianStepMs": 0.2807,
+            "p95StepMs": 1.3816000000000002,
+            "stepBytes": 0,
+            "cleanupMs": 0.0285,
+            "remainingTweens": 0
+        },
+        {
+            "workload": "rich TMP wave",
+            "size": 1024,
+            "constructionMs": 0.0261,
+            "constructionBytes": 0,
+            "medianStepMs": 1.3178,
+            "p95StepMs": 5.7052000000000009,
+            "stepBytes": 0,
+            "cleanupMs": 0.0789,
+            "remainingTweens": 0
+        }
+    ]
+}

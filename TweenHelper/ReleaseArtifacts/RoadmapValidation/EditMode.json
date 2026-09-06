@@ -1,0 +1,251 @@
+{
+  "status": "completed",
+  "duration": 2.68,
+  "summary": {
+    "total": 34,
+    "passed": 34,
+    "failed": 0,
+    "skipped": 0,
+    "inconclusive": 0
+  },
+  "results": [
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.DocumentationExamplesEditorTests.ApiExamples_BuildAgainstCurrentFluentSurface",
+      "Status": "Passed",
+      "Duration": 0.077655,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.DocumentationExamplesEditorTests.PresetCatalog_MatchesDeterministicGenerator",
+      "Status": "Passed",
+      "Duration": 0.0577114,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.PublishingReadinessEditorTests.AuthoredSample_HasValidBindingsAndPersistentMotionEvent",
+      "Status": "Passed",
+      "Duration": 0.0172812,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.PublishingReadinessEditorTests.Bootstrapper_PreservesHostDefaultsAndRawTween",
+      "Status": "Passed",
+      "Duration": 0.0049481,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.PublishingReadinessEditorTests.BrowserPreferences_PersistFavoritesAndBoundRecentEntries",
+      "Status": "Passed",
+      "Duration": 0.0493044,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.PublishingReadinessEditorTests.EditorCancellation_KillsWithoutWaitingForPlayMode",
+      "Status": "Passed",
+      "Duration": 0.0049328,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.PublishingReadinessEditorTests.EditorHandleKill_CleansOnlyOwnedTweenAndPreservesCallbackIdentity",
+      "Status": "Passed",
+      "Duration": 0.0014981,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.PublishingReadinessEditorTests.RetainedCompletedTween_AllAwaitEntriesSettleImmediately",
+      "Status": "Passed",
+      "Duration": 0.005516,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.PublishingReadinessEditorTests.WorkflowSample_HasValidStableData(\"ProgressReward\")",
+      "Status": "Passed",
+      "Duration": 0.0007149,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.PublishingReadinessEditorTests.WorkflowSample_HasValidStableData(\"RewardPresentation\")",
+      "Status": "Passed",
+      "Duration": 0.0007662,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.PublishingReadinessEditorTests.WorkflowSample_HasValidStableData(\"CollectionEntrance\")",
+      "Status": "Passed",
+      "Duration": 0.0006868,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenCoreEditModeEditorTests.AwaitCompletion_CancellationCancelsTask",
+      "Status": "Passed",
+      "Duration": 0.214473,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenCoreEditModeEditorTests.AwaitCompletion_PreservesExistingCallbacks",
+      "Status": "Passed",
+      "Duration": 0.1987035,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenCoreEditModeEditorTests.AwaitWithTimeout_ReturnsFalseWhenTweenIsKilledExternally",
+      "Status": "Passed",
+      "Duration": 1.2954035,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenCoreEditModeEditorTests.Builder_AppliesOptionsDeclaredAfterStep",
+      "Status": "Passed",
+      "Duration": 0.003656,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenCoreEditModeEditorTests.Builder_AppliesPendingOptionsToNextStep",
+      "Status": "Passed",
+      "Duration": 0.0007619,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenCoreEditModeEditorTests.Builder_CallbackRegistrationsAreAdditive",
+      "Status": "Passed",
+      "Duration": 0.0008676,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenCoreEditModeEditorTests.Builder_ExplicitDurationOverridesOptionDuration",
+      "Status": "Passed",
+      "Duration": 0.0003588,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenCoreEditModeEditorTests.Builder_PresetReceivesOptionsCapturedForItsStep",
+      "Status": "Passed",
+      "Duration": 0.0018465,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenCoreEditModeEditorTests.Builder_ThenAndWithProduceExpectedDurations",
+      "Status": "Passed",
+      "Duration": 0.0007594,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenCoreEditModeEditorTests.Handle_CallbacksAreAdditive",
+      "Status": "Passed",
+      "Duration": 0.0009858,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenCoreEditModeEditorTests.Registry_ConstructsEveryPresetForCompatibleTarget",
+      "Status": "Passed",
+      "Duration": 0.1355491,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenCoreEditModeEditorTests.Registry_HandlesUnknownPresetAndIncompatibleFadeTarget",
+      "Status": "Passed",
+      "Duration": 0.015506,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenCoreEditModeEditorTests.Registry_HasUniqueConstructiblePresetNames",
+      "Status": "Passed",
+      "Duration": 0.0190609,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenHelperPipelineCliEditorTests.Catalog_FiltersAndValidatesSimplePagingArguments",
+      "Status": "Passed",
+      "Duration": 0.0165602,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenHelperPipelineCliEditorTests.Catalog_PagesAllBuiltInPresetsWithoutChangingRegistry",
+      "Status": "Passed",
+      "Duration": 0.0043683,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenHelperPipelineCliEditorTests.Commands_ExposeTheCatalogAndDeveloperTelemetrySummary",
+      "Status": "Passed",
+      "Duration": 0.0030336,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenHelperPipelineCliEditorTests.Telemetry_DefaultsToEnabledAndPersistsOptOut",
+      "Status": "Passed",
+      "Duration": 0.0035291,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenHelperPipelineCliEditorTests.Telemetry_Disabled_DoesNotCreateFiles",
+      "Status": "Passed",
+      "Duration": 0.0013007,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenHelperPipelineCliEditorTests.Telemetry_RecordsEveryRegisteredCommandOnce",
+      "Status": "Passed",
+      "Duration": 0.0308787,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenHelperPipelineCliEditorTests.Telemetry_RotatesToOneBackupAtTheSizeLimit",
+      "Status": "Passed",
+      "Duration": 0.0159647,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenHelperPipelineCliEditorTests.Telemetry_StoresNoInputsOrExceptionMessagesAndRethrowsOriginalException",
+      "Status": "Passed",
+      "Duration": 0.0209588,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenHelperPipelineCliEditorTests.Telemetry_SummarySkipsMalformedLinesAndReportsThem",
+      "Status": "Passed",
+      "Duration": 0.0263375,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.Editor.TweenHelperPipelineCliEditorTests.Telemetry_WriteFailure_DoesNotChangeCommandResult",
+      "Status": "Passed",
+      "Duration": 0.0056656,
+      "Message": null,
+      "StackTrace": null
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+RESULT: PASS
+PASS | Camera lazy capture, interrupted kill, callbacks, and nested cleanup
+PASS | Feedback transient and Pickup Collect lifecycle policies
+PASS | TMP partial preservation and transient visual restoration
+PASS | UI even-Yoyo invocation restoration
+PASS | Spatial direct-play, interruption, completion, and Yoyo
+PASS | Affected review ID manifest contains exactly 177 unique IDs
+PASS | Every affected review ID exists in the 610-entry catalog

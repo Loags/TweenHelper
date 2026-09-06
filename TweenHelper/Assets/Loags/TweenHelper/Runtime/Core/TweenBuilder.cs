@@ -363,6 +363,12 @@ namespace LB.TweenHelper
             return this;
         }
 
+        public TweenBuilder WithMotionPreference(TweenMotionPreference preference)
+        {
+            UpdateStepOptions(options => options.SetMotionPreference(preference));
+            return this;
+        }
+
         /// <summary>
         /// Uses unscaled time for the tween.
         /// </summary>
@@ -889,6 +895,7 @@ namespace LB.TweenHelper
                 result.onKill += _onKill.Invoke;
             }
 
+            result?.Pause();
             return new TweenHandle(result);
         }
 
@@ -905,7 +912,7 @@ namespace LB.TweenHelper
         private Tween BuildSingleTween()
         {
             var step = _firstStep;
-            var tween = step.TweenFactory?.Invoke(step.Options);
+            var tween = step.TweenFactory?.Invoke(step.Options.ResolveMotionPreference());
 
             if (tween == null)
             {
@@ -947,7 +954,7 @@ namespace LB.TweenHelper
                     continue;
                 }
 
-                var tween = step.TweenFactory?.Invoke(step.Options);
+                var tween = step.TweenFactory?.Invoke(step.Options.ResolveMotionPreference());
                 if (tween == null) continue;
 
                 if (step.ApplyBuilderOptions)
@@ -975,6 +982,7 @@ namespace LB.TweenHelper
         private void ApplySequenceUpdateOptions(Sequence sequence)
         {
             var settings = TweenHelperSettings.Instance;
+            sequence.SetAutoKill(settings.EnableAutoKill);
             var sequenceOptions = default(TweenOptions);
 
             for (int i = 0; i < _stepCount; i++)
@@ -993,6 +1001,7 @@ namespace LB.TweenHelper
         private void ApplyOptions(Tween tween, TweenOptions options)
         {
             var settings = TweenHelperSettings.Instance;
+            tween.SetAutoKill(settings.EnableAutoKill);
 
             // Apply ease (options override > settings default)
             var ease = options.Ease ?? settings.DefaultEase;

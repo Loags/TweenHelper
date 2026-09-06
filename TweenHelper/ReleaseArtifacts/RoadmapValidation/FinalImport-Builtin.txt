@@ -1,0 +1,5 @@
+Unity: 6000.5.2f1
+Registry: 300
+Product paths: 197
+Render pipeline: Built-in
+PASS

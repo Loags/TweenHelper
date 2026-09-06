@@ -28,6 +28,19 @@ namespace LB.TweenHelper
         private float? strength;
         private float? startAlpha;
         private float? targetAlpha;
+        private TweenMotionPreference _motionPreference;
+
+        public static TweenOptions WithMotionPreference(TweenMotionPreference preference) => new TweenOptions().SetMotionPreference(preference);
+
+        public TweenOptions SetMotionPreference(TweenMotionPreference preference)
+        {
+            TweenMotion.Validate(preference);
+            _motionPreference = preference;
+            return this;
+        }
+
+        internal TweenOptions ResolveMotionPreference() => SetMotionPreference(TweenMotion.Resolve(_motionPreference));
+        internal float MotionMultiplier => TweenMotion.Resolve(_motionPreference) == TweenMotionPreference.Reduced ? 0.2f : 1f;
 
         /// <summary>
         /// Creates a new TweenOptions with the specified duration override.
@@ -416,11 +429,12 @@ namespace LB.TweenHelper
         internal string Id => id;
         internal Ease? SecondaryEase => secondaryEase;
         internal Ease? TertiaryEase => tertiaryEase;
-        internal float? Overshoot => overshoot;
+        internal float? Overshoot => MotionMultiplier < 1f ? (overshoot ?? 1f) * MotionMultiplier : overshoot;
         internal float? Duration => duration;
         internal Vector3? StartScale => startScale;
         internal Vector3? TargetScale => targetScale;
-        internal float? Strength => strength;
+        internal float? Strength => MotionMultiplier < 1f ? (strength ?? 1f) * MotionMultiplier : strength;
+        internal float UnmodifiedStrength => strength ?? 1f;
         internal float? StartAlpha => startAlpha;
         internal float? TargetAlpha => targetAlpha;
 

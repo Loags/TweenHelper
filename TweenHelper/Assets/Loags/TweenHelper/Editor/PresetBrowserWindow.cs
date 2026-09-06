@@ -26,6 +26,10 @@ namespace LB.TweenHelper.Editor
         private ToolbarSearchField _searchField;
         private PopupField<string> _categoryPopup;
         private PopupField<string> _familyPopup;
+        private PopupField<string> _useCasePopup;
+        private PopupField<string> _savedPopup;
+        private PresetBrowserPreferences _preferences;
+        private Button _favoriteButton;
         private ListView _listView;
         private Label _catalogCount;
         private Label _visibleCount;
@@ -132,6 +136,7 @@ namespace LB.TweenHelper.Editor
 
         private void BuildFilters()
         {
+            _preferences = PresetBrowserPreferences.Load();
             var filterCard = new VisualElement();
             filterCard.AddToClassList("browser-filter-card");
 
@@ -155,6 +160,28 @@ namespace LB.TweenHelper.Editor
             _familyPopup.AddToClassList("browser-popup");
             _familyPopup.RegisterValueChangedCallback(_ => ApplyFilters());
             filterCard.Add(_familyPopup);
+
+            _useCasePopup = new PopupField<string>("Use case", new List<string> { "All use cases", "Menus", "Inventory", "Rewards", "Text", "Progress", "Camera" }, 0);
+            _useCasePopup.AddToClassList("browser-popup");
+            _useCasePopup.RegisterValueChangedCallback(_ => ApplyFilters());
+            filterCard.Add(_useCasePopup);
+            _savedPopup = new PopupField<string>("Show", new List<string> { "All entries", "Favorites", "Recent" }, 0);
+            _savedPopup.AddToClassList("browser-popup");
+            _savedPopup.RegisterValueChangedCallback(_ => ApplyFilters());
+            filterCard.Add(_savedPopup);
+
+            var resetButton = new Button(() =>
+            {
+                _searchField.SetValueWithoutNotify(string.Empty);
+                _categoryPopup.SetValueWithoutNotify(AllAnimations);
+                RefreshFamilyChoices();
+                _familyPopup.SetValueWithoutNotify(AllFamilies);
+                _useCasePopup.SetValueWithoutNotify("All use cases");
+                _savedPopup.SetValueWithoutNotify("All entries");
+                ApplyFilters();
+            }) { text = "Reset filters" };
+            resetButton.AddToClassList("secondary-button");
+            filterCard.Add(resetButton);
 
             var refreshButton = new Button(RefreshEntries) { text = "Refresh" };
             refreshButton.AddToClassList("secondary-button");
@@ -253,6 +280,15 @@ namespace LB.TweenHelper.Editor
             _copyButton.AddToClassList("secondary-button");
             _copyButton.SetEnabled(false);
             panel.Add(_copyButton);
+            _favoriteButton = new Button(() =>
+            {
+                if (_selectedEntry == null) return;
+                _preferences.ToggleFavorite(_selectedEntry.Id);
+                ApplyFilters();
+            }) { text = "Add favorite" };
+            _favoriteButton.AddToClassList("secondary-button");
+            _favoriteButton.SetEnabled(false);
+            panel.Add(_favoriteButton);
             parent.Add(panel);
         }
 
@@ -383,6 +419,9 @@ namespace LB.TweenHelper.Editor
 
             _visibleEntries.Clear();
             _visibleEntries.AddRange(_entries.Where(entry =>
+                PresetBrowserPreferences.MatchesUseCase(entry, _useCasePopup.value) &&
+                (_savedPopup.value != "Favorites" || _preferences.IsFavorite(entry.Id)) &&
+                (_savedPopup.value != "Recent" || _preferences.RecentIndex(entry.Id) >= 0) &&
                 MatchesCategory(entry, category) &&
                 (family == AllFamilies || string.Equals(entry.Family, family, StringComparison.Ordinal)) &&
                 (string.IsNullOrEmpty(search) ||
@@ -391,6 +430,7 @@ namespace LB.TweenHelper.Editor
                  entry.Category.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
                  entry.Family.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)));
 
+            if (_savedPopup.value == "Recent") _visibleEntries.Sort((left, right) => _preferences.RecentIndex(left.Id).CompareTo(_preferences.RecentIndex(right.Id)));
             _listView.itemsSource = _visibleEntries;
             _listView.Rebuild();
             _visibleCount.text = $"{_visibleEntries.Count} shown";
@@ -416,6 +456,9 @@ namespace LB.TweenHelper.Editor
         private void SelectEntry(PresetBrowserEntry entry)
         {
             _selectedEntry = entry;
+            _preferences.Visit(entry.Id);
+            _favoriteButton.SetEnabled(true);
+            _favoriteButton.text = _preferences.IsFavorite(entry.Id) ? "Remove favorite" : "Add favorite";
             _entryBadge.text = entry.Badge;
             _entryBadge.EnableInClassList("browser-entry-badge-collection", !entry.IsPreset);
             _entryName.text = entry.Name;
@@ -436,6 +479,8 @@ namespace LB.TweenHelper.Editor
         private void ClearSelection()
         {
             _selectedEntry = null;
+            _favoriteButton.SetEnabled(false);
+            _favoriteButton.text = "Add favorite";
             _entryBadge.text = string.Empty;
             _entryName.text = "No matching animations";
             _entryDescription.text = "Adjust the search or filters to continue browsing.";

@@ -79,6 +79,7 @@ namespace LB.TweenHelper
             Vector3 destination = default;
             Quaternion focusRotation = default;
             bool focusCaptured = false;
+            float rotationMultiplier = options.MotionMultiplier;
 
             return CreateTransient(target, duration, options, (state, progress) =>
             {
@@ -95,7 +96,7 @@ namespace LB.TweenHelper
 
                 float zoom = Mathf.Sin(progress * Mathf.PI);
                 float easedZoom = EaseValue(zoom, options.Ease ?? Ease.InOutSine);
-                state.ApplyWorld(Vector3.LerpUnclamped(state.WorldPosition, destination, easedZoom), Quaternion.SlerpUnclamped(state.WorldRotation, focusRotation, easedZoom), -fieldOfViewDelta * strength * easedZoom);
+                state.ApplyWorld(Vector3.LerpUnclamped(state.WorldPosition, destination, easedZoom), Quaternion.SlerpUnclamped(state.WorldRotation, focusRotation, easedZoom * rotationMultiplier), -fieldOfViewDelta * strength * easedZoom);
             });
         }
 

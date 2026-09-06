@@ -101,7 +101,7 @@ namespace LB.TweenHelper.Editor
             try
             {
                 CaptureState(player);
-                if (!TweenRecipeExecutor.TryBuild(player.Recipe, player.Bindings, player.gameObject, out _handle, out TweenRecipeValidationResult validation, false, UpdateType.Manual))
+                if (!TweenRecipeExecutor.TryBuild(player.Recipe, player.Bindings, player.gameObject, out _handle, out TweenRecipeValidationResult validation, false, UpdateType.Manual, player.MotionPreference))
                 {
                     message = validation.GetSummary();
                     RestoreState(message);

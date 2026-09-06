@@ -45,7 +45,8 @@ namespace LB.TweenHelper
         CameraFieldOfViewTo,
         LightIntensityTo,
         AudioVolumeTo,
-        ParticleEmissionRateTo
+        ParticleEmissionRateTo,
+        ProgressFillTo
     }
 
     [Flags]

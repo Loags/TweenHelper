@@ -77,6 +77,8 @@ namespace LB.TweenHelper
 
             var settings = TweenHelperSettings.Instance;
 
+            ApplyPlaybackDefaults(tween, settings);
+
             // Apply ease (options override > settings default)
             var ease = options.Ease ?? settings.DefaultEase;
             tween.SetEase(ease);
@@ -138,6 +140,8 @@ namespace LB.TweenHelper
             }
 
             var settings = TweenHelperSettings.Instance;
+
+            ApplyPlaybackDefaults(tween, settings);
 
             // Apply ease (options override > settings default)
             var ease = options.Ease ?? settings.DefaultEase;
@@ -211,6 +215,8 @@ namespace LB.TweenHelper
 
             var settings = TweenHelperSettings.Instance;
 
+            ApplyPlaybackDefaults(sequence, settings);
+
             // Apply ease (options override > settings default)
             var ease = options.Ease ?? settings.DefaultEase;
             sequence.SetEase(ease);
@@ -250,6 +256,13 @@ namespace LB.TweenHelper
         }
 
         #endregion
+
+        internal static void ApplyPlaybackDefaults(Tween tween, TweenHelperSettings settings)
+        {
+            tween.SetAutoKill(settings.EnableAutoKill);
+            if (settings.EnableAutoPlay) tween.Play();
+            else tween.Pause();
+        }
 
         #region Linking Extension Methods
 
