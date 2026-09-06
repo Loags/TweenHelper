@@ -1,6 +1,6 @@
 # Tween Helper 1.3.0-rc.1
 
-Status: locally verified release candidate; not submitted or published.
+Status: locally verified release candidate, uploaded to [Publisher draft 1472100](https://publisher.unity.com/packages/1472100/edit/upload); not submitted or published.
 
 Source commit: `f3711bd705c987f41ec769086d0fdad21eb2a1ce` (implementation, customer documentation, candidate archive and validation/media tooling). This follow-up record changes release metadata only.
 
@@ -42,4 +42,8 @@ The final archive differs from the player-tested payload only in customer docume
 
 [Media manifest](../../PublisherMedia/README.md), [captioned reel](../../PublisherMedia/MarketingReel/TweenHelper-1.3.0-rc.1-Reel.mp4), and [written first-animation tutorial](../../PublisherMedia/Tutorial/FirstAnimation.md).
 
-Native Browser/Setup/Inspector screenshots and live Portal checks remain blocked by the recorded computer-use failures. Upload/submission requires the final publishing decision for this exact candidate.
+Native Browser/Setup/Inspector captures remain unavailable because of the Windows screenshot failure. Chrome extension control succeeded for the Portal update on September 6, 2026. The linked version 1464536 was Pending; its “Create new draft to edit” action created draft 1472100 for product 399068. The Portal stated that updating and resubmitting preserves the queue position.
+
+The exact archive above was uploaded using the installed Asset Store Tools 12.0.5 uploader service in Unity 6000.5.2f1. It returned Success at 2026-09-06T17:21:39.8456114Z. Portal verification after processing showed September 6, 17:21 UTC, 171 files and 775.5 KB. The local archive contains 171 asset files plus 27 folders, matching its 198 paths; the hash is unchanged.
+
+The saved draft uses the existing title “Tween Helper” and version 1.3.0-rc.1. Summary, feature description, technical details, release notes, compatibility wording and AI disclosure were updated from the verified implementation; historical changelog entries were retained. DOTween is configured as a required dependency. Eight current screenshots and the captioned reel were added through Chrome, with twelve screenshots and two videos present afterward. The new reel preview rendered correctly. Existing price, launch discount and marketing key images were retained. Submission remains a separate publishing decision.

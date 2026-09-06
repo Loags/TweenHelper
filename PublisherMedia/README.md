@@ -1,6 +1,6 @@
 # Tween Helper publishing media
 
-Candidate: **1.3.0-rc.1**. [Exact artifact and release copy](../TweenHelper/ReleaseArtifacts/Release-1.3.0-rc.1.md). Remote publication/draft state remains unverified; historical Portal IDs are not a verified current destination.
+Candidate: **1.3.0-rc.1**. [Exact artifact and release copy](../TweenHelper/ReleaseArtifacts/Release-1.3.0-rc.1.md). Updated [Publisher draft 1472100](https://publisher.unity.com/packages/1472100/edit/upload) on September 6, 2026; saved as Draft, not submitted.
 
 ## Current delivery
 
@@ -23,6 +23,8 @@ This directory stays outside Unity Assets and is excluded from the customer arch
 
 Native Browser, Setup and Inspector screenshots require a working Windows capture surface. Computer use fails with `SetIsBorderRequired ... 0x80004002`; publisher-tab control also failed its CDP focus operation. Gallery stills/reel succeeded through Recorder. A recorded Editor walkthrough is not claimed.
 
-Before upload, verify the actual draft, category, dimensions/crops, codecs/hosting limits and dependency configuration. Review listing copy, support address and AI disclosure. No media was uploaded or replaced remotely.
+Chrome extension upload and verification succeeded on September 6, 2026. Added eight 1920×1080 screenshots (presets, UI recipes, collection option menu, destination motion, gameplay feedback, UI sequences, text/values and camera feedback) and the captioned 32.24-second reel. Portal shows twelve screenshots and two videos including the five existing media entries; the new reel preview rendered correctly. Existing marketing images, price and launch discount were retained. The Portal supports direct MP4 upload, so external video hosting was unnecessary.
+
+Draft 1472100 belongs to Tween Helper, product 399068, Tools/Animation. The user-provided version 1464536 was pending and locked; its “Create new draft to edit” action created the editable replacement. Listing copy, version, changelog, compatibility details, keywords and AI disclosure were updated. DOTween remains configured as a required Asset Store dependency. The exact candidate archive uploaded successfully through installed Asset Store Tools 12.0.5 in Unity 6000.5.2f1 at 17:21 UTC. After processing, Portal shows 171 files and 775.5 KB, matching the archive's 171 files plus 27 folders (198 paths). No submission was made.
 
 Historical icon/card/cover artwork remains under TweenHelper/PublisherMedia and is not automatically approved for reuse. Old 2D/3D showcase captures and TweenHelper-2D-Showcase-1280x720.mp4 predate the current Gallery. Review provenance and visible claims before reusing old artwork.
