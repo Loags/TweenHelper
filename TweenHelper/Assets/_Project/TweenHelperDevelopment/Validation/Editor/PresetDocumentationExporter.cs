@@ -123,7 +123,7 @@ namespace LB.TweenHelper.Editor
             var builder = new StringBuilder();
             builder.AppendLine("# Tween Helper preset catalog");
             builder.AppendLine();
-            builder.AppendLine("> Generated deterministically from the 300 registered preset types in the current pre-release baseline.");
+            builder.AppendLine("> Generated deterministically from the 300 registered preset types in Tween Helper 1.2.0.");
             builder.AppendLine();
             builder.AppendLine($"Built-in presets: **{sorted.Count}**");
             builder.AppendLine();

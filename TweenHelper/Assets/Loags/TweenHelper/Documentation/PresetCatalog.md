@@ -1,6 +1,6 @@
 # Tween Helper preset catalog
 
-> Generated deterministically from the 300 registered preset types in the current pre-release baseline.
+> Generated deterministically from the 300 registered preset types in Tween Helper 1.2.0.
 
 Built-in presets: **300**
 

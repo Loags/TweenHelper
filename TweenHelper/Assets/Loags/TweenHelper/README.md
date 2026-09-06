@@ -2,7 +2,7 @@
 
 Tween Helper is a fluent animation builder and a catalog of reusable presets built on DOTween. It supports transform, UI, SpriteRenderer, renderer, TextMesh Pro, collections, destination motion, world-to-UI projection, gameplay feedback, production UI, progress values, cameras, audio, lights, particles, and material properties while keeping playback, sequencing, cancellation, and reset behavior consistent.
 
-Tween Helper is in pre-release development and has not had a public release. The current baseline was developed and validated with Unity `6000.5.2f1` and DOTween Free package `1.2.825` (runtime `1.3.030`). Lower Unity and older DOTween versions have not been tested. DOTween is installed and licensed separately; it is not included with Tween Helper.
+The current release is Tween Helper `1.2.0`. It was developed and validated with Unity `6000.5.2f1` and DOTween Free package `1.2.825` (runtime `1.3.030`). Lower Unity and older DOTween versions have not been tested. DOTween is installed and licensed separately; it is not included with Tween Helper.
 
 ## Requirements
 
@@ -13,6 +13,10 @@ Tween Helper is in pre-release development and has not had a public release. The
 - Built-in Render Pipeline or Universal Render Pipeline. HDRP and custom render pipelines are untested.
 
 DOTween is an external Asset Store dependency and is not redistributed with this package. Use **Tools > Tween Helper > Validate > DOTween Setup** after installation for an actionable setup check.
+
+## What's new in 1.2.0
+
+Version 1.2.0 adds generalized character, word, and line TextMesh Pro animation; collection Deal In/Out, grid serpentine, and layout-difference transitions; and visual Tween Recipe authoring with explicit bindings and safe Editor preview. The release contains 300 registered presets, 461 isolated Preset Browser entries, and 423 Animation Gallery entries. See [the changelog](CHANGELOG.md) for the complete release delta.
 
 ## Installation
 
@@ -233,6 +237,7 @@ No settings asset is required. TweenHelper uses safe in-memory defaults when `Re
 - [Camera feedback](Documentation/CameraFeedback.md)
 - [Engine property animations](Documentation/EnginePropertyAnimations.md)
 - [Preset catalog](Documentation/PresetCatalog.md)
+- [Release history](CHANGELOG.md)
 
 ## Licensing
 

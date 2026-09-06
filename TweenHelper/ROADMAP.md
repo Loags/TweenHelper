@@ -1,34 +1,27 @@
-# Tween Helper active roadmaps
+# Tween Helper roadmap
 
-Status: **pre-release development**
+Status: **1.2.0 release candidate validated**
 
-Updated: 2026-08-29
+Updated: 2026-08-30
 
-Tween Helper has not had a public release. Existing APIs and catalog counts describe the current development baseline, not a compatibility contract. Prefer clear APIs and small implementations over preserving obsolete development-only names or plans.
+Tween Helper 1.2.0 is the current release target. No implementation roadmap is active.
 
-## Active roadmaps
+## Delivered for 1.2.0
 
-| Roadmap | Scope | State |
-| --- | --- | --- |
-| [TMP Animation Expansion](Assets/Loags/TweenHelper/Documentation/TMPAnimationExpansionRoadmap.md) | Generalized TMP units, glyph motion, transforms, and spatial reactions | Planned |
-| [Layout-Difference Collection Transitions](Assets/_Project/TweenHelperDevelopment/Documentation/LayoutDifferenceCollectionTransitionsRoadmap.md) | Animate UI children between authored layout states | Planned |
-| [Collection Deal and Grid Serpentine](Assets/_Project/TweenHelperDevelopment/Documentation/CollectionDealAndGridSerpentineRoadmap.md) | Deal In/Out motion and reusable serpentine grid ordering | Planned |
-| [TweenRecipe Node Editor and TweenPlayer](Assets/_Project/TweenHelperDevelopment/Documentation/TweenRecipeNodeEditorRoadmap.md) | Visual recipe authoring, runtime bindings, playback, and preview | Planned |
+| Area | State |
+| --- | --- |
+| Generalized TextMesh Pro animation | Implemented, integrated, documented, and validated |
+| Deal In/Out and grid serpentine collections | Implemented, integrated, documented, and validated |
+| Layout-difference collection transitions | Implemented, integrated, documented, and validated |
+| Tween Recipe assets, TweenPlayer, and visual editor | Implemented, integrated, documented, and validated |
+| Gallery, Browser, and review integration | 423 Gallery entries, 461 Browser entries, 610 review configurations |
 
-## Planning rules
+## Deferred work
 
-- Implement one roadmap phase at a time.
-- Reuse the current tween, lifecycle, stagger, preview, and catalog infrastructure where it fits.
-- Do not add legacy aliases for unreleased APIs.
-- Do not build generalized frameworks without a current roadmap consumer.
-- Update Gallery, Preset Browser, review coverage, and customer documentation in the same phase as each public feature.
-- Recalculate catalog counts after implementation instead of preserving historical totals.
-- Do not publish planned features as available before runtime, preview, lifecycle, and documentation validation are complete.
+TMP formation transitions remain unapproved and are not part of 1.2.0. Persistent curved/circular text layout, material/shader effects, editor authoring systems beyond Tween Recipes, and parameter-only duplicate engines remain out of scope. Any future expansion requires a new explicit roadmap and release decision.
 
-## Documentation cleanup
+## Documentation state
 
-Completed implementation trackers, superseded lifecycle handoffs, stale release-candidate records, and abandoned CLI-gated recipe plans were moved to the development documentation archive on 2026-08-29. They are excluded from active planning and remain recoverable until explicitly deleted.
+Completed implementation roadmaps, historical release candidates, deprecated handoffs, and abandoned pipeline plans were removed on 2026-08-30 after their current facts were incorporated into the shipped guides, changelog, and `Assets/_Project/TweenHelperDevelopment/Documentation/Release-1.2.0.md`.
 
-The implemented CLI prototype is documented by `Assets/_Project/TweenHelperDevelopment/CLI/README.md`; it has no active feature roadmap and is not a dependency of the public runtime.
-
-Git history remains the source for decisions removed from active documentation.
+Git history remains the source for removed planning decisions.

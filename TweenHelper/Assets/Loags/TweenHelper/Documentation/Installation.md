@@ -2,7 +2,7 @@
 
 ## Validated configuration
 
-The current pre-release Tween Helper baseline was developed and validated with:
+Tween Helper 1.2.0 was developed and validated with:
 
 - Unity `6000.5.2f1`.
 - DOTween Free package `1.2.825`, which reports runtime `1.3.030`.

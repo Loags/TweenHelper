@@ -1,36 +1,34 @@
 # Changelog
 
-## Unreleased
+## [1.2.0] - 2026-08-30
 
-Tween Helper remains in pre-release development. The entries below describe the current development baseline rather than a published version.
+### Added
 
-### Runtime and lifecycle
+- Expanded TextMesh Pro animation with shared character, word, and line element mapping; ordered stagger, scatter, rotate, shear, tracking, impact-ripple, wiggle, float, swing, pulse, and deterministic scramble workflows.
+- Added builder and direct-extension parity for the expanded text operations, with one mesh-state owner per label and exact mesh/visibility restoration across completion, rewind, interruption, restart, kill, and Yoyo loops.
+- Added collection Deal In/Out, reusable eight-direction grid serpentine ordering, and layout-difference transitions captured around caller-owned layout changes.
+- Added reusable Tween Recipe assets, explicit TweenPlayer bindings, a constrained Then/With editor, safe scene/Prefab Mode preview, validation navigation, and a curated 27-operation runtime catalog.
 
-- Added a fluent, type-safe DOTween animation builder with explicit playback handles and lifecycle control.
-- Added 300 registered presets with typed and dynamic lookup workflows.
-- Added semantic UI, collection, destination-motion, gameplay-feedback, production-UI, TextMesh Pro, numeric-value, and camera-feedback APIs.
-- Expanded TextMesh Pro with character/word/line reveals, shared deterministic ordering, finite wiggle/float/swing/pulse motion, scatter/rotate/shear/tracking transitions, and local-space impact ripple while preserving exact mesh and visibility lifecycle state.
-- Replaced the unreleased character-specific stagger names with `TextStaggerIn` and `TextStaggerOut`; no legacy public aliases remain.
-- Added world-to-UI Arc, Hop, Bezier, Path, and pickup-collection projection for overlay and camera-space canvases.
-- Added normalized Image/Slider fill, value/text synchronization, drain, charge, alert pulse, and progress-hook operations.
-- Added gameplay-state feedback, collection topology recipes, deal-in/deal-out and eight-direction serpentine collections, reusable sequence macros, camera rack-focus/collection kick, and engine-property wrappers for audio, lights, particle emission, and renderer properties.
-- Added two-step collection layout snapshots for animating direct UI children across caller-owned sibling-order and layout-setting changes.
-- Consolidated advanced semantic timelines around consistent capture, completion, rewind, interruption, loop, target-link, and async/cancellation behavior.
-- Added reusable TweenRecipe assets, explicit TweenPlayer bindings and ownership, pre-mutation validation, and a curated 27-operation executor spanning local/world transforms, presets, destination motion, feedback, multi-binding UI, text/value, collections, and camera/engine properties.
+### Changed
 
-### Editor tools and samples
+- Replaced the unreleased character-specific stagger names with the generalized `TextStaggerIn` and `TextStaggerOut` API; no legacy public aliases remain.
+- Expanded the searchable Preset Browser to 461 isolated entries and the shipped Animation Gallery to 423 customer-facing entries while keeping the registered preset catalog at 300.
+- Expanded the development-only review surface to 610 unique configurations, including exhaustive text, collection, layout-transition, and recipe coverage.
+- Updated setup, API, text/value, collection, recipe, catalog, gallery, browser, and release documentation for the 1.2.0 surface.
 
-- Added the searchable Preset Browser with 461 isolated previews and copyable configuration-aware examples.
-- Added purpose-built preview fixtures for UI sequences, progress bars, cameras, audio, lights, particles, material properties, and projected world-to-UI content.
-- Synchronized proxy sorting/depth, Graphic color, parent `CanvasGroup` alpha, fill/value state, and incoming/backdrop participants during Editor previews.
-- Added Setup & Support, DOTween validation, and an optional settings asset.
-- Added the mouse-driven Animation Gallery with 423 entries, contextual options, replay/reset navigation, live C# examples, presentation mode, and dedicated world/camera/layout fixtures.
-- Added the UI Toolkit Tween Recipe Editor, binding synchronization, constrained Then/With timeline editing, validation navigation, and exact-restoring scene/Prefab Mode preview.
+### Fixed
 
-### Fixes and documentation
+- Aligned Text Float phases across multiline TMP content.
+- Made character, word, and line stagger/scatter previews visibly distinct and corrected outgoing line transitions so they operate one line at a time.
+- Made grouped TMP transform previews use their intended operation rather than an unrelated animation.
+- Preserved rich text, whitespace, line breaks, invisible glyphs, multi-material text, TextMeshProUGUI, and world-space TextMeshPro across the expanded mesh effects.
 
-- Fixed Animation Gallery UI fixtures so fades consistently include child text, icons, and other grouped visuals.
-- Fixed Hop-to-UI timing so anticipation finishes before travel and landing squash begins after arrival.
-- Fixed Image fill and engine-meter review fixtures by assigning renderable filled sprites and placing synchronized percentage text over the bar.
-- Improved audio/light preview meters, pitch normalization, Torch Flicker visibility, and alert-pulse descriptions.
-- Added customer documentation for installation, API usage, every feature family, the 300-preset catalog, the 461-entry Preset Browser, the 423-entry Animation Gallery, and the Tween Recipe authoring workflow.
+## [1.1.0] - 2026-08-19
+
+### Added
+
+- Introduced the fluent, type-safe DOTween builder, explicit TweenHandle lifecycle, sequencing, joined steps, callbacks, loops, async waiting, cancellation, timeout, rewind, restart, and kill behavior.
+- Added 300 registered presets plus semantic UI, collection, destination, gameplay-feedback, production-UI, TextMesh Pro/value, progress, camera, and engine-property APIs.
+- Added Setup & Support, DOTween validation, the Preset Browser, the mouse-driven Animation Gallery, focused customer guides, and the generated preset catalog.
+
+[1.2.0]: https://publisher.unity.com/packages/1453516/edit/upload

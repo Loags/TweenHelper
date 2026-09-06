@@ -13,7 +13,7 @@ namespace LB.TweenHelper.Setup.Editor
 {
     public sealed class TweenHelperSetupWindow : EditorWindow
     {
-        private const string PackageVersion = "1.1.0";
+        private const string PackageVersion = "1.2.0";
         private const string SupportEmail = "Info@Loags.de";
         private const string DotweenUrl = "https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676";
         private const string DocumentationPath = "Assets/Loags/TweenHelper/Documentation/Installation.md";

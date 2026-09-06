@@ -88,7 +88,7 @@
                 </ui:VisualElement>
             </ui:VisualElement>
 
-            <ui:Toggle name="do-not-show-again" label="Don't show this window again for Tween Helper 1.1.0" class="dismiss-toggle" />
+            <ui:Toggle name="do-not-show-again" label="Don't show this window again for Tween Helper 1.2.0" class="dismiss-toggle" />
         </ui:ScrollView>
     </ui:VisualElement>
 </ui:UXML>

@@ -6,7 +6,7 @@ This folder is repository-only. Never include it in the Asset Store `.unitypacka
 
 - `Tests` contains EditMode and PlayMode validation assemblies.
 - `Validation` contains gallery audits, preset integrity tools, lifecycle/coverage validators, and the internal review scene.
-- `Documentation` contains active feature roadmaps and a clearly separated archive of superseded plans.
+- `Documentation` contains the current internal release record. Completed implementation roadmaps and superseded release drafts are removed after their facts are folded into customer and release documentation.
 - `CLI` contains the development-only Unity Pipeline command adapter and local telemetry documentation.
 - Publisher Portal source records and branding remain development-only.
 
@@ -46,4 +46,4 @@ The review scene was rebuilt at scene version 3 so filled Images and property me
 
 ## Development state
 
-Tween Helper has not had a public release. Current catalog counts and validation snapshots are development baselines and may change as active roadmaps are implemented. Use the repository root `ROADMAP.md` for active plans; files under `Documentation/Archive` are historical only.
+Tween Helper 1.2.0 is the current release target. The repository root `ROADMAP.md` records the delivered scope and explicitly deferred work; `Documentation/Release-1.2.0.md` is the canonical internal publishing record. Git history retains completed implementation plans and superseded release drafts.
