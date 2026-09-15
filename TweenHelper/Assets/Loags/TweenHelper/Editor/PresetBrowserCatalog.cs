@@ -9,7 +9,7 @@ namespace LB.TweenHelper.Editor
     {
         public static List<PresetBrowserEntry> Build()
         {
-            TweenPresetRegistry.Refresh();
+            TweenPresetRegistry.DiscoverPresets();
             var entries = TweenPresetRegistry.Presets
                 .OrderBy(preset => preset.PresetName, StringComparer.Ordinal)
                 .Select(PresetBrowserEntry.FromPreset)

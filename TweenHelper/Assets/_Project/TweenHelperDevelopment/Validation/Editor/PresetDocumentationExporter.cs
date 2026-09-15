@@ -102,10 +102,11 @@ namespace LB.TweenHelper.Editor
             }
 
             TweenPresetRegistry.Refresh();
-            if (TweenPresetRegistry.Count != presets.Count)
+            int builtInCount = TweenPresetRegistry.Presets.Count(preset => preset.GetType().Assembly == typeof(ITweenPreset).Assembly);
+            if (builtInCount != presets.Count)
             {
                 content = null;
-                error = $"Registry count {TweenPresetRegistry.Count} does not match discovered preset count {presets.Count}.";
+                error = $"Built-in registry count {builtInCount} does not match discovered preset count {presets.Count}.";
                 return false;
             }
 

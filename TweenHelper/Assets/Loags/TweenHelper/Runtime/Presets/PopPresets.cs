@@ -92,6 +92,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PopInPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.StartScale | PresetOverrideFields.TargetScale)]
     public class PopInPreset : CodePreset
     {
         public override string PresetName => "PopIn";
@@ -122,6 +123,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PopInOvershootPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.StartScale | PresetOverrideFields.TargetScale | PresetOverrideFields.Overshoot)]
     public class PopInOvershootPreset : CodePreset
     {
         public override string PresetName => "PopInOvershoot";
@@ -152,6 +154,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PopOutPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.TargetScale)]
     public class PopOutPreset : CodePreset
     {
         public override string PresetName => "PopOut";
@@ -174,6 +177,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PopOutSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.TargetScale)]
     public class PopOutSoftPreset : CodePreset
     {
         public override string PresetName => "PopOutSoft";
@@ -196,6 +200,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PopOutHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.TargetScale)]
     public class PopOutHardPreset : CodePreset
     {
         public override string PresetName => "PopOutHard";
@@ -225,6 +230,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PopOutOvershootPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.TargetScale | PresetOverrideFields.Overshoot)]
     public class PopOutOvershootPreset : CodePreset
     {
         public override string PresetName => "PopOutOvershoot";
@@ -255,6 +261,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PopOutOvershootSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.TargetScale | PresetOverrideFields.Overshoot)]
     public class PopOutOvershootSoftPreset : CodePreset
     {
         public override string PresetName => "PopOutOvershootSoft";
@@ -285,6 +292,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PopOutOvershootHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.TargetScale | PresetOverrideFields.Overshoot)]
     public class PopOutOvershootHardPreset : CodePreset
     {
         public override string PresetName => "PopOutOvershootHard";
@@ -308,6 +316,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PopInSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.StartScale | PresetOverrideFields.TargetScale)]
     public class PopInSoftPreset : CodePreset
     {
         public override string PresetName => "PopInSoft";
@@ -338,6 +347,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PopInOvershootSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.StartScale | PresetOverrideFields.TargetScale | PresetOverrideFields.Overshoot)]
     public class PopInOvershootSoftPreset : CodePreset
     {
         public override string PresetName => "PopInOvershootSoft";
@@ -361,6 +371,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PopInHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.StartScale | PresetOverrideFields.TargetScale)]
     public class PopInHardPreset : CodePreset
     {
         public override string PresetName => "PopInHard";
@@ -391,6 +402,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PopInOvershootHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.StartScale | PresetOverrideFields.TargetScale | PresetOverrideFields.Overshoot)]
     public class PopInOvershootHardPreset : CodePreset
     {
         public override string PresetName => "PopInOvershootHard";

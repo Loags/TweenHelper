@@ -1,0 +1,15 @@
+{
+  "Authenticated": true,
+  "Packages": [
+    {
+      "Name": "Tween Helper",
+      "PackageId": "399068",
+      "VersionId": "1482192",
+      "Status": "draft",
+      "RootPath": "Assets/Loags/TweenHelper",
+      "Category": "Tools/Animation",
+      "Modified": "2026-09-15 19:01:09",
+      "Size": "809551"
+    }
+  ]
+}

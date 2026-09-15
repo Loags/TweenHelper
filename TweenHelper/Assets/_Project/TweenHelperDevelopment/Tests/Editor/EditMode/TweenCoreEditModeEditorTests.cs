@@ -48,7 +48,7 @@ namespace LB.TweenHelper.Tests.Editor
             Assert.That(duplicateNames, Is.Empty);
 
             TweenPresetRegistry.Refresh();
-            Assert.That(TweenPresetRegistry.Count, Is.EqualTo(presetTypes.Count));
+            Assert.That(TweenPresetRegistry.Presets.Count(preset => preset.GetType().Assembly == typeof(ITweenPreset).Assembly), Is.EqualTo(presetTypes.Count));
         }
 
         [Test]

@@ -16,7 +16,7 @@ The timeline is intentionally constrained. It represents only `Then`, `With`, an
 
 ## Bind and play
 
-Add **Tween Player** to a GameObject, assign a recipe, and choose **Sync Bindings** in its Inspector. Assign every GameObject or ordered collection explicitly. Synchronization adds new recipe slots without silently deleting stale assignments, so removed slots can be reviewed before deletion.
+Add **Tween Player** to a GameObject, assign a recipe, and use **Recipe** mode in its Inspector; binding fields appear automatically. Assign every GameObject or ordered collection explicitly. Synchronization adds new recipe slots without silently deleting stale assignments, so removed slots can be reviewed before deletion.
 
 Call `Play()` from code to receive the active handle. For an Inspector-wired UnityEvent, choose `PlayFromEvent()`; its void signature is compatible with persistent event bindings. A player owns exactly one active `TweenHandle`; playing again replaces its previous handle after the new recipe and all bindings have validated. The component also exposes `Pause`, `Resume`, `Restart`, `Rewind`, `Complete`, and `Kill`.
 

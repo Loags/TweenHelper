@@ -18,6 +18,23 @@ namespace LB.TweenHelper
         private static readonly Dictionary<Type, ITweenPreset> _presetsByType = new Dictionary<Type, ITweenPreset>(BuiltInPresetCapacity);
         private static bool _hasScannedCodePresets = false;
         private static int _registryVersion;
+        private static bool _hasRegisteredBuiltIns;
+
+        public static int Version
+        {
+            get
+            {
+                EnsureInitialized();
+                return _registryVersion;
+            }
+        }
+
+        /// <summary>Discovers newly loaded types without clearing explicitly registered presets.</summary>
+        public static void DiscoverPresets()
+        {
+            _hasScannedCodePresets = false;
+            ScanForCodePresets();
+        }
 
         /// <summary>
         /// Gets all registered preset names.
@@ -281,7 +298,12 @@ namespace LB.TweenHelper
             if (_hasScannedCodePresets) return;
 
             _hasScannedCodePresets = true;
-            int count = BuiltInPresetRegistration.Register();
+            int count = 0;
+            if (!_hasRegisteredBuiltIns)
+            {
+                _hasRegisteredBuiltIns = true;
+                count = BuiltInPresetRegistration.Register();
+            }
 
             try
             {
@@ -341,6 +363,7 @@ namespace LB.TweenHelper
             _presetsByName.Clear();
             _presetsByType.Clear();
             _hasScannedCodePresets = false;
+            _hasRegisteredBuiltIns = false;
             _registryVersion++;
             ScanForCodePresets();
         }
@@ -375,6 +398,7 @@ namespace LB.TweenHelper
             _presetsByName.Clear();
             _presetsByType.Clear();
             _hasScannedCodePresets = false;
+            _hasRegisteredBuiltIns = false;
             _registryVersion++;
         }
 

@@ -66,7 +66,7 @@ Preserve existing asset GUIDs and recipe binding IDs when updating. After import
 | Layout snaps the target back | Check whether a LayoutGroup owns the same transform; use the documented layout-transition capture workflow |
 | Reused object continues animating while disabled | Kill the controller's owned handle in its disable/pool-return path |
 | Restart does nothing | The old tween may have autokilled; create a new handle or use a retained recipe player |
-| Recipe validation fails after editing | Sync Bindings and review stale/missing assignments rather than substituting hierarchy searches |
+| Recipe validation fails after editing | Review automatically synchronized slots and stale/missing assignments rather than substituting hierarchy searches |
 | Wait hangs after a pause | Check infinite loops, whether playback was started, and whether the main thread is blocked |
 
 See [Quick start](QuickStart.md) for complete ownership examples.

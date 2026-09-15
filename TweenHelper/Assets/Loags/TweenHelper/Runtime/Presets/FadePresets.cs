@@ -83,6 +83,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<FadeInPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.StartAlpha | PresetOverrideFields.TargetAlpha)]
     public class FadeInPreset : CodePreset
     {
         public override string PresetName => "FadeIn";
@@ -112,6 +113,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<FadeInSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.StartAlpha | PresetOverrideFields.TargetAlpha)]
     public class FadeInSoftPreset : CodePreset
     {
         public override string PresetName => "FadeInSoft";
@@ -141,6 +143,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<FadeInHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.StartAlpha | PresetOverrideFields.TargetAlpha)]
     public class FadeInHardPreset : CodePreset
     {
         public override string PresetName => "FadeInHard";
@@ -175,6 +178,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<FadeOutPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.TargetAlpha)]
     public class FadeOutPreset : CodePreset
     {
         public override string PresetName => "FadeOut";
@@ -204,6 +208,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<FadeOutSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.TargetAlpha)]
     public class FadeOutSoftPreset : CodePreset
     {
         public override string PresetName => "FadeOutSoft";
@@ -233,6 +238,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<FadeOutHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.TargetAlpha)]
     public class FadeOutHardPreset : CodePreset
     {
         public override string PresetName => "FadeOutHard";

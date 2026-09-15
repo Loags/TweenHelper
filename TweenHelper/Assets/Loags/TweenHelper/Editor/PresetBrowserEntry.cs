@@ -254,7 +254,7 @@ namespace LB.TweenHelper.Editor
                 preset.PresetName,
                 preset.Description,
                 "Presets",
-                metadata.Family,
+                PresetSelectionCatalog.GetCategory(preset),
                 metadata.Intensity,
                 metadata.Direction,
                 axisOrPlane,

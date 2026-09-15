@@ -2,7 +2,7 @@
 
 Tween Helper is a fluent animation builder and a catalog of reusable presets built on DOTween. It supports transform, UI, SpriteRenderer, renderer, TextMesh Pro, collections, destination motion, world-to-UI projection, gameplay feedback, production UI, progress values, cameras, audio, lights, particles, and material properties while keeping playback, sequencing, cancellation, and reset behavior consistent.
 
-This is the Tween Helper `1.3.0-rc.1` release candidate, extending the 1.2.0 baseline. It is developed with Unity `6000.5.2f1` and DOTween Free package `1.2.825` (runtime `1.3.030`). Lower Unity and older DOTween versions have not been tested. DOTween is installed and licensed separately; it is not included with Tween Helper.
+This is the Tween Helper `1.3.0-rc.2` release candidate, extending the 1.2.0 baseline. It is developed with Unity `6000.5.2f1` and DOTween Free package `1.2.825` (runtime `1.3.030`). Lower Unity and older DOTween versions have not been tested. DOTween is installed and licensed separately; it is not included with Tween Helper.
 
 ## Requirements
 
@@ -14,7 +14,7 @@ This is the Tween Helper `1.3.0-rc.1` release candidate, extending the 1.2.0 bas
 
 DOTween is an external Asset Store dependency and is not redistributed with this package. Use **Tools > Tween Helper > Validate > DOTween Setup** after installation for an actionable setup check.
 
-## What's new in 1.3.0-rc.1
+## What's new in 1.3.0-rc.2
 
 This candidate hardens async cancellation and Editor preview cleanup, preserves the host's DOTween configuration by default, and explicitly registers all built-in presets for stripped players. It adds Browser use-case filters, favorites and recent entries; package-local reduced-motion options; and a progress-fill recipe operation with three additional workflow samples and an authored preference-toggle prefab. The recipe catalog now has 28 operations and seven samples. Preset, Browser and Gallery totals remain 300, 461 and 423 respectively.
 
@@ -33,6 +33,8 @@ All distributable files are installed beneath `Assets/Loags/TweenHelper`. The in
 Tween Helper opens **Tools > Tween Helper > Setup & Support** once for each imported package version. The window checks DOTween, the active render pipeline, Unity UI, and TextMesh Pro without changing the project automatically. It also links to the required installation locations and remains available from the Tools menu after dismissal.
 
 ## Quick start
+
+Add **Tween Helper > Tween Player** to an existing GameObject, choose a category and animation, then enable **Play On Start** or press **Preview**. No recipe asset is required. See [Tween Player](Documentation/TweenPlayer.md) for the Inspector workflow, supported overrides, automatic recipe bindings, and custom animation registration.
 
 Explore [recipe workflows](Documentation/RecipeWorkflows.md) and [motion preferences](Documentation/MotionPreferences.md). The Preset Browser also offers use-case filters, favorites and the 20 most recently selected entries; these are stored locally per project and do not modify your scenes.
 

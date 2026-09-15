@@ -20,6 +20,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PulseScalePreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.Strength)]
     public class PulseScalePreset : CodePreset
     {
         public override string PresetName => "PulseScale";
@@ -75,6 +76,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PulseScaleSoftPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.Strength)]
     public class PulseScaleSoftPreset : CodePreset
     {
         public override string PresetName => "PulseScaleSoft";
@@ -98,6 +100,7 @@ namespace LB.TweenHelper
     /// Usage: <c>transform.Tween().Preset<PulseScaleHardPreset>().Play();</c>
     /// </summary>
     [AutoRegisterPreset]
+    [PresetOverrides(PresetOverrideFields.Ease | PresetOverrideFields.Strength)]
     public class PulseScaleHardPreset : CodePreset
     {
         public override string PresetName => "PulseScaleHard";

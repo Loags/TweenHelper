@@ -1,0 +1,10 @@
+[
+  "Self target and Play/Pause/Resume/Complete/Restart/Rewind/Kill passed",
+  "Custom discovery and unresolved selection passed",
+  "Inspector category and animation dropdowns built",
+  "Edit Mode preview restored scale",
+  "Recipe slots synchronize and preserve assignments",
+  "Duration, supported scale override, external target and owner-disable handler cleanup passed",
+  "Manual registration survives Browser refresh; unsupported custom preview is blocked",
+  "Category filtering preserves selection; dropdown Undo/Redo passed"
+]

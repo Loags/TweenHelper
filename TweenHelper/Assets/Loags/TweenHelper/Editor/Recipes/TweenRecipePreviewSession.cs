@@ -72,6 +72,11 @@ namespace LB.TweenHelper.Editor
             }
 
             TweenRecipeValidationResult validation = player.Validate();
+            if (player.Mode == TweenPlayerMode.Preset && !PresetSelectionCatalog.SupportsPreview(TweenPresetRegistry.GetPresetByName(player.PresetName)))
+            {
+                reason = "This custom preset has not opted into supported target-hierarchy preview. Use Play Mode or add PresetPreviewSupported after verifying its property changes.";
+                return false;
+            }
             if (!validation.IsValid)
             {
                 reason = validation.GetSummary();
@@ -101,7 +106,7 @@ namespace LB.TweenHelper.Editor
             try
             {
                 CaptureState(player);
-                if (!TweenRecipeExecutor.TryBuild(player.Recipe, player.Bindings, player.gameObject, out _handle, out TweenRecipeValidationResult validation, false, UpdateType.Manual, player.MotionPreference))
+                if (!player.TryBuild(out _handle, out TweenRecipeValidationResult validation, UpdateType.Manual))
                 {
                     message = validation.GetSummary();
                     RestoreState(message);
@@ -113,7 +118,7 @@ namespace LB.TweenHelper.Editor
                 DOTweenEditorPreview.PrepareTweenForPreview(_handle.Tween, false, true, true);
                 _ownsDotweenPreview = true;
                 DOTweenEditorPreview.Start(Repaint);
-                _statusMessage = $"Previewing '{player.Recipe.name}' on '{player.name}'.";
+                _statusMessage = $"Previewing '{(player.Mode == TweenPlayerMode.Preset ? player.PresetName : player.Recipe.name)}' on '{player.name}'.";
                 message = _statusMessage;
                 Repaint();
                 return true;
@@ -152,6 +157,12 @@ namespace LB.TweenHelper.Editor
             var capturedScenes = new HashSet<ulong>();
             var capturedTargets = new HashSet<GameObject>();
             CaptureTarget(player.gameObject, capturedTargets, capturedObjects, capturedScenes);
+            if (player.Mode == TweenPlayerMode.Preset)
+            {
+                CaptureTarget(player.PresetTarget, capturedTargets, capturedObjects, capturedScenes);
+                Undo.CollapseUndoOperations(_undoGroup);
+                return;
+            }
             for (int i = 0; i < player.Bindings.Count; i++)
             {
                 TweenPlayerBinding binding = player.Bindings[i];

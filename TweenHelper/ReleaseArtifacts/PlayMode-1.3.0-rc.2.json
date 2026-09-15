@@ -1,0 +1,146 @@
+{
+  "status": "completed",
+  "duration": 2.27,
+  "summary": {
+    "total": 19,
+    "passed": 19,
+    "failed": 0,
+    "skipped": 0,
+    "inconclusive": 0
+  },
+  "results": [
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.PublishingLifecyclePlayTests.ActiveMotion_DoesNotChangeWhenPreferenceChanges",
+      "Status": "Passed",
+      "Duration": 0.0839107,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.PublishingLifecyclePlayTests.AlreadyCanceledToken_KillsActiveTweenOnce",
+      "Status": "Passed",
+      "Duration": 0.0222095,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.PublishingLifecyclePlayTests.AwaitAny_DetachesLoserWithoutKillingIt",
+      "Status": "Passed",
+      "Duration": 0.0561192,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.PublishingLifecyclePlayTests.AwaitAny_PropagatesCanceledWinner",
+      "Status": "Passed",
+      "Duration": 0.0184666,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.PublishingLifecyclePlayTests.CompletionWinsBeforeCancellation_AndCallbacksStayAdditive",
+      "Status": "Passed",
+      "Duration": 0.0159451,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.PublishingLifecyclePlayTests.ProgressRecipe_ValidatesValueAndComponentAndRestoresOnRewind",
+      "Status": "Passed",
+      "Duration": 0.0614724,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.PublishingLifecyclePlayTests.ReducedMotion_ScalesFeedbackAndKeepsSemanticDestination",
+      "Status": "Passed",
+      "Duration": 0.0060924,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.PublishingLifecyclePlayTests.ReducedSpin_PreservesFinalOrientation(1,1.0f)",
+      "Status": "Passed",
+      "Duration": 0.0151069,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.PublishingLifecyclePlayTests.ReducedSpin_PreservesFinalOrientation(3,0.25f)",
+      "Status": "Passed",
+      "Duration": 0.0008063,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.PublishingLifecyclePlayTests.Timeout_StillSettlesAtZeroTimeScale",
+      "Status": "Passed",
+      "Duration": 0.0599523,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.PublishingLifecyclePlayTests.WorkerCancellation_MutatesTweenOnUnityThread",
+      "Status": "Passed",
+      "Duration": 0.0217115,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.TweenLifecyclePlayTests.AwaitCompletion_CancellationKillsRunningTween",
+      "Status": "Passed",
+      "Duration": 0.0286856,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.TweenLifecyclePlayTests.AwaitCompletion_MultipleAwaitersCompleteTogether",
+      "Status": "Passed",
+      "Duration": 0.1220631,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.TweenLifecyclePlayTests.AwaitWithTimeout_KillsTweenOnce",
+      "Status": "Passed",
+      "Duration": 0.0648743,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.TweenLifecyclePlayTests.DestroyedTarget_KillsLinkedBuilderTween",
+      "Status": "Passed",
+      "Duration": 0.0253993,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.TweenLifecyclePlayTests.FiniteYoyo_CompletesAndCleansUp",
+      "Status": "Passed",
+      "Duration": 0.0974824,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.TweenLifecyclePlayTests.Handle_RewindRestoresStartingState",
+      "Status": "Passed",
+      "Duration": 0.1105961,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.TweenLifecyclePlayTests.InfinitePresets_KillStopsEntireLoop",
+      "Status": "Passed",
+      "Duration": 1.1785777,
+      "Message": null,
+      "StackTrace": null
+    },
+    {
+      "FullName": "LB.TweenHelper.Tests.PlayMode.TweenLifecyclePlayTests.OneShotPreset_CompletesAtExpectedState",
+      "Status": "Passed",
+      "Duration": 0.1073048,
+      "Message": null,
+      "StackTrace": null
+    }
+  ]
+}

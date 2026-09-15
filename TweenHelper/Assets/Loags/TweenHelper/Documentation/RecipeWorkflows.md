@@ -9,7 +9,7 @@ The catalog contains 28 operations. Existing serialized operation values remain 
 | ProgressReward | Filled Image or Slider, reward GameObject | Fill to 100%, then confirm the reward |
 | CollectionEntrance | Ordered collection of targets supporting PopInFade | Staggered entrance in the binding's array order |
 
-All assets live in `Samples/TweenHelper Demos/Recipes`. Assign one to a TweenPlayer, choose **Sync Bindings**, and wire its targets. Scene references stay on the player. Each recipe is a presentation; it does not modify inventory, grant rewards, or implement game state.
+All assets live in `Samples/TweenHelper Demos/Recipes`. Assign one to a TweenPlayer, switch to **Recipe** mode, and wire its targets. Scene references stay on the player. Each recipe is a presentation; it does not modify inventory, grant rewards, or implement game state.
 
 ## Progress Fill To
 

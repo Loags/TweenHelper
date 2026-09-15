@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.3.0-rc.2] - 2026-09-15
+
+### Added
+
+- Direct Tween Player preset mode with category and searchable animation dropdowns, same-object targeting, optional external targets, duration overrides, and declared preset-specific controls.
+- Optional custom category, override-capability, and preview-support attributes; custom animations appear through the existing preset registry.
+- Direct and custom preset sample prefabs and a documented custom preset implementation.
+
+### Changed
+
+- Newly added players default to Preset mode; existing serialized players retain Recipe mode and their references/events.
+- Recipe target slots synchronize automatically while preserving assignments by binding ID. Removed bindings remain available for explicit cleanup.
+- Preset Browser discovery preserves explicit registry registrations.
+- Player preview supports direct presets and requires custom presets to opt into supported state restoration.
+
+### Documentation
+
+- Make Inspector animation selection the primary quick-start workflow; document extension metadata, preview boundaries, migration, multi-selection, and automatic binding synchronization.
+
+This is an update draft candidate. Validation evidence and remaining platform limits are recorded with the release artifact.
+
 ## [1.3.0-rc.1] - 2026-09-06
 
 ### Added

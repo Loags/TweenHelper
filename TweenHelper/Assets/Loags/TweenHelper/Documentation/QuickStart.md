@@ -2,7 +2,11 @@
 
 Complete [installation](Installation.md) first: install DOTween separately, run its setup with the UI module, and import TMP Essential Resources for the Gallery. The examples below use existing GameObjects and Inspector-assigned references.
 
-## 1. Animate an existing object
+## 1. Choose an animation in the Inspector
+
+Add **Tween Helper > Tween Player**, leave Mode on **Preset**, and choose a category and animation. The same GameObject is the default target. Use **Preview**, **Play On Start**, or a UnityEvent wired to `PlayFromEvent()`. No recipe asset is required. See [Tween Player](TweenPlayer.md) for overrides, custom presets, and optional recipes.
+
+## Animate an existing object from code
 
 Attach this script to the object you want to animate. Enabling it plays an entrance; disabling it releases its animation handle.
 
@@ -89,7 +93,7 @@ Start tween operations and waits on Unity's main thread. A cancellation token ma
 
 1. Find `PanelMoveFade` in `Samples/TweenHelper Demos/Recipes` and inspect its bindings and timeline in **Tools > Tween Helper > Recipe Editor**.
 2. Add a `TweenPlayer` to an existing scene or prefab object and assign the recipe.
-3. Choose **Sync Bindings**. Assign the explicit targets required by the recipe; a fade target needs a supported visual component such as a `CanvasGroup`.
+3. Binding fields appear automatically in **Recipe** mode. Assign the explicit targets required by the recipe; a fade target needs a supported visual component such as a `CanvasGroup`.
 4. Validate before previewing. Stop the preview before saving or applying prefab overrides.
 5. For a Button's `On Click`, assign the player object and select **TweenPlayer > PlayFromEvent()**. From code, call `Play()` to receive the active handle.
 

@@ -2,17 +2,16 @@
 
 ## Validated configuration
 
-Tween Helper 1.3.0-rc.1 was checked with:
+Tween Helper 1.3.0-rc.2 was checked in the development Editor with:
 
 - Unity `6000.5.2f1`.
 - DOTween Free package `1.2.825`, which reports runtime `1.3.030`.
 - Unity UI (uGUI) and TextMesh Pro.
-- Built-in Render Pipeline clean import, reference checks, and Windows x64 Mono and IL2CPP player smoke checks; IL2CPP used High managed stripping.
-- Universal Render Pipeline 17.5.0 in the development project: live Gallery rendering, recipe/lifecycle validation and Edit Mode/Play Mode tests.
+- The existing development render-pipeline configuration, 34 Edit Mode and 19 Play Mode regression tests, focused Tween Player/Inspector/preview checks, and the Asset Store Tools package validator.
 
-The exported candidate was also imported over the historical 1.2.0 package in a disposable customer project. A customer-owned scene retained its TweenPlayer script and existing recipe reference. Read the migration guide before enabling global DOTween configuration: the new default preserves the host engine.
+The preceding 1.3.0-rc.1 candidate was checked with Built-in clean/update imports, Windows x64 Mono and IL2CPP High-stripping smoke checks, and URP 17.5.0 Gallery/lifecycle checks. Those player-build and clean-import checks have not been repeated for rc.2. The current update preserves existing serialized recipe mode/references and validates recipe playback in the Editor. Read the migration guide before enabling global DOTween configuration: the default preserves the host engine.
 
-Player smoke checks cover all 300 registered names, string-only preset playback, retained completion, worker-thread cancellation and repeated cleanup. They are not full rendered-game or platform certification. The tested Windows players used Built-in; a standalone URP player and a second Unity version have not been validated for this candidate.
+The earlier player smoke checks covered all 300 built-in registered names, string-only preset playback, retained completion, worker-thread cancellation and repeated cleanup. They are not full rendered-game or platform certification. A standalone URP player and a second Unity version remain unvalidated. Custom preset preservation in stripped players must be verified for the consuming project.
 
 Other Unity versions, older DOTween versions, macOS/Linux players, mobile, WebGL, HDRP and custom render pipelines have not been tested for this candidate. These statements describe the validated configuration; they are not claims that other configurations cannot work.
 
@@ -37,9 +36,9 @@ Tween Helper opens **Tools > Tween Helper > Setup & Support** once for each impo
 
 Run **Tools > Tween Helper > Validate > DOTween Setup** for a focused DOTween and module check. No `TweenHelperSettings` asset is required; choose **Tools > Tween Helper > Settings > Create Settings Asset** only when you want to override the built-in defaults.
 
-Open **Tools > Tween Helper > Preset Browser** to confirm the Editor assembly and preview stage are working. The browser contains 461 isolated entries and does not require an active-scene target. Progress previews should show a visible filled bar and percentage, UI sequences should show only the participants required by the selected operation, layout transitions should show numbered list/grid changes, and engine-property entries should display their live meter/readout.
+Open **Tools > Tween Helper > Preset Browser** to confirm the Editor assembly and preview stage are working. The browser contains 461 built-in entries plus custom registered presets and does not require an active-scene target. Progress previews should show a visible filled bar and percentage, UI sequences should show only the participants required by the selected operation, layout transitions should show numbered list/grid changes, and engine-property entries should display their live meter/readout.
 
-Open **Tools > Tween Helper > Recipe Editor**, create a small recipe, and select **Validate** to confirm the recipe Editor and runtime assembly are available. Add a `TweenPlayer`, assign the recipe, choose **Sync Bindings**, and assign its explicit targets before previewing or entering Play Mode. See [Tween Recipes](TweenRecipes.md) for the complete workflow.
+Open **Tools > Tween Helper > Recipe Editor**, create a small recipe, and select **Validate** to confirm the recipe Editor and runtime assembly are available. Add a `TweenPlayer`, assign the recipe, switch to **Recipe** mode, and assign its explicit targets before previewing or entering Play Mode. See [Tween Recipes](TweenRecipes.md) for the complete workflow.
 
 ## 4. Open the Animation Gallery
 

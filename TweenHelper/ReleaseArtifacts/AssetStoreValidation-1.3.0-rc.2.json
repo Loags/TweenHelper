@@ -1,0 +1,266 @@
+{
+  "Status": "RanToCompletion",
+  "HadCompilationErrors": false,
+  "Exception": null,
+  "Tests": [
+    {
+      "Title": "Check Animation Clips",
+      "Status": "Pass",
+      "Messages": [
+        "No animation clips with invalid names were found!"
+      ]
+    },
+    {
+      "Title": "Check Audio Clipping",
+      "Status": "Pass",
+      "Messages": [
+        "No clipping audio files were detected."
+      ]
+    },
+    {
+      "Title": "Check Colliders",
+      "Status": "Pass",
+      "Messages": [
+        "All found prefabs have colliders!"
+      ]
+    },
+    {
+      "Title": "Check Compressed Files",
+      "Status": "Pass",
+      "Messages": [
+        "No archives were found in the package content!"
+      ]
+    },
+    {
+      "Title": "Check Empty Prefabs",
+      "Status": "Pass",
+      "Messages": [
+        "No empty prefabs were found!"
+      ]
+    },
+    {
+      "Title": "Check File Menu Names",
+      "Status": "Pass",
+      "Messages": [
+        "No MenuItems with invalid names were found!"
+      ]
+    },
+    {
+      "Title": "Check Line Endings",
+      "Status": "Pass",
+      "Messages": [
+        "No scripts with inconsistent line endings were found!"
+      ]
+    },
+    {
+      "Title": "Check LODs",
+      "Status": "Pass",
+      "Messages": [
+        "All found prefabs are meeting the LOD requirements!"
+      ]
+    },
+    {
+      "Title": "Check Mesh Prefabs",
+      "Status": "Pass",
+      "Messages": [
+        "All found prefabs have meshes!"
+      ]
+    },
+    {
+      "Title": "Check Missing Components in Assets",
+      "Status": "Pass",
+      "Messages": [
+        "No assets have missing components!"
+      ]
+    },
+    {
+      "Title": "Check Missing Components in Scenes",
+      "Status": "Pass",
+      "Messages": [
+        "No missing components were found!"
+      ]
+    },
+    {
+      "Title": "Check Model Import Logs",
+      "Status": "Pass",
+      "Messages": [
+        "No issues were detected when importing your models!"
+      ]
+    },
+    {
+      "Title": "Check Model Orientation",
+      "Status": "Pass",
+      "Messages": [
+        "All found models are facing the right way!"
+      ]
+    },
+    {
+      "Title": "Check Model Types",
+      "Status": "Pass",
+      "Messages": [
+        "All models are of allowed formats!"
+      ]
+    },
+    {
+      "Title": "Check Normal Map Textures",
+      "Status": "Pass",
+      "Messages": [
+        "All normal map textures have the correct texture type!"
+      ]
+    },
+    {
+      "Title": "Check Package Naming",
+      "Status": "Pass",
+      "Messages": [
+        "All package asset names are valid!"
+      ]
+    },
+    {
+      "Title": "Check Particle Systems",
+      "Status": "Pass",
+      "Messages": [
+        "No Particle Systems without Prefabs were found!"
+      ]
+    },
+    {
+      "Title": "Check Path Lengths",
+      "Status": "Pass",
+      "Messages": [
+        "All package content matches the path limit criteria!"
+      ]
+    },
+    {
+      "Title": "Check Prefab Transforms",
+      "Status": "Pass",
+      "Messages": [
+        "All found prefabs were reset!"
+      ]
+    },
+    {
+      "Title": "Check Script Compilation",
+      "Status": "Pass",
+      "Messages": [
+        "All scripts in the project compiled successfully!"
+      ]
+    },
+    {
+      "Title": "Check Shader Compilation",
+      "Status": "Pass",
+      "Messages": [
+        "All found Shaders have no compilation errors!"
+      ]
+    },
+    {
+      "Title": "Check SRP Compatible Materials",
+      "Status": "Pass",
+      "Messages": [
+        "All shaders used by package materials and all shader files in the package are SRP-compatible."
+      ]
+    },
+    {
+      "Title": "Check Static Variables",
+      "Status": "Warning",
+      "Messages": [
+        "The following scripts contain static fields and/or properties. You should take caution that their values are correctly reset during Play mode state change, if needed",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "Title": "Check Texture Dimensions",
+      "Status": "Pass",
+      "Messages": [
+        "All texture dimensions are a power of 2!"
+      ]
+    },
+    {
+      "Title": "Check Type Namespaces",
+      "Status": "Pass",
+      "Messages": [
+        "All scripts contain valid namespaces!"
+      ]
+    },
+    {
+      "Title": "Remove Executable Files",
+      "Status": "Pass",
+      "Messages": [
+        "No executable files were found!"
+      ]
+    },
+    {
+      "Title": "Remove JavaScript Files",
+      "Status": "Pass",
+      "Messages": [
+        "No UnityScript / JS files were found!"
+      ]
+    },
+    {
+      "Title": "Remove JPG Files",
+      "Status": "Pass",
+      "Messages": [
+        "No JPG/JPEG textures were found!"
+      ]
+    },
+    {
+      "Title": "Remove Lossy Audio Files",
+      "Status": "Pass",
+      "Messages": [
+        "No lossy audio files were found!"
+      ]
+    },
+    {
+      "Title": "Remove Mixamo Files",
+      "Status": "Pass",
+      "Messages": [
+        "No Mixamo files were found!"
+      ]
+    },
+    {
+      "Title": "Remove SpeedTree Files",
+      "Status": "Pass",
+      "Messages": [
+        "No SpeedTree assets have been found!"
+      ]
+    },
+    {
+      "Title": "Remove Video Files",
+      "Status": "Pass",
+      "Messages": [
+        "No video files were found, looking good!"
+      ]
+    },
+    {
+      "Title": "Check Demo Scenes",
+      "Status": "Pass",
+      "Messages": [
+        "Demo scenes found"
+      ]
+    },
+    {
+      "Title": "Check Documentation",
+      "Status": "Pass",
+      "Messages": [
+        "Found documentation files"
+      ]
+    },
+    {
+      "Title": "Check Package Size",
+      "Status": "Pass",
+      "Messages": [
+        "Your package does not exceed the maximum allowed package size!"
+      ]
+    },
+    {
+      "Title": "Check Project Template Assets",
+      "Status": "Pass",
+      "Messages": [
+        "No common assets that might cause asset clashing were found!"
+      ]
+    }
+  ]
+}
