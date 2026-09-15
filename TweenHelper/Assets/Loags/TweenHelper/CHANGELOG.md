@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.3.0-rc.3] - 2026-09-15
+
+### Fixed
+
+- Keep Tween Player dropdowns open by rebuilding the Inspector only when mode or override settings actually change.
+
 ## [1.3.0-rc.2] - 2026-09-15
 
 ### Added

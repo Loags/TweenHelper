@@ -74,7 +74,7 @@ namespace LB.TweenHelper.Editor
             serializedObject.UpdateIfRequiredOrScript();
 
             var modeField = new PropertyField(serializedObject.FindProperty("mode"));
-            modeField.RegisterValueChangeCallback(_ => _root.schedule.Execute(Rebuild));
+            RebuildWhenChanged(modeField, serializedObject.FindProperty("mode"));
             _configuration.Add(modeField);
             if (serializedObject.FindProperty("mode").hasMultipleDifferentValues)
             {
@@ -207,7 +207,7 @@ namespace LB.TweenHelper.Editor
             _configuration.Add(new PropertyField(serializedObject.FindProperty("targetOverride"), "Target Override (optional)"));
             _configuration.Add(CreateHint("Uses this GameObject when Target Override is empty."));
             var overrideField = new PropertyField(serializedObject.FindProperty("overrideDuration"));
-            overrideField.RegisterValueChangeCallback(_ => _root.schedule.Execute(Rebuild));
+            RebuildWhenChanged(overrideField, serializedObject.FindProperty("overrideDuration"));
             _configuration.Add(overrideField);
             if (serializedObject.FindProperty("overrideDuration").boolValue || serializedObject.FindProperty("overrideDuration").hasMultipleDifferentValues) _configuration.Add(new PropertyField(serializedObject.FindProperty("duration")));
             if (!serializedObject.FindProperty("presetName").hasMultipleDifferentValues)
@@ -220,7 +220,7 @@ namespace LB.TweenHelper.Editor
                     SerializedProperty values = serializedObject.FindProperty("presetOverrides");
                     SerializedProperty toggle = values.FindPropertyRelative("override" + name);
                     var toggleField = new PropertyField(toggle);
-                    toggleField.RegisterValueChangeCallback(_ => _root.schedule.Execute(Rebuild));
+                    RebuildWhenChanged(toggleField, toggle);
                     _configuration.Add(toggleField);
                     if (toggle.boolValue || toggle.hasMultipleDifferentValues) _configuration.Add(new PropertyField(values.FindPropertyRelative(char.ToLowerInvariant(name[0]) + name.Substring(1))));
                 }
@@ -229,6 +229,19 @@ namespace LB.TweenHelper.Editor
         }
 
         private string GetBindingSignature() => string.Join("|", targets.Cast<TweenPlayer>().Select(player => player.Mode + ":" + player.PresetName + ":" + (player.Recipe == null ? "none" : AssetDatabase.GetAssetPath(player.Recipe) + ":" + string.Join(",", player.Recipe.Bindings.Select(binding => binding == null ? "null" : binding.Id + ":" + binding.DisplayName + ":" + binding.Kind)))));
+
+        private void RebuildWhenChanged(PropertyField field, SerializedProperty property)
+        {
+            string ReadValue() => property.hasMultipleDifferentValues + ":" + (property.propertyType == SerializedPropertyType.Boolean ? property.boolValue.ToString() : property.intValue.ToString());
+            string previousValue = ReadValue();
+            field.RegisterValueChangeCallback(_ =>
+            {
+                string currentValue = ReadValue();
+                if (currentValue == previousValue) return;
+                previousValue = currentValue;
+                _root.schedule.Execute(Rebuild);
+            });
+        }
 
         private void AddBindingFields(TweenRecipe recipe)
         {
