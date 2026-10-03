@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.0-rc.5] - 2026-10-03
+
+### Fixed
+
+- Replace optional DOTween UI/Sprite shortcuts with core APIs, preserving position constraints, snapping, target ownership and color/alpha behavior.
+- Remove DOTween.Modules references from runtime and demo assemblies.
+- Gate dependent assemblies behind an independent checker so missing dependencies do not cause compiler errors on import.
+- Update recipe asset navigation to Unity 6.6's EntityId callback signature.
+- Support the gallery in projects using either legacy input or the Input System, without changing project input settings.
+- Remove private Unity Editor API reflection from recipe preview cleanup.
+
+### Changed
+
+- Exclude the development Setup & Support window from the upload and give the Preset Browser independent branding resources.
+- Update installation instructions and support links for Unity 6.6 and separate DOTween installation.
+
 ## [1.3.0-rc.3] - 2026-09-15
 
 ### Fixed

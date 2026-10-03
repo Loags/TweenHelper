@@ -4,8 +4,7 @@
     "references": [
         "LB.TweenHelper.Runtime",
         "Unity.TextMeshPro",
-        "Unity.ugui",
-        "DOTween.Modules"
+        "Unity.ugui"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -13,7 +12,7 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": ["TWEEN_HELPER_DEPENDENCIES_READY"],
     "versionDefines": [],
     "noEngineReferences": false
 }

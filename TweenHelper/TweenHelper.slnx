@@ -7,7 +7,8 @@
   <Project Path="DOTween.Modules.csproj" />
   <Project Path="LB.TweenHelper.Editor.csproj" />
   <Project Path="LB.TweenHelper.Development.Pipeline.Editor.csproj" />
-  <Project Path="LB.TweenHelper.Setup.Editor.csproj" />
   <Project Path="LB.TweenHelper.PlayTests.csproj" />
+  <Project Path="LB.TweenHelper.Setup.Editor.csproj" />
+  <Project Path="LB.TweenHelper.Installation.Editor.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
 </Solution>

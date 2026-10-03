@@ -12,9 +12,8 @@ namespace LB.TweenHelper.Editor
     {
         private const string AllAnimations = "All animations";
         private const string AllFamilies = "All families";
-        private const string SetupStylePath = "Assets/Loags/TweenHelper/Editor/Setup/TweenHelperSetupWindow.uss";
         private const string BrowserStylePath = "Assets/Loags/TweenHelper/Editor/PresetBrowserWindow.uss";
-        private const string LogoPath = "Assets/Loags/TweenHelper/Editor/Setup/Branding/TweenHelperLogo-v2.png";
+        private const string LogoPath = "Assets/Loags/TweenHelper/Editor/TweenHelperLogo.png";
 
         private readonly List<PresetBrowserEntry> _entries = new List<PresetBrowserEntry>();
         private readonly List<PresetBrowserEntry> _visibleEntries = new List<PresetBrowserEntry>();
@@ -93,9 +92,7 @@ namespace LB.TweenHelper.Editor
             rootVisualElement.AddToClassList("window-root");
             rootVisualElement.AddToClassList("preset-browser-root");
 
-            StyleSheet setupStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(SetupStylePath);
             StyleSheet browserStyle = AssetDatabase.LoadAssetAtPath<StyleSheet>(BrowserStylePath);
-            if (setupStyle != null) rootVisualElement.styleSheets.Add(setupStyle);
             if (browserStyle != null) rootVisualElement.styleSheets.Add(browserStyle);
 
             BuildHeader();

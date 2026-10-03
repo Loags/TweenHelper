@@ -50,9 +50,8 @@ namespace LB.TweenHelper.Editor
         }
 
         [OnOpenAsset]
-        public static bool OnOpenAsset(int instanceId, int line)
+        public static bool OnOpenAsset(EntityId entityId, int line)
         {
-            EntityId entityId = EntityId.FromULong(unchecked((ulong)(long)instanceId));
             if (EditorUtility.EntityIdToObject(entityId) is not TweenRecipe recipe) return false;
             Open(recipe);
             return true;

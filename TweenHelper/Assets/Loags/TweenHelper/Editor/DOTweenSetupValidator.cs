@@ -36,11 +36,6 @@ namespace LB.TweenHelper.Editor
                 errors.Add($"DOTween.dll is not loaded. Install DOTween separately. Tween Helper was validated with package {ValidatedPackageVersion}.");
             }
 
-            if (Type.GetType("DG.Tweening.DOTweenModuleUI, DOTween.Modules") == null)
-            {
-                errors.Add("DOTween's UI module is unavailable. Open Tools > Demigiant > DOTween Utility Panel and run Setup DOTween.");
-            }
-
             if (AssetDatabase.FindAssets("t:DOTweenSettings").Length == 0)
             {
                 notes.Add("No DOTweenSettings asset was found. DOTween can use defaults, but running its Setup panel is recommended.");
@@ -58,7 +53,7 @@ namespace LB.TweenHelper.Editor
 
             if (errors.Count == 0)
             {
-                message = $"DOTween runtime {version} is loaded and the required modules are available. Tween Helper was validated with package {ValidatedPackageVersion}.";
+                message = $"DOTween runtime {version} is loaded. Tween Helper uses DOTween core directly and does not require optional modules or generated module assembly definitions. Validated package: {ValidatedPackageVersion}.";
                 if (notes.Count > 0) message += $"\n\n{string.Join("\n", notes)}";
                 return true;
             }

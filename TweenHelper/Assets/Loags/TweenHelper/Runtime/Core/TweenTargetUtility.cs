@@ -145,7 +145,7 @@ namespace LB.TweenHelper
         {
             if (TryGetRectTransform(target, out var rectTransform))
             {
-                return rectTransform.DOAnchorPos(ToAnchored(localTarget), duration, snapping);
+                return CreateAnchoredPositionTween(rectTransform, ToAnchored(localTarget), duration, snapping);
             }
 
             return target.transform.DOLocalMove(localTarget, duration, snapping);
@@ -155,7 +155,7 @@ namespace LB.TweenHelper
         {
             if (TryGetRectTransform(target, out var rectTransform))
             {
-                return rectTransform.DOAnchorPos(ToAnchored(localOffset), duration, snapping).SetRelative(true);
+                return CreateAnchoredPositionTween(rectTransform, ToAnchored(localOffset), duration, snapping).SetRelative(true);
             }
 
             return target.transform.DOLocalMove(localOffset, duration, snapping).SetRelative(true);
@@ -165,7 +165,7 @@ namespace LB.TweenHelper
         {
             if (TryGetRectTransform(target, out var rectTransform))
             {
-                return rectTransform.DOAnchorPos(ToAnchored(offset), duration, snapping).SetRelative(true);
+                return CreateAnchoredPositionTween(rectTransform, ToAnchored(offset), duration, snapping).SetRelative(true);
             }
 
             return target.transform.DOMove(target.transform.position + offset, duration, snapping);
@@ -175,7 +175,7 @@ namespace LB.TweenHelper
         {
             if (TryGetRectTransform(target, out var rectTransform))
             {
-                return rectTransform.DOAnchorPosX(x, duration, snapping);
+                return CreateAnchoredPositionXTween(rectTransform, x, duration, snapping);
             }
 
             return target.transform.DOMoveX(x, duration, snapping);
@@ -185,11 +185,17 @@ namespace LB.TweenHelper
         {
             if (TryGetRectTransform(target, out var rectTransform))
             {
-                return rectTransform.DOAnchorPosY(y, duration, snapping);
+                return CreateAnchoredPositionYTween(rectTransform, y, duration, snapping);
             }
 
             return target.transform.DOMoveY(y, duration, snapping);
         }
+
+        internal static Tween CreateAnchoredPositionTween(RectTransform target, Vector2 position, float duration, bool snapping = false) => DOTween.To(() => target.anchoredPosition, value => target.anchoredPosition = value, position, duration).SetOptions(snapping).SetTarget(target);
+
+        internal static Tween CreateAnchoredPositionXTween(RectTransform target, float x, float duration, bool snapping = false) => DOTween.To(() => target.anchoredPosition, value => target.anchoredPosition = value, new Vector2(x, 0f), duration).SetOptions(AxisConstraint.X, snapping).SetTarget(target);
+
+        internal static Tween CreateAnchoredPositionYTween(RectTransform target, float y, float duration, bool snapping = false) => DOTween.To(() => target.anchoredPosition, value => target.anchoredPosition = value, new Vector2(0f, y), duration).SetOptions(AxisConstraint.Y, snapping).SetTarget(target);
 
         public static bool TryGetRectTransform(GameObject target, out RectTransform rectTransform)
         {
@@ -235,9 +241,9 @@ namespace LB.TweenHelper
 
             public Tween CreateTween(Color color, float duration)
             {
-                if (_spriteRenderer != null) return _spriteRenderer.DOColor(color, duration);
-                if (_graphic != null) return _graphic.DOColor(color, duration);
-                if (_tmpText != null) return _tmpText.DOColor(color, duration);
+                if (_spriteRenderer != null) return DOTween.To(GetColor, SetColor, color, duration).SetTarget(_spriteRenderer);
+                if (_graphic != null) return DOTween.To(GetColor, SetColor, color, duration).SetTarget(_graphic);
+                if (_tmpText != null) return DOTween.To(GetColor, SetColor, color, duration).SetTarget(_tmpText);
                 return _renderer?.CreateTween(color, duration);
             }
 
@@ -300,10 +306,10 @@ namespace LB.TweenHelper
 
             public Tween CreateTween(float alpha, float duration)
             {
-                if (_canvasGroup != null) return _canvasGroup.DOFade(alpha, duration);
-                if (_spriteRenderer != null) return _spriteRenderer.DOFade(alpha, duration);
-                if (_graphic != null) return _graphic.DOFade(alpha, duration);
-                if (_tmpText != null) return _tmpText.DOFade(alpha, duration);
+                if (_canvasGroup != null) return DOTween.To(GetAlpha, SetAlpha, alpha, duration).SetTarget(_canvasGroup);
+                if (_spriteRenderer != null) return DOTween.To(GetAlpha, SetAlpha, alpha, duration).SetTarget(_spriteRenderer);
+                if (_graphic != null) return DOTween.To(GetAlpha, SetAlpha, alpha, duration).SetTarget(_graphic);
+                if (_tmpText != null) return DOTween.To(GetAlpha, SetAlpha, alpha, duration).SetTarget(_tmpText);
                 return _renderer?.CreateTween(alpha, duration);
             }
 

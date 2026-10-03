@@ -17,9 +17,9 @@ namespace LB.TweenHelper.Setup.Editor
         private const string SupportEmail = "Info@Loags.de";
         private const string DotweenUrl = "https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676";
         private const string DocumentationPath = "Assets/Loags/TweenHelper/Documentation/Installation.md";
-        private const string UxmlPath = "Assets/Loags/TweenHelper/Editor/Setup/TweenHelperSetupWindow.uxml";
-        private const string StylePath = "Assets/Loags/TweenHelper/Editor/Setup/TweenHelperSetupWindow.uss";
-        private const string LogoPath = "Assets/Loags/TweenHelper/Editor/Setup/Branding/TweenHelperLogo-v2.png";
+        private const string UxmlPath = "Assets/_Project/TweenHelperDevelopment/Setup/TweenHelperSetupWindow.uxml";
+        private const string StylePath = "Assets/_Project/TweenHelperDevelopment/Setup/TweenHelperSetupWindow.uss";
+        private const string LogoPath = "Assets/_Project/TweenHelperDevelopment/Setup/Branding/TweenHelperLogo-v2.png";
         private const string ValidatedDotweenPackageVersionText = "1.2.825";
         private const string ValidatedDotweenRuntimeVersionText = "1.3.030";
         private const int MaximumTagCount = 5;
@@ -169,10 +169,8 @@ namespace LB.TweenHelper.Setup.Editor
             FieldInfo versionField = dotweenType.GetField("Version", BindingFlags.Public | BindingFlags.Static);
             string versionText = versionProperty?.GetValue(null) as string ?? versionField?.GetValue(null) as string;
             bool versionValid = Version.TryParse(versionText, out Version version) && version >= ValidatedDotweenRuntimeVersion;
-            Type modulesType = Type.GetType("DG.Tweening.DOTweenModuleUI, DOTween.Modules");
 
             if (!versionValid) return new SetupStatus(false, $"DOTween runtime {versionText ?? "unknown"} is older than tested runtime {ValidatedDotweenRuntimeVersionText}");
-            if (modulesType == null) return new SetupStatus(false, $"DOTween {versionText} found; run Setup DOTween to generate modules");
             return new SetupStatus(true, $"DOTween runtime {versionText} is ready; validated package {ValidatedDotweenPackageVersionText}");
         }
 

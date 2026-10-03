@@ -1,1 +1,1 @@
-PASS: Two sessions with domain reload disabled. Editor and runtime waits canceled at transitions; motion preference reset; all 300 names registered; original Editor options restored.
+PASS: Two sessions with domain reload disabled. Editor and runtime waits canceled at transitions; motion preference reset; all 301 built-in and custom names preserved; original Editor options restored.

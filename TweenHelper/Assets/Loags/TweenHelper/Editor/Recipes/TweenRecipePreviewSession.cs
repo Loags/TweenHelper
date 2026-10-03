@@ -2,7 +2,6 @@ using DG.DOTweenEditor;
 using DG.Tweening;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -19,7 +18,6 @@ namespace LB.TweenHelper.Editor
         private static readonly List<SceneDirtyState> DirtyScenes = new List<SceneDirtyState>();
         private static readonly List<RendererState> RendererStates = new List<RendererState>();
         private static readonly List<TargetState> TargetStates = new List<TargetState>();
-        private static readonly MethodInfo ClearSceneDirtinessMethod = typeof(EditorSceneManager).GetMethod("ClearSceneDirtiness", BindingFlags.Static | BindingFlags.NonPublic);
 
         private static TweenPlayer _player;
         private static TweenHandle _handle;
@@ -306,7 +304,7 @@ namespace LB.TweenHelper.Editor
         private static void Repaint()
         {
             SceneView.RepaintAll();
-            UnityEditorInternal.InternalEditorUtility.RepaintAllViews();
+            foreach (EditorWindow window in Resources.FindObjectsOfTypeAll<EditorWindow>()) window.Repaint();
         }
 
         private readonly struct ObjectDirtyState
@@ -339,7 +337,7 @@ namespace LB.TweenHelper.Editor
 
             public void RestoreDirtyState()
             {
-                if (_scene.IsValid() && !_wasDirty && _scene.isDirty) ClearSceneDirtinessMethod?.Invoke(null, new object[] { _scene });
+                if (_scene.IsValid() && _wasDirty && !_scene.isDirty) EditorSceneManager.MarkSceneDirty(_scene);
             }
         }
 

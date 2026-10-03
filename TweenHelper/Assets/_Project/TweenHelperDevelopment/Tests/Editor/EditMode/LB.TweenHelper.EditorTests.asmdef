@@ -8,6 +8,7 @@
         "LB.TweenHelper.Development.Pipeline.Editor",
         "DOTween.Modules",
         "Unity.Pipeline",
+        "Unity.Pipeline.Attributes",
         "Unity.ugui"
     ],
     "includePlatforms": [

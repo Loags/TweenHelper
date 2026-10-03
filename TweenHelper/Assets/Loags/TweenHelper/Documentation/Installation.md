@@ -1,59 +1,40 @@
 # Installation and compatibility
 
-## Validated configuration
+Tween Helper 1.3.0-rc.5 targets Unity 6.6 (`6000.6.0f1`), Unity UI (uGUI) with TextMesh Pro, and DOTween Free runtime `1.3.030` or newer. DOTween is installed and licensed separately, not included in this package.
 
-Tween Helper 1.3.0-rc.2 was checked in the development Editor with:
+## Install dependencies
 
-- Unity `6000.5.2f1`.
-- DOTween Free package `1.2.825`, which reports runtime `1.3.030`.
-- Unity UI (uGUI) and TextMesh Pro.
-- The existing development render-pipeline configuration, 34 Edit Mode and 19 Play Mode regression tests, focused Tween Player/Inspector/preview checks, and the Asset Store Tools package validator.
+1. Install [DOTween Free](https://assetstore.unity.com/packages/tools/animation/dotween-hotween-v2-27676) separately from My Assets or [Demigiant](https://dotween.demigiant.com/download.php), including its core and Editor libraries.
+2. Run **Tools > Demigiant > DOTween Utility Panel > Setup DOTween**.
+3. Ensure **Unity UI** is installed through Unity Package Manager. In Unity 6 this includes TextMesh Pro.
+4. Import **TMP Essential Resources** before opening the sample gallery.
 
-The preceding 1.3.0-rc.1 candidate was checked with Built-in clean/update imports, Windows x64 Mono and IL2CPP High-stripping smoke checks, and URP 17.5.0 Gallery/lifecycle checks. Those player-build and clean-import checks have not been repeated for rc.2. The current update preserves existing serialized recipe mode/references and validates recipe playback in the Editor. Read the migration guide before enabling global DOTween configuration: the default preserves the host engine.
+Tween Helper uses core DOTween APIs for UI position, color and alpha. Its runtime and demos do not reference `DOTween.Modules`. Optional UI/Sprite extensions and generated module assembly definitions are not required. Keep DOTween's own `DOTweenModuleUtils.cs` loader and the rest of its normal installation intact.
 
-The earlier player smoke checks covered all 300 built-in registered names, string-only preset playback, retained completion, worker-thread cancellation and repeated cleanup. They are not full rendered-game or platform certification. A standalone URP player and a second Unity version remain unvalidated. Custom preset preservation in stripped players must be verified for the consuming project.
+If Unity 6.6 reports old dependency importer metadata, select the affected DOTween DLLs or TMP font assets and re-save their import settings in the Inspector. This upgrades Unity's metadata without modifying the dependency libraries or font files.
 
-Other Unity versions, older DOTween versions, macOS/Linux players, mobile, WebGL, HDRP and custom render pipelines have not been tested for this candidate. These statements describe the validated configuration; they are not claims that other configurations cannot work.
+## Import Tween Helper
 
-DOTween is a separate dependency and is not included with Tween Helper.
+Use **Window > Package Management > My Assets**, or **Assets > Import Package > Custom Package** for a local `.unitypackage`. All distributable files are under `Assets/Loags/TweenHelper`. This is a standard Asset Store package, not a UPM package.
 
-## 1. Install and configure DOTween
+An independent installation assembly checks for DOTween's libraries and Unity UI/TextMesh Pro. It enables `TWEEN_HELPER_DEPENDENCIES_READY` for the active build target when dependencies are available, preserving existing scripting symbols. Until then, dependent runtime, Editor and sample assemblies stay disabled so missing dependencies do not cause compiler errors. Install dependencies before opening samples.
 
-1. Install DOTween Free separately.
-2. Open **Tools > Demigiant > DOTween Utility Panel**.
-3. Run **Setup DOTween** and enable the UI module.
-4. Import TextMesh Pro Essential Resources when Unity prompts for them, or before opening the Animation Gallery.
+Use **Tools > Tween Helper > Validate > Dependencies** to inspect setup status, even before dependencies are installed. The checker does not install or change third-party packages. After switching build targets, run this check if the tools have not yet appeared.
 
-## 2. Install Tween Helper
+When upgrading an installation that still contains `Assets/Loags/TweenHelper/Editor/Setup`, remove that obsolete folder. Unity package imports do not delete files removed from later releases.
 
-Install the Asset Store release from **Window > Package Management > My Assets**, or import a downloaded artifact with **Assets > Import Package > Custom Package**.
+## Validate tools and samples
 
-The import creates one product root: `Assets/Loags/TweenHelper`. Tween Helper is distributed as a standard Asset Store package, not as a UPM package.
+Open **Tools > Tween Helper > Preset Browser** to browse 461 isolated entries. Open **Tools > Tween Helper > Recipe Editor**, open a recipe, and select **Validate**. Add a `TweenPlayer` and assign its required targets before previewing or entering Play Mode.
 
-## 3. Validate the installation
+No settings asset is required. Use **Tools > Tween Helper > Settings > Create Settings Asset** only to override defaults. Global DOTween configuration is opt-in; see [Lifecycle and migration](LifecycleAndMigration.md).
 
-Tween Helper opens **Tools > Tween Helper > Setup & Support** once for each imported version. Its status cards inspect DOTween, the active render pipeline, Unity UI, and TextMesh Pro without installing, removing, or changing packages.
+Open `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes/TweenHelperAnimationGallery.unity` and enter Play Mode. Select an animation, then use Replay, Reset, Previous and Next. The mouse-driven gallery contains 423 entries, including all 300 registered presets. It uses the project's enabled input backend: legacy input or the optional Input System package.
 
-Run **Tools > Tween Helper > Validate > DOTween Setup** for a focused DOTween and module check. No `TweenHelperSettings` asset is required; choose **Tools > Tween Helper > Settings > Create Settings Asset** only when you want to override the built-in defaults.
-
-Open **Tools > Tween Helper > Preset Browser** to confirm the Editor assembly and preview stage are working. The browser contains 461 built-in entries plus custom registered presets and does not require an active-scene target. Progress previews should show a visible filled bar and percentage, UI sequences should show only the participants required by the selected operation, layout transitions should show numbered list/grid changes, and engine-property entries should display their live meter/readout.
-
-Open **Tools > Tween Helper > Recipe Editor**, create a small recipe, and select **Validate** to confirm the recipe Editor and runtime assembly are available. Add a `TweenPlayer`, assign the recipe, switch to **Recipe** mode, and assign its explicit targets before previewing or entering Play Mode. See [Tween Recipes](TweenRecipes.md) for the complete workflow.
-
-## 4. Open the Animation Gallery
-
-Open `Assets/Loags/TweenHelper/Samples/TweenHelper Demos/Scenes/TweenHelperAnimationGallery.unity` and enter Play Mode.
-
-Use the mouse to select a category and animation. The selection auto-plays after resetting the fixture. Use Replay, Reset, Previous, and Next for repeatable comparison. The 423-entry catalog contains all 300 presets plus 123 curated UI, collection, destination, gameplay/macro, production-UI, text/value, and camera examples. Contextual options update both the preview and the displayed C# call.
-
-The gallery is designed for 16:9 presentation and validated at `1920×1080`. It uses dedicated world and camera preview rigs and does not require the Input System.
-
-Progress-bar, audio, light, particle, and renderer-property examples are available in the Preset Browser and documented in their focused guides. They are not additional registered presets.
+The gallery uses a 16:9 layout with world and camera preview rigs. Built-in Render Pipeline and URP are supported. HDRP, custom pipelines, earlier Unity versions, mobile, WebGL and macOS/Linux players are unvalidated. This candidate does not claim fresh player-build validation.
 
 ## Support
 
-For complete first-use examples, continue with [Quick start](QuickStart.md). When updating an existing project, read [Lifecycle and migration](LifecycleAndMigration.md), particularly the explicit opt-in for global DOTween engine configuration.
+Read [Quick start](QuickStart.md), [Tween Player](TweenPlayer.md) and [Tween Recipes](TweenRecipes.md) for first-use examples.
 
-Open **Tools > Tween Helper > Setup & Support** to prepare a bug report, feature request, documentation question, or other support email. The form opens your default email client with editable content; it never sends a message automatically.
-
-Optional environment fields are unchecked by default. The form does not collect project names, scenes, assets, logs, files, or machine identifiers.
+Contact [info@loags.de](mailto:info@loags.de) or use the [HTTPS contact page](https://www.loags.de/contact/). Include package and Unity versions, dependency versions, reproduction steps and relevant Console messages. The development-only Setup & Support window is not shipped.

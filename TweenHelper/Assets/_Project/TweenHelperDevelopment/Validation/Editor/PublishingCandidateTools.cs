@@ -29,7 +29,7 @@ namespace LB.TweenHelper.Editor
         public static void Export()
         {
             Directory.CreateDirectory("ReleaseArtifacts");
-            string source = File.ReadAllText("Assets/Loags/TweenHelper/Editor/Setup/TweenHelperPackageInfo.cs");
+            string source = File.ReadAllText("Assets/Loags/TweenHelper/Editor/Installation/TweenHelperDependencySetup.cs");
             string version = System.Text.RegularExpressions.Regex.Match(source, "Version = \"([^\"]+)\"").Groups[1].Value;
             if (string.IsNullOrEmpty(version)) throw new System.InvalidOperationException("Package version is missing.");
             AssetDatabase.ExportPackage("Assets/Loags/TweenHelper", "ReleaseArtifacts/TweenHelper-" + version + ".unitypackage", ExportPackageOptions.Recurse);

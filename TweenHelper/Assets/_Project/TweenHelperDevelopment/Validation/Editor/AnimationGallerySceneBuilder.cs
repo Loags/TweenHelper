@@ -666,7 +666,7 @@ namespace LB.TweenHelper.Editor
 
         private static void CreateEventSystem(Transform parent)
         {
-            GameObject eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+            GameObject eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(AnimationGalleryInputModule));
             eventSystem.transform.SetParent(parent, false);
         }
 

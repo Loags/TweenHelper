@@ -615,7 +615,7 @@ namespace LB.TweenHelper
             {
                 var targetPosition = rectTransform.anchoredPosition;
                 rectTransform.anchoredPosition = targetPosition + new Vector2(offsetDirection.x, offsetDirection.y) * (distance * strength);
-                moveTween = rectTransform.DOAnchorPos(targetPosition, duration);
+                moveTween = TweenTargetUtility.CreateAnchoredPositionTween(rectTransform, targetPosition, duration);
             }
             else
             {

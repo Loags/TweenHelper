@@ -74,7 +74,7 @@ namespace LB.TweenHelper
                 for (int i = 0; i < childStates.Length; i++)
                 {
                     ChildState childState = childStates[i];
-                    sequence.Join(childState.Child.DOAnchorPos(childState.FinalAnchoredPosition, tweenDuration, snapping).SetEase(ease));
+                    sequence.Join(TweenTargetUtility.CreateAnchoredPositionTween(childState.Child, childState.FinalAnchoredPosition, tweenDuration, snapping).SetEase(ease));
                     if (childState.CapturedScale != childState.FinalScale)
                     {
                         sequence.Join(childState.Child.DOScale(childState.FinalScale, tweenDuration).SetEase(ease));

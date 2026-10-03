@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using DG.Tweening;
 using UnityEditor;
@@ -17,6 +18,7 @@ namespace LB.TweenHelper.Editor
         private static Tween _editorTween;
         private static int _cycle;
         private static bool _running;
+        private static string[] _expectedPresetNames;
 
         [MenuItem("Tools/Tween Helper Dev/Publishing/Validate Domain Reload Disabled")]
         public static void Validate()
@@ -25,6 +27,8 @@ namespace LB.TweenHelper.Editor
             _previousEnabled = EditorSettings.enterPlayModeOptionsEnabled;
             _previousOptions = EditorSettings.enterPlayModeOptions;
             _previousMotion = TweenMotion.Preference;
+            TweenPresetRegistry.Refresh();
+            _expectedPresetNames = TweenPresetRegistry.PresetNames.OrderBy(name => name, StringComparer.Ordinal).ToArray();
             EditorSettings.enterPlayModeOptionsEnabled = true;
             EditorSettings.enterPlayModeOptions = EnterPlayModeOptions.DisableDomainReload;
             _cycle = 0;
@@ -50,7 +54,7 @@ namespace LB.TweenHelper.Editor
                     if (!_pending.IsCanceled) throw new Exception("Entering Play Mode did not settle the Editor observation.");
                     if (TweenMotion.Preference != TweenMotionPreference.UseProjectDefault) throw new Exception("Motion preference leaked across sessions.");
                     TweenPresetRegistry.Refresh();
-                    if (TweenPresetRegistry.Count != 300) throw new Exception("Registry changed across play sessions.");
+                    if (!TweenPresetRegistry.PresetNames.OrderBy(name => name, StringComparer.Ordinal).SequenceEqual(_expectedPresetNames)) throw new Exception("Registry changed across play sessions.");
                     new TweenHandle(_editorTween).Kill();
                     DOTween.Init();
                     _pending = TweenAsync.AwaitCompletion(DOVirtual.Float(0f, 1f, 60f, _ => { }));
@@ -60,7 +64,7 @@ namespace LB.TweenHelper.Editor
                 {
                     if (!_pending.IsCanceled) throw new Exception("Exiting Play Mode left a pending observation.");
                     if (++_cycle < 2) StartCycle();
-                    else Finish("PASS: Two sessions with domain reload disabled. Editor and runtime waits canceled at transitions; motion preference reset; all 300 names registered; original Editor options restored.");
+                    else Finish($"PASS: Two sessions with domain reload disabled. Editor and runtime waits canceled at transitions; motion preference reset; all {_expectedPresetNames.Length} built-in and custom names preserved; original Editor options restored.");
                 }
             }
             catch (Exception exception)

@@ -22,7 +22,7 @@ namespace LB.TweenHelper
         public static Tween CreateYTween(GameObject target, float y, float duration)
         {
             return TweenTargetUtility.TryGetRectTransform(target, out var rectTransform)
-                ? rectTransform.DOAnchorPosY(y, duration)
+                ? TweenTargetUtility.CreateAnchoredPositionYTween(rectTransform, y, duration)
                 : target.transform.DOLocalMoveY(y, duration);
         }
     }

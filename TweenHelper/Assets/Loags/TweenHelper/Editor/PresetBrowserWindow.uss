@@ -1,3 +1,19 @@
+.window-root {
+    flex-grow: 1;
+    background-color: rgb(20, 23, 32);
+}
+
+.version-pill {
+    align-self: flex-start;
+    padding-left: 9px;
+    padding-right: 9px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    background-color: rgba(74, 208, 238, 0.16);
+    color: rgb(101, 222, 247);
+    border-radius: 10px;
+}
+
 .preset-browser-root {
     padding-left: 18px;
     padding-right: 18px;

@@ -67,8 +67,8 @@ namespace LB.TweenHelper
             if (TweenTargetUtility.TryGetRectTransform(target, out var rectTransform))
             {
                 var originalY = rectTransform.anchoredPosition.y;
-                moveUp = rectTransform.DOAnchorPosY(originalY + distance, halfDur);
-                moveDown = rectTransform.DOAnchorPosY(originalY, halfDur);
+                moveUp = TweenTargetUtility.CreateAnchoredPositionYTween(rectTransform, originalY + distance, halfDur);
+                moveDown = TweenTargetUtility.CreateAnchoredPositionYTween(rectTransform, originalY, halfDur);
             }
             else
             {
