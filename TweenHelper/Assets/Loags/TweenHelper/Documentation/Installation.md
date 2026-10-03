@@ -1,6 +1,6 @@
 # Installation and compatibility
 
-Tween Helper 1.3.0-rc.5 targets Unity 6.6 (`6000.6.0f1`), Unity UI (uGUI) with TextMesh Pro, and DOTween Free runtime `1.3.030` or newer. DOTween is installed and licensed separately, not included in this package.
+Tween Helper 1.3.0-rc.6 targets Unity 6.6 (`6000.6.0f1`), Unity UI (uGUI) with TextMesh Pro, and DOTween Free runtime `1.3.030` or newer. DOTween is installed and licensed separately, not included in this package. The archive declares Unity UI `com.unity.ugui` version `2.6.0` using Unity's package dependency manifest; TMP Essential Resources still need the official resource import described below.
 
 ## Install dependencies
 

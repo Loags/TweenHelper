@@ -1,0 +1,11 @@
+1.3.0-rc.6 — Unity 6.6 review and setup update
+
+• Fixed the RectTransform/SpriteRenderer compiler errors reported during review by replacing optional DOTween UI/Sprite shortcuts with core DOTween APIs. Preserved snapping, position constraints, target ownership and color/alpha behavior.
+• Removed DOTween.Modules references from runtime and demo assemblies. An independent checker keeps dependent assemblies disabled until the required libraries are installed, preventing missing-dependency compiler errors on initial import.
+• Added a branded Setup window that opens once per project and package version. It checks the installed DOTween runtime version, Editor library and module loader, Unity UI/TextMesh Pro code, TMP Settings and the gallery font. Buttons open official installation and setup tools; gallery and preset-browser buttons stay disabled until setup is ready.
+• Declared Unity UI 2.6.0 (com.unity.ugui, which includes TextMesh Pro in Unity 6) in the exported package dependency manifest. DOTween Free runtime 1.3.030 or newer remains a separately installed Asset Store dependency. TMP Essential Resources must be imported before opening the gallery.
+• Updated recipe asset navigation for Unity 6.6 and removed private Unity Editor API reflection from preview cleanup. Preserved support for entering Play Mode with Domain Reload disabled.
+• Made the sample gallery work with either legacy input or the Input System without changing the project's input settings. Built-in Render Pipeline and URP are supported.
+• Updated installation documentation and HTTPS support links. Excluded development-only support, validation, test and MCP tools from the uploaded package.
+
+Validated with Unity 6000.6.0f1: 42 EditMode tests and 19 PlayMode tests, clean URP import and gallery checks after the documented dependency setup. Earlier Unity versions, HDRP, custom render pipelines and fresh player builds remain unvalidated.

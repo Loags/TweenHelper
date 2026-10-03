@@ -1,4 +1,6 @@
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using UnityEditor;
 using UnityEditor.Build;
 using UnityEditor.Build.Reporting;
@@ -26,14 +28,31 @@ namespace LB.TweenHelper.Editor
         }
 
         [MenuItem("Tools/Tween Helper Dev/Publishing/Export Candidate")]
-        public static void Export()
+        public static async void Export() => await ExportCandidate();
+
+        public static async Task<string> ExportCandidate()
         {
             Directory.CreateDirectory("ReleaseArtifacts");
             string source = File.ReadAllText("Assets/Loags/TweenHelper/Editor/Installation/TweenHelperDependencySetup.cs");
             string version = System.Text.RegularExpressions.Regex.Match(source, "Version = \"([^\"]+)\"").Groups[1].Value;
             if (string.IsNullOrEmpty(version)) throw new System.InvalidOperationException("Package version is missing.");
-            AssetDatabase.ExportPackage("Assets/Loags/TweenHelper", "ReleaseArtifacts/TweenHelper-" + version + ".unitypackage", ExportPackageOptions.Recurse);
+            var toolsAssembly = UnityEngine.Assemblies.CurrentAssemblies.GetLoadedAssemblies().FirstOrDefault(assembly => assembly.GetType("AssetStoreTools.Exporter.DefaultExporterSettings") != null);
+            if (toolsAssembly == null) throw new System.InvalidOperationException("Install Asset Store Tools before exporting a publishing candidate.");
+            var settingsType = toolsAssembly.GetType("AssetStoreTools.Exporter.DefaultExporterSettings");
+            var settings = System.Activator.CreateInstance(settingsType);
+            settingsType.GetField("ExportPaths").SetValue(settings, new[] { "Assets/Loags/TweenHelper" });
+            settingsType.GetField("Dependencies").SetValue(settings, new[] { "com.unity.ugui" });
+            settingsType.GetField("OutputFilename").SetValue(settings, Path.GetFullPath("ReleaseArtifacts/TweenHelper-" + version + ".unitypackage"));
+            var exporterType = toolsAssembly.GetType("AssetStoreTools.Exporter.DefaultPackageExporter");
+            var exporter = System.Activator.CreateInstance(exporterType, new[] { settings });
+            var exportTask = (Task)exporterType.GetMethod("Export", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance).Invoke(exporter, null);
+            await exportTask;
+            var result = exportTask.GetType().GetProperty("Result").GetValue(exportTask);
+            var resultType = result.GetType();
+            if (!(bool)resultType.GetField("Success").GetValue(result)) throw new System.InvalidOperationException("Asset Store package export failed.", resultType.GetField("Exception").GetValue(result) as System.Exception);
+            string exportedPath = (string)resultType.GetField("ExportedPath").GetValue(result);
             Debug.Log("Publishing candidate exported.");
+            return exportedPath;
         }
 
         [MenuItem("Tools/Tween Helper Dev/Publishing/Build Mono Smoke")]

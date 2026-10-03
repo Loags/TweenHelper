@@ -10,7 +10,7 @@ namespace LB.TweenHelper.Installation.Editor
     [InitializeOnLoad]
     internal static class TweenHelperDependencySetup
     {
-        internal const string Version = "1.3.0-rc.5";
+        internal const string Version = "1.3.0-rc.6";
         private const string DependencySymbol = "TWEEN_HELPER_DEPENDENCIES_READY";
         private static readonly Version MinimumDotweenVersion = new Version(1, 3, 30);
         internal static event Action StatusChanged;

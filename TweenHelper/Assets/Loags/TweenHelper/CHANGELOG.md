@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0-rc.6] - 2026-10-03
+
+### Added
+
+- Branded setup window that opens once per project and package version, checks DOTween and Unity UI/TMP code and resources, and opens official dependency installation tools.
+- Setup-window gallery and preset-browser buttons stay disabled until dependencies and TMP Essential Resources are available.
+
+### Changed
+
+- Export the Unity UI `com.unity.ugui` registry dependency manifest with the archive using the official Asset Store Tools exporter.
+- Update installation guidance for the setup window and the TMP resource import required before opening samples.
+
 ## [1.3.0-rc.5] - 2026-10-03
 
 ### Fixed

@@ -2,7 +2,7 @@
 
 Tween Helper is a fluent animation builder and a catalog of reusable presets built on DOTween. It supports transform, UI, SpriteRenderer, renderer, TextMesh Pro, collections, destination motion, world-to-UI projection, gameplay feedback, production UI, progress values, cameras, audio, lights, particles, and material properties while keeping playback, sequencing, cancellation, and reset behavior consistent.
 
-This is the Tween Helper `1.3.0-rc.5` release candidate for Unity `6000.6.0f1` and DOTween Free runtime `1.3.030`. Lower Unity and older DOTween versions have not been tested. DOTween is installed and licensed separately; it is not included with Tween Helper.
+This is the Tween Helper `1.3.0-rc.6` release candidate for Unity `6000.6.0f1` and DOTween Free runtime `1.3.030`. Lower Unity and older DOTween versions have not been tested. DOTween is installed and licensed separately; it is not included with Tween Helper.
 
 ## Requirements
 
@@ -12,13 +12,13 @@ This is the Tween Helper `1.3.0-rc.5` release candidate for Unity `6000.6.0f1` a
 - Unity UI (uGUI) and TextMesh Pro. Import TextMesh Pro Essential Resources before opening the gallery.
 - Built-in Render Pipeline or Universal Render Pipeline. HDRP and custom render pipelines are untested.
 
-DOTween is an external Asset Store dependency and is not redistributed with this package. Use **Tools > Tween Helper > Validate > Dependencies** for a setup check, available before dependencies are installed.
+DOTween is an external Asset Store dependency and is not redistributed with this package. The archive declares Unity UI `com.unity.ugui` version `2.6.0` as a registry dependency. The branded Setup window opens once per version after import; reopen it from **Tools > Tween Helper > Setup** to check dependencies and open the official setup tools.
 
-## What's new in 1.3.0-rc.5
+## What's new in 1.3.0-rc.6
 
 This candidate hardens async cancellation and Editor preview cleanup, preserves the host's DOTween configuration by default, and explicitly registers all built-in presets for stripped players. It adds Browser use-case filters, favorites and recent entries; package-local reduced-motion options; and a progress-fill recipe operation with three additional workflow samples and an authored preference-toggle prefab. The recipe catalog now has 28 operations and seven samples. Preset, Browser and Gallery totals remain 300, 461 and 423 respectively.
 
-This update removes optional DOTween module dependencies, handles missing dependencies without compiler errors, and updates recipe asset navigation for Unity 6.6. The development-only support window is excluded from the upload. See [installation and compatibility](Documentation/Installation.md) and [lifecycle and migration](Documentation/LifecycleAndMigration.md).
+This update removes optional DOTween module dependencies, handles missing dependencies without compiler errors, and updates recipe asset navigation for Unity 6.6. The new branded Setup window checks DOTween, Unity UI/TMP code and TMP Essential Resources, and keeps its sample-launch buttons disabled until setup is complete. Its buttons open the official installation tools. The development-only support window is excluded from the upload. See [installation and compatibility](Documentation/Installation.md) and [lifecycle and migration](Documentation/LifecycleAndMigration.md).
 
 ## Previous release: 1.2.0
 
@@ -30,7 +30,7 @@ Install and set up DOTween first. Then import the TweenHelper `.unitypackage` fr
 
 All distributable files are installed beneath `Assets/Loags/TweenHelper`. The included Animation Gallery is in `Samples/TweenHelper Demos`. It is mouse-driven, capture-ready at 16:9, and does not require the Input System.
 
-Run **Tools > Tween Helper > Validate > Dependencies** after import. The checker enables Tween Helper's assemblies when dependencies are ready, preserving existing scripting symbols. It does not install third-party packages or open external pages automatically.
+Complete the three steps in **Tools > Tween Helper > Setup** after import. The checker enables Tween Helper's assemblies when dependencies are ready, preserving existing scripting symbols. It does not install third-party packages or open external pages automatically.
 
 ## Quick start
 
