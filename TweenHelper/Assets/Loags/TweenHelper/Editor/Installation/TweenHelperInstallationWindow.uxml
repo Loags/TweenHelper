@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement class="window-root">
+        <ui:Style src="TweenHelperInstallationWindow.uss" />
+        <ui:ScrollView class="window-scroll">
+            <ui:VisualElement class="hero-card">
+                <ui:Image name="brand-logo" class="brand-logo" />
+                <ui:VisualElement class="hero-copy">
+                    <ui:Label text="TWEEN HELPER" class="hero-title" />
+                    <ui:Label text="A few steps, then you're ready to animate." class="description" />
+                    <ui:Label name="version-label" class="version-pill" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="section-card">
+                <ui:VisualElement class="heading-row">
+                    <ui:Label text="Let's get set up" class="section-title" />
+                    <ui:Button name="refresh-button" text="Check again" class="secondary-button" />
+                </ui:VisualElement>
+                <ui:Label name="setup-status" class="status-label summary" />
+                <ui:VisualElement class="step-card">
+                    <ui:Label text="1. DOTween Free" class="step-title" />
+                    <ui:Label name="dotween-status" class="status-label" />
+                    <ui:Label text="Install or update from My Assets, then run Setup DOTween in its Utility Panel. DOTween is installed separately." class="description" />
+                    <ui:VisualElement class="button-row">
+                        <ui:Button name="dotween-store-button" text="Get / update DOTween" class="link-button" />
+                        <ui:Button name="dotween-setup-button" text="Open DOTween setup" class="secondary-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="step-card">
+                    <ui:Label text="2. Unity UI + TextMesh Pro" class="step-title" />
+                    <ui:Label name="ui-status" class="status-label" />
+                    <ui:VisualElement class="button-row">
+                        <ui:Button name="ui-button" text="Open Unity UI in Package Manager" class="link-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="step-card">
+                    <ui:Label text="3. TMP Essential Resources" class="step-title" />
+                    <ui:Label name="tmp-status" class="status-label" />
+                    <ui:Label text="These resources are required by the gallery. If the gallery was already open, reopen it after importing." class="description" />
+                    <ui:VisualElement class="button-row">
+                        <ui:Button name="tmp-button" text="Import TMP essentials" class="link-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement class="button-row">
+                    <ui:Button name="browser-button" text="Open preset browser" class="primary-button" />
+                    <ui:Button name="gallery-button" text="Open animation gallery" class="primary-button" />
+                    <ui:Button name="documentation-button" text="Installation guide" class="secondary-button" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:Label text="Opens once per package version. Reopen from Tools > Tween Helper > Setup." class="footer" />
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>

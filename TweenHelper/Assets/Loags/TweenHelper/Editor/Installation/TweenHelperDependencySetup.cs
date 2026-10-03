@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Build;
+using UnityEngine;
 
 namespace LB.TweenHelper.Installation.Editor
 {
@@ -12,8 +13,16 @@ namespace LB.TweenHelper.Installation.Editor
         internal const string Version = "1.3.0-rc.5";
         private const string DependencySymbol = "TWEEN_HELPER_DEPENDENCIES_READY";
         private static readonly Version MinimumDotweenVersion = new Version(1, 3, 30);
+        internal static event Action StatusChanged;
 
-        static TweenHelperDependencySetup() => ScheduleRefresh();
+        static TweenHelperDependencySetup()
+        {
+            EditorApplication.playModeStateChanged += state =>
+            {
+                if (state == PlayModeStateChange.EnteredEditMode) ScheduleRefresh();
+            };
+            ScheduleRefresh();
+        }
 
         internal static void ScheduleRefresh()
         {
@@ -25,12 +34,12 @@ namespace LB.TweenHelper.Installation.Editor
         private static void Validate()
         {
             Refresh();
-            bool ready = GetStatus(out string message);
-            EditorUtility.DisplayDialog(ready ? "Tween Helper Dependencies Ready" : "Tween Helper Dependencies Required", message, "OK");
+            TweenHelperInstallationWindow.Open();
         }
 
-        private static void Refresh()
+        internal static void Refresh()
         {
+            if (EditorApplication.isPlayingOrWillChangePlaymode) return;
             if (EditorApplication.isCompiling || EditorApplication.isUpdating)
             {
                 ScheduleRefresh();
@@ -39,36 +48,53 @@ namespace LB.TweenHelper.Installation.Editor
 
             NamedBuildTarget target = NamedBuildTarget.FromBuildTargetGroup(BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget));
             var symbols = new List<string>(PlayerSettings.GetScriptingDefineSymbols(target).Split(';', StringSplitOptions.RemoveEmptyEntries));
-            bool ready = GetStatus(out _);
+            bool ready = ReadStatus().CoreReady;
             bool changed = ready ? !symbols.Contains(DependencySymbol) : symbols.Contains(DependencySymbol);
-            if (!changed) return;
+            StatusChanged?.Invoke();
+            if (!changed)
+            {
+                TweenHelperInstallationWindow.OpenOnce();
+                return;
+            }
             if (ready) symbols.Add(DependencySymbol);
             else symbols.RemoveAll(symbol => symbol == DependencySymbol);
             PlayerSettings.SetScriptingDefineSymbols(target, string.Join(";", symbols));
         }
 
-        private static bool GetStatus(out string message)
+        internal static TweenHelperDependencyStatus ReadStatus()
         {
-            var missing = new List<string>();
             Type dotween = Type.GetType("DG.Tweening.DOTween, DOTween");
             bool hasDotweenFile = AssetDatabase.FindAssets("DOTween").Any(guid => AssetDatabase.GUIDToAssetPath(guid).EndsWith("/DOTween.dll", StringComparison.OrdinalIgnoreCase));
             bool hasEditorLibrary = Type.GetType("DG.DOTweenEditor.DOTweenEditorPreview, DOTweenEditor") != null;
             bool hasModuleLoader = AssetDatabase.FindAssets("DOTweenModuleUtils").Any(guid => AssetDatabase.GUIDToAssetPath(guid).EndsWith("/DOTweenModuleUtils.cs", StringComparison.OrdinalIgnoreCase));
             string runtimeVersion = dotween?.GetField("Version")?.GetValue(null) as string ?? dotween?.GetProperty("Version")?.GetValue(null) as string;
-            if (!hasDotweenFile || !hasEditorLibrary || !hasModuleLoader || !System.Version.TryParse(runtimeVersion, out Version version) || version < MinimumDotweenVersion)
-            {
-                missing.Add("Install DOTween Free 1.3.030 or newer separately, including its core, Editor libraries and module loader, and run its Setup DOTween utility.");
-            }
-            if (Type.GetType("UnityEngine.UI.Graphic, UnityEngine.UI") == null || Type.GetType("TMPro.TMP_Text, Unity.TextMeshPro") == null)
-            {
-                missing.Add("Install Unity UI (uGUI), including TextMesh Pro, through Unity Package Manager.");
-            }
+            bool dotweenReady = hasDotweenFile && hasEditorLibrary && hasModuleLoader && System.Version.TryParse(runtimeVersion, out Version version) && version >= MinimumDotweenVersion;
+            bool uiReady = Type.GetType("UnityEngine.UI.Graphic, UnityEngine.UI") != null && Type.GetType("TMPro.TMP_Text, Unity.TextMeshPro") != null;
+            Type settingsType = Type.GetType("TMPro.TMP_Settings, Unity.TextMeshPro");
+            Type fontType = Type.GetType("TMPro.TMP_FontAsset, Unity.TextMeshPro");
+            string fontPath = AssetDatabase.GUIDToAssetPath("8f586378b4e144a9851e7b34d9b748ee");
+            bool resourcesReady = uiReady && settingsType != null && fontType != null && Resources.Load("TMP Settings", settingsType) != null && !string.IsNullOrEmpty(fontPath) && AssetDatabase.LoadAssetAtPath(fontPath, fontType) != null;
+            return new TweenHelperDependencyStatus(runtimeVersion, hasEditorLibrary, dotweenReady, uiReady, resourcesReady);
+        }
+    }
 
-            bool ready = missing.Count == 0;
-            message = ready
-                ? $"DOTween runtime {runtimeVersion}, its module loader and Unity UI/TextMesh Pro are available. Tween Helper does not require DOTween's optional UI/Sprite extensions or generated module assembly definitions. Import TMP Essential Resources before opening the sample gallery."
-                : string.Join("\n\n", missing) + "\n\nTween Helper's runtime, Editor tools and samples remain disabled until these dependencies are ready. Existing project scripting symbols are preserved.";
-            return ready;
+    internal sealed class TweenHelperDependencyStatus
+    {
+        internal string DotweenVersion { get; }
+        internal bool HasDotweenEditor { get; }
+        internal bool DotweenReady { get; }
+        internal bool UiReady { get; }
+        internal bool ResourcesReady { get; }
+        internal bool CoreReady => DotweenReady && UiReady;
+        internal bool SamplesReady => CoreReady && ResourcesReady;
+
+        internal TweenHelperDependencyStatus(string dotweenVersion, bool hasDotweenEditor, bool dotweenReady, bool uiReady, bool resourcesReady)
+        {
+            DotweenVersion = dotweenVersion;
+            HasDotweenEditor = hasDotweenEditor;
+            DotweenReady = dotweenReady;
+            UiReady = uiReady;
+            ResourcesReady = resourcesReady;
         }
     }
 

@@ -1,0 +1,127 @@
+.window-root {
+    flex-grow: 1;
+    background-color: rgb(20, 23, 32);
+}
+.window-scroll {
+    flex-grow: 1;
+    padding: 18px;
+}
+.hero-card {
+    flex-direction: row;
+    align-items: center;
+    padding: 18px;
+    margin-bottom: 14px;
+    background-color: rgb(11, 16, 32);
+    border-width: 1px;
+    border-left-color: rgb(46, 199, 238);
+    border-top-color: rgb(46, 199, 238);
+    border-right-color: rgb(114, 80, 230);
+    border-bottom-color: rgb(114, 80, 230);
+    border-radius: 14px;
+}
+.brand-logo {
+    width: 86px;
+    height: 86px;
+    margin-right: 18px;
+    flex-shrink: 0;
+    -unity-background-scale-mode: scale-to-fit;
+}
+.hero-copy {
+    flex-grow: 1;
+    flex-shrink: 1;
+}
+.hero-title {
+    font-size: 26px;
+    -unity-font-style: bold;
+    color: rgb(239, 246, 255);
+}
+.version-pill {
+    align-self: flex-start;
+    margin-top: 8px;
+    padding: 5px 9px;
+    border-radius: 10px;
+    background-color: rgba(74, 208, 238, 0.16);
+    color: rgb(101, 222, 247);
+    white-space: normal;
+}
+.section-card {
+    padding: 16px;
+    background-color: rgb(29, 33, 45);
+    border-radius: 12px;
+}
+.heading-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+.section-title {
+    font-size: 18px;
+    -unity-font-style: bold;
+    color: rgb(236, 241, 251);
+}
+.step-card {
+    padding: 12px;
+    margin-bottom: 10px;
+    background-color: rgb(23, 27, 38);
+    border-radius: 9px;
+}
+.step-title {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(236, 241, 251);
+}
+.description, .status-label {
+    margin-top: 5px;
+    white-space: normal;
+    color: rgb(170, 180, 198);
+    font-size: 12px;
+}
+.summary {
+    margin-bottom: 12px;
+}
+.status-ready {
+    color: rgb(80, 220, 167);
+}
+.status-action {
+    color: rgb(255, 190, 92);
+}
+.button-row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 7px;
+}
+Button {
+    height: 28px;
+    margin-left: 0;
+    margin-right: 7px;
+    margin-top: 4px;
+    padding-left: 12px;
+    padding-right: 12px;
+    border-width: 0;
+    border-radius: 7px;
+}
+.primary-button {
+    background-color: rgb(84, 91, 230);
+    color: white;
+    -unity-font-style: bold;
+}
+.secondary-button {
+    background-color: rgb(43, 49, 65);
+    color: rgb(218, 225, 240);
+}
+.link-button {
+    background-color: rgba(62, 201, 238, 0.12);
+    color: rgb(102, 219, 246);
+}
+Button:hover:enabled {
+    background-color: rgb(65, 74, 102);
+}
+Button:disabled {
+    opacity: 0.45;
+}
+.footer {
+    margin-top: 12px;
+    white-space: normal;
+    color: rgb(165, 175, 196);
+    font-size: 11px;
+}

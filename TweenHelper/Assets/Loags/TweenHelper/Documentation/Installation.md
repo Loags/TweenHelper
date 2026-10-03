@@ -19,7 +19,9 @@ Use **Window > Package Management > My Assets**, or **Assets > Import Package > 
 
 An independent installation assembly checks for DOTween's libraries and Unity UI/TextMesh Pro. It enables `TWEEN_HELPER_DEPENDENCIES_READY` for the active build target when dependencies are available, preserving existing scripting symbols. Until then, dependent runtime, Editor and sample assemblies stay disabled so missing dependencies do not cause compiler errors. Install dependencies before opening samples.
 
-Use **Tools > Tween Helper > Validate > Dependencies** to inspect setup status, even before dependencies are installed. The checker does not install or change third-party packages. After switching build targets, run this check if the tools have not yet appeared.
+The branded **Tween Helper Setup** window opens once per package version after import. Reopen it from **Tools > Tween Helper > Setup** or **Validate > Dependencies**. It checks the installed DOTween runtime version, its Editor library and module loader, Unity UI/TextMesh Pro code, and TMP Essential Resources (settings and the gallery's font). Its buttons open the official Asset Store, Package Manager, DOTween Utility Panel and TMP resource importer. Complete installation or updates in those tools; in the TMP importer, keep all essentials selected and click **Import**. The checker does not install or change third-party packages. After switching build targets, run **Check again** if the tools have not yet appeared.
+
+The setup window enables its gallery and preset-browser buttons only after all three steps are ready. If a sample scene was already open before importing TMP Essential Resources, reopen it after import so its text components initialize with the resources available. This setup window does not open a sample scene or an external website automatically.
 
 When upgrading an installation that still contains `Assets/Loags/TweenHelper/Editor/Setup`, remove that obsolete folder. Unity package imports do not delete files removed from later releases.
 
